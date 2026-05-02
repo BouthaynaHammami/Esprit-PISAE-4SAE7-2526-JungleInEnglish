@@ -1,0 +1,193 @@
+<div class="chat-container">
+  <!-- Chat Icon Button with Badge -->
+  <div class="chat-toggle-wrapper">
+    <button 
+      (click)="toggleChat()" 
+      class="chat-toggle-btn"
+      [class.active]="isOpen"
+      [title]="username + (isConnected ? ' (Connected)' : ' (Offline)')">
+      <span class="chat-icon">💬</span>
+      <span *ngIf="unreadCount > 0 && !isOpen" class="unread-badge">{{ unreadCount }}</span>
+      <span *ngIf="!isConnected && isOpen" class="status-dot connecting"></span>
+      <span *ngIf="isConnected" class="status-dot connected"></span>
+    </button>
+    
+    <!-- Username Badge -->
+    <div class="user-badge" *ngIf="!isOpen">
+      <span class="user-name">{{ username }}</span>
+      <span class="user-status" [class.online]="isConnected">
+        {{ isConnected ? 'Online' : 'Offline' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Chat Window -->
+  <div class="chat-window" *ngIf="isOpen" [class.dark-mode]="darkMode">
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="header-content">
+        <span class="header-icon">💬</span>
+        <div>
+          <h3 class="header-title">Global Chat</h3>
+          <p class="header-status">
+            <span class="status-indicator" [class.connected]="isConnected"></span>
+            {{ isConnected ? onlineUsers.length + ' online' : 'Connecting...' }}
+          </p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button (click)="toggleParticipants()" class="icon-btn" title="Participants">
+          👥 {{ onlineUsers.length }}
+        </button>
+        <button (click)="toggleSearch()" class="icon-btn" title="Search">
+          🔍
+        </button>
+        <button (click)="toggleDarkMode()" class="icon-btn" title="Toggle dark mode">
+          {{ darkMode ? '☀️' : '🌙' }}
+        </button>
+        <button (click)="toggleChat()" class="icon-btn" title="Close">✕</button>
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-bar" *ngIf="showSearch">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery"
+        (input)="filterMessages()"
+        placeholder="Search messages..."
+        class="search-input">
+      <button (click)="clearSearch()" class="clear-search-btn">✕</button>
+    </div>
+
+    <!-- Participants Panel -->
+    <div class="participants-panel" *ngIf="showParticipants">
+      <div class="participants-header">
+        <h4>Online Users ({{ onlineUsers.length }})</h4>
+        <button (click)="toggleParticipants()" class="close-btn">✕</button>
+      </div>
+      <div class="participants-list">
+        <div *ngFor="let user of onlineUsers" class="participant-item">
+          <span class="online-dot"></span>
+          <span>{{ user }}</span>
+        </div>
+        <div *ngIf="onlineUsers.length === 0" class="no-participants">
+          No one else is here yet
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages Container -->
+    <div class="messages-container" #messagesContainer>
+      <div *ngIf="filteredMessages.length === 0 && !searchQuery" class="empty-state">
+        <span class="empty-icon">💬</span>
+        <p>No messages yet</p>
+        <p class="empty-subtitle">Start the conversation!</p>
+      </div>
+
+      <div *ngIf="filteredMessages.length === 0 && searchQuery" class="empty-state">
+        <span class="empty-icon">🔍</span>
+        <p>No messages found</p>
+        <p class="empty-subtitle">Try a different search term</p>
+      </div>
+
+      <div *ngFor="let message of filteredMessages" 
+           class="message" 
+           [ngClass]="getMessageClass(message)">
+        <div class="message-content">
+          <div class="message-header" *ngIf="message.type === 'CHAT'">
+            <span class="message-sender">{{ message.sender }}</span>
+            <span class="message-time" *ngIf="message.timestamp">
+              {{ formatMessageTime(message.timestamp) }}
+            </span>
+            <button 
+              (click)="toggleReactions(message)"
+              class="add-reaction-btn"
+              title="Add reaction">
+              😊+
+            </button>
+          </div>
+          <div class="message-body">
+            <span class="message-icon">{{ getMessageIcon(message) }}</span>
+            <span class="message-text" [innerHTML]="formatMessageWithMentions(getMessageText(message))"></span>
+          </div>
+          
+          <!-- Displayed Reactions (always visible) -->
+          <div class="message-reactions-display" *ngIf="message.type === 'CHAT' && getReactionCounts(message).length > 0">
+            <button 
+              *ngFor="let reactionCount of getReactionCounts(message)"
+              (click)="hasUserReacted(message, reactionCount.emoji) ? removeReaction(message, reactionCount.emoji) : addReaction(message, reactionCount.emoji)"
+              class="reaction-display-btn"
+              [class.user-reacted]="hasUserReacted(message, reactionCount.emoji)"
+              [title]="reactionCount.users.join(', ')">
+              {{ reactionCount.emoji }} {{ reactionCount.count }}
+            </button>
+          </div>
+          
+          <!-- Reaction Picker (shown on click) -->
+          <div class="message-reactions" *ngIf="message.type === 'CHAT' && showReactionsForMessage === message.timestamp">
+            <button 
+              *ngFor="let reaction of ['👍', '❤️', '😂', '🎉', '🔥', '⭐']"
+              (click)="addReaction(message, reaction)"
+              class="reaction-btn"
+              [title]="'React with ' + reaction">
+              {{ reaction }}
+            </button>
+            <button 
+              (click)="closeReactions()"
+              class="reaction-close-btn"
+              title="Close">
+              ✕
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="chat-input-container">
+      <!-- Emoji Picker -->
+      <div class="emoji-picker" *ngIf="showEmojiPicker">
+        <div class="emoji-picker-header">
+          <span>Choose an emoji</span>
+          <button (click)="toggleEmojiPicker()" class="emoji-close">✕</button>
+        </div>
+        <div class="emoji-grid">
+          <button 
+            *ngFor="let emoji of emojis" 
+            (click)="addEmoji(emoji)"
+            class="emoji-btn"
+            [title]="emoji">
+            {{ emoji }}
+          </button>
+        </div>
+      </div>
+
+      <div class="input-row">
+        <button 
+          (click)="toggleEmojiPicker()" 
+          class="emoji-toggle-btn"
+          [class.active]="showEmojiPicker"
+          title="Add emoji">
+          😊
+        </button>
+        
+        <input 
+          type="text" 
+          [(ngModel)]="newMessage"
+          (keypress)="onKeyPress($event)"
+          [disabled]="!isConnected"
+          placeholder="{{ isConnected ? 'Type a message... (use @ to mention)' : 'Connecting...' }}"
+          class="chat-input">
+        
+        <button 
+          (click)="sendMessage()" 
+          [disabled]="!newMessage.trim() || !isConnected"
+          class="send-btn"
+          title="Send">
+          <span>📤</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

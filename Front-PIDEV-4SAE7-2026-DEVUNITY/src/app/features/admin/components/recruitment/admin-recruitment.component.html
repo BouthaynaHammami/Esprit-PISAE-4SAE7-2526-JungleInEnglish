@@ -1,0 +1,201 @@
+<!-- ══════════════════  LIST VIEW  ══════════════════ -->
+<div id="rc-list-view">
+  <div class="rc-page">
+
+    <!-- Header -->
+    <div class="rc-page-header">
+      <div>
+        <div class="rc-page-title">Recruitment management</div>
+        <div class="rc-page-subtitle">Manage open positions, applicants and hiring status</div>
+      </div>
+      <div class="rc-stat-chips">
+        <span class="rc-stat-chip rc-stat-chip--total">
+          <span class="rc-stat-dot"></span>
+          <span id="rc-stat-total">0</span> total
+        </span>
+        <span class="rc-stat-chip rc-stat-chip--open">
+          <span class="rc-stat-dot"></span>
+          <span id="rc-stat-open">0</span> open
+        </span>
+        <span class="rc-stat-chip rc-stat-chip--closed">
+          <span class="rc-stat-dot"></span>
+          <span id="rc-stat-closed">0</span> closed
+        </span>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="rc-toolbar">
+      <button class="rc-btn rc-btn--primary" (click)="openCreateModal()">＋ New recruitment</button>
+    </div>
+
+    <!-- Main card -->
+    <div class="rc-card">
+      <div class="rc-card-toolbar">
+        <span class="rc-card-toolbar-label">All recruitments</span>
+      </div>
+      <div class="rc-table-wrap">
+        <table class="rc-table">
+          <thead>
+            <tr>
+              <th class="rc-td-num">#</th>
+              <th>Position</th>
+              <th>Department</th>
+              <th>Opened at</th>
+              <th>Interviews</th>
+              <th>Applicants</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rc-recruitment-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════  DETAIL VIEW  ══════════════════ -->
+<div id="rc-detail-view">
+  <div class="rc-page">
+
+    <div class="rc-detail-back">
+      <button class="rc-btn rc-btn--secondary rc-btn--sm" (click)="showListView()">← Back to list</button>
+    </div>
+
+    <div class="rc-detail-head">
+      <div class="rc-detail-title" id="rc-detail-title-text">–</div>
+      <div class="rc-detail-meta">
+        <span class="rc-dept-tag" id="rc-detail-dept-tag">–</span>
+        <span class="rc-pill" id="rc-detail-status-badge">–</span>
+        <span class="rc-detail-date" id="rc-detail-opened-date">–</span>
+      </div>
+    </div>
+
+    <div class="rc-card">
+      <div class="rc-card-toolbar">
+        <span class="rc-card-toolbar-label">Applicants</span>
+      </div>
+      <div class="rc-table-wrap">
+        <table class="rc-table">
+          <thead>
+            <tr>
+              <th class="rc-td-num">#</th>
+              <th>User Name</th>
+              <th>Response</th>
+              <th>CV</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rc-applicants-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════  MODAL (fixed overlay)  ══════════════════ -->
+<div id="rc-modal-overlay" class="rc-modal-overlay" (click)="onOverlayClick($event)">
+  <div class="rc-modal-box" id="rc-modal-box">
+
+    <div class="rc-modal-head">
+      <span class="rc-modal-head-title" id="rc-modal-title">New recruitment</span>
+      <button class="rc-modal-close-btn" (click)="closeModal()" aria-label="Close">×</button>
+    </div>
+
+    <div class="rc-modal-body">
+      <input type="hidden" id="rc-edit-id" value="" />
+
+      <div class="rc-form-row">
+        <div class="rc-form-group" id="rc-field-position">
+          <label for="rc-f-position">Position title *</label>
+          <input type="text" id="rc-f-position" placeholder="e.g. Frontend developer" />
+          <span class="rc-form-error">Position title is required.</span>
+        </div>
+        <div class="rc-form-group" id="rc-field-department">
+          <label for="rc-f-department">Department *</label>
+          <input type="text" id="rc-f-department" placeholder="e.g. Engineering" />
+          <span class="rc-form-error">Department is required.</span>
+        </div>
+      </div>
+
+      <div class="rc-form-row">
+        <div class="rc-form-group">
+          <label for="rc-f-status">Status</label>
+          <select id="rc-f-status">
+            <option value="OPEN">Open</option>
+            <option value="CLOSED">Closed</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select>
+        </div>
+        <div class="rc-form-group">
+          <label for="rc-f-opened">Opening date</label>
+          <input type="date" id="rc-f-opened" />
+        </div>
+      </div>
+    </div>
+
+    <div class="rc-modal-foot">
+      <button class="rc-btn rc-btn--secondary rc-btn--sm" (click)="closeModal()">Cancel</button>
+      <button class="rc-btn rc-btn--primary rc-btn--sm" (click)="saveRecruitment()">Save</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════  CV VIEWER (full screen)  ══════════════════ -->
+<div id="rc-viewer-overlay" class="rc-viewer-overlay">
+  <div class="rc-viewer-head">
+    <span class="rc-viewer-title">CV Quick Viewer</span>
+    <button class="rc-viewer-close" (click)="closeViewer()">×</button>
+  </div>
+  <div class="rc-viewer-body" id="rc-viewer-body">
+    <iframe id="rc-viewer-frame" src="" frameborder="0" style="width:100%; height:100%"></iframe>
+  </div>
+</div>
+
+<!-- ══════════════════  SCHEDULE INTERVIEW MODAL  ══════════════════ -->
+<div id="rc-schedule-overlay" class="rc-modal-overlay">
+  <div class="rc-modal-box">
+    <div class="rc-modal-head">
+      <span class="rc-modal-head-title">Schedule interview</span>
+      <button class="rc-modal-close-btn" (click)="closeScheduleModal()">×</button>
+    </div>
+    <div class="rc-modal-body">
+      <div class="rc-form-group">
+        <label for="in-f-title">Interview title *</label>
+        <input type="text" id="in-f-title" placeholder="e.g. Technical Interview" />
+      </div>
+      <div class="rc-form-row">
+        <div class="rc-form-group">
+          <label for="in-f-date">Start date & time *</label>
+          <input type="datetime-local" id="in-f-date" />
+        </div>
+        <div class="rc-form-group">
+          <label for="in-f-duration">Duration (minutes)</label>
+          <input type="number" id="in-f-duration" value="30" />
+        </div>
+      </div>
+      <div class="rc-form-row">
+        <div class="rc-form-group">
+          <label for="in-f-link">Meeting link / Location</label>
+          <input type="text" id="in-f-link" placeholder="https://meet.google.com/..." />
+        </div>
+        <div class="rc-form-group">
+          <label for="in-f-type">Type</label>
+          <select id="in-f-type">
+            <option value="ENLIGNE">Online (En ligne)</option>
+            <option value="PRESENTIEL">In-person (Présentiel)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="rc-modal-foot">
+      <button class="rc-btn rc-btn--secondary rc-btn--sm" (click)="closeScheduleModal()">Cancel</button>
+      <button class="rc-btn rc-btn--primary rc-btn--sm" (click)="submitInterview()">Schedule & Accept</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,154 @@
+/* ═══════════════════════════════════════════════
+   EMPLOYEE OPEN POSITIONS — isolated with re- prefix
+   Palette: #006D77 / #83C5BE / #FFDDD2 / #E29578
+═══════════════════════════════════════════════ */
+
+.re-page {
+  padding: 24px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #EDF6F9 0%, #EAF3F6 100%);
+  font-family: inherit;
+  color: rgba(0,0,0,.82);
+}
+
+.re-page *, .re-page *::before, .re-page *::after {
+  box-sizing: border-box;
+}
+
+/* ── Header ───────────────────────────────────── */
+.re-header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.re-title {
+  font-size: 26px;
+  font-weight: 900;
+  color: #006D77;
+  margin: 0;
+}
+
+.re-subtitle {
+  margin-top: 6px;
+  font-size: 14px;
+  opacity: .65;
+}
+
+/* ── Filter Toolbar ───────────────────────────── */
+.re-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.re-toolbar label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #006D77;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.re-select {
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.10);
+  background: #fff;
+  font-size: 13px;
+  color: #006D77;
+  font-weight: 600;
+  outline: none;
+}
+
+/* ── Grid ─────────────────────────────────────── */
+.re-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* ── Recruitment Card ─────────────────────────── */
+.re-card {
+  background: rgba(255,255,255,.92);
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 14px 34px rgba(0,0,0,.05);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.re-card:hover { transform: translateY(-4px); box-shadow: 0 20px 45px rgba(0,0,0,.08); }
+
+.re-card-body {
+  padding: 24px;
+  flex: 1;
+}
+
+.re-pos-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #006D77;
+  margin: 0 0 10px;
+  line-height: 1.25;
+}
+
+.re-dept {
+  display: inline-flex;
+  padding: 4px 10px;
+  background: rgba(0,109,119,.08);
+  color: #006D77;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 15px;
+}
+
+.re-card-foot {
+  padding: 16px 24px;
+  background: rgba(237,246,249,.50);
+  border-top: 1px solid rgba(0,0,0,.04);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ── Pills ────────────────────────────────────── */
+.re-pill {
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.re-pill--open { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+.re-pill--closed { background: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb; }
+
+/* ── Buttons ──────────────────────────────────── */
+.re-btn {
+  border: 0;
+  border-radius: 12px;
+  padding: 0 16px;
+  height: 38px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background .15s;
+  font-family: inherit;
+}
+
+.re-btn--primary { background: #006D77; color: #fff; }
+.re-btn--primary:hover { background: #005f6b; }
+.re-btn:disabled { opacity: .5; cursor: default; }
+
+.re-loading { padding: 60px; text-align: center; font-size: 14px; opacity: .5; }
+.re-empty { padding: 60px; text-align: center; border-radius: 20px; background: rgba(0,0,0,.02); border: 2px dashed rgba(0,0,0,.05); color: rgba(0,0,0,.35); font-weight: 600; }

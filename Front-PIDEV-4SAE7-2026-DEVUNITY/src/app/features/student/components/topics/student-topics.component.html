@@ -1,0 +1,221 @@
+<!-- ══════════════════════════════════════════════
+     DECORATIVE BACKGROUND SHAPES
+══════════════════════════════════════════════ -->
+<div class="bg-decor">
+  <div class="bg-orb bg-orb--1"></div>
+  <div class="bg-orb bg-orb--2"></div>
+  <div class="bg-orb bg-orb--3"></div>
+  <div class="bg-sphere bg-sphere--1"></div>
+  <div class="bg-sphere bg-sphere--2"></div>
+  <div class="bg-sphere bg-sphere--3"></div>
+  <div class="bg-sphere bg-sphere--4"></div>
+  <div class="bg-plane">
+    <svg width="90" height="60" viewBox="0 0 90 60" fill="none">
+      <path d="M5 50 L85 10 L50 30 L85 10 L60 55 L50 30 L5 50Z" fill="url(#planeGrad)" opacity="0.18"/>
+      <defs><linearGradient id="planeGrad" x1="0" y1="0" x2="90" y2="60"><stop stop-color="#5ad0d0"/><stop offset="1" stop-color="#83C5BE" stop-opacity="0.3"/></linearGradient></defs>
+    </svg>
+  </div>
+</div>
+
+<main class="page">
+  <nav class="breadcrumb">
+    <span class="breadcrumb__back">&#8249;</span>
+    <a routerLink="/student/dashboard">Home</a>
+    <span class="breadcrumb__sep">&#8250;</span>
+    <strong>Topics</strong>
+  </nav>
+
+  <header class="hero">
+    <h1>Discussion Topics</h1>
+    <p>Join conversations, share questions, and collaborate with your classmates.</p>
+  </header>
+
+  <div class="layout">
+    <div class="layout__main">
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" [(ngModel)]="searchQuery" (input)="onSearchChange()" placeholder="Search topics...">
+      </div>
+
+      <div *ngIf="loading && filteredTopics.length === 0" class="empty-state">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <p class="empty-state__title">Loading topics...</p>
+        <p class="empty-state__sub">Please wait while we gather the latest discussions.</p>
+      </div>
+
+      <div *ngIf="!loading && filteredTopics.length === 0" class="empty-state">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+        <p class="empty-state__title">No topics found</p>
+        <p class="empty-state__sub">Try a different search or create a new discussion.</p>
+        <button class="ev-btn ev-btn--prim" (click)="openCreateModal()">Create Topic</button>
+      </div>
+
+      <div *ngIf="!loading && filteredTopics.length > 0" class="events-list">
+        <article *ngFor="let topic of filteredTopics; let i = index" class="event-card glass" [style.--card-delay]="(i * 0.07) + 's'">
+          <div class="event-card__img-side">
+            <div class="event-card__img-ph">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(90,208,208,0.35)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+            <div class="event-card__date-badge" [ngClass]="{ 'orange': i % 2 === 0, 'teal': i % 2 !== 0 }">
+              <span class="event-card__date-month">{{ topic.createdAt | date:'MMM' | uppercase }}</span>
+              <span class="event-card__date-day">{{ topic.createdAt | date:'dd' }}</span>
+            </div>
+          </div>
+
+          <div class="event-card__body">
+            <div class="event-card__header">
+              <h3 class="event-card__title">{{ topic.title }}</h3>
+              <span class="event-card__pill pill--demand">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z" fill="#f6a13f"/></svg>
+                Discussion
+              </span>
+            </div>
+
+            <p *ngIf="topic.description" class="event-card__desc">{{ topic.description }}</p>
+            <div class="event-card__separator"></div>
+
+            <div class="event-card__footer">
+              <div class="event-card__meta">
+                <span class="event-card__meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  {{ topic.user?.firstName || 'Anonymous' }}
+                </span>
+                <span class="event-card__meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  {{ topic.createdAt | date:'dd MMM yyyy' }}
+                </span>
+              </div>
+
+              <div class="event-card__actions">
+                <button class="btn-register" (click)="openTopicChat(topic)">Open Chat</button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <aside class="layout__sidebar">
+      <div class="sidebar-card glass">
+        <h2 class="sidebar-card__title">Topic Overview</h2>
+        <p class="sidebar-card__sub">Explore active discussions or start a new topic in seconds.</p>
+
+        <div class="sidebar-card__label">Quick Stats</div>
+        <div class="sidebar-card__stat-row">
+          <div class="sidebar-card__stat">
+            <span>{{ filteredTopics.length }}</span>
+            <small>Visible topics</small>
+          </div>
+          <div class="sidebar-card__stat">
+            <span>{{ topics.length }}</span>
+            <small>Total topics</small>
+          </div>
+        </div>
+
+        <button class="sidebar-card__submit" (click)="openCreateModal()">Create Topic</button>
+        <p class="sidebar-card__terms">Open a topic and invite classmates to join the chat.</p>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<!-- CREATE TOPIC MODAL -->
+<div *ngIf="showCreateModal" class="ev-overlay">
+  <div class="ev-overlay__bg" (click)="closeCreateModal()"></div>
+  <div class="ev-modal ev-modal--sm" (click)="$event.stopPropagation()">
+    <div class="ev-modal__bar"></div>
+    <div class="ev-modal__head">
+      <div class="ev-modal__head-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <h2>Create Topic</h2>
+      <button class="ev-modal__x" (click)="closeCreateModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ev-modal__body">
+      <label class="sidebar-card__label" for="topic-title">Topic Title</label>
+      <input id="topic-title" type="text" class="sidebar-card__input" placeholder="Enter topic title..." [(ngModel)]="newTopic.title" maxlength="100">
+      <label class="sidebar-card__label" for="topic-description">Description</label>
+      <textarea id="topic-description" class="ev-modal__ta" placeholder="Describe what this topic is about..." rows="4" [(ngModel)]="newTopic.description" maxlength="500"></textarea>
+      <div class="ev-modal__btns">
+        <button class="ev-btn ev-btn--ghost" (click)="closeCreateModal()">Cancel</button>
+        <button class="ev-btn ev-btn--prim" (click)="createTopic()" [disabled]="!newTopic.title?.trim() || loading">
+          <span *ngIf="!loading">Create Topic</span>
+          <span *ngIf="loading" class="ev-btn__ld"><span class="ev-spin"></span> Creating...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOPIC CHAT MODAL -->
+<div *ngIf="showChatModal && selectedTopic" class="ev-overlay" (click)="closeChatModal()">
+  <div class="ev-overlay__bg"></div>
+  <div class="ev-modal ev-modal--lg" (click)="$event.stopPropagation()">
+    <div class="ev-modal__bar"></div>
+    <div class="ev-modal__head">
+      <div class="ev-modal__head-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7"/><path d="M8 10l4-4 4 4"/><path d="M12 16v-8"/></svg>
+      </div>
+      <div>
+        <h2>{{ selectedTopic.title }}</h2>
+        <p class="ev-modal__sub">{{ selectedTopic.description || 'Start the discussion with your peers.' }}</p>
+      </div>
+      <button class="ev-modal__x" (click)="closeChatModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="ev-modal__body topic-chat-modal-body">
+      <div class="topic-chat-container">
+        <div class="messages-container" #messagesContainer>
+          <div *ngFor="let message of topicMessages" [class]="'message ' + getMessageClass(message)">
+            <div *ngIf="message.type === 'CHAT'" class="message-bubble">
+              <div class="message-header">
+                <span class="message-sender">{{ message.sender }}</span>
+                <span class="message-time">{{ formatMessageTime(message.timestamp) }}</span>
+              </div>
+              <div class="message-content">{{ message.content }}</div>
+              <div *ngIf="message.reactions && message.reactions.length > 0" class="message-reactions">
+                <span *ngFor="let reaction of getReactionCounts(message)" class="reaction-badge" [class.user-reacted]="hasUserReacted(message, reaction.emoji)" (click)="toggleReactionOnMessage(message, reaction.emoji)" [title]="reaction.users.join(', ')">
+                  {{ reaction.emoji }} {{ reaction.count }}
+                </span>
+              </div>
+              <button class="btn-react" (click)="showReactionsFor(message)">😊+</button>
+            </div>
+            <div *ngIf="message.type === 'JOIN' || message.type === 'LEAVE'" class="message-system">
+              <span class="system-icon">{{ message.type === 'JOIN' ? '👋' : '👋' }}</span>
+              {{ message.sender }} {{ message.type === 'JOIN' ? 'joined' : 'left' }} the discussion
+            </div>
+          </div>
+
+          <div *ngIf="topicMessages.length === 0" class="chat-empty">
+            <div class="empty-icon">💬</div>
+            <p>No messages yet</p>
+            <p class="text-muted">Be the first to start the conversation!</p>
+          </div>
+        </div>
+
+        <div *ngIf="showReactionPicker" class="reaction-picker-overlay" (click)="closeReactionPicker()">
+          <div class="reaction-picker" (click)="$event.stopPropagation()">
+            <div class="reaction-grid">
+              <button *ngFor="let emoji of quickReactions" class="reaction-btn" (click)="addReactionToMessage(selectedMessageForReaction, emoji)">{{ emoji }}</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input-container">
+          <div class="input-wrapper">
+            <input type="text" class="chat-input" placeholder="Type your message..." [(ngModel)]="topicMessageInput" (keypress)="onTopicChatKeyPress($event)" [disabled]="!topicChatConnected" />
+            <button class="btn-send" (click)="sendTopicMessage()" [disabled]="!topicMessageInput.trim() || !topicChatConnected"><span class="send-icon">📤</span></button>
+          </div>
+          <div class="connection-status" [class.connected]="topicChatConnected">
+            <span class="status-dot"></span>
+            {{ topicChatConnected ? 'Connected' : 'Connecting...' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

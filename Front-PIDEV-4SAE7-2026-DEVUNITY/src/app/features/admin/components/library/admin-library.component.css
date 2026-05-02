@@ -1,0 +1,35 @@
+/* admin-library.component.css */
+/* Tout est en Tailwind — ce fichier contient uniquement
+   les styles dynamiques générés par le TypeScript       */
+
+/* Les méthodes getSpineStyle(i) et getCoverStyle(i)
+   retournent des strings de style inline.
+   Ajoute ces méthodes dans ton admin-library.component.ts : */
+
+/*
+  private SPINES = [
+    'background:linear-gradient(180deg,#006D77,#0ea896)',
+    'background:linear-gradient(180deg,#d4a853,#f59e0b)',
+    'background:linear-gradient(180deg,#3b82f6,#60a5fa)',
+    'background:linear-gradient(180deg,#a855f7,#c084fc)',
+    'background:linear-gradient(180deg,#ef4444,#f87171)',
+    'background:linear-gradient(180deg,#22c55e,#4ade80)',
+  ];
+
+  private COVERS = [
+    'background:linear-gradient(135deg,#004e45,#006D77)',
+    'background:linear-gradient(135deg,#92400e,#d4a853)',
+    'background:linear-gradient(135deg,#1e3a8a,#3b82f6)',
+    'background:linear-gradient(135deg,#581c87,#a855f7)',
+    'background:linear-gradient(135deg,#7f1d1d,#ef4444)',
+    'background:linear-gradient(135deg,#14532d,#22c55e)',
+  ];
+
+  getSpineStyle(i: number): string {
+    return this.SPINES[i % this.SPINES.length];
+  }
+
+  getCoverStyle(i: number): string {
+    return this.COVERS[i % this.COVERS.length];
+  }
+*/

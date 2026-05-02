@@ -1,0 +1,286 @@
+<div class="bg-decor">
+  <div class="bg-orb bg-orb--1"></div>
+  <div class="bg-orb bg-orb--2"></div>
+  <div class="bg-orb bg-orb--3"></div>
+  <div class="bg-sphere bg-sphere--1"></div>
+  <div class="bg-sphere bg-sphere--2"></div>
+  <div class="bg-sphere bg-sphere--3"></div>
+  <div class="bg-sphere bg-sphere--4"></div>
+  <div class="bg-plane">
+    <svg width="90" height="60" viewBox="0 0 90 60" fill="none">
+      <path d="M5 50 L85 10 L50 30 L85 10 L60 55 L50 30 L5 50Z" fill="url(#planeGrad)" opacity="0.18" />
+      <defs>
+        <linearGradient id="planeGrad" x1="0" y1="0" x2="90" y2="60">
+          <stop stop-color="#5ad0d0" />
+          <stop offset="1" stop-color="#83C5BE" stop-opacity="0.3" />
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+</div>
+
+<div *ngIf="isUsingMockVapi()" class="dev-mode-indicator">
+  🎭 Mock VAPI Mode - Development Testing
+</div>
+
+<main class="page">
+  <nav class="breadcrumb">
+    <span class="breadcrumb__back">&#8249;</span>
+    <a routerLink="/student/dashboard">Home</a>
+    <span class="breadcrumb__sep">&#8250;</span>
+    <strong>Level Test</strong>
+  </nav>
+
+  <header class="hero">
+    <h1>Level Test Assessment</h1>
+    <p>Evaluate your English proficiency through a timed writing challenge.</p>
+  </header>
+
+  <div class="layout">
+    <div class="layout__main">
+      <div *ngIf="submitSuccess && !showOralTestTransition && !isOralTestActive" class="alert-bar alert-bar--success glass">
+        <strong>Submitted!</strong>
+        <span>Your complete test (written + oral) has been submitted. Our tutors will review it shortly.</span>
+      </div>
+
+      <div *ngIf="submitError" class="alert-bar alert-bar--danger glass">
+        <strong>Submission issue</strong>
+        <span>{{ submitError }}</span>
+      </div>
+
+      <div *ngIf="showOralTestTransition" class="alert-bar alert-bar--info glass">
+        <div class="transition-content">
+          <h3>Preparing Oral Test Phase</h3>
+          <p>Great job on your written test! Now we'll continue with a brief oral assessment.</p>
+          <div class="spinner-small"></div>
+          <p class="text-muted">Connecting to voice assistant...</p>
+        </div>
+      </div>
+
+      <div *ngIf="submitError && !isOralTestActive && !showOralTestTransition" class="alert-bar alert-bar--warn glass">
+        <div class="error-content">
+          <h4>Voice Assistant Connection Issue</h4>
+          <p>{{ submitError }}</p>
+          <div class="error-actions">
+            <button class="btn btn-primary" (click)="retryOralTest()">Retry Oral Test</button>
+            <button class="btn btn-soft" (click)="skipOralTest()">Skip Oral Test</button>
+          </div>
+        </div>
+      </div>
+
+      <section *ngIf="!isTestActive && !isOralTestActive && !showOralTestTransition && !loadingSubjects" class="hero-card glass">
+        <div class="card-hero">
+          <span class="hero-icon">🚀</span>
+          <h2>Ready to prove your skills?</h2>
+          <p>We will assign you a random writing prompt based on our curriculum. You will have a limited time to complete your response.</p>
+        </div>
+        <div class="card-footer">
+          <button class="btn btn-primary btn-lg" (click)="startRandomTest()" [disabled]="subjects.length === 0">
+            {{ subjects.length > 0 ? 'Start Random Level Test' : 'No subjects available' }}
+          </button>
+        </div>
+      </section>
+
+      <section *ngIf="isTestActive && selectedSubject" class="test-panel">
+        <div class="test-header glass">
+          <div class="subject-info">
+            <h3>{{ selectedSubject.title }}</h3>
+          </div>
+          <button class="btn btn-soft btn-sm" (click)="cancelTest()">Abort Test</button>
+        </div>
+
+        <div class="grid-layout">
+          <div class="card prompt-card glass">
+            <div class="card-header">
+              <h4>Your Writing Prompt</h4>
+            </div>
+            <div class="card-body">
+              <p class="topic-desc">{{ selectedSubject.description }}</p>
+            </div>
+          </div>
+
+          <div class="card editor-card glass">
+            <div class="card-header">
+              <h4>Write Your Response</h4>
+              <span class="char-count">{{ writtenParagraph.length }} chars</span>
+            </div>
+            <div class="card-body">
+              <textarea
+                [(ngModel)]="writtenParagraph"
+                (ngModelChange)="checkForBadWords()"
+                rows="10"
+                class="premium-input"
+                [class.input-error]="hasBadWords"
+                placeholder="Start typing your response here..."
+                [disabled]="submitting"></textarea>
+
+              <div *ngIf="hasBadWords" class="alert-bar alert-bar--danger alert-compact">
+                <strong>Inappropriate Language Detected</strong>
+                <span>{{ badWordWarning }}</span>
+                <small class="text-muted">Detected words: {{ detectedBadWords.join(', ') }}</small>
+              </div>
+
+              <div class="test-actions">
+                <button class="btn btn-primary w-100" (click)="submitTest()"
+                        [disabled]="submitting || !writtenParagraph.trim() || hasBadWords">
+                  {{ submitting ? 'Submitting...' : 'Submit Assessment' }}
+                  <span *ngIf="hasBadWords" class="ms-2">(Remove inappropriate language first)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section *ngIf="isOralTestActive && selectedSubject" class="oral-test-container">
+        <div class="test-header glass">
+          <div class="subject-info">
+            <h3>Oral Test - {{ selectedSubject.title }}</h3>
+          </div>
+          <button class="btn btn-soft btn-sm" (click)="skipOralTest()">Skip Oral Test</button>
+        </div>
+
+        <div class="oral-test-content">
+          <div *ngIf="isConnecting" class="card glass text-center">
+            <div class="card-body">
+              <div class="spinner"></div>
+              <h4>Connecting to Voice Assistant...</h4>
+              <p>Please wait while we establish the connection.</p>
+            </div>
+          </div>
+
+          <div *ngIf="isConnected && !isConnecting" class="card oral-interface">
+            <div class="card-header">
+              <h4>Voice Assessment</h4>
+              <div class="question-progress">
+                Question {{ currentQuestionIndex + 1 }} of {{ totalQuestions }}
+              </div>
+            </div>
+            <div class="card-body text-center">
+              <div class="audio-status-alert" [class]="getAudioStatusClass()">
+                <div class="audio-status-content">
+                  <span class="audio-icon">{{ getAudioStatusIcon() }}</span>
+                  <div class="audio-text">
+                    <strong>{{ getAudioStatusTitle() }}</strong>
+                    <p>{{ getAudioStatusMessage() }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="current-question" *ngIf="currentQuestion && !activeTranscript.text">
+                <h5>Current Question:</h5>
+                <p class="question-text">{{ currentQuestion }}</p>
+              </div>
+
+              <div class="transcript-container" *ngIf="activeTranscript.text">
+                <div class="transcript-badge" [ngClass]="activeTranscript.role">
+                  {{ activeTranscript.role === 'assistant' ? 'Examiner' : 'You' }}
+                </div>
+                <div class="transcript-text">
+                  "{{ activeTranscript.text }}"
+                </div>
+                <div class="typing-indicator" *ngIf="activeTranscript.role === 'assistant' && isSpeaking">
+                  <span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="voice-status">
+                <div class="status-indicator" [class.active]="isSpeaking">
+                  <span class="icon">🔊</span>
+                  <span class="label">AI Speaking</span>
+                </div>
+                <div class="status-indicator" [class.active]="isListening">
+                  <span class="icon">🎤</span>
+                  <span class="label">Listening</span>
+                </div>
+              </div>
+
+              <div class="oral-instructions">
+                <p *ngIf="isSpeaking" class="text-info">
+                  <strong>Please listen carefully to the question...</strong>
+                </p>
+                <p *ngIf="isListening" class="text-success">
+                  <strong>You can speak now! Take your time to answer.</strong>
+                </p>
+                <p *ngIf="!isSpeaking && !isListening" class="text-muted">
+                  Waiting for next question...
+                </p>
+              </div>
+
+              <div class="response-history" *ngIf="oralResponses.length > 0">
+                <h6>Your Responses:</h6>
+                <div class="response-item" *ngFor="let response of oralResponses; let i = index">
+                  <strong>Q{{ i + 1 }}:</strong> {{ response }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div *ngIf="loadingSubjects && !isTestActive && !isOralTestActive" class="loading-state">
+        <div class="spinner"></div>
+        <p>Preparing assessment modules...</p>
+      </div>
+
+      <div class="card history-card glass" *ngIf="!isTestActive && !isOralTestActive && !showOralTestTransition">
+        <div class="card-header">
+          <h2>My Assessment History</h2>
+        </div>
+        <div class="card-body">
+          <div *ngIf="loadingHistory" class="loading-state">Loading history...</div>
+          <div *ngIf="!loadingHistory && myTentatives.length === 0" class="empty-state">
+            You haven't completed any assessments yet.
+          </div>
+
+          <div *ngIf="!loadingHistory && myTentatives.length > 0" class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Subject Title</th>
+                  <th>Score</th>
+                  <th>Status</th>
+                  <th>Feedback</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let t of myTentatives">
+                  <td class="text-muted">{{ t.id ? 'Ref: #' + t.id : 'N/A' }}</td>
+                  <td><strong>{{ t.subject?.title ?? '—' }}</strong></td>
+                  <td>
+                    <span class="score-pill" *ngIf="t.score !== null">
+                      {{ t.score }}/100
+                    </span>
+                    <span class="text-muted" *ngIf="t.score === null">—</span>
+                  </td>
+                  <td><span [class]="'badge-status ' + getStatusClass(t.status)">{{ t.status }}</span></td>
+                  <td class="feedback-cell">{{ t.tutorFeedback ?? 'Awaiting evaluation...' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="layout__sidebar">
+      <div class="sidebar-card glass">
+        <h2 class="sidebar-card__title">Test Overview</h2>
+        <div class="sidebar-stat">
+          <span>Available subjects</span>
+          <strong>{{ subjects.length }}</strong>
+        </div>
+        <div class="sidebar-stat">
+          <span>Completed tests</span>
+          <strong>{{ myTentatives.length }}</strong>
+        </div>
+        <div class="sidebar-stat">
+          <span>Current status</span>
+          <strong>{{ (isTestActive || isOralTestActive) ? 'In progress' : 'Idle' }}</strong>
+        </div>
+        <button class="sidebar-card__submit" (click)="loadMyHistory()">Refresh History</button>
+      </div>
+    </aside>
+  </div>
+</main>

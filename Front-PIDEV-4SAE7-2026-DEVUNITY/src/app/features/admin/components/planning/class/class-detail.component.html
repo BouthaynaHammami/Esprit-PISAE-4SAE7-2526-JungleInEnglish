@@ -1,0 +1,53 @@
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
+    <div class="flex justify-between items-start mb-5">
+        <h3 class="text-xl font-bold text-gray-800">Class Details</h3>
+        <div class="flex gap-2">
+            <button (click)="edit.emit(cls)"
+                class="px-4 py-1.5 text-sm font-semibold text-[#006D77] border border-[#006D77] rounded-lg hover:bg-[#006D77] hover:text-white transition-colors">
+                Edit
+            </button>
+            <button (click)="closed.emit()"
+                class="px-4 py-1.5 text-sm font-semibold text-gray-500 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                ✕ Close
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Class Name</p>
+            <p class="text-2xl font-bold text-[#006D77]">{{ cls.name }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Students</p>
+            <p class="text-2xl font-bold text-gray-800">{{ cls.numberStudents }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Level</p>
+            <span class="inline-block mt-1 px-3 py-1 bg-[#006D77]/10 text-[#006D77] rounded-full text-sm font-semibold">
+                {{ cls.level }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Assign Student Section -->
+    <div class="border-t border-gray-100 pt-5">
+        <h4 class="text-sm font-semibold text-gray-700 mb-3">Assign Student to This Class</h4>
+        <div class="flex gap-3 items-center">
+            <input
+                type="email"
+                [(ngModel)]="assignUserEmail"
+                placeholder="Enter student email"
+                class="w-48 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006D77]/30 focus:border-[#006D77]"
+            />
+            <button
+                (click)="onAssign()"
+                [disabled]="isAssigning || !assignUserEmail"
+                class="px-4 py-2 text-sm font-semibold bg-[#006D77] text-white rounded-lg hover:bg-[#005560] disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                {{ isAssigning ? 'Assigning…' : 'Assign' }}
+            </button>
+        </div>
+        <p *ngIf="assignSuccess" class="mt-2 text-sm text-green-600 font-medium">✅ {{ assignSuccess }}</p>
+        <p *ngIf="assignError" class="mt-2 text-sm text-red-600">⚠️ {{ assignError }}</p>
+    </div>
+</div>

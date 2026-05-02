@@ -1,0 +1,206 @@
+/* =======================================================
+   COMPANY NAVBAR PREMIUM DESIGN
+   ======================================================= */
+
+.glass-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: 72px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 109, 119, 0.08);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-content {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* --- BRAND --- */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.brand-icon {
+    background: linear-gradient(135deg, #006D77, #83C5BE);
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 109, 119, 0.15);
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-name {
+    font-size: 18px;
+    font-weight: 800;
+    color: #006D77;
+    line-height: 1;
+}
+
+.brand-name span { color: #E29578; }
+
+.brand-sub {
+    font-size: 10px;
+    font-weight: 700;
+    color: #83C5BE;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+}
+
+/* --- LINKS --- */
+.nav-center {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(237, 246, 249, 0.5);
+    padding: 6px;
+    border-radius: 100px;
+    border: 1px solid rgba(0, 109, 119, 0.04);
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 100px;
+    text-decoration: none;
+    color: #64748b;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-link:hover {
+    color: #006D77;
+    background: rgba(131, 197, 190, 0.1);
+}
+
+.nav-link.active {
+    background: #006D77;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 109, 119, 0.2);
+}
+
+.nav-link.highlight {
+    color: #E29578;
+}
+
+.nav-link.highlight:hover {
+    background: #FFDDD2;
+}
+
+.nav-link.highlight.active {
+    background: #E29578;
+    color: white;
+}
+
+/* --- RIGHT --- */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1px solid rgba(0, 109, 119, 0.08);
+}
+
+.avatar-sm {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #EDF6F9;
+    color: #006D77;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-email {
+    font-size: 12px;
+    font-weight: 700;
+    color: #006D77;
+}
+
+.profile-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #006D77;
+    background: white;
+    border: 1.5px solid rgba(0, 109, 119, 0.1);
+    transition: all 0.2s;
+}
+
+.profile-btn:hover {
+    border-color: #006D77;
+    background: #EDF6F9;
+}
+
+.logout-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #FFDDD2;
+    color: #E29578;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.logout-btn:hover {
+    background: #E29578;
+    color: white;
+    transform: rotate(90deg);
+}
+
+.navbar-spacer {
+    height: 72px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+    .glass-navbar { padding: 0 20px; }
+    .user-info { display: none; }
+}
+
+@media (max-width: 768px) {
+    .nav-link span { display: none; }
+    .nav-link { padding: 8px 12px; }
+}

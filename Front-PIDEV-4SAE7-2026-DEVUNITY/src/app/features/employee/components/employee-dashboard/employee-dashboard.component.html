@@ -1,0 +1,43 @@
+<div class="p-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-[#006D77]">Employee Dashboard 💼</h1>
+        <p class="text-gray-500 mt-1">Explore job opportunities and track your applications.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-[#FFDDD2] rounded-xl flex items-center justify-center text-2xl">💼</div>
+                <div>
+                    <p class="text-sm text-gray-500">Open Recruitments</p>
+                    <p class="text-2xl font-bold text-[#006D77]">—</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-[#FFDDD2] rounded-xl flex items-center justify-center text-2xl">📋</div>
+                <div>
+                    <p class="text-sm text-gray-500">My Applications</p>
+                    <p class="text-2xl font-bold text-[#006D77]">—</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Quick Access</h2>
+        <div class="grid grid-cols-2 gap-4">
+            <a routerLink="../recruitments"
+                class="flex flex-col items-center gap-2 p-4 bg-[#F0FAF9] rounded-xl hover:bg-[#83C5BE]/20 transition-colors cursor-pointer">
+                <span class="text-3xl">💼</span>
+                <span class="text-sm font-medium text-[#006D77]">Open Recruitments</span>
+            </a>
+            <a routerLink="../applications"
+                class="flex flex-col items-center gap-2 p-4 bg-[#F0FAF9] rounded-xl hover:bg-[#83C5BE]/20 transition-colors cursor-pointer">
+                <span class="text-3xl">📋</span>
+                <span class="text-sm font-medium text-[#006D77]">My Applications</span>
+            </a>
+        </div>
+    </div>
+</div>

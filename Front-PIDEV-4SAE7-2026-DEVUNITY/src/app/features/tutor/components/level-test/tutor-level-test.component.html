@@ -1,0 +1,92 @@
+<!-- src/app/features/tutor/components/level-test/tutor-level-test.component.html -->
+<div class="page-container anim-fade-in">
+
+  <div class="page-header">
+    <h1>🖋️ Level Test Corrections</h1>
+    <p class="subtitle">Review and grade student paragraphs to assess their English proficiency.</p>
+  </div>
+
+  <div class="content-view">
+    <!-- Loading State -->
+    <div *ngIf="loadingTests" class="loading-state card">
+      <div class="spinner"></div>
+      <p>Gathering pending submissions...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loadingTests && pendingTests.length === 0" class="empty-state card success-glow">
+      <span class="hero-icon">✨</span>
+      <h3>All Submissions Graded</h3>
+      <p>There are no pending level tests to evaluate at this time.</p>
+      <button class="btn btn-soft mt-3" (click)="loadPendingTests()">Refresh List</button>
+    </div>
+
+    <!-- Grid of Pending Tests -->
+    <div class="grid" *ngIf="!loadingTests && pendingTests.length > 0">
+      <div class="card item assessment-card" *ngFor="let t of pendingTests">
+        <div class="card-header-top">
+          <span class="id-tag">REF: #{{ t.id }}</span>
+          <span class="badge-status badge-warning">PENDING</span>
+        </div>
+        
+        <h3 class="subject-title">{{ t.subject?.title }}</h3>
+        
+        <div class="paragraph-preview mt-3">
+          <p>{{ t.paragraph }}</p>
+        </div>
+
+        <div class="card-actions mt-4">
+          <button class="btn btn-primary w-100" (click)="startGrading(t)">
+            Evaluate Submission
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grading Modal Overlay -->
+  <div *ngIf="gradingTest" class="modal-overlay animate-in" (click)="cancelGrading()">
+    <div class="card grading-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2>🖊️ Performance Evaluation</h2>
+          <p class="muted">Subject: {{ gradingTest.subject?.title }}</p>
+        </div>
+        <button class="btn icon-btn" (click)="cancelGrading()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Student's Submission -->
+        <div class="submission-section">
+          <label>📜 Student Paragraph</label>
+          <div class="full-paragraph-view">
+            {{ gradingTest.paragraph }}
+          </div>
+        </div>
+
+        <!-- Feedback Form -->
+        <div class="form-section mt-4">
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label>🎯 Score (0-100)</label>
+              <input type="number" [(ngModel)]="scoreDraft" min="0" max="100" class="form-control premium-input text-center" />
+            </div>
+            <div class="col-12 mb-3">
+              <label>💬 Tutor Feedback</label>
+              <textarea [(ngModel)]="feedbackText" rows="4" class="form-control premium-input"
+                        placeholder="Provide constructive feedback for the student..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="gradingError" class="alert alert-danger mt-3">{{ gradingError }}</div>
+      </div>
+
+      <div class="modal-footer mt-4">
+        <button class="btn btn-secondary" (click)="cancelGrading()">Discard</button>
+        <button class="btn btn-primary" (click)="submitGrade()">🚀 Finalize Evaluation</button>
+      </div>
+    </div>
+  </div>
+
+</div>

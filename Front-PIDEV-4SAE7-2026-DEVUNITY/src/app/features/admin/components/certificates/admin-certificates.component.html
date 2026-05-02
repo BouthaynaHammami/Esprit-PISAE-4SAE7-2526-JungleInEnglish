@@ -1,0 +1,298 @@
+<div class="ca-container">
+
+  <!-- ALERTS -->
+  <div class="ca-alert ca-success" *ngIf="successMessage">{{ successMessage }}</div>
+  <div class="ca-alert ca-error"   *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <!-- HEADER -->
+  <div class="ca-header">
+    <div>
+      <h2>🎓 Certification Management</h2>
+      <p>Manage English test questions and view student results</p>
+    </div>
+    <div class="ca-stats">
+      <div class="ca-stat">
+        <span class="ca-stat-n">{{ questions.length }}</span>
+        <span class="ca-stat-l">Questions</span>
+      </div>
+      <div class="ca-stat">
+        <span class="ca-stat-n">{{ sessions.length }}</span>
+        <span class="ca-stat-l">Tests</span>
+      </div>
+      <div class="ca-stat">
+        <span class="ca-stat-n">{{ getPassRate() }}%</span>
+        <span class="ca-stat-l">Pass Rate</span>
+      </div>
+      <div class="ca-stat">
+        <span class="ca-stat-n">{{ certificates.length }}</span>
+        <span class="ca-stat-l">Certificates</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="ca-tabs">
+    <button [class.active]="activeTab==='questions'" (click)="activeTab='questions'">
+      📋 Questions <span class="ca-badge">{{ questions.length }}</span>
+    </button>
+    <button [class.active]="activeTab==='add'" (click)="activeTab='add'; resetForm()">
+      {{ editingQuestion ? '✏️ Edit' : '➕ Add Question' }}
+    </button>
+    <button [class.active]="activeTab==='results'" (click)="activeTab='results'">
+      📊 Results <span class="ca-badge">{{ sessions.length }}</span>
+    </button>
+    <button [class.active]="activeTab==='certificates'" (click)="activeTab='certificates'">
+      🏆 Certificates <span class="ca-badge">{{ certificates.length }}</span>
+    </button>
+  </div>
+
+  <!-- ══ QUESTIONS TAB ══ -->
+  <div *ngIf="activeTab==='questions'" class="ca-card">
+
+    <div class="ca-levels">
+      <span *ngFor="let l of levels" class="ca-lvl ca-lvl-{{l.key}}">
+        {{ l.key }} <strong>{{ l.count }}</strong>
+      </span>
+    </div>
+
+    <div class="ca-filters">
+      <input type="text" [(ngModel)]="searchQ" placeholder="🔍 Search questions..."/>
+      <select [(ngModel)]="filterLevel">
+        <option value="">All Levels</option>
+        <option *ngFor="let l of levels" [value]="l.key">{{ l.key }}</option>
+      </select>
+      <select [(ngModel)]="filterCategory">
+        <option value="">All Categories</option>
+        <option value="Grammar">Grammar</option>
+        <option value="Vocabulary">Vocabulary</option>
+        <option value="Idioms">Idioms</option>
+        <option value="Register">Register</option>
+      </select>
+      <span class="ca-count">{{ filteredQuestions().length }} questions</span>
+    </div>
+
+    <div class="ca-table-wrap">
+      <table class="ca-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Question</th>
+            <th>A</th><th>B</th><th>C</th><th>D</th>
+            <th>✓</th>
+            <th>Level</th>
+            <th>Category</th>
+            <th>Pts</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let q of filteredQuestions(); let i = index">
+            <td>{{ i+1 }}</td>
+            <td class="ca-q-text">{{ q.questionText }}</td>
+            <td>{{ q.optiona }}</td>
+            <td>{{ q.optionb }}</td>
+            <td>{{ q.optionc }}</td>
+            <td>{{ q.optiond }}</td>
+            <td><span class="ca-answer">{{ q.correctAnswer }}</span></td>
+            <td><span class="ca-lvl ca-lvl-{{q.level}}">{{ q.level }}</span></td>
+            <td><span class="ca-cat">{{ q.category }}</span></td>
+            <td><span class="ca-pts">{{ q.points }}</span></td>
+            <td>
+              <div class="ca-actions">
+                <ng-container *ngIf="confirmDeleteId !== q.id">
+                  <button class="ca-btn-edit" (click)="editQuestion(q)">✏️</button>
+                  <button class="ca-btn-del"  (click)="confirmDeleteQuestion(q.id)">🗑</button>
+                </ng-container>
+                <div class="ca-confirm" *ngIf="confirmDeleteId === q.id">
+                  <span>Delete?</span>
+                  <button class="ca-yes" (click)="deleteQuestion(q.id)">Yes</button>
+                  <button class="ca-no"  (click)="cancelDelete()">No</button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="ca-empty" *ngIf="filteredQuestions().length === 0">
+        <span>📭</span><p>No questions found</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ADD/EDIT TAB ══ -->
+  <div *ngIf="activeTab==='add'" class="ca-card">
+    <h3>{{ editingQuestion ? '✏️ Edit Question' : '➕ New Question' }}</h3>
+
+    <div class="ca-form-grid">
+      <div class="ca-field ca-full">
+        <label>QUESTION TEXT *</label>
+        <textarea [(ngModel)]="form.questionText" rows="3" placeholder="Enter question..."></textarea>
+      </div>
+      <div class="ca-field">
+        <label>OPTION A *</label>
+        <input [(ngModel)]="form.optiona" placeholder="Option A"/>
+      </div>
+      <div class="ca-field">
+        <label>OPTION B *</label>
+        <input [(ngModel)]="form.optionb" placeholder="Option B"/>
+      </div>
+      <div class="ca-field">
+        <label>OPTION C *</label>
+        <input [(ngModel)]="form.optionc" placeholder="Option C"/>
+      </div>
+      <div class="ca-field">
+        <label>OPTION D *</label>
+        <input [(ngModel)]="form.optiond" placeholder="Option D"/>
+      </div>
+      <div class="ca-field">
+        <label>CORRECT ANSWER *</label>
+        <select [(ngModel)]="form.correctAnswer">
+          <option value="">-- Select --</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+        </select>
+      </div>
+      <div class="ca-field">
+        <label>LEVEL *</label>
+        <select [(ngModel)]="form.level">
+          <option value="">-- Select --</option>
+          <option value="A1">A1 - Beginner</option>
+          <option value="A2">A2 - Elementary</option>
+          <option value="B1">B1 - Intermediate</option>
+          <option value="B2">B2 - Upper-Intermediate</option>
+          <option value="C1">C1 - Advanced</option>
+          <option value="C2">C2 - Mastery</option>
+        </select>
+      </div>
+      <div class="ca-field">
+        <label>CATEGORY *</label>
+        <select [(ngModel)]="form.category">
+          <option value="">-- Select --</option>
+          <option value="Grammar">Grammar</option>
+          <option value="Vocabulary">Vocabulary</option>
+          <option value="Idioms">Idioms</option>
+          <option value="Register">Register</option>
+        </select>
+      </div>
+      <div class="ca-field">
+        <label>POINTS *</label>
+        <input type="number" [(ngModel)]="form.points" min="1"/>
+      </div>
+    </div>
+
+    <div class="ca-form-actions">
+      <button class="ca-btn-ghost" (click)="resetForm(); activeTab='questions'">Cancel</button>
+      <button class="ca-btn-teal" (click)="onSubmitQuestion()">
+        {{ editingQuestion ? '💾 Update' : '✅ Add Question' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ RESULTS TAB ══ -->
+  <div *ngIf="activeTab==='results'" class="ca-card">
+
+    <div class="ca-summary">
+      <div class="ca-summary-card ca-green">
+        <span class="ca-summary-n">{{ passedCount }}</span>
+        <span class="ca-summary-l">✅ Passed</span>
+      </div>
+      <div class="ca-summary-card ca-red">
+        <span class="ca-summary-n">{{ sessions.length - passedCount }}</span>
+        <span class="ca-summary-l">❌ Failed</span>
+      </div>
+      <div class="ca-summary-card ca-blue">
+        <span class="ca-summary-n">{{ getPassRate() }}%</span>
+        <span class="ca-summary-l">📈 Pass Rate</span>
+      </div>
+      <div class="ca-summary-card ca-orange">
+        <span class="ca-summary-n">{{ getAvgScore() }}%</span>
+        <span class="ca-summary-l">⭐ Avg Score</span>
+      </div>
+    </div>
+
+    <div class="ca-table-wrap">
+      <table class="ca-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Student</th>
+            <th>Score</th>
+            <th>Status</th>
+            <th>Fraud Reason</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of sessions; let i = index">
+            <td>{{ i+1 }}</td>
+
+            <!-- ✅ firstName + lastName -->
+            <td>{{ s.firstName }} {{ s.lastName }}</td>
+
+            <!-- ✅ Score avec barre -->
+            <td>
+              <div class="ca-score-bar">
+                <div class="ca-score-fill"
+                     [style.width]="(s.score || 0) + '%'"
+                     [class.ca-pass]="s.passed"
+                     [class.ca-fail]="!s.passed">
+                </div>
+                <span>{{ s.score ?? '—' }}%</span>
+              </div>
+            </td>
+
+            <td>
+              <span class="ca-status"
+                    [class.ca-passed]="s.passed"
+                    [class.ca-failed]="!s.passed">
+                {{ s.passed ? '✅ Passed' : '❌ Failed' }}
+              </span>
+            </td>
+
+        <td>
+  <span *ngIf="s.suspiciousReason; else noFraud"
+        style="color:#dc2626; font-size:11px; font-weight:600;">
+    ⚠️ {{ s.suspiciousReason }}
+  </span>
+
+  <ng-template #noFraud>
+    <span style="color:#9ca3af; font-size:12px;">—</span>
+  </ng-template>
+</td>
+
+            <td>{{ s.takenAt | date:'dd/MM/yyyy HH:mm' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="ca-empty" *ngIf="sessions.length === 0">
+        <span>📊</span><p>No test results yet</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CERTIFICATES TAB ══ -->
+  <div *ngIf="activeTab==='certificates'" class="ca-card">
+    <div class="ca-cert-grid">
+      <div *ngFor="let c of certificates" class="ca-cert-card">
+        <div class="ca-cert-top" [class]="'ca-cert-'+c.level?.toLowerCase()">
+          <span class="ca-cert-emoji">🏆</span>
+          <span class="ca-cert-level">{{ c.level }}</span>
+        </div>
+        <div class="ca-cert-body">
+          <p class="ca-cert-number">{{ c.certificateNumber }}</p>
+          <!-- ✅ firstName + lastName -->
+          <p class="ca-cert-student">{{ c.firstName }} {{ c.lastName }}</p>
+          <p class="ca-cert-score">Score: <strong>{{ c.score }}%</strong></p>
+          <p class="ca-cert-date">{{ c.issuedAt | date:'dd/MM/yyyy' }}</p>
+          <img *ngIf="c.qrCode" [src]="c.qrCode" alt="QR" class="ca-cert-qr"/>
+        </div>
+      </div>
+    </div>
+    <div class="ca-empty" *ngIf="certificates.length === 0">
+      <span>🏆</span><p>No certificates issued yet</p>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,182 @@
+<div class="analysis-container">
+  <!-- Header -->
+  <div class="analysis-header">
+    <div>
+      <h2>Daily Analysis Dashboard</h2>
+      <p class="subtitle">Overview of today's Kanban tasks across all modules</p>
+    </div>
+    <button class="btn btn-primary" (click)="loadAnalysis()">Refresh</button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading analysis...</p>
+  </div>
+
+  <div *ngIf="!loading">
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="card-icon blue">T</div>
+        <div class="card-info">
+          <span class="card-value">{{ totalTasks }}</span>
+          <span class="card-label">Total Tasks</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon red">!</div>
+        <div class="card-info">
+          <span class="card-value">{{ totalTodo }}</span>
+          <span class="card-label">To Do</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon orange">~</div>
+        <div class="card-info">
+          <span class="card-value">{{ totalDoing }}</span>
+          <span class="card-label">In Progress</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon green">&#10003;</div>
+        <div class="card-info">
+          <span class="card-value">{{ totalDone }}</span>
+          <span class="card-label">Completed</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon dark-red">!!</div>
+        <div class="card-info">
+          <span class="card-value">{{ totalOverdue }}</span>
+          <span class="card-label">Overdue</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon teal">%</div>
+        <div class="card-info">
+          <span class="card-value">{{ completionRate }}%</span>
+          <span class="card-label">Completion Rate</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-section">
+      <h3>Overall Progress</h3>
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" [style.width.%]="completionRate"></div>
+      </div>
+      <p class="progress-text">{{ totalDone }} of {{ totalTasks }} tasks completed</p>
+    </div>
+
+    <!-- Module Sections -->
+    <div class="modules-grid">
+      <!-- Certifications Module -->
+      <div class="module-card" *ngIf="certifAnalysis">
+        <div class="module-header certif">
+          <h3>Certifications</h3>
+          <span class="module-date">{{ certifAnalysis.date }}</span>
+        </div>
+        <div class="module-stats">
+          <div class="stat">
+            <span class="stat-count">{{ certifAnalysis.totalTasks }}</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat">
+            <span class="stat-count todo">{{ certifAnalysis.todoCount }}</span>
+            <span class="stat-label">To Do</span>
+          </div>
+          <div class="stat">
+            <span class="stat-count doing">{{ certifAnalysis.doingCount }}</span>
+            <span class="stat-label">Doing</span>
+          </div>
+          <div class="stat">
+            <span class="stat-count done">{{ certifAnalysis.doneCount }}</span>
+            <span class="stat-label">Done</span>
+          </div>
+          <div class="stat">
+            <span class="stat-count overdue">{{ certifAnalysis.overdueCount }}</span>
+            <span class="stat-label">Overdue</span>
+          </div>
+        </div>
+
+        <!-- Tasks Due Today -->
+        <div *ngIf="certifAnalysis.tasksDueToday?.length" class="task-section">
+          <h4>Due Today</h4>
+          <div *ngFor="let t of certifAnalysis.tasksDueToday" class="mini-task">
+            <span class="mini-status" [class]="t.status.toLowerCase()">{{ t.status }}</span>
+            <span class="mini-title">{{ t.title }}</span>
+            <span class="mini-deadline">{{ t.deadline | date:'HH:mm' }}</span>
+          </div>
+        </div>
+
+        <!-- Overdue Tasks -->
+        <div *ngIf="certifAnalysis.overdueTasks?.length" class="task-section overdue-section">
+          <h4>Overdue</h4>
+          <div *ngFor="let t of certifAnalysis.overdueTasks" class="mini-task">
+            <span class="mini-status overdue-badge">OVERDUE</span>
+            <span class="mini-title">{{ t.title }}</span>
+            <span class="mini-deadline text-red">{{ t.deadline | date:'MMM d, HH:mm' }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="!certifAnalysis.tasksDueToday?.length && !certifAnalysis.overdueTasks?.length" class="no-tasks">
+          No tasks due today or overdue.
+        </div>
+      </div>
+
+      <!-- Events Module -->
+      <div class="module-card" *ngIf="eventsAnalysis">
+        <div class="module-header events">
+          <h3>Community Events</h3>
+          <span class="module-date">{{ eventsAnalysis.date }}</span>
+        </div>
+        <div class="module-stats">
+          <div class="stat">
+            <span class="stat-count">{{ eventsAnalysis.totalTasks }}</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat">
+            <span class="stat-count todo">{{ eventsAnalysis.todoCount }}</span>
+            <span class="stat-label">To Do</span>
+          </div>
+          <div class="stat">
+            <span class="stat-count doing">{{ eventsAnalysis.doingCount }}</span>
+            <span class="stat-label">Doing</span>
+          </div>
+          <div class="stat">
+            <span class="stat-count done">{{ eventsAnalysis.doneCount }}</span>
+            <span class="stat-label">Done</span>
+          </div>
+          <div class="stat">
+            <span class="stat-count overdue">{{ eventsAnalysis.overdueCount }}</span>
+            <span class="stat-label">Overdue</span>
+          </div>
+        </div>
+
+        <div *ngIf="eventsAnalysis.tasksDueToday?.length" class="task-section">
+          <h4>Due Today</h4>
+          <div *ngFor="let t of eventsAnalysis.tasksDueToday" class="mini-task">
+            <span class="mini-status" [class]="t.status.toLowerCase()">{{ t.status }}</span>
+            <span class="mini-title">{{ t.title }}</span>
+            <span class="mini-deadline">{{ t.deadline | date:'HH:mm' }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="eventsAnalysis.overdueTasks?.length" class="task-section overdue-section">
+          <h4>Overdue</h4>
+          <div *ngFor="let t of eventsAnalysis.overdueTasks" class="mini-task">
+            <span class="mini-status overdue-badge">OVERDUE</span>
+            <span class="mini-title">{{ t.title }}</span>
+            <span class="mini-deadline text-red">{{ t.deadline | date:'MMM d, HH:mm' }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="!eventsAnalysis.tasksDueToday?.length && !eventsAnalysis.overdueTasks?.length" class="no-tasks">
+          No tasks due today or overdue.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

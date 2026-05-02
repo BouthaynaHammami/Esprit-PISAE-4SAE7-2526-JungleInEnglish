@@ -1,0 +1,43 @@
+<div class="max-w-7xl mx-auto px-6 py-8">
+
+    <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-[#006D77]">Planning Management</h1>
+        <p class="text-gray-500 mt-1">Manage rooms, classes, room complaints, and course schedules</p>
+    </div>
+
+    <!-- Tab nav -->
+    <div class="flex gap-1 mb-8 border-b border-gray-200">
+        <button (click)="activeTab = 'rooms'"
+            [class]="activeTab === 'rooms'
+        ? 'px-5 py-2.5 text-sm font-semibold text-[#006D77] bg-[#006D77]/5 border-b-2 border-[#006D77] rounded-t-lg transition-colors'
+        : 'px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors'">
+            🚪 Rooms
+        </button>
+        <button (click)="activeTab = 'classes'"
+            [class]="activeTab === 'classes'
+        ? 'px-5 py-2.5 text-sm font-semibold text-[#006D77] bg-[#006D77]/5 border-b-2 border-[#006D77] rounded-t-lg transition-colors'
+        : 'px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors'">
+            🏫 Classes
+        </button>
+        <button (click)="activeTab = 'complaints'"
+            [class]="activeTab === 'complaints'
+        ? 'px-5 py-2.5 text-sm font-semibold text-[#006D77] bg-[#006D77]/5 border-b-2 border-[#006D77] rounded-t-lg transition-colors'
+        : 'px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors'">
+            ✉️ Complaints
+        </button>
+        <button (click)="activeTab = 'schedules'"
+            [class]="activeTab === 'schedules'
+        ? 'px-5 py-2.5 text-sm font-semibold text-[#006D77] bg-[#006D77]/5 border-b-2 border-[#006D77] rounded-t-lg transition-colors'
+        : 'px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors'">
+            📅 Schedules
+        </button>
+    </div>
+
+    <!-- Tab panels -->
+    <app-room-list *ngIf="activeTab === 'rooms'"></app-room-list>
+    <app-class-list *ngIf="activeTab === 'classes'"></app-class-list>
+    <app-complaint-list *ngIf="activeTab === 'complaints'"></app-complaint-list>
+    <app-schedule-list *ngIf="activeTab === 'schedules'"></app-schedule-list>
+
+</div>

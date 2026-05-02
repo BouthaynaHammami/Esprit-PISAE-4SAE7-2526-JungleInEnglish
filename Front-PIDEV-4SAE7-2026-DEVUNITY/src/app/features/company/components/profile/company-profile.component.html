@@ -1,0 +1,68 @@
+<div class="profile-container">
+  
+  <header class="profile-header">
+    <h1 class="main-title">Account Center</h1>
+    <p class="subtitle">Securely manage your corporate credentials and professional profile.</p>
+  </header>
+
+  <div class="profile-card">
+    
+    <!-- Hero Banner -->
+    <div class="banner"></div>
+
+    <!-- Avatar Section -->
+    <div class="avatar-wrapper">
+      <div class="avatar-circle">{{ avatarLetter }}</div>
+      <h2 class="user-email-main">{{ email }}</h2>
+      <span class="user-role-pill role-company">
+        {{ role }}
+      </span>
+    </div>
+
+    <!-- Info Details -->
+    <div class="info-grid">
+      
+      <div class="info-item">
+        <div class="info-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </div>
+        <div class="info-content">
+          <span class="info-label">E-mail Address</span>
+          <span class="info-value">{{ email }}</span>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        </div>
+        <div class="info-content">
+          <span class="info-label">Access Level</span>
+          <span class="info-value">{{ role }}</span>
+        </div>
+      </div>
+
+
+      <div class="info-item">
+        <div class="info-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        </div>
+        <div class="info-content">
+          <span class="info-label">Session Status</span>
+          <span class="info-value">{{ expiryDate || 'Active' }}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="profile-footer">
+      <button (click)="logout()" class="logout-big-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <span>Secure Sign Out</span>
+      </button>
+    </div>
+
+  </div>
+
+</div>

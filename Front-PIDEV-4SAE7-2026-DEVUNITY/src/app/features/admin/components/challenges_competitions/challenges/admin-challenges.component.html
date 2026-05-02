@@ -1,0 +1,290 @@
+<div class="admin-wrapper">
+  <!-- HEADER SECTION -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1 class="page-title">Challenges Management</h1>
+      <p class="page-subtitle">Design, organize and monitor educational challenges.</p>
+    </div>
+    
+    <div class="header-actions">
+      <nav class="sub-nav">
+        <a class="nav-link active" routerLink="/admin/challenges">Challenges</a>
+        <a class="nav-link" routerLink="/admin/student-stats">Stats</a>
+        <a class="nav-link" routerLink="/admin/badges">Badges</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar" *ngIf="!showInlineForm">
+    <div class="action-group">
+      <button class="btn btn--primary" (click)="startCreate()">
+        <i class="fas fa-plus"></i> New Challenge
+      </button>
+      <button class="btn btn--secondary" (click)="loadAll()" [disabled]="loading">
+        <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i> Refresh
+      </button>
+    </div>
+
+    <div class="action-group">
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" [(ngModel)]="searchQuery" placeholder="Search challenges..." class="search-input" />
+        </div>
+      </div>
+      <select class="filter-select" [(ngModel)]="typeFilter">
+        <option value="">All Types</option>
+        <option *ngFor="let t of types" [value]="t">{{ typeLabel(t) }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- STATUS MESSAGES -->
+  <div class="status-msg success" *ngIf="successMessage">
+    <i class="fas fa-check-circle"></i> {{ successMessage }}
+  </div>
+  <div class="status-msg error" *ngIf="error">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+  </div>
+
+  <!-- ========================= -->
+  <!-- INLINE FORM (Create/Edit) -->
+  <!-- ========================= -->
+  <div class="inline-editor" *ngIf="showInlineForm">
+    <div class="editor-header">
+      <h2 class="editor-title">{{ isEdit ? 'Edit Challenge' : 'Create New Challenge' }}</h2>
+      <p class="editor-subtitle">{{ selectedType ? 'Fill in the details for ' + typeLabel(selectedType) : 'Choose a challenge type to begin' }}</p>
+    </div>
+
+    <!-- Step 1: Type Picker -->
+    <div *ngIf="!isEdit && !selectedType" class="type-picker-grid">
+      <div *ngFor="let t of types" class="type-card" (click)="pickType(t)">
+        <div class="t-icon">
+          <i class="fas" [ngClass]="{
+            'fa-question-circle': t === 'MYSTERY_WORD',
+            'fa-font': t === 'SENTENCE_BUILDER',
+            'fa-smile': t === 'EMOJI_WORD',
+            'fa-fist-raised': t === 'WORD_BATTLE_ROYALE',
+            'fa-pen-nib': t === 'STORY_CHAIN',
+            'fa-language': t === 'SPEED_TRANSLATION_RACE'
+          }"></i>
+        </div>
+        <div class="t-name">{{ typeLabel(t) }}</div>
+      </div>
+    </div>
+
+    <!-- Step 2: Form -->
+    <form [formGroup]="form" (ngSubmit)="save()" *ngIf="selectedType">
+      <div class="form-grid">
+        <!-- Common Fields -->
+        <div class="form-group full-width">
+          <label class="form-label">Challenge Title *</label>
+          <input formControlName="title" class="form-input" placeholder="Enter a catchy title..." />
+        </div>
+        <div class="form-group full-width">
+          <label class="form-label">Description</label>
+          <textarea formControlName="description" class="form-input" rows="3" placeholder="Explain the rules..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Difficulty Level</label>
+          <select formControlName="level" class="form-input">
+            <option [ngValue]="null">Select Level</option>
+            <option *ngFor="let l of levels" [value]="l">{{ l }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time Limit (Seconds)</label>
+          <input type="number" formControlName="timeLimitSeconds" class="form-input" placeholder="e.g. 60" />
+        </div>
+
+        <!-- TYPE SPECIFIC FIELDS -->
+        <ng-container [ngSwitch]="selectedType">
+          <!-- MYSTERY_WORD -->
+          <ng-container *ngSwitchCase="'MYSTERY_WORD'">
+            <div class="form-group">
+              <label class="form-label">Target Word *</label>
+              <input formControlName="correctAnswer" class="form-input" placeholder="The hidden word" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Max Attempts</label>
+              <input type="number" formControlName="maxAttempts" class="form-input" />
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Hints (comma separated)</label>
+              <input formControlName="hints" class="form-input" placeholder="Hint 1, Hint 2..." />
+            </div>
+          </ng-container>
+
+          <!-- SENTENCE_BUILDER -->
+          <ng-container *ngSwitchCase="'SENTENCE_BUILDER'">
+            <div class="form-group full-width">
+              <label class="form-label">Correct Sentence *</label>
+              <input formControlName="correctAnswer" class="form-input" placeholder="The full sentence" />
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Scrambled Version (Optional)</label>
+              <input formControlName="scrambledSentence" class="form-input" placeholder="Leave empty for auto-scramble" />
+            </div>
+          </ng-container>
+
+          <!-- EMOJI_WORD -->
+          <ng-container *ngSwitchCase="'EMOJI_WORD'">
+            <div class="form-group">
+              <label class="form-label">Emoji Prompt *</label>
+              <input formControlName="emojiPrompt" class="form-input" placeholder="🍎 🍏 ..." />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Correct Word *</label>
+              <input formControlName="correctAnswer" class="form-input" />
+            </div>
+          </ng-container>
+
+          <!-- MULTIPLAYER COMMON FIELDS -->
+          <div class="form-group" *ngIf="selectedType === 'WORD_BATTLE_ROYALE' || selectedType === 'STORY_CHAIN' || selectedType === 'SPEED_TRANSLATION_RACE'">
+            <label class="form-label">Max Participants</label>
+            <input type="number" formControlName="maxParticipants" class="form-input" />
+          </div>
+
+          <!-- WORD_BATTLE_ROYALE -->
+          <ng-container *ngSwitchCase="'WORD_BATTLE_ROYALE'">
+            <div class="form-group">
+              <label class="form-label">Theme</label>
+              <input formControlName="wordTheme" class="form-input" placeholder="e.g. Animals, Tech" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Allowed Letters (Optional)</label>
+              <input formControlName="allowedLetters" class="form-input" />
+            </div>
+          </ng-container>
+
+          <!-- STORY_CHAIN -->
+          <ng-container *ngSwitchCase="'STORY_CHAIN'">
+            <div class="form-group full-width">
+              <label class="form-label">Initial Sentence</label>
+              <input formControlName="initialSentence" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Max Sentences</label>
+              <input type="number" formControlName="maxSentences" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Words Per Sentence (Min-Max)</label>
+              <div style="display:flex; gap:10px;">
+                <input type="number" formControlName="minWordsPerSentence" class="form-input" style="flex:1" />
+                <input type="number" formControlName="maxWordsPerSentence" class="form-input" style="flex:1" />
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- SPEED_TRANSLATION_RACE -->
+          <ng-container *ngSwitchCase="'SPEED_TRANSLATION_RACE'">
+             <div class="form-group">
+              <label class="form-label">Languages (From → To)</label>
+              <div style="display:flex; gap:10px;">
+                <input formControlName="sourceLanguage" class="form-input" style="flex:1" placeholder="English" />
+                <input formControlName="targetLanguage" class="form-input" style="flex:1" placeholder="French" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Points & Bonus</label>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <input type="number" formControlName="pointsPerCorrectAnswer" class="form-input" style="flex:1" />
+                <label style="display:flex; align-items:center; gap:5px; font-size:12px;">
+                  <input type="checkbox" formControlName="speedBonusEnabled"> Speed Bonus
+                </label>
+              </div>
+            </div>
+            <div class="form-group full-width">
+            <label class="form-label">Sentences List (JSON format: [{{ '{' }}"source":"...", "target":"..."{{ '}' }}])</label>
+              <textarea formControlName="sentencesList" class="form-input" rows="4"></textarea>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+
+      <div class="form-footer">
+        <button class="btn btn--secondary" type="button" (click)="cancelForm()">Cancel</button>
+        <button class="btn btn--primary" type="submit" [disabled]="saving">
+          <i class="fas fa-save"></i> {{ isEdit ? 'Update Challenge' : 'Create Challenge' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ========================= -->
+  <!-- LIST VIEW (Separated)      -->
+  <!-- ========================= -->
+  <div *ngIf="!loading && !showInlineForm">
+    <div *ngFor="let t of types">
+      <ng-container *ngIf="!typeFilter || typeFilter === t">
+        <div class="type-section-header" *ngIf="(filterByType(challenges, t)).length > 0">
+          <div class="section-icon">
+             <i class="fas" [ngClass]="{
+              'fa-question-circle': t === 'MYSTERY_WORD',
+              'fa-font': t === 'SENTENCE_BUILDER',
+              'fa-smile': t === 'EMOJI_WORD',
+              'fa-fist-raised': t === 'WORD_BATTLE_ROYALE',
+              'fa-pen-nib': t === 'STORY_CHAIN',
+              'fa-language': t === 'SPEED_TRANSLATION_RACE'
+            }"></i>
+          </div>
+          <h3 class="section-title">{{ typeLabel(t) }}s</h3>
+          <span class="section-count">{{ (filterByType(challenges, t)).length }}</span>
+        </div>
+
+        <div class="table-container" *ngIf="(filterByType(challenges, t)).length > 0">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Title & Level</th>
+                <th>Description</th>
+                <th>Settings</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of filterByType(filtered, t)" class="table-row">
+                <td>
+                  <div class="cell-main">{{ c.title }}</div>
+                  <span class="badge-pill level">{{ c.level || 'Any' }}</span>
+                </td>
+                <td>
+                  <div class="cell-sub">{{ (c.description | slice:0:60) + ((c.description?.length ?? 0) > 60 ? '...' : '') }}</div>
+                </td>
+                <td>
+                  <div class="cell-sub">
+                    <i class="fas fa-clock"></i> {{ c.timeLimitSeconds }}s | 
+                    <i class="fas fa-users"></i> {{ c.maxParticipants || '--' }}
+                  </div>
+                </td>
+                <td class="text-right">
+                  <div class="row-actions">
+                    <button class="action-btn edit-btn" (click)="onEdit(c)">
+                      <i class="fas fa-edit"></i> <span>Edit</span>
+                    </button>
+                    <button class="action-btn delete-btn" (click)="onDelete(c)">
+                      <i class="fas fa-trash"></i> <span>Delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" *ngIf="filtered.length === 0">
+      <div class="empty-state__visual"><i class="fas fa-folder-open"></i></div>
+      <h3 class="empty-state__title">No challenges found</h3>
+      <p class="empty-state__text">Start by creating your first challenge for the students.</p>
+    </div>
+  </div>
+
+  <!-- LOADER -->
+  <div *ngIf="loading" style="padding: 100px; text-align: center;">
+    <i class="fas fa-spinner fa-spin fa-3x" style="color: #83C5BE;"></i>
+  </div>
+</div>

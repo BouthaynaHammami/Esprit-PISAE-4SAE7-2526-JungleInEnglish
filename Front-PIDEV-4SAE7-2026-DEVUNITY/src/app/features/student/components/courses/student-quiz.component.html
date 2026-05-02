@@ -1,0 +1,157 @@
+<!-- Loading -->
+<div *ngIf="loading" class="flex items-center justify-center min-h-[60vh]">
+    <div class="flex flex-col items-center gap-4">
+        <div class="w-14 h-14 border-4 border-[#006D77] border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-gray-500 font-medium">Loading quiz…</p>
+    </div>
+</div>
+
+<!-- Error -->
+<div *ngIf="!loading && error" class="flex items-center justify-center min-h-[60vh]">
+    <div class="bg-red-50 border border-red-200 rounded-2xl p-8 text-center max-w-md">
+        <span class="text-4xl">⚠️</span>
+        <p class="mt-3 text-red-600 font-medium">{{ error }}</p>
+        <button (click)="goBack()"
+            class="mt-4 px-5 py-2 bg-[#006D77] text-white rounded-xl text-sm font-medium hover:opacity-90 transition">
+            ← Back
+        </button>
+    </div>
+</div>
+
+<!-- Result Screen -->
+<div *ngIf="!loading && !error && result"
+    class="flex items-center justify-center min-h-[60vh] px-6">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-10 text-center max-w-md w-full">
+
+        <div class="text-6xl mb-4">
+            {{ result.score! >= (totalQuestions / 2) ? '🎉' : '😅' }}
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Quiz Complete!</h2>
+        <p class="text-gray-500 mb-6">Here's how you did</p>
+
+        <!-- Score Circle -->
+        <div class="w-32 h-32 rounded-full border-8 flex items-center justify-center mx-auto mb-6"
+            [style.border-color]="result.score! >= (totalQuestions / 2) ? '#22c55e' : '#ef4444'">
+            <div>
+                <p class="text-3xl font-bold"
+                    [style.color]="result.score! >= (totalQuestions / 2) ? '#22c55e' : '#ef4444'">
+                    {{ result.score }}
+                </p>
+                <p class="text-xs text-gray-400">/ {{ totalQuestions }}</p>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-500 mb-8">
+            You got <strong>{{ result.score }}</strong> out of <strong>{{ totalQuestions }}</strong> correct
+            ({{ ((result.score! / totalQuestions) * 100) | number:'1.0-0' }}%)
+        </p>
+
+        <div class="flex gap-3">
+            <button (click)="tryAgain()"
+                class="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-[#006D77] text-white hover:opacity-90 transition">
+                🔄 Try Again
+            </button>
+            <button (click)="goBack()"
+                class="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
+                ← Back
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Quiz Screen -->
+<div *ngIf="!loading && !error && !result && quiz" class="max-w-2xl mx-auto px-6 py-8">
+
+    <!-- Header -->
+    <div class="mb-6">
+        <button (click)="goBack()"
+            class="text-sm text-[#006D77] font-semibold hover:underline mb-3 block">
+            ← Back to Course
+        </button>
+        <h1 class="text-2xl font-bold text-gray-800">{{ quiz.title }}</h1>
+        <p class="text-sm text-gray-500 mt-1">{{ totalQuestions }} questions</p>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="h-2 bg-gray-100 rounded-full overflow-hidden mb-6">
+        <div class="h-full bg-[#006D77] rounded-full transition-all duration-300"
+            [style.width.%]="((currentIndex + 1) / totalQuestions) * 100"></div>
+    </div>
+
+    <!-- Question Navigation Dots -->
+    <div class="flex gap-2 flex-wrap mb-6">
+        <button *ngFor="let q of quiz.questions; let i = index"
+            (click)="goToQuestion(i)"
+            class="w-8 h-8 rounded-full text-xs font-bold transition-all"
+            [style.background]="i === currentIndex ? '#006D77' : answers[i] !== '' ? '#83C5BE' : '#F3F4F6'"
+            [style.color]="i === currentIndex || answers[i] !== '' ? 'white' : '#6B7280'">
+            {{ i + 1 }}
+        </button>
+    </div>
+
+    <!-- Question Card -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+
+        <!-- Question Number + Text -->
+        <div class="flex items-start gap-3 mb-6">
+            <span class="w-8 h-8 rounded-full bg-[#006D77] text-white text-sm font-bold flex items-center justify-center shrink-0 mt-0.5">
+                {{ currentIndex + 1 }}
+            </span>
+            <p class="text-gray-800 font-semibold text-base leading-relaxed">
+                {{ currentQuestion?.text }}
+            </p>
+        </div>
+
+        <!-- Options -->
+        <div class="flex flex-col gap-3">
+            <ng-container *ngFor="let option of ['A', 'B', 'C', 'D']">
+                <button *ngIf="getOption(option)"
+                    (click)="selectAnswer(option)"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all text-sm font-medium"
+                    [style.border-color]="answers[currentIndex] === option ? '#006D77' : '#E5E7EB'"
+                    [style.background]="answers[currentIndex] === option ? 'rgba(0,109,119,0.06)' : 'white'"
+                    [style.color]="answers[currentIndex] === option ? '#006D77' : '#374151'">
+
+                    <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-all"
+                        [style.background]="answers[currentIndex] === option ? '#006D77' : '#F3F4F6'"
+                        [style.color]="answers[currentIndex] === option ? 'white' : '#6B7280'">
+                        {{ option }}
+                    </span>
+
+                    <span>{{ getOption(option) }}</span>
+                </button>
+            </ng-container>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="flex items-center justify-between">
+        <button (click)="prev()" [disabled]="isFirst"
+            class="px-5 py-2.5 rounded-xl border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed">
+            ← Previous
+        </button>
+
+        <span class="text-sm text-gray-400 font-medium">
+            {{ currentIndex + 1 }} / {{ totalQuestions }}
+        </span>
+
+        <button *ngIf="!isLast" (click)="next()"
+            class="px-5 py-2.5 rounded-xl bg-[#006D77] text-white text-sm font-semibold hover:opacity-90 transition">
+            Next →
+        </button>
+
+        <button *ngIf="isLast" (click)="submit()"
+            [disabled]="!allAnswered || submitting"
+            class="px-5 py-2.5 rounded-xl bg-[#006D77] text-white text-sm font-semibold hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed">
+            {{ submitting ? 'Submitting...' : '✅ Submit Quiz' }}
+        </button>
+    </div>
+
+    <!-- Unanswered warning -->
+    <p *ngIf="isLast && !allAnswered"
+        class="text-center text-xs text-orange-500 mt-3 font-medium">
+        ⚠️ Please answer all questions before submitting.
+    </p>
+
+</div>

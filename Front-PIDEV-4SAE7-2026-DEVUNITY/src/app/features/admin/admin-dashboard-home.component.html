@@ -1,0 +1,54 @@
+<!-- src/app/features/admin/admin-dashboard-home.component.html -->
+
+<!-- Top Navbar -->
+<div class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-40">
+    <div>
+        <h1 class="text-xl font-bold text-gray-900">Dashboard Overview</h1>
+        <p class="text-sm text-gray-500">Welcome back, Admin</p>
+    </div>
+    <div class="flex items-center gap-3 bg-gray-100 rounded-full px-4 py-2">
+        <span class="text-lg">🛡️</span>
+        <span class="text-sm font-medium text-gray-700">{{ email }}</span>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="p-8">
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-4 gap-6 mb-8">
+        <div *ngFor="let stat of stats"
+            class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+                    [style.background]="stat.color + '20'">
+                    {{ stat.icon }}
+                </div>
+                <span class="text-xs text-gray-400">●</span>
+            </div>
+            <div class="text-3xl font-bold text-gray-900 mb-1">{{ stat.value }}</div>
+            <div class="text-sm font-medium text-gray-500">{{ stat.label }}</div>
+            <div class="text-xs mt-2 font-medium" [style.color]="stat.color">{{ stat.trend }}</div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100">
+            <h2 class="text-lg font-bold text-gray-900">Recent Activity</h2>
+        </div>
+        <div class="divide-y divide-gray-50">
+            <div *ngFor="let item of recentActivity"
+                class="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors">
+                <div class="w-10 h-10 rounded-full bg-[#83C5BE]/20 flex items-center justify-center text-xl">
+                    {{ item.avatar }}
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-semibold text-gray-900">{{ item.user }}</p>
+                    <p class="text-xs text-gray-500">{{ item.action }}</p>
+                </div>
+                <span class="text-xs text-gray-400 whitespace-nowrap">{{ item.time }}</span>
+            </div>
+        </div>
+    </div>
+</div>

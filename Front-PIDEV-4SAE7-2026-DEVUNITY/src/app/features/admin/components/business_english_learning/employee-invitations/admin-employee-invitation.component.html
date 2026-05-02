@@ -1,0 +1,204 @@
+<div class="admin-wrapper">
+  <!-- HEADER SECTION -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1 class="page-title">Business English Learning</h1>
+      <p class="page-subtitle">Manage corporate training offers and language programs.</p>
+    </div>
+    
+    <div class="header-actions">
+      <nav class="sub-nav">
+        <a class="nav-link" routerLink="/admin/offers">Offers</a>
+        <a class="nav-link active" routerLink="/admin/employee-invitations">Requests</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar">
+    <div class="action-group">
+      <button class="btn btn--secondary" (click)="loadRequests()" [disabled]="loading">
+        <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i>
+        Refresh
+      </button>
+      <div class="pill-count-badge">
+        <i class="fas fa-file-alt"></i>
+        <span>{{ filteredRequests.length }} Total Requests</span>
+      </div>
+    </div>
+
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" 
+               [(ngModel)]="searchTerm" 
+               (ngModelChange)="applyFilter()" 
+               placeholder="Search by company or program..."
+               class="form-input search-input" />
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADING STATE -->
+  <div *ngIf="loading" class="status-msg info">
+    <i class="fas fa-spinner fa-spin"></i> Syncing requests from database...
+  </div>
+
+  <!-- DATA TABLE -->
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Company & Contact</th>
+          <th>Requested Program</th>
+          <th>Students</th>
+          <th>Payment</th>
+          <th>Status</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let request of filteredRequests" class="table-row table-row--clickable" (click)="openModal(request)">
+          <td>
+            <div class="cell-main">{{ request.company?.firstName }} {{ request.company?.lastName }}</div>
+            <div class="cell-sub">{{ request.company?.email }}</div>
+          </td>
+          <td>
+            <span class="program-tag">{{ request.offerName }}</span>
+          </td>
+          <td>
+            <div class="student-count-cell">
+              <i class="fas fa-users"></i>
+              <span>{{ request.invitations?.length || 0 }}</span>
+            </div>
+          </td>
+          <td>
+             <span class="badge" 
+                  [class.badge--active]="request.paymentStatus === 'PAID'"
+                  [class.badge--pending]="request.paymentStatus === 'PENDING'"
+                  [class.badge--inactive]="request.paymentStatus === 'FAILED'">
+              {{ request.paymentStatus || 'PENDING' }}
+            </span>
+          </td>
+          <td>
+            <span class="badge" 
+                  [class.badge--active]="request.status === 'APPROVED'"
+                  [class.badge--pending]="request.status === 'PENDING'"
+                  [class.badge--inactive]="request.status === 'REJECTED'">
+              {{ request.status }}
+            </span>
+          </td>
+          <td class="text-right" (click)="$event.stopPropagation()">
+            <div class="row-actions">
+              <button class="action-btn edit-btn" (click)="openModal(request)" title="View Details">
+                <i class="fas fa-eye"></i>
+                <span>Details</span>
+              </button>
+              <button *ngIf="request.status === 'PENDING'" class="action-btn approve-btn" (click)="approve(request.companyOfferId)" title="Approve">
+                <i class="fas fa-check"></i>
+                <span>Approve</span>
+              </button>
+              <button *ngIf="request.status === 'PENDING'" class="action-btn delete-btn" (click)="reject(request.companyOfferId)" title="Reject">
+                <i class="fas fa-times"></i>
+                <span>Reject</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" *ngIf="filteredRequests.length === 0 && !loading">
+      <div class="empty-state__visual">
+        <i class="fas fa-inbox"></i>
+      </div>
+      <h3 class="empty-state__title">No requests found</h3>
+      <p class="empty-state__text">Pending invitation requests will appear here once submitted by corporate clients.</p>
+    </div>
+  </div>
+
+  <!-- REQUEST DETAILS MODAL (Styled to match) -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <h2 class="modal-title">Request Details</h2>
+          <p class="modal-subtitle">Manage payment and employee invitations</p>
+        </div>
+        <button class="close-btn" (click)="closeModal()">&times;</button>
+      </div>
+
+      <div class="modal-body" *ngIf="selectedRequest">
+        <!-- DETAILS GRID -->
+        <div class="details-grid">
+          <div class="details-item">
+            <label class="form-label">Company</label>
+            <div class="details-value">
+              <strong>{{ selectedRequest.company?.firstName }} {{ selectedRequest.company?.lastName }}</strong>
+              <span>{{ selectedRequest.company?.email }}</span>
+            </div>
+          </div>
+          <div class="details-item">
+            <label class="form-label">Requested Program</label>
+            <div class="details-value">
+              <span class="program-tag program-tag--large">{{ selectedRequest.offerName }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAYMENT SECTION -->
+        <div class="section-divider"></div>
+        <div class="form-group">
+          <label class="form-label">Update Payment Status</label>
+          <div class="payment-selector">
+            <button *ngFor="let status of paymentStatuses"
+                    class="pay-option"
+                    [class.active]="selectedRequest.paymentStatus === status"
+                    (click)="updatePayment(status)">
+              <i class="fas" [ngClass]="status === 'PAID' ? 'fa-check-circle' : (status === 'PENDING' ? 'fa-clock' : 'fa-times-circle')"></i>
+              {{ status }}
+            </button>
+          </div>
+        </div>
+
+        <!-- EMPLOYEE SECTION -->
+        <div class="section-divider"></div>
+        <div class="employee-section">
+          <div class="section-header">
+            <label class="form-label">Employee List ({{ selectedRequest.invitations?.length || 0 }})</label>
+            <div class="add-email-row">
+              <input type="email" [(ngModel)]="newEmail" placeholder="employee@company.com" (keyup.enter)="addEmail()" class="form-input">
+              <button (click)="addEmail()" class="btn btn--primary btn--icon">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="email-list-container">
+            <div class="email-row" *ngFor="let inv of selectedRequest.invitations; let i = index">
+              <div class="email-input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" [(ngModel)]="inv.email" class="form-input-minimal">
+              </div>
+              <button class="btn-remove" (click)="removeEmail(i)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+            <div *ngIf="!selectedRequest.invitations?.length" class="empty-list-msg">
+              No employees added yet.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn--secondary" (click)="closeModal()">Cancel</button>
+        <button class="btn btn--primary" (click)="saveEmails()" [disabled]="isSaving">
+          <i class="fas fa-save"></i>
+          {{ isSaving ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,217 @@
+<div class="admin-wrapper">
+  <!-- HEADER SECTION -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1 class="page-title">Business English Learning</h1>
+      <p class="page-subtitle">Manage corporate training offers and language programs.</p>
+    </div>
+    
+    <div class="header-actions">
+      <nav class="sub-nav">
+        <a class="nav-link active" routerLink="/admin/offers">Offers</a>
+        <a class="nav-link" routerLink="/admin/employee-invitations">Requests</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar">
+    <div class="action-group">
+      <button class="btn btn--primary" (click)="startCreate()">
+        <i class="fas" [class.fa-plus]="!showInlineForm" [class.fa-times]="showInlineForm"></i>
+        {{ showInlineForm && !isEdit ? 'Cancel' : 'New Offer' }}
+      </button>
+      <button class="btn btn--secondary" (click)="loadOffers()" [disabled]="loading">
+        <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i>
+        Refresh
+      </button>
+    </div>
+
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" 
+               [(ngModel)]="searchTerm" 
+               (ngModelChange)="applyFilter()" 
+               placeholder="Search by name or description..."
+               class="form-input search-input" />
+      </div>
+    </div>
+  </div>
+
+  <!-- INLINE FORM -->
+  <div class="inline-editor" *ngIf="showInlineForm">
+    <div class="editor-header">
+      <h3 class="editor-title">{{ isEdit ? 'Edit Offer' : 'Create New Offer' }}</h3>
+      <p class="editor-subtitle">Please fill all required fields marked with *</p>
+    </div>
+
+    <form class="editor-form" (ngSubmit)="save()">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Offer Name *</label>
+          <input [(ngModel)]="offer.name" name="name" class="form-input" placeholder="e.g. Executive Business English" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <input [(ngModel)]="offer.category" name="category" class="form-input" placeholder="e.g. Corporate" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Description *</label>
+        <textarea [(ngModel)]="offer.description" name="description" class="form-input" rows="3" placeholder="Provide a detailed description..." required></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Start Date</label>
+          <input type="date" [(ngModel)]="offer.startDate" name="startDate" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">End Date</label>
+          <input type="date" [(ngModel)]="offer.endDate" name="endDate" class="form-input" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Price (TND)</label>
+          <input type="number" [(ngModel)]="offer.price" name="price" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Duration (Hours)</label>
+          <input type="number" [(ngModel)]="offer.durationHours" name="durationHours" class="form-input" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Target Level</label>
+          <select [(ngModel)]="offer.level" name="level" class="form-input">
+            <option *ngFor="let l of levels" [value]="l">{{ l }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select [(ngModel)]="offer.status" name="status" class="form-input">
+            <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- COURSE SELECTION -->
+      <div class="course-picker">
+        <label class="picker-label">Select Associated Courses</label>
+        <div class="picker-grid">
+          <div *ngFor="let course of availableCourses" 
+               class="picker-item"
+               [class.is-selected]="isCourseSelected(course.courseId!)" 
+               (click)="toggleCourse(course.courseId!)">
+            <div class="picker-checkbox">
+              <i class="fas fa-check" *ngIf="isCourseSelected(course.courseId!)"></i>
+            </div>
+            <div class="picker-info">
+              <span class="picker-name">{{ course.title }}</span>
+              <span class="picker-meta">{{ course.level }} • {{ course.type.replace('_', ' ') }}</span>
+            </div>
+          </div>
+        </div>
+        <p class="empty-hint" *ngIf="availableCourses.length === 0">No courses available to link.</p>
+      </div>
+
+      <div class="form-footer">
+        <button class="btn btn--primary" type="submit" [disabled]="loading">
+          <i class="fas fa-check"></i>
+          {{ isEdit ? 'Update Offer' : 'Create Offer' }}
+        </button>
+        <button class="btn btn--secondary" type="button" (click)="cancelForm()">
+          Cancel
+        </button>
+      </div>
+
+      <div class="status-msg error" *ngIf="error">
+        {{ error }}
+      </div>
+    </form>
+  </div>
+
+  <!-- SUCCESS NOTIFICATION -->
+  <div class="status-msg success" *ngIf="message">
+    <i class="fas fa-check-circle"></i> {{ message }}
+  </div>
+
+  <!-- DATA TABLE -->
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name & Category</th>
+          <th>Price</th>
+          <th>Level</th>
+          <th>Duration</th>
+          <th>Dates</th>
+          <th>Status</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let o of filtered" class="table-row">
+          <td>
+            <div class="cell-main">{{ o.name }}</div>
+            <div class="cell-sub">{{ o.category || 'General' }}</div>
+          </td>
+          <td>
+            <span class="price-tag" *ngIf="(o.price ?? 0) > 0">{{ o.price }} TND</span>
+            <span class="price-tag free" *ngIf="!(o.price ?? 0)">Free</span>
+          </td>
+          <td>
+            <span class="badge badge--level">{{ o.level }}</span>
+          </td>
+          <td>
+            <span class="duration-info">{{ o.durationHours ? o.durationHours + 'h' : '--' }}</span>
+          </td>
+          <td>
+            <div class="cell-dates" *ngIf="o.startDate">
+              <span>{{ o.startDate | date:'mediumDate' }}</span>
+              <span class="date-arrow" *ngIf="o.endDate">→</span>
+              <span *ngIf="o.endDate">{{ o.endDate | date:'mediumDate' }}</span>
+            </div>
+            <span *ngIf="!o.startDate" class="muted">--</span>
+          </td>
+          <td>
+            <span class="badge" [class.badge--active]="o.status === 'ACTIVE'" [class.badge--inactive]="o.status !== 'ACTIVE'">
+              {{ o.status }}
+            </span>
+          </td>
+          <td class="text-right">
+            <div class="row-actions">
+              <button class="action-btn edit-btn" (click)="onEdit(o)" title="Edit">
+                <i class="fas fa-edit"></i>
+                <span>Edit</span>
+              </button>
+              <button class="action-btn delete-btn" (click)="deleteOffer(o)" title="Delete">
+                <i class="fas fa-trash-alt"></i>
+                <span>Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" *ngIf="filtered.length === 0 && !loading">
+      <div class="empty-state__visual">
+        <i class="fas fa-folder-open"></i>
+      </div>
+      <h3 class="empty-state__title">No data found</h3>
+      <p class="empty-state__text">Try adjusting your filters or create a new offer to get started.</p>
+    </div>
+  </div>
+
+  <!-- LOADING OVERLAY -->
+  <div class="loader-overlay" *ngIf="loading">
+    <div class="loader-spinner"></div>
+  </div>
+</div>

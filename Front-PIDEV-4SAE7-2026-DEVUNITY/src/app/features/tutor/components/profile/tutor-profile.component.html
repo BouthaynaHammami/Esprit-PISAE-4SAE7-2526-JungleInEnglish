@@ -1,0 +1,52 @@
+<div class="p-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-[#006D77]">My Profile</h1>
+        <p class="text-gray-500 mt-1">Your account information</p>
+    </div>
+    <div class="max-w-lg">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-gradient-to-r from-[#006D77] to-[#83C5BE] p-8 flex flex-col items-center">
+                <div
+                    class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center border-4 border-white/30 mb-3">
+                    <span class="text-white text-3xl font-bold">{{ avatarLetter }}</span>
+                </div>
+                <p class="text-white font-semibold text-lg">{{ email }}</p>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                    <span class="text-2xl">📧</span>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wide">Email</p>
+                        <p class="font-medium text-gray-800">{{ email }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                    <span class="text-2xl">🎓</span>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wide">Role</p>
+                        <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold"
+                            [ngClass]="getRoleBadgeClass()">{{ role }}</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                    <span class="text-2xl">🪪</span>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wide">Member ID</p>
+                        <p class="font-medium text-gray-800">#{{ userId }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                    <span class="text-2xl">🕐</span>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wide">Session Expires</p>
+                        <p class="font-medium text-gray-800">{{ expiryDate }}</p>
+                    </div>
+                </div>
+                <button (click)="logout()"
+                    class="w-full mt-4 py-3 px-6 bg-[#E29578] text-white font-semibold rounded-xl hover:bg-[#d4845f] transition-colors flex items-center justify-center gap-2">
+                    <span>🚪</span><span>Logout</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

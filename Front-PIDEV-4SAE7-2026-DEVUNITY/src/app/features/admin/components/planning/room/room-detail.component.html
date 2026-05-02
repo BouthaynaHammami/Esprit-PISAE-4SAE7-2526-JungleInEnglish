@@ -1,0 +1,39 @@
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
+    <div class="flex justify-between items-start mb-5">
+        <h3 class="text-xl font-bold text-gray-800">Room Details</h3>
+        <div class="flex gap-2">
+            <button (click)="edit.emit(room)"
+                class="px-4 py-1.5 text-sm font-semibold text-[#006D77] border border-[#006D77] rounded-lg hover:bg-[#006D77] hover:text-white transition-colors">
+                Edit
+            </button>
+            <button (click)="closed.emit()"
+                class="px-4 py-1.5 text-sm font-semibold text-gray-500 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                ✕ Close
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Room Name</p>
+            <p class="text-2xl font-bold text-[#006D77]">{{ room.name }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Capacity</p>
+            <p class="text-2xl font-bold text-gray-800">{{ room.capacity }} <span
+                    class="text-sm font-normal text-gray-500">seats</span></p>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Level</p>
+            <p class="text-2xl font-bold text-gray-800">{{ room.level }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4 sm:col-span-3">
+            <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-2">Availability</p>
+            <span [class]="room.available
+        ? 'inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold'
+        : 'inline-block px-3 py-1 bg-red-100 text-red-600 rounded-full text-sm font-semibold'">
+                {{ room.available ? '✅ Available' : '🚫 Unavailable' }}
+            </span>
+        </div>
+    </div>
+</div>

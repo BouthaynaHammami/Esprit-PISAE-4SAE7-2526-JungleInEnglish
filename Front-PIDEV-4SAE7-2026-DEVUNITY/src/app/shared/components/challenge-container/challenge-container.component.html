@@ -1,0 +1,194 @@
+<div class="challenge-container" [class]="state.status">
+  <!-- Header Section -->
+  <div class="challenge-header">
+    <div class="challenge-title">
+      <h2>Challenge Mode</h2>
+    </div>
+
+    <!-- Timer and Attempts -->
+    <div class="challenge-stats">
+      <!-- Timer -->
+      <div class="timer-section" [class.critical]="isTimeRunningOut">
+        <div class="timer-label">Time Remaining</div>
+        <div 
+          class="timer" 
+          [ngClass]="animationClass"
+          [style.color]="timerColor"
+        >
+          {{ formatTime(state.timeRemaining) }}
+        </div>
+      </div>
+
+      <!-- Attempts -->
+      <div class="attempts-section">
+        <div class="attempts-label">Attempts</div>
+        <div class="attempts-counter">
+          {{ getAttemptDisplay() }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-container">
+    <div class="progress-bar-wrapper">
+      <div 
+        class="progress-bar" 
+        [style.width.%]="getProgressPercentage()"
+        [class.critical]="isTimeRunningOut"
+      ></div>
+    </div>
+    <div class="progress-text">
+      {{ getProgressPercentage() }}% Complete
+    </div>
+  </div>
+
+  <!-- Challenge Content Area -->
+  <div class="challenge-content">
+    <!-- Playing State -->
+    <div *ngIf="state.status === 'playing'" class="content-section">
+      <div class="challenge-instructions">
+        <h3>Challenge Instructions</h3>
+        <p>Answer as many questions as possible correctly within the time limit.</p>
+        <p>You have <strong>{{ state.maxAttempts }}</strong> attempts to complete this challenge.</p>
+      </div>
+
+      <!-- Question Area (Placeholder) -->
+      <div class="question-area">
+        <div class="question-box">
+          <p class="question-text">Challenge Question Goes Here</p>
+          <div class="options-area">
+            <!-- Options would be projected or dynamically loaded here -->
+            <p class="placeholder-text">Content to be filled by parent component</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button 
+          class="btn btn-correct"
+          (click)="recordCorrectAnswer()"
+          [disabled]="isInputDisabled"
+          title="Record correct answer"
+        >
+          ✓ Correct Answer
+        </button>
+
+        <button 
+          class="btn btn-wrong"
+          (click)="recordWrongAnswer()"
+          [disabled]="isInputDisabled"
+          title="Record wrong answer"
+        >
+          ✗ Wrong Answer
+        </button>
+
+        <button 
+          class="btn btn-next"
+          (click)="nextAttempt()"
+          [disabled]="isInputDisabled || state.currentAttempt >= state.maxAttempts"
+          title="Move to next attempt"
+        >
+          → Next Attempt
+        </button>
+
+        <button 
+          class="btn btn-finish"
+          (click)="finishChallenge()"
+          [disabled]="!isActive()"
+          title="Finish challenge now"
+        >
+          ⊗ Finish Challenge
+        </button>
+
+        <button 
+          class="btn btn-abort"
+          (click)="abortChallenge()"
+          title="Abort challenge"
+        >
+          ↩ Abort
+        </button>
+      </div>
+    </div>
+
+    <!-- Finished State - Results -->
+    <div *ngIf="state.status === 'finished'" class="content-section results-section">
+      <div class="results-container">
+        <div class="results-header">
+          <h3>Challenge Completed! 🎉</h3>
+          <p class="results-subtitle">Here are your results</p>
+        </div>
+
+        <!-- Score Card -->
+        <div class="results-card">
+          <div class="score-display">
+            <div class="score-value">{{ state.score }}</div>
+            <div class="score-label">Total Score</div>
+          </div>
+
+          <!-- Statistics Grid -->
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-icon correct">✓</div>
+              <div class="stat-value">{{ state.correctAnswers }}</div>
+              <div class="stat-label">Correct</div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon wrong">✗</div>
+              <div class="stat-value">{{ state.wrongAnswers }}</div>
+              <div class="stat-label">Wrong</div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon time">⏱</div>
+              <div class="stat-value">{{ formatTime(state.totalTime - state.timeRemaining) }}</div>
+              <div class="stat-label">Time Used</div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon bonus">⭐</div>
+              <div class="stat-value">{{ (state.totalTime - state.timeRemaining) < state.totalTime ? Math.floor(state.timeRemaining / 2) : 0 }}</div>
+              <div class="stat-label">Bonus</div>
+            </div>
+          </div>
+
+          <!-- Feedback -->
+          <div class="feedback-section">
+            <p class="feedback-text">{{ generateFeedback() }}</p>
+          </div>
+
+          <!-- Accuracy Percentage -->
+          <div class="accuracy-section" *ngIf="state.correctAnswers + state.wrongAnswers > 0">
+            <div class="accuracy-label">Accuracy Rate</div>
+            <div class="accuracy-bar">
+              <div 
+                class="accuracy-fill"
+                [style.width.%]="(state.correctAnswers / (state.correctAnswers + state.wrongAnswers)) * 100"
+              ></div>
+            </div>
+            <div class="accuracy-text">
+              {{ Math.round((state.correctAnswers / (state.correctAnswers + state.wrongAnswers)) * 100) }}%
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeout State -->
+    <div *ngIf="state.status === 'timeout'" class="content-section timeout-section">
+      <div class="timeout-container">
+        <div class="timeout-icon">⏱️</div>
+        <h3>Time's Up!</h3>
+        <p>Your challenge session has ended.</p>
+        <div class="timeout-stats">
+          <p><strong>Final Score:</strong> {{ state.score }}</p>
+          <p><strong>Correct Answers:</strong> {{ state.correctAnswers }}</p>
+          <p><strong>Wrong Answers:</strong> {{ state.wrongAnswers }}</p>
+          <p><strong>Attempts Used:</strong> {{ state.currentAttempt }}/{{ state.maxAttempts }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

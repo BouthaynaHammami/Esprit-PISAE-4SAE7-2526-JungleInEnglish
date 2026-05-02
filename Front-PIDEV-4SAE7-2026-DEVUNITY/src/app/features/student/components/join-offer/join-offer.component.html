@@ -1,0 +1,227 @@
+<div class="bg-decor">
+  <div class="bg-orb bg-orb--1"></div>
+  <div class="bg-orb bg-orb--2"></div>
+  <div class="bg-orb bg-orb--3"></div>
+  <div class="bg-sphere bg-sphere--1"></div>
+  <div class="bg-sphere bg-sphere--2"></div>
+  <div class="bg-sphere bg-sphere--3"></div>
+  <div class="bg-sphere bg-sphere--4"></div>
+  <div class="bg-plane">
+    <svg width="90" height="60" viewBox="0 0 90 60" fill="none">
+      <path d="M5 50 L85 10 L50 30 L85 10 L60 55 L50 30 L5 50Z" fill="url(#planeGrad)" opacity="0.18"></path>
+      <defs>
+        <linearGradient id="planeGrad" x1="0" y1="0" x2="90" y2="60">
+          <stop stop-color="#5ad0d0"></stop>
+          <stop offset="1" stop-color="#83C5BE" stop-opacity="0.3"></stop>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+</div>
+
+<main class="page">
+  <nav class="breadcrumb">
+    <span class="breadcrumb__back">&#8249;</span>
+    <a routerLink="/student/dashboard">Home</a>
+    <span class="breadcrumb__sep">&#8250;</span>
+    <strong>Join Offer</strong>
+  </nav>
+
+  <header class="hero">
+    <h1>Join Business Offer</h1>
+    <p>Enter the activation code provided by your organization to unlock your premium learning path.</p>
+  </header>
+
+  <div class="layout">
+    <div class="layout__main">
+      <section *ngIf="!success && !selectedOffer" class="panel">
+        <div class="panel__head">
+          <h2 class="panel__title">My Active Offers</h2>
+          <div *ngIf="loadingOffers" class="loader-xs"></div>
+        </div>
+
+        <div *ngIf="enrolledOffers.length > 0" class="events-list">
+          <article *ngFor="let offer of enrolledOffers; let i = index"
+                   class="event-card glass offer-card"
+                   [style.--card-delay]="(i * 0.07) + 's'"
+                   (click)="selectOffer(offer)">
+            <div class="event-card__img-side offer-card__img-side">
+              <div class="offer-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                  <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                </svg>
+              </div>
+              <div class="event-card__date-badge" [ngClass]="{ 'orange': i % 2 === 0, 'teal': i % 2 !== 0 }">
+                <span class="event-card__date-month">Level</span>
+                <span class="event-card__date-day">{{ offer.level }}</span>
+              </div>
+            </div>
+
+            <div class="event-card__body">
+              <div class="event-card__header">
+                <h3 class="event-card__title">{{ offer.name }}</h3>
+                <span class="event-card__pill pill--rated">Active</span>
+              </div>
+
+              <p class="event-card__desc" *ngIf="offer.description">{{ offer.description }}</p>
+
+              <div class="event-card__separator"></div>
+
+              <div class="event-card__footer">
+                <div class="event-card__meta">
+                  <span class="event-card__meta-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    Click to view offer
+                  </span>
+                </div>
+                <div class="event-card__actions">
+                  <button class="btn-register">View</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div *ngIf="!loadingOffers && enrolledOffers.length === 0" class="empty-state">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5">
+            <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <p class="empty-state__title">No active offers found</p>
+          <p class="empty-state__sub">Join one using an activation code.</p>
+        </div>
+      </section>
+
+      <section class="success-view" *ngIf="(success && invitation) || selectedOffer">
+        <div class="success-hero glass">
+          <div class="success-badge" *ngIf="success">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+
+          <button class="btn-ghost" *ngIf="selectedOffer" (click)="deselectOffer()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back to Offers
+          </button>
+
+          <h2 class="offer-title">
+            {{ success ? 'Welcome to ' + (invitation?.offer?.name || '') : selectedOffer?.name }}
+          </h2>
+
+          <p class="offer-summary">
+            {{ success ? (invitation?.offer?.description || '') : selectedOffer?.description }}
+          </p>
+
+          <div class="offer-meta">
+            <div class="meta-tag">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+              </svg>
+              <span>Level {{ success ? (invitation?.offer?.level || '') : selectedOffer?.level }}</span>
+            </div>
+
+            <div class="meta-tag">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>{{ (success ? (invitation?.offer?.durationHours || 0) : (selectedOffer?.durationHours || 0)) }} Hours</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="courses-section">
+          <h3 class="section-title">Included Courses</h3>
+
+          <div class="course-grid">
+            <div class="course-card glass clickable-course" *ngFor="let course of offerCourses"
+              [routerLink]="['/student/courses', course.courseId]">
+              <div class="course-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+              </div>
+
+              <div class="course-details">
+                <h4 class="c-title">{{ course.title }}</h4>
+                <p class="c-desc text-xs">{{ course.description }}</p>
+              </div>
+            </div>
+
+            <div *ngIf="loadingCourses" class="loader-container">
+              <div class="loader-md"></div>
+              <p>Loading courses...</p>
+            </div>
+
+            <div *ngIf="!loadingCourses && offerCourses?.length === 0" class="empty-courses-student">
+              <p>No courses are available for this offer.</p>
+            </div>
+          </div>
+
+          <div class="actions-group">
+            <button class="primary-action" routerLink="/student/dashboard">
+              Go to Dashboard
+            </button>
+
+            <button class="secondary-action" (click)="reset()" *ngIf="success">
+              Enter another code
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="layout__sidebar" *ngIf="!success && !selectedOffer">
+      <div class="sidebar-card glass">
+        <div class="sidebar-card__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+        </div>
+        <h2 class="sidebar-card__title">Enter Activation Code</h2>
+
+        <label class="sidebar-card__label">Activation Code</label>
+        <input type="text" [(ngModel)]="activationCode" placeholder="e.g. BE-2026-XXXX" class="sidebar-card__input"
+          (keyup.enter)="joinOffer()" />
+
+        <div *ngIf="errorMsg" class="error-msg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ errorMsg }}</span>
+        </div>
+
+        <button class="sidebar-card__submit" (click)="joinOffer()" [disabled]="loading || !activationCode.trim()">
+          <span *ngIf="!loading">Unlock Offer</span>
+          <span *ngIf="loading" class="ev-btn__ld"><span class="ev-spin"></span> Unlocking...</span>
+        </button>
+
+        <p class="sidebar-card__terms">Use the code provided by your organization. Your access is activated instantly.</p>
+      </div>
+    </aside>
+  </div>
+</main>

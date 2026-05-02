@@ -1,0 +1,72 @@
+<div class="kanban-container">
+  <div class="kanban-header">
+    <div>
+      <h2>My Certifications Board</h2>
+      <p class="subtitle">Track your certification progress with drag &amp; drop</p>
+    </div>
+    <button class="btn btn-primary" (click)="openAddForm()">+ New Task</button>
+  </div>
+
+  <div *ngIf="loading" class="loading-state"><div class="spinner"></div><p>Loading board...</p></div>
+
+  <div class="board" *ngIf="!loading">
+    <div *ngFor="let col of columns" class="column"
+         (dragover)="onDragOver($event)" (dragenter)="onDragEnter($event)"
+         (dragleave)="onDragLeave($event)" (drop)="onDrop($event, col.status)">
+      <div class="column-header" [style.borderTopColor]="col.color">
+        <div class="column-title">
+          <span class="status-dot" [style.backgroundColor]="col.color"></span>
+          <h3>{{ col.label }}</h3>
+          <span class="task-count">{{ countByStatus(col.status) }}</span>
+        </div>
+        <button class="btn-add-col" (click)="openAddForm(col.status)">+</button>
+      </div>
+      <div class="task-list">
+        <div *ngFor="let task of getTasksByStatus(col.status)" class="task-card"
+             [class.overdue]="isOverdue(task)" [class.due-soon]="isDueSoon(task)"
+             draggable="true" (dragstart)="onDragStart($event, task)">
+          <div class="task-top">
+            <h4 class="task-title">{{ task.title }}</h4>
+            <div class="task-actions">
+              <button class="btn-icon" (click)="openEditForm(task)">&#9998;</button>
+              <button class="btn-icon btn-delete" (click)="deleteTask(task)">&times;</button>
+            </div>
+          </div>
+          <p *ngIf="task.description" class="task-desc">{{ task.description }}</p>
+          <div class="task-meta">
+            <span *ngIf="task.deadline" class="deadline" [class.text-red]="isOverdue(task)" [class.text-orange]="isDueSoon(task)">
+              {{ task.deadline | date:'MMM d, y HH:mm' }}
+            </span>
+          </div>
+        </div>
+        <div *ngIf="getTasksByStatus(col.status).length === 0" class="empty-column">
+          <p>No tasks</p><button class="btn-link" (click)="openAddForm(col.status)">+ Add a task</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="showForm" (click)="closeForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ editingTask ? 'Edit Task' : 'New Task' }}</h3>
+        <button class="btn-close" (click)="closeForm()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group"><label>Title *</label><input type="text" [(ngModel)]="formTitle" placeholder="Task title" class="form-control" /></div>
+        <div class="form-group"><label>Description</label><textarea [(ngModel)]="formDescription" placeholder="Description" class="form-control" rows="3"></textarea></div>
+        <div class="form-row">
+          <div class="form-group half"><label>Status</label>
+            <select [(ngModel)]="formStatus" class="form-control"><option value="TODO">To Do</option><option value="DOING">Doing</option><option value="DONE">Done</option></select>
+          </div>
+          <div class="form-group half"><label>Deadline</label><input type="datetime-local" [(ngModel)]="formDeadline" class="form-control" /></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeForm()">Cancel</button>
+        <button class="btn btn-primary" (click)="saveTask()" [disabled]="!formTitle.trim()">{{ editingTask ? 'Update' : 'Create' }}</button>
+      </div>
+    </div>
+  </div>
+</div>

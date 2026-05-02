@@ -1,0 +1,846 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  .complaints-shell {
+    position: relative;
+    min-height: 100vh;
+    font-family: "Inter", sans-serif;
+    color: #1a2332;
+    background: linear-gradient(135deg, #fafbfc 0%, #f0f7f9 20%, #edf6f9 40%, #f2f9fc 60%, #eef7fa 80%, #fafbfc 100%);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .complaints-shell *, .complaints-shell *::before, .complaints-shell *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  .complaints-shell .bg-decor {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .complaints-shell .bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+  }
+
+  .complaints-shell .bg-orb--1 {
+    width: 420px;
+    height: 420px;
+    top: -100px;
+    right: -60px;
+    background: radial-gradient(circle, rgba(131, 197, 190, 0.08), transparent 70%);
+    animation: orbFloat 24s ease-in-out infinite;
+  }
+
+  .complaints-shell .bg-orb--2 {
+    width: 380px;
+    height: 380px;
+    bottom: -80px;
+    left: -100px;
+    background: radial-gradient(circle, rgba(226, 149, 120, 0.06), transparent 70%);
+    animation: orbFloat 30s ease-in-out infinite reverse;
+  }
+
+  .complaints-shell .bg-orb--3 {
+    width: 260px;
+    height: 260px;
+    top: 40%;
+    left: 50%;
+    background: radial-gradient(circle, rgba(237, 246, 249, 0.1), transparent 70%);
+    animation: orbFloat 20s ease-in-out infinite 4s;
+  }
+
+  .complaints-shell .bg-sphere {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 38%, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.25) 55%, rgba(131, 197, 190, 0.08) 100%);
+    box-shadow: inset 0 -8px 14px rgba(0, 109, 119, 0.03), inset 1px 2px 3px rgba(255, 255, 255, 0.85), 0 8px 24px rgba(0, 109, 119, 0.06);
+  }
+
+  .complaints-shell .bg-sphere--1 {
+    width: 60px;
+    height: 60px;
+    top: 40px;
+    right: 80px;
+    animation: sphereBob 6s ease-in-out infinite;
+  }
+
+  .complaints-shell .bg-sphere--2 {
+    width: 28px;
+    height: 28px;
+    top: 120px;
+    right: 30px;
+    opacity: 0.7;
+    animation: sphereBob 8s ease-in-out infinite 1s;
+  }
+
+  .complaints-shell .bg-sphere--3 {
+    width: 18px;
+    height: 18px;
+    top: 60px;
+    right: 170px;
+    opacity: 0.5;
+    animation: sphereBob 5s ease-in-out infinite 2s;
+  }
+
+  .complaints-shell .bg-sphere--4 {
+    width: 42px;
+    height: 42px;
+    top: 90px;
+    right: 130px;
+    background: radial-gradient(circle at 40% 40%, rgba(226, 149, 120, 0.5), rgba(226, 149, 120, 0.12) 60%, transparent 100%);
+    animation: sphereBob 7s ease-in-out infinite 0.5s;
+  }
+
+  .complaints-shell .bg-plane {
+    position: absolute;
+    bottom: 60px;
+    right: 40px;
+    opacity: 0.5;
+    animation: planeDrift 12s ease-in-out infinite;
+  }
+
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(20px, -12px) scale(1.03); }
+    66% { transform: translate(-12px, 8px) scale(0.97); }
+  }
+
+  @keyframes sphereBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes planeDrift {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-15px, -8px) rotate(-3deg); }
+  }
+
+  .complaints-shell .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1340px;
+    margin: 0 auto;
+    padding: 36px 52px 120px;
+  }
+
+  .complaints-shell .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #8a9ab0;
+    margin-bottom: 24px;
+    letter-spacing: 0.3px;
+  }
+
+  .complaints-shell .breadcrumb a {
+    color: #8a9ab0;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .complaints-shell .breadcrumb a:hover {
+    color: #006d77;
+    font-weight: 700;
+  }
+
+  .complaints-shell .breadcrumb strong {
+    color: #1a2332;
+    font-weight: 700;
+  }
+
+  .complaints-shell .breadcrumb__back {
+    font-size: 18px;
+    color: rgba(0, 109, 119, 0.35);
+    line-height: 1;
+    font-weight: 400;
+  }
+
+  .complaints-shell .breadcrumb__sep {
+    font-size: 14px;
+    color: rgba(0, 109, 119, 0.25);
+    font-weight: 300;
+  }
+
+  .complaints-shell .hero {
+    margin-bottom: 36px;
+  }
+
+  .complaints-shell .hero h1 {
+    font-size: 42px;
+    font-weight: 800;
+    color: #1a2332;
+    margin: 0 0 10px;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    background: linear-gradient(135deg, #1a2332 0%, #141a26 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .complaints-shell .hero p {
+    font-size: 17px;
+    color: #5a6b7f;
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: 0.15px;
+    line-height: 1.5;
+  }
+
+  .complaints-shell .layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 36px;
+    align-items: flex-start;
+  }
+
+  .complaints-shell .layout__main {
+    min-width: 0;
+  }
+
+  .complaints-shell .layout__sidebar {
+    position: sticky;
+    top: 120px;
+  }
+
+  .complaints-shell .panel__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .complaints-shell .panel__title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #1a2332;
+    letter-spacing: -0.01em;
+  }
+
+  .complaints-shell .glass {
+    background: rgba(255, 255, 255, 0.62);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 32px rgba(0, 109, 119, 0.05), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  }
+
+  .complaints-shell .events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .complaints-shell .event-card {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    border-radius: 22px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: cardUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--card-delay, 0s);
+  }
+
+  .complaints-shell .event-card:hover {
+    box-shadow: 0 20px 56px rgba(0, 109, 119, 0.12), 0 8px 32px rgba(131, 197, 190, 0.1);
+    transform: translateY(-4px);
+    border-color: rgba(131, 197, 190, 0.2);
+  }
+
+  @keyframes cardUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .complaints-shell .event-card__img-side {
+    position: relative;
+    width: 260px;
+    min-height: 200px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #eef4f6, #e4ecf0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .complaints-shell .complaint-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #006d77;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 28px rgba(0, 109, 119, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  }
+
+  .complaints-shell .event-card__date-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 80px;
+    padding: 9px 0 11px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+    z-index: 2;
+    font-weight: 700;
+    backdrop-filter: blur(4px);
+  }
+
+  .complaints-shell .event-card__date-badge.orange {
+    background: linear-gradient(135deg, #e29578 0%, #d97f60 100%);
+  }
+
+  .complaints-shell .event-card__date-badge.teal {
+    background: linear-gradient(135deg, #006d77 0%, #0b7a81 100%);
+  }
+
+  .complaints-shell .event-card__date-month {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    opacity: 0.92;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .complaints-shell .event-card__date-day {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .complaints-shell .event-card__body {
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    gap: 6px;
+  }
+
+  .complaints-shell .event-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+
+  .complaints-shell .event-card__title {
+    font-size: 19px;
+    font-weight: 800;
+    color: #1a2332;
+    line-height: 1.35;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .complaints-shell .event-card__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 22px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .complaints-shell .pill--pending {
+    background: rgba(226, 149, 120, 0.12);
+    color: #e29578;
+    border: 1.5px solid rgba(226, 149, 120, 0.25);
+  }
+
+  .complaints-shell .pill--answered {
+    background: rgba(0, 109, 119, 0.08);
+    color: #006d77;
+    border: 1.5px solid rgba(0, 109, 119, 0.18);
+  }
+
+  .complaints-shell .event-card__desc {
+    font-size: 14px;
+    color: #5a6b7f;
+    line-height: 1.6;
+    margin: 2px 0 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .complaints-shell .event-card__separator {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(0, 109, 119, 0.12), transparent);
+    margin: 16px 0 14px;
+  }
+
+  .complaints-shell .event-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+  }
+
+  .complaints-shell .event-card__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .complaints-shell .event-card__meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #8a9ab0;
+  }
+
+  .complaints-shell .event-card__meta-item svg {
+    color: #006d77;
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+
+  .complaints-shell .event-card__actions {
+    flex-shrink: 0;
+  }
+
+  .complaints-shell .ev-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 14px;
+    border: none;
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    letter-spacing: 0.2px;
+  }
+
+  .complaints-shell .ev-btn--dang {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: white;
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.22), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  }
+
+  .complaints-shell .ev-btn--dang:hover {
+    box-shadow: 0 10px 32px rgba(220, 38, 38, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .complaints-shell .sidebar-card {
+    border-radius: 26px;
+    padding: 36px 32px 32px;
+  }
+
+  .complaints-shell .sidebar-card__title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1a2332;
+    margin: 0 0 20px;
+    letter-spacing: -0.01em;
+    background: linear-gradient(135deg, #1a2332 0%, #141a26 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .complaints-shell .sidebar-stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: rgba(0, 109, 119, 0.04);
+    border: 1px solid rgba(0, 109, 119, 0.08);
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #5a6b7f;
+  }
+
+  .complaints-shell .sidebar-stat strong {
+    color: #006d77;
+    font-weight: 800;
+  }
+
+  .complaints-shell .sidebar-card__submit {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 26px;
+    border-radius: 18px;
+    border: none;
+    background: linear-gradient(135deg, #006d77 0%, #005a63 100%);
+    color: white;
+    font-family: "Inter", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 10px 28px rgba(0, 109, 119, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    margin-top: 14px;
+    letter-spacing: 0.3px;
+  }
+
+  .complaints-shell .sidebar-card__submit:hover {
+    box-shadow: 0 14px 40px rgba(0, 109, 119, 0.32), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .complaints-shell .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 40px;
+    text-align: center;
+  }
+
+  .complaints-shell .empty-state svg {
+    margin-bottom: 22px;
+    opacity: 0.35;
+    color: #006d77;
+  }
+
+  .complaints-shell .empty-state__title {
+    font-size: 21px;
+    font-weight: 800;
+    color: #1a2332;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .complaints-shell .empty-state__sub {
+    font-size: 15px;
+    color: #5a6b7f;
+    margin: 0;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .complaints-shell .loader {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 3px solid rgba(0, 109, 119, 0.2);
+    border-top-color: #006d77;
+    animation: spin 0.7s linear infinite;
+  }
+
+  .complaints-shell .loader-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+  }
+
+  .complaints-shell .ev-toast {
+    position: fixed;
+    top: 28px;
+    right: 28px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 24px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18), inset 0 1px 2px rgba(255, 255, 255, 0.15);
+    animation: toastIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    letter-spacing: 0.2px;
+  }
+
+  .complaints-shell .ev-toast--success {
+    background: linear-gradient(135deg, #0b7a81 0%, #006d77 100%);
+  }
+
+  .complaints-shell .ev-toast--error {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  }
+
+  .complaints-shell .ev-toast__ico {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 1100px) {
+    .complaints-shell .layout {
+      grid-template-columns: 1fr 300px;
+      gap: 22px;
+    }
+
+    .complaints-shell .event-card {
+      grid-template-columns: 220px 1fr;
+    }
+
+    .complaints-shell .event-card__img-side {
+      width: 220px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .complaints-shell .layout {
+      grid-template-columns: 1fr;
+    }
+
+    .complaints-shell .layout__sidebar {
+      position: static;
+      order: -1;
+    }
+
+    .complaints-shell .page {
+      padding: 20px 24px 60px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .complaints-shell .event-card {
+      grid-template-columns: 1fr;
+    }
+
+    .complaints-shell .event-card__img-side {
+      width: 100%;
+      height: 200px;
+      min-height: auto;
+    }
+
+    .complaints-shell .event-card__footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .complaints-shell .event-card__actions {
+      width: 100%;
+    }
+
+    .complaints-shell .event-card__actions .ev-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .complaints-shell .page {
+      padding: 16px 16px 48px;
+    }
+
+    .complaints-shell .hero h1 {
+      font-size: 26px;
+    }
+
+    .complaints-shell .event-card__header {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+</style>
+
+<div class="complaints-shell">
+  <div class="bg-decor">
+    <div class="bg-orb bg-orb--1"></div>
+    <div class="bg-orb bg-orb--2"></div>
+    <div class="bg-orb bg-orb--3"></div>
+    <div class="bg-sphere bg-sphere--1"></div>
+    <div class="bg-sphere bg-sphere--2"></div>
+    <div class="bg-sphere bg-sphere--3"></div>
+    <div class="bg-sphere bg-sphere--4"></div>
+    <div class="bg-plane">
+      <svg width="90" height="60" viewBox="0 0 90 60" fill="none">
+        <path d="M5 50 L85 10 L50 30 L85 10 L60 55 L50 30 L5 50Z" fill="url(#planeGrad)" opacity="0.18" />
+        <defs>
+          <linearGradient id="planeGrad" x1="0" y1="0" x2="90" y2="60">
+            <stop stop-color="#5ad0d0" />
+            <stop offset="1" stop-color="#83C5BE" stop-opacity="0.3" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <div *ngIf="successMessage" class="ev-toast ev-toast--success">
+    <div class="ev-toast__ico">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </div>
+    <span>{{ successMessage }}</span>
+  </div>
+
+  <div *ngIf="error" class="ev-toast ev-toast--error">
+    <div class="ev-toast__ico">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="15" y1="9" x2="9" y2="15"></line>
+        <line x1="9" y1="9" x2="15" y2="15"></line>
+      </svg>
+    </div>
+    <span>{{ error }}</span>
+  </div>
+
+  <main class="page">
+    <nav class="breadcrumb">
+      <span class="breadcrumb__back">&#8249;</span>
+      <a routerLink="/student/dashboard">Home</a>
+      <span class="breadcrumb__sep">&#8250;</span>
+      <strong>Complaints</strong>
+    </nav>
+
+    <header class="hero">
+      <h1>My Complaints</h1>
+      <p>Track and manage your class planning complaints.</p>
+    </header>
+
+    <div class="layout">
+      <div class="layout__main">
+        <section class="panel">
+          <div class="panel__head">
+            <h2 class="panel__title">Latest Complaints</h2>
+          </div>
+
+          <div *ngIf="isLoading" class="loader-wrap">
+            <div class="loader"></div>
+          </div>
+
+          <div *ngIf="!isLoading && complaints.length === 0" class="empty-state">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5">
+              <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <p class="empty-state__title">No complaints found</p>
+            <p class="empty-state__sub">Your submitted complaints will appear here.</p>
+          </div>
+
+          <div *ngIf="!isLoading && complaints.length > 0" class="events-list">
+            <article *ngFor="let c of complaints; let i = index"
+                     class="event-card glass"
+                     [style.--card-delay]="(i * 0.07) + 's'">
+              <div class="event-card__img-side">
+                <div class="complaint-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
+                    <line x1="7" y1="9" x2="17" y2="9"></line>
+                    <line x1="7" y1="13" x2="13" y2="13"></line>
+                  </svg>
+                </div>
+                <div class="event-card__date-badge" [ngClass]="{ 'orange': !c.status, 'teal': c.status }">
+                  <span class="event-card__date-month">ID</span>
+                  <span class="event-card__date-day">#{{ c.complaintId }}</span>
+                </div>
+              </div>
+
+              <div class="event-card__body">
+                <div class="event-card__header">
+                  <h3 class="event-card__title">{{ c.subject }}</h3>
+                  <span class="event-card__pill" [ngClass]="c.status ? 'pill--answered' : 'pill--pending'">
+                    {{ c.status ? 'Answered' : 'Pending' }}
+                  </span>
+                </div>
+
+                <p class="event-card__desc">{{ c.answer || 'No answer yet. Our team will respond soon.' }}</p>
+
+                <div class="event-card__separator"></div>
+
+                <div class="event-card__footer">
+                  <div class="event-card__meta">
+                    <span class="event-card__meta-item">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                      Complaint #{{ c.complaintId }}
+                    </span>
+                    <span class="event-card__meta-item">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                      {{ c.room?.name || 'No room assigned' }}
+                    </span>
+                  </div>
+
+                  <div class="event-card__actions">
+                    <button class="ev-btn ev-btn--dang" (click)="deleteComplaint(c)">Delete</button>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <aside class="layout__sidebar">
+        <div class="sidebar-card glass">
+          <h2 class="sidebar-card__title">Complaints Overview</h2>
+          <div class="sidebar-stat">
+            <span>Total complaints</span>
+            <strong>{{ complaints.length }}</strong>
+          </div>
+          <div class="sidebar-stat">
+            <span>Answered</span>
+            <strong>{{ answeredCount }}</strong>
+          </div>
+          <div class="sidebar-stat">
+            <span>Pending</span>
+            <strong>{{ pendingCount }}</strong>
+          </div>
+          <button class="sidebar-card__submit" (click)="loadMine()">
+            Refresh Complaints
+          </button>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>

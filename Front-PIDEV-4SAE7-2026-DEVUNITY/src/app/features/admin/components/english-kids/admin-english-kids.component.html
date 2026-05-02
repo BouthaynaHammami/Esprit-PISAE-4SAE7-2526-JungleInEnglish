@@ -1,0 +1,1021 @@
+<div class="p-8">
+    <div class="mb-8 flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-[#006D77] heading-font">EnglishKids Management</h1>
+            <p class="text-gray-500 mt-1">Manage courses, parents, children, progress and rewards</p>
+        </div>
+        <button (click)="openAddModal()" 
+                *ngIf="activeTab !== 'analytics'"
+                class="bg-[#006D77] text-white px-6 py-3 rounded-lg hover:bg-[#005662] transition-colors flex items-center gap-2">
+            <span class="text-xl">+</span>
+            Add {{ activeTab === 'courses' ? 'Course' : activeTab === 'parents' ? 'Parent' : activeTab === 'children' ? 'Child' : activeTab === 'progress' ? 'Progress' : activeTab === 'activities' ? 'Activity' : 'Reward' }}
+        </button>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Courses</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ courses.length }}</p>
+                </div>
+                <div class="text-4xl">📚</div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Parents</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ parents.length }}</p>
+                </div>
+                <div class="text-4xl">👨‍👩‍👧</div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-yellow-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Children</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ children.length }}</p>
+                </div>
+                <div class="text-4xl">👶</div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-purple-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Progress</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ progressList.length }}</p>
+                </div>
+                <div class="text-4xl">📊</div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-red-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Rewards</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ rewards.length }}</p>
+                </div>
+                <div class="text-4xl">🏆</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="mb-6 border-b border-gray-200">
+        <nav class="flex space-x-8">
+            <button (click)="switchTab('courses')" 
+                    [class.border-[#006D77]]="activeTab === 'courses'"
+                    [class.text-[#006D77]]="activeTab === 'courses'"
+                    [class.border-transparent]="activeTab !== 'courses'"
+                    [class.text-gray-500]="activeTab !== 'courses'"
+                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors hover:text-[#006D77]">
+                Courses
+            </button>
+            <button (click)="switchTab('activities')" 
+                    [class.border-[#006D77]]="activeTab === 'activities'"
+                    [class.text-[#006D77]]="activeTab === 'activities'"
+                    [class.border-transparent]="activeTab !== 'activities'"
+                    [class.text-gray-500]="activeTab !== 'activities'"
+                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors hover:text-[#006D77]">
+                Activities
+            </button>
+            <button (click)="switchTab('parents')" 
+                    [class.border-[#006D77]]="activeTab === 'parents'"
+                    [class.text-[#006D77]]="activeTab === 'parents'"
+                    [class.border-transparent]="activeTab !== 'parents'"
+                    [class.text-gray-500]="activeTab !== 'parents'"
+                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors hover:text-[#006D77]">
+                Parents
+            </button>
+            <button (click)="switchTab('children')" 
+                    [class.border-[#006D77]]="activeTab === 'children'"
+                    [class.text-[#006D77]]="activeTab === 'children'"
+                    [class.border-transparent]="activeTab !== 'children'"
+                    [class.text-gray-500]="activeTab !== 'children'"
+                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors hover:text-[#006D77]">
+                Children
+            </button>
+            <button (click)="switchTab('progress')" 
+                    [class.border-[#006D77]]="activeTab === 'progress'"
+                    [class.text-[#006D77]]="activeTab === 'progress'"
+                    [class.border-transparent]="activeTab !== 'progress'"
+                    [class.text-gray-500]="activeTab !== 'progress'"
+                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors hover:text-[#006D77]">
+                Progress
+            </button>
+            <button (click)="switchTab('rewards')" 
+                    [class.border-[#006D77]]="activeTab === 'rewards'"
+                    [class.text-[#006D77]]="activeTab === 'rewards'"
+                    [class.border-transparent]="activeTab !== 'rewards'"
+                    [class.text-gray-500]="activeTab !== 'rewards'"
+                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors hover:text-[#006D77]">
+                Rewards
+            </button>
+            <button (click)="switchTab('analytics')" 
+                    [class.border-[#006D77]]="activeTab === 'analytics'"
+                    [class.text-[#006D77]]="activeTab === 'analytics'"
+                    [class.border-transparent]="activeTab !== 'analytics'"
+                    [class.text-gray-500]="activeTab !== 'analytics'"
+                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors hover:text-[#006D77]">
+                Analytics
+            </button>
+        </nav>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-6 flex gap-4" *ngIf="activeTab !== 'analytics'">
+        <div class="flex-1">
+            <input type="text" 
+                   [(ngModel)]="searchTerm" 
+                   (input)="onSearch()"
+                   placeholder="Search..." 
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent">
+        </div>
+        <button (click)="sortBy('title')" *ngIf="activeTab === 'courses'" 
+                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Sort by Title
+        </button>
+        <button (click)="sortBy('phone')" *ngIf="activeTab === 'parents'" 
+                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Sort by Phone
+        </button>
+        <button (click)="sortBy('name')" *ngIf="activeTab === 'children'" 
+                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Sort by Name
+        </button>
+        <button (click)="sortBy('completionRate')" *ngIf="activeTab === 'progress'" 
+                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Sort by Rate
+        </button>
+        <button (click)="sortBy('name')" *ngIf="activeTab === 'rewards'" 
+                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Sort by Name
+        </button>
+        <button (click)="sortBy('title')" *ngIf="activeTab === 'activities'" 
+                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Sort by Title
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center py-8">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#006D77]"></div>
+        <p class="mt-2 text-gray-600">Loading...</p>
+    </div>
+
+    <!-- COURSES TAB -->
+    <div *ngIf="!loading && activeTab === 'courses'">
+        <div *ngIf="filteredCourses.length === 0" class="bg-white rounded-2xl border-2 border-dashed border-[#83C5BE] p-16 text-center">
+            <div class="text-6xl mb-4">📚</div>
+            <h2 class="text-xl font-semibold text-gray-700 mb-2">No Courses Yet</h2>
+            <p class="text-gray-400">Click "Add Course" to create your first course.</p>
+        </div>
+
+        <div *ngIf="filteredCourses.length > 0" class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let course of filteredCourses" class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ course.courseId }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ course.title }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600 max-w-md truncate">{{ course.description || 'N/A' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ course.price }} €</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <button (click)="openEditModal(course)" class="text-[#006D77] hover:text-[#005662]">Edit</button>
+                            <button (click)="deleteCourse(course.courseId!)" class="text-red-600 hover:text-red-800">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PARENTS TAB -->
+    <div *ngIf="!loading && activeTab === 'parents'">
+        <div *ngIf="filteredParents.length === 0" class="bg-white rounded-2xl border-2 border-dashed border-[#83C5BE] p-16 text-center">
+            <div class="text-6xl mb-4">👨‍👩‍👧</div>
+            <h2 class="text-xl font-semibold text-gray-700 mb-2">No Parents Yet</h2>
+            <p class="text-gray-400">Click "Add Parent" to create your first parent.</p>
+        </div>
+
+        <div *ngIf="filteredParents.length > 0" class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Address</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let parent of filteredParents" class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ parent.parentId }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ parent.phone }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600 max-w-md truncate">{{ parent.address }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ parent.userId }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <button (click)="openEditModal(parent)" class="text-[#006D77] hover:text-[#005662]">Edit</button>
+                            <button (click)="deleteParent(parent.parentId!)" class="text-red-600 hover:text-red-800">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- CHILDREN TAB -->
+    <div *ngIf="!loading && activeTab === 'children'">
+        <div *ngIf="filteredChildren.length === 0" class="bg-white rounded-2xl border-2 border-dashed border-[#83C5BE] p-16 text-center">
+            <div class="text-6xl mb-4">👶</div>
+            <h2 class="text-xl font-semibold text-gray-700 mb-2">No Children Yet</h2>
+            <p class="text-gray-400">Click "Add Child" to create your first child.</p>
+        </div>
+
+        <div *ngIf="filteredChildren.length > 0" class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Birth Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let child of filteredChildren" class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ child.childId }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ child.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ child.birthDate | date }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <button (click)="openEditModal(child)" class="text-[#006D77] hover:text-[#005662]">Edit</button>
+                            <button (click)="deleteChild(child.childId!)" class="text-red-600 hover:text-red-800">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PROGRESS TAB -->
+    <div *ngIf="!loading && activeTab === 'progress'">
+        <div *ngIf="filteredProgressList.length === 0" class="bg-white rounded-2xl border-2 border-dashed border-[#83C5BE] p-16 text-center">
+            <div class="text-6xl mb-4">📊</div>
+            <h2 class="text-xl font-semibold text-gray-700 mb-2">No Progress Yet</h2>
+            <p class="text-gray-400">Click "Add Progress" to create your first progress record.</p>
+        </div>
+
+        <div *ngIf="filteredProgressList.length > 0" class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Completion Rate</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Last Access</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let progress of filteredProgressList" class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ progress.progressId }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ progress.completionRate }}%</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ progress.lastAccess | date }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <button (click)="openEditModal(progress)" class="text-[#006D77] hover:text-[#005662]">Edit</button>
+                            <button (click)="deleteProgress(progress.progressId!)" class="text-red-600 hover:text-red-800">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- REWARDS TAB -->
+    <div *ngIf="!loading && activeTab === 'rewards'">
+        <div *ngIf="filteredRewards.length === 0" class="bg-white rounded-2xl border-2 border-dashed border-[#83C5BE] p-16 text-center">
+            <div class="text-6xl mb-4">🏆</div>
+            <h2 class="text-xl font-semibold text-gray-700 mb-2">No Rewards Yet</h2>
+            <p class="text-gray-400">Click "Add Reward" to create your first reward.</p>
+        </div>
+
+        <div *ngIf="filteredRewards.length > 0" class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Points Required</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let reward of filteredRewards" class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ reward.rewardId }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ reward.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <span class="px-2 py-1 bg-[#EDF6F9] text-[#006D77] rounded-full text-xs">{{ reward.type }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ reward.pointsRequired }} pts</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <button (click)="openEditModal(reward)" class="text-[#006D77] hover:text-[#005662]">Edit</button>
+                            <button (click)="deleteReward(reward.rewardId!)" class="text-red-600 hover:text-red-800">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ACTIVITIES TAB -->
+    <div *ngIf="!loading && activeTab === 'activities'">
+        <div *ngIf="filteredActivities.length === 0" class="bg-white rounded-2xl border-2 border-dashed border-[#83C5BE] p-16 text-center">
+            <div class="text-6xl mb-4">🎮</div>
+            <h2 class="text-xl font-semibold text-gray-700 mb-2">No Activities Yet</h2>
+            <p class="text-gray-400">Click "Add Activity" to create your first activity.</p>
+        </div>
+
+        <div *ngIf="filteredActivities.length > 0" class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Points</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let activity of filteredActivities" class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ activity.activityId }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ activity.title }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <span class="px-2 py-1 bg-[#EDF6F9] text-[#006D77] rounded-full text-xs">{{ activity.type }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ activity.points }} pts</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ activity.orderIndex }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <button (click)="openEditModal(activity)" class="text-[#006D77] hover:text-[#005662]">Edit</button>
+                            <button *ngIf="activity.type === 'QUIZ'" (click)="openQuizEditor(activity)" 
+                                    class="text-blue-600 hover:text-blue-800">Manage Quiz</button>
+                            <button (click)="deleteActivity(activity.activityId!)" class="text-red-600 hover:text-red-800">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL FOR COURSES -->
+<div *ngIf="showModal && activeTab === 'courses'" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-2xl font-bold text-[#006D77]">{{ isEditMode ? 'Edit Course' : 'Add New Course' }}</h2>
+        </div>
+        
+        <form [formGroup]="courseForm" (ngSubmit)="onSubmit()" class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+                <input type="text" formControlName="title"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                       placeholder="Enter course title">
+                <div *ngIf="courseForm.get('title')?.invalid && courseForm.get('title')?.touched" 
+                     class="text-red-500 text-sm mt-1">Title is required</div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea formControlName="description" rows="3"
+                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                          placeholder="Enter course description"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Price *</label>
+                <input type="number" formControlName="price" step="0.01"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                       placeholder="Enter price">
+                <div *ngIf="courseForm.get('price')?.invalid && courseForm.get('price')?.touched" 
+                     class="text-red-500 text-sm mt-1">Price is required and must be positive</div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button type="submit" [disabled]="courseForm.invalid || saving"
+                        class="flex-1 bg-[#006D77] text-white py-2 rounded-lg hover:bg-[#005662] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+                    {{ saving ? 'Saving...' : (isEditMode ? 'Update' : 'Add') }}
+                </button>
+                <button type="button" (click)="closeModal()" [disabled]="saving"
+                        class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition-colors disabled:cursor-not-allowed">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL FOR PARENTS -->
+<div *ngIf="showModal && activeTab === 'parents'" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-2xl font-bold text-[#006D77]">{{ isEditMode ? 'Edit Parent' : 'Add New Parent' }}</h2>
+        </div>
+        
+        <form [formGroup]="parentForm" (ngSubmit)="onSubmit()" class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
+                <input type="text" formControlName="phone"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                       placeholder="Enter phone number">
+                <div *ngIf="parentForm.get('phone')?.invalid && parentForm.get('phone')?.touched" 
+                     class="text-red-500 text-sm mt-1">Phone is required</div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+                <textarea formControlName="address" rows="2"
+                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                          placeholder="Enter address"></textarea>
+                <div *ngIf="parentForm.get('address')?.invalid && parentForm.get('address')?.touched" 
+                     class="text-red-500 text-sm mt-1">Address is required</div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">User ID *</label>
+                <input type="number" formControlName="userId"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                       placeholder="Enter user ID">
+                <div *ngIf="parentForm.get('userId')?.invalid && parentForm.get('userId')?.touched" 
+                     class="text-red-500 text-sm mt-1">User ID is required</div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button type="submit" [disabled]="parentForm.invalid || saving"
+                        class="flex-1 bg-[#006D77] text-white py-2 rounded-lg hover:bg-[#005662] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+                    {{ saving ? 'Saving...' : (isEditMode ? 'Update' : 'Add') }}
+                </button>
+                <button type="button" (click)="closeModal()" [disabled]="saving"
+                        class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition-colors disabled:cursor-not-allowed">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL FOR CHILDREN -->
+<div *ngIf="showModal && activeTab === 'children'" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-2xl font-bold text-[#006D77]">{{ isEditMode ? 'Edit Child' : 'Add New Child' }}</h2>
+        </div>
+        
+        <form [formGroup]="childForm" (ngSubmit)="onSubmit()" class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                <input type="text" formControlName="name"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                       placeholder="Enter child name">
+                <div *ngIf="childForm.get('name')?.invalid && childForm.get('name')?.touched" 
+                     class="text-red-500 text-sm mt-1">Name is required</div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Birth Date *</label>
+                <input type="date" formControlName="birthDate"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent">
+                <div *ngIf="childForm.get('birthDate')?.invalid && childForm.get('birthDate')?.touched" 
+                     class="text-red-500 text-sm mt-1">Birth date is required</div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button type="submit" [disabled]="childForm.invalid || saving"
+                        class="flex-1 bg-[#006D77] text-white py-2 rounded-lg hover:bg-[#005662] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+                    {{ saving ? 'Saving...' : (isEditMode ? 'Update' : 'Add') }}
+                </button>
+                <button type="button" (click)="closeModal()" [disabled]="saving"
+                        class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition-colors disabled:cursor-not-allowed">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL FOR PROGRESS -->
+<div *ngIf="showModal && activeTab === 'progress'" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-2xl font-bold text-[#006D77]">{{ isEditMode ? 'Edit Progress' : 'Add New Progress' }}</h2>
+        </div>
+        
+        <form [formGroup]="progressForm" (ngSubmit)="onSubmit()" class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Completion Rate (%) *</label>
+                <input type="number" formControlName="completionRate" min="0" max="100"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                       placeholder="Enter completion rate (0-100)">
+                <div *ngIf="progressForm.get('completionRate')?.invalid && progressForm.get('completionRate')?.touched" 
+                     class="text-red-500 text-sm mt-1">Completion rate is required (0-100)</div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button type="submit" [disabled]="progressForm.invalid || saving"
+                        class="flex-1 bg-[#006D77] text-white py-2 rounded-lg hover:bg-[#005662] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+                    {{ saving ? 'Saving...' : (isEditMode ? 'Update' : 'Add') }}
+                </button>
+                <button type="button" (click)="closeModal()" [disabled]="saving"
+                        class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition-colors disabled:cursor-not-allowed">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL FOR REWARDS -->
+<div *ngIf="showModal && activeTab === 'rewards'" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-2xl font-bold text-[#006D77]">{{ isEditMode ? 'Edit Reward' : 'Add New Reward' }}</h2>
+        </div>
+        
+        <form [formGroup]="rewardForm" (ngSubmit)="onSubmit()" class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                <input type="text" formControlName="name"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                       placeholder="Enter reward name">
+                <div *ngIf="rewardForm.get('name')?.invalid && rewardForm.get('name')?.touched" 
+                     class="text-red-500 text-sm mt-1">Name is required</div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Type *</label>
+                <select formControlName="type"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent">
+                    <option value="BADGES">BADGES</option>
+                    <option value="STARS">STARS</option>
+                    <option value="GIFTS">GIFTS</option>
+                </select>
+                <div *ngIf="rewardForm.get('type')?.invalid && rewardForm.get('type')?.touched" 
+                     class="text-red-500 text-sm mt-1">Type is required</div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Points Required *</label>
+                <input type="number" formControlName="pointsRequired" min="0"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                       placeholder="Enter points required">
+                <div *ngIf="rewardForm.get('pointsRequired')?.invalid && rewardForm.get('pointsRequired')?.touched" 
+                     class="text-red-500 text-sm mt-1">Points required is required and must be positive</div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button type="submit" [disabled]="rewardForm.invalid || saving"
+                        class="flex-1 bg-[#006D77] text-white py-2 rounded-lg hover:bg-[#005662] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+                    {{ saving ? 'Saving...' : (isEditMode ? 'Update' : 'Add') }}
+                </button>
+                <button type="button" (click)="closeModal()" [disabled]="saving"
+                        class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition-colors disabled:cursor-not-allowed">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL FOR ACTIVITIES -->
+<div *ngIf="showModal && activeTab === 'activities'" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-2xl font-bold text-[#006D77]">{{ isEditMode ? 'Edit Activity' : 'Add New Activity' }}</h2>
+        </div>
+        
+        <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+                <input type="text" formControlName="title"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                       placeholder="Enter activity title">
+                <div *ngIf="activityForm.get('title')?.invalid && activityForm.get('title')?.touched" 
+                     class="text-red-500 text-sm mt-1">Title is required</div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Type *</label>
+                <select formControlName="type"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent">
+                    <option value="QUIZ">Quiz</option>
+                    <option value="GAME">Game</option>
+                    <option value="VIDEO">Video</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Content URL</label>
+                <input type="text" formControlName="contentUrl"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                       placeholder="Enter content URL (optional)">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Points *</label>
+                <input type="number" formControlName="points" min="0"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                       placeholder="Enter points">
+                <div *ngIf="activityForm.get('points')?.invalid && activityForm.get('points')?.touched" 
+                     class="text-red-500 text-sm mt-1">Points is required and must be positive</div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Order Index *</label>
+                <input type="number" formControlName="orderIndex" min="1"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                       placeholder="Enter order index">
+                <div *ngIf="activityForm.get('orderIndex')?.invalid && activityForm.get('orderIndex')?.touched" 
+                     class="text-red-500 text-sm mt-1">Order index is required and must be at least 1</div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Course *</label>
+                <select formControlName="course"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent">
+                    <option [ngValue]="null">Select a course</option>
+                    <option *ngFor="let course of courses" [ngValue]="course">{{ course.title }}</option>
+                </select>
+                <div *ngIf="activityForm.get('course')?.invalid && activityForm.get('course')?.touched" 
+                     class="text-red-500 text-sm mt-1">Course is required</div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button type="submit" [disabled]="activityForm.invalid || saving"
+                        class="flex-1 bg-[#006D77] text-white py-2 rounded-lg hover:bg-[#005662] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+                    {{ saving ? 'Saving...' : (isEditMode ? 'Update' : 'Add') }}
+                </button>
+                <button type="button" (click)="closeModal()" [disabled]="saving"
+                        class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition-colors disabled:cursor-not-allowed">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- MODAL FOR QUIZ EDITOR -->
+<div *ngIf="showQuizEditor" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl mx-4 my-8">
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-[#006D77]">Quiz Editor: {{ currentActivity?.title }}</h2>
+            <button (click)="closeQuizEditor()" class="text-gray-500 hover:text-gray-700">
+                <span class="text-2xl">×</span>
+            </button>
+        </div>
+        
+        <div class="p-6 max-h-[70vh] overflow-y-auto">
+            <!-- Liste des questions existantes -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-4">Questions Existantes ({{ questions.length }})</h3>
+                <div *ngIf="questions.length === 0" class="text-gray-500 text-center py-8 bg-gray-50 rounded-lg">
+                    📝 Aucune question pour le moment. Ajoutez-en une ci-dessous!
+                </div>
+                
+                <div *ngFor="let question of questions; let i = index" class="mb-4 p-4 border-2 border-gray-200 rounded-lg hover:border-[#006D77] transition-colors">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">Question {{ i + 1 }}: {{ question.questionText }}</p>
+                            <img *ngIf="question.imageUrl" [src]="question.imageUrl" 
+                                 class="mt-2 max-w-xs rounded shadow-sm" alt="Question image">
+                        </div>
+                        <button (click)="deleteQuestion(question.questionId!)" 
+                                class="text-red-600 hover:text-red-800 ml-4 px-3 py-1 rounded hover:bg-red-50">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2 mt-3">
+                        <div *ngFor="let option of question.options; let j = index" 
+                             [class.bg-green-50]="j === question.correctAnswerIndex"
+                             [class.border-green-500]="j === question.correctAnswerIndex"
+                             [class.border-2]="j === question.correctAnswerIndex"
+                             class="p-3 border rounded-lg">
+                            <p class="text-sm font-medium text-gray-700">{{ option.optionText }}</p>
+                            <img *ngIf="option.imageUrl" [src]="option.imageUrl" 
+                                 class="mt-2 max-w-full h-20 object-cover rounded" alt="Option image">
+                            <span *ngIf="j === question.correctAnswerIndex" 
+                                  class="inline-block mt-1 text-xs text-green-600 font-semibold">✓ Correct Answer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Formulaire pour ajouter une nouvelle question -->
+            <div class="border-t-2 pt-6">
+                <h3 class="text-lg font-semibold mb-4 text-[#006D77]">➕ Ajouter une Nouvelle Question</h3>
+                
+                <div class="space-y-4">
+                    <!-- Question Text -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Texte de la Question *</label>
+                        <textarea [(ngModel)]="currentQuestion.questionText" rows="2"
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                                  placeholder="Entrez le texte de la question"></textarea>
+                    </div>
+                    
+                    <!-- Question Image URL -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">URL de l'Image de la Question (optionnel)</label>
+                        <input type="text" [(ngModel)]="currentQuestion.imageUrl"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006D77] focus:border-transparent"
+                               placeholder="https://example.com/image.jpg">
+                        <img *ngIf="currentQuestion.imageUrl" [src]="currentQuestion.imageUrl" 
+                             class="mt-2 max-w-xs rounded shadow-sm" alt="Preview">
+                    </div>
+                    
+                    <!-- Options -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Options de Réponse (Sélectionnez la bonne réponse)</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div *ngFor="let option of currentQuestion.options; let i = index" 
+                                 class="p-3 border-2 rounded-lg transition-all"
+                                 [class.border-green-500]="i === currentQuestion.correctAnswerIndex"
+                                 [class.bg-green-50]="i === currentQuestion.correctAnswerIndex"
+                                 [class.border-gray-300]="i !== currentQuestion.correctAnswerIndex">
+                                <div class="flex items-center mb-2">
+                                    <input type="radio" [value]="i" [(ngModel)]="currentQuestion.correctAnswerIndex"
+                                           [id]="'correct-' + i" class="mr-2 w-4 h-4 text-green-600">
+                                    <label [for]="'correct-' + i" class="text-sm font-medium cursor-pointer">
+                                        Option {{ i + 1 }} {{ i === currentQuestion.correctAnswerIndex ? '✓ (Correcte)' : '' }}
+                                    </label>
+                                </div>
+                                
+                                <input type="text" [(ngModel)]="option.optionText"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded mb-2 text-sm focus:ring-2 focus:ring-[#006D77]"
+                                       [placeholder]="'Texte option ' + (i + 1)">
+                                
+                                <input type="text" [(ngModel)]="option.imageUrl"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-[#006D77]"
+                                       [placeholder]="'URL image (optionnel)'">
+                                
+                                <img *ngIf="option.imageUrl" [src]="option.imageUrl" 
+                                     class="mt-2 max-w-full h-20 object-cover rounded shadow-sm" alt="Option preview">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Add Button -->
+                    <div class="flex justify-end pt-4">
+                        <button (click)="addQuestion()" 
+                                [disabled]="!isQuestionFormValid()"
+                                class="bg-[#006D77] text-white px-6 py-3 rounded-lg hover:bg-[#005662] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center gap-2">
+                            <span class="text-xl">➕</span>
+                            Ajouter la Question
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-6 border-t border-gray-200 flex justify-between items-center bg-gray-50">
+            <p class="text-sm text-gray-600">💡 Astuce: Utilisez des URLs d'images hébergées en ligne (Imgur, Cloudinary, etc.)</p>
+            <button (click)="closeQuizEditor()" 
+                    class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                Fermer
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Analytics Tab -->
+<div *ngIf="activeTab === 'analytics'">
+    <div *ngIf="loading" class="text-center py-12">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#006D77]"></div>
+        <p class="mt-4 text-gray-600">Loading analytics...</p>
+    </div>
+
+    <div *ngIf="!loading && analyticsData">
+        <!-- Overview Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Children</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ analyticsData.overviewStats.totalChildren }}</p>
+                    </div>
+                    <div class="text-4xl">👶</div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Activities Completed</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ analyticsData.overviewStats.totalActivitiesCompleted }}</p>
+                    </div>
+                    <div class="text-4xl">✅</div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-yellow-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Average Score</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ analyticsData.overviewStats.averageScore }}%</p>
+                    </div>
+                    <div class="text-4xl">📊</div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-purple-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Total XP Earned</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ analyticsData.overviewStats.totalXpEarned }}</p>
+                    </div>
+                    <div class="text-4xl">⭐</div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-red-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Active Learners (7d)</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ analyticsData.overviewStats.activeLearners }}</p>
+                    </div>
+                    <div class="text-4xl">🔥</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Performers -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">🏆 Top Performers</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rank</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Child Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Level</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total XP</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Avg Score</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Activities</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Badges</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr *ngFor="let performer of analyticsData.topPerformers; let i = index" class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-2xl" *ngIf="i === 0">🥇</span>
+                                <span class="text-2xl" *ngIf="i === 1">🥈</span>
+                                <span class="text-2xl" *ngIf="i === 2">🥉</span>
+                                <span class="text-gray-600 font-medium" *ngIf="i > 2">{{ i + 1 }}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ performer.childName }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    Level {{ performer.currentLevel }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-900">{{ performer.totalXp }} XP</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                                      [class.bg-green-100]="performer.averageScore >= 80"
+                                      [class.text-green-800]="performer.averageScore >= 80"
+                                      [class.bg-yellow-100]="performer.averageScore >= 60 && performer.averageScore < 80"
+                                      [class.text-yellow-800]="performer.averageScore >= 60 && performer.averageScore < 80"
+                                      [class.bg-red-100]="performer.averageScore < 60"
+                                      [class.text-red-800]="performer.averageScore < 60">
+                                    {{ performer.averageScore }}%
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-900">{{ performer.activitiesCompleted }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-900">{{ performer.badgesEarned }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Activity Statistics -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">📚 Activity Statistics</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Activity</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Completions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Avg Score</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Completion Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr *ngFor="let activity of analyticsData.activityStats" class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-medium text-gray-900">{{ activity.activityTitle }}</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                                      [class.bg-purple-100]="activity.activityType === 'QUIZ'"
+                                      [class.text-purple-800]="activity.activityType === 'QUIZ'"
+                                      [class.bg-blue-100]="activity.activityType === 'VIDEO'"
+                                      [class.text-blue-800]="activity.activityType === 'VIDEO'"
+                                      [class.bg-green-100]="activity.activityType === 'READING'"
+                                      [class.text-green-800]="activity.activityType === 'READING'">
+                                    {{ activity.activityType }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-gray-900">{{ activity.completionCount }}</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                                      [class.bg-green-100]="activity.averageScore >= 80"
+                                      [class.text-green-800]="activity.averageScore >= 80"
+                                      [class.bg-yellow-100]="activity.averageScore >= 60 && activity.averageScore < 80"
+                                      [class.text-yellow-800]="activity.averageScore >= 60 && activity.averageScore < 80"
+                                      [class.bg-red-100]="activity.averageScore < 60"
+                                      [class.text-red-800]="activity.averageScore < 60">
+                                    {{ activity.averageScore }}%
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="w-full bg-gray-200 rounded-full h-2 mr-2">
+                                        <div class="bg-[#006D77] h-2 rounded-full" [style.width.%]="activity.completionRate"></div>
+                                    </div>
+                                    <span class="text-sm text-gray-600">{{ activity.completionRate }}%</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Progress Trends -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">📈 Progress Trends (Last 30 Days)</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Activities Completed</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Average Score</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">XP Earned</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr *ngFor="let trend of analyticsData.progressTrends" class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ trend.date }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-900">{{ trend.activitiesCompleted }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                                      [class.bg-green-100]="trend.averageScore >= 80"
+                                      [class.text-green-800]="trend.averageScore >= 80"
+                                      [class.bg-yellow-100]="trend.averageScore >= 60 && trend.averageScore < 80"
+                                      [class.text-yellow-800]="trend.averageScore >= 60 && trend.averageScore < 80"
+                                      [class.bg-red-100]="trend.averageScore < 60"
+                                      [class.text-red-800]="trend.averageScore < 60">
+                                    {{ trend.averageScore }}%
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-900">{{ trend.xpEarned }} XP</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Level Distribution -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">📊 Level Distribution</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div *ngFor="let level of analyticsData.levelDistribution | keyvalue" 
+                     class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 text-center">
+                    <p class="text-sm text-gray-600 mb-1">{{ level.key }}</p>
+                    <p class="text-3xl font-bold text-blue-600">{{ level.value }}</p>
+                    <p class="text-xs text-gray-500 mt-1">students</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

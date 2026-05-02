@@ -1,0 +1,204 @@
+<div class="arena-wrapper">
+
+  <!-- ═══════════ BODY ═══════════ -->
+  <div class="arena-body">
+
+    <!-- ─── MAIN: GAME AREA ─── -->
+    <main class="game-main">
+
+      <!-- Error Banner -->
+      <div class="error-banner" *ngIf="errorMsg">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ errorMsg }}
+      </div>
+
+      <!-- LOBBY -->
+      <div class="lobby-view" *ngIf="!session?.gameStarted && !session?.gameEnded">
+        <div class="lobby-card">
+          <div class="lobby-illustration">
+            <div class="illustration-circle">
+              <i class="fas fa-globe-europe"></i>
+            </div>
+            <div class="sparkle s1">✦</div>
+            <div class="sparkle s2">✦</div>
+            <div class="sparkle s3">✦</div>
+          </div>
+
+          <h2 class="lobby-title">Ready to Race?</h2>
+          <p class="lobby-subtitle">Translate sentences as fast and accurately as possible. Speed and precision both matter!</p>
+
+          <div class="lobby-stats">
+            <div class="lobby-stat">
+              <span class="lobby-stat__value">{{ session?.maxQuestions || '?' }}</span>
+              <span class="lobby-stat__label">Questions</span>
+            </div>
+            <div class="lobby-stat-divider"></div>
+            <div class="lobby-stat">
+              <span class="lobby-stat__value">{{ activePlayers.length }}</span>
+              <span class="lobby-stat__label">Racers</span>
+            </div>
+            <div class="lobby-stat-divider"></div>
+            <div class="lobby-stat">
+              <span class="lobby-stat__value">10s</span>
+              <span class="lobby-stat__label">Per Question</span>
+            </div>
+          </div>
+
+          <button class="btn-start" [disabled]="activePlayers.length < 2" (click)="startGame()">
+            <i class="fas fa-flag-checkered"></i>
+            Start Race
+          </button>
+          <p class="lobby-hint" *ngIf="activePlayers.length < 2">
+            <i class="fas fa-info-circle"></i>
+            Need at least 2 racers to start!
+          </p>
+        </div>
+      </div>
+
+      <!-- ACTIVE GAME -->
+      <div class="game-view" *ngIf="session?.gameStarted && !session?.gameEnded">
+        
+        <!-- Game Info Bar -->
+        <div class="game-info-bar">
+          <div class="info-chip">
+            <i class="fas fa-list"></i>
+            <span>Question {{ (session?.currentQuestionIndex || 0) + 1 }} / {{ session?.maxQuestions }}</span>
+          </div>
+          <div class="info-chip">
+            <i class="fas fa-language"></i>
+            <span>To: English</span>
+          </div>
+          <div class="timer-chip" [class.timer-chip--urgent]="timeLeft < 10">
+            <i class="fas fa-clock"></i>
+            <span>{{ timeLeft }}s</span>
+          </div>
+        </div>
+
+        <!-- Question Zone (Large Display) -->
+        <div class="question-display-zone">
+          <div class="source-sentence">
+            {{ currentQuestion?.sourceText }}
+          </div>
+        </div>
+
+        <!-- Input Panel (Same as Word Battle) -->
+        <div class="input-panel">
+          <!-- My Turn to Translate -->
+          <div class="my-turn-input" *ngIf="!myStatus?.hasAnsweredCurrentQuestion">
+            <div class="input-header">
+              <span class="your-turn-badge">
+                <i class="fas fa-bolt"></i> Answer Now!
+              </span>
+            </div>
+            <div class="input-row">
+              <input type="text"
+                     [(ngModel)]="translationInput"
+                     (keyup.enter)="submitTranslation()"
+                     placeholder="Type your translation here..."
+                     class="word-input"
+                     #translationField />
+              <button class="btn-submit" (click)="submitTranslation()" [disabled]="!translationInput.trim()">
+                <i class="fas fa-paper-plane"></i>
+                Submit
+              </button>
+            </div>
+          </div>
+
+          <!-- Waiting for next question -->
+          <div class="wait-zone" *ngIf="myStatus?.hasAnsweredCurrentQuestion">
+            <div class="wait-animation">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+            <p class="wait-text">Translation submitted! Waiting for others...</p>
+          </div>
+        </div>
+
+        <!-- Mini Leaderboard -->
+        <div class="mini-leaderboard">
+          <div class="leaderboard-header">
+            <i class="fas fa-trophy"></i>
+            <span>Current Standings</span>
+          </div>
+          <div class="leaderboard-items">
+            <div *ngFor="let p of sortedPlayers; let i = index" class="leader-item">
+              <span class="rank">{{ i + 1 }}</span>
+              <span class="name">{{ p.username }}</span>
+              <span class="score">{{ p.score }} pts</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- END VIEW -->
+      <div class="end-view" *ngIf="session?.gameEnded">
+        <div class="end-card">
+          <div class="end-icon">
+            <i class="fas fa-medal"></i>
+          </div>
+          <h2 class="end-title">Race Finished!</h2>
+
+          <div class="podium">
+            <div *ngFor="let p of sortedPlayers; let i = index" class="podium-item" [class.gold]="i === 0">
+              <div class="podium-rank">{{ i + 1 }}</div>
+              <div class="podium-name">{{ p.username }}</div>
+              <div class="podium-score">{{ p.score }} pts</div>
+            </div>
+          </div>
+
+          <button class="btn-back" (click)="leaveArena()">
+            <i class="fas fa-home"></i>
+            Back to Challenges
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- ─── RIGHT SIDEBAR: RACE INFO ─── -->
+    <aside class="race-sidebar">
+      <div class="sidebar-top">
+        <button class="back-btn" (click)="leaveArena()">
+          <i class="fas fa-chevron-left"></i>
+          <span>Back</span>
+        </button>
+
+        <div class="sidebar-challenge-info">
+          <div class="challenge-badge">
+            <i class="fas fa-language"></i>
+            <span>Speed Translation Race</span>
+          </div>
+          <h1 class="challenge-title">{{ roomId }}</h1>
+        </div>
+      </div>
+
+      <div class="sidebar-stats" *ngIf="session?.gameStarted">
+        <div class="sidebar-stat-item">
+          <span class="label">Progress</span>
+          <span class="value">{{ (session?.currentQuestionIndex || 0) + 1 }} / {{ session?.maxQuestions }}</span>
+        </div>
+        <div class="sidebar-stat-item">
+          <span class="label">Time Remaining</span>
+          <span class="value">{{ timeLeft }}s</span>
+        </div>
+      </div>
+
+      <div class="sidebar-header">
+        <i class="fas fa-users"></i>
+        <span>Racers</span>
+        <span class="count-chip">{{ activePlayers.length }}</span>
+      </div>
+
+      <div class="player-list">
+        <div *ngFor="let p of activePlayers; let i = index" class="player-card">
+          <div class="player-avatar">
+            {{ p.username ? p.username.charAt(0).toUpperCase() : '?' }}
+          </div>
+          <div class="player-info">
+            <span class="player-name">{{ p.username }}</span>
+            <span class="player-score">{{ p.score }} pts</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>

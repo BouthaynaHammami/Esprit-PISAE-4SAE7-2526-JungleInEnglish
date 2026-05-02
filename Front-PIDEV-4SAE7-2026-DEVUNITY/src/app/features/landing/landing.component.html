@@ -1,0 +1,704 @@
+<!-- src/app/features/landing/landing.component.html -->
+
+<!-- ── Navbar ─────────────────────────────────────────────────────────────── -->
+<nav class="landing-navbar" id="navbar">
+    <div class="nav-container">
+        <!-- Brand -->
+        <a href="#home" class="brand-wrap">
+            <div class="brand-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 3 6 3s6-1.9 6-3v-5"/></svg>
+            </div>
+            <div class="brand-text">
+                <span class="brand-name">Jungle In English</span>
+                <span class="brand-tagline">Excellence in Education</span>
+            </div>
+        </a>
+
+        <!-- Nav links -->
+        <div class="nav-links">
+            <a href="#home" class="nav-link-item active">Home</a>
+            <a href="#about" class="nav-link-item">About</a>
+            <a href="#history" class="nav-link-item">Our History</a>
+            <a href="#contact" class="nav-link-item">Contact</a>
+        </div>
+
+        <!-- CTA -->
+        <div class="nav-actions">
+            <button (click)="openStudentLogin()" class="nav-btn-signin">
+                Get Started
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Hidden admin access — triple-click the footer copyright -->
+<!-- Admin modal is still wired, just no visible button in navbar -->
+
+<!-- ── Hero ───────────────────────────────────────────────────────────────── -->
+<section id="home" class="hero">
+    <!-- Animated mesh gradient background -->
+    <div class="hero-gradient"></div>
+    <!-- Grain texture overlay -->
+    <div class="hero-grain"></div>
+    <!-- Floating geometric shapes -->
+    <div class="hero-shape hero-shape-1"></div>
+    <div class="hero-shape hero-shape-2"></div>
+    <div class="hero-shape hero-shape-3"></div>
+    <div class="hero-shape hero-shape-4"></div>
+    <!-- Glow spots -->
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+
+    <div class="hero-inner">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                <span>Trusted by 2,500+ students worldwide</span>
+            </div>
+
+            <h1 class="hero-title">
+                Learn English.<br>
+                <span class="hero-title-accent">Shape Your Future.</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                Structured courses from A1 to C2 level, designed by expert linguists 
+                and tailored to your pace. Start your transformation today.
+            </p>
+
+            <div class="hero-actions">
+                <button (click)="openRegister()" class="btn-hero-primary">
+                    <span>Start Learning Free</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+                <button (click)="openStudentLogin()" class="btn-hero-ghost">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"/></svg>
+                    <span>Sign In</span>
+                </button>
+            </div>
+
+            <!-- Trust row -->
+            <div class="hero-trust">
+                <div class="hero-trust-avatars">
+                    <div class="hero-avatar" style="background:#006D77;"><span>J</span></div>
+                    <div class="hero-avatar" style="background:#E29578;"><span>A</span></div>
+                    <div class="hero-avatar" style="background:#83C5BE;"><span>S</span></div>
+                    <div class="hero-avatar" style="background:#d17f61;"><span>M</span></div>
+                </div>
+                <div class="hero-trust-text">
+                    <div class="hero-trust-stars">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#E29578"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#E29578"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#E29578"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#E29578"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#E29578"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    <span>4.9/5 from 800+ reviews</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hero visual — floating feature cards in stacked layout -->
+        <div class="hero-visual">
+            <div class="hero-visual-main">
+                <!-- Large central illustration card -->
+                <div class="hero-showcase">
+                    <div class="hero-showcase-inner">
+                        <div class="showcase-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        </div>
+                        <h3 class="showcase-title">Interactive Learning</h3>
+                        <p class="showcase-desc">Real-world scenarios, live sessions & AI-powered practice</p>
+                        <div class="showcase-tags">
+                            <span class="showcase-tag">A1-C2</span>
+                            <span class="showcase-tag">Live Classes</span>
+                            <span class="showcase-tag">Certified</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating mini-cards -->
+            <div class="hero-float-card float-card-1">
+                <div class="float-card-icon" style="background:rgba(226,149,120,0.15);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E29578" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div>
+                    <span class="float-card-num">98%</span>
+                    <span class="float-card-label">Success Rate</span>
+                </div>
+            </div>
+
+            <div class="hero-float-card float-card-2">
+                <div class="float-card-icon" style="background:rgba(131,197,190,0.15);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#83C5BE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div>
+                    <span class="float-card-num">50+</span>
+                    <span class="float-card-label">Expert Teachers</span>
+                </div>
+            </div>
+
+            <div class="hero-float-card float-card-3">
+                <div class="float-card-icon" style="background:rgba(0,109,119,0.12);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                </div>
+                <div>
+                    <span class="float-card-num">15 yrs</span>
+                    <span class="float-card-label">Experience</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Stats Marquee ──────────────────────────────────────────────────────── -->
+<section class="stats-bar">
+    <div class="stats-inner">
+        <div class="stat-chip">
+            <span class="stat-chip-val">2,500+</span>
+            <span class="stat-chip-label">Active Students</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-chip">
+            <span class="stat-chip-val">15</span>
+            <span class="stat-chip-label">Years of Excellence</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-chip">
+            <span class="stat-chip-val">98%</span>
+            <span class="stat-chip-label">Satisfaction Rate</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-chip">
+            <span class="stat-chip-val">50+</span>
+            <span class="stat-chip-label">Certified Teachers</span>
+        </div>
+    </div>
+</section>
+
+<!-- ── About ──────────────────────────────────────────────────────────────── -->
+<section id="about" class="section-about">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-eyebrow">Why Choose Us</span>
+            <h2 class="section-title">About Our School</h2>
+            <p class="section-desc">
+                An institution of excellence dedicated to English learning with an innovative 
+                and personalized pedagogical approach.
+            </p>
+        </div>
+
+        <div class="about-grid">
+            <div class="about-card">
+                <div class="about-card-number">01</div>
+                <div class="about-card-icon-wrap about-icon-teal">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                </div>
+                <h3 class="about-card-title">Effective Methodology</h3>
+                <p class="about-card-text">
+                    Our approach combines proven traditional methods and modern technologies 
+                    for optimal and rapid learning outcomes.
+                </p>
+                <div class="about-card-line"></div>
+            </div>
+
+            <div class="about-card about-card-featured">
+                <div class="about-card-number">02</div>
+                <div class="about-card-icon-wrap about-icon-coral">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E29578" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <h3 class="about-card-title">Qualified Teachers</h3>
+                <p class="about-card-text">
+                    All our teachers are native or bilingual speakers, certified with a minimum 
+                    of 5 years teaching experience.
+                </p>
+                <div class="about-card-line"></div>
+            </div>
+
+            <div class="about-card">
+                <div class="about-card-number">03</div>
+                <div class="about-card-icon-wrap about-icon-teal">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <h3 class="about-card-title">Total Flexibility</h3>
+                <p class="about-card-text">
+                    Learn at your own pace with courses available 24/7, accessible from any 
+                    connected device anywhere in the world.
+                </p>
+                <div class="about-card-line"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Our History ────────────────────────────────────────────────────────── -->
+<section id="history" class="section-history">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-eyebrow">Our Journey</span>
+            <h2 class="section-title">Our History</h2>
+            <p class="section-desc">
+                From a small language tutoring centre to one of the region's most trusted English institutions.
+            </p>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-track"></div>
+
+            <div class="timeline-entry timeline-entry-left">
+                <div class="timeline-node">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                </div>
+                <div class="timeline-content">
+                    <div class="timeline-year-badge">2009</div>
+                    <h4 class="timeline-heading">The Beginning</h4>
+                    <p class="timeline-text">
+                        Founded by a team of passionate English educators with just 3 classrooms 
+                        and 50 students. Our mission: make high-quality English education accessible to all.
+                    </p>
+                </div>
+            </div>
+
+            <div class="timeline-entry timeline-entry-right">
+                <div class="timeline-node">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                </div>
+                <div class="timeline-content">
+                    <div class="timeline-year-badge">2014</div>
+                    <h4 class="timeline-heading">Rapid Growth</h4>
+                    <p class="timeline-text">
+                        Expanded to 500+ students and introduced online learning. Partnered with Cambridge 
+                        Assessment for internationally accredited certification programmes.
+                    </p>
+                </div>
+            </div>
+
+            <div class="timeline-entry timeline-entry-left">
+                <div class="timeline-node">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </div>
+                <div class="timeline-content">
+                    <div class="timeline-year-badge">2019</div>
+                    <h4 class="timeline-heading">Going Digital</h4>
+                    <p class="timeline-text">
+                        Launched our fully interactive e-learning platform, enabling students from 20+ 
+                        countries to learn English remotely with live virtual classes.
+                    </p>
+                </div>
+            </div>
+
+            <div class="timeline-entry timeline-entry-right">
+                <div class="timeline-node">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                </div>
+                <div class="timeline-content">
+                    <div class="timeline-year-badge">2024</div>
+                    <h4 class="timeline-heading">Today &amp; Beyond</h4>
+                    <p class="timeline-text">
+                        With over 2,500 active students, 50+ certified teachers, and a 98% satisfaction 
+                        rate, we continue to innovate and set the standard for English education excellence.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── CTA Banner ─────────────────────────────────────────────────────────── -->
+<section class="cta-banner">
+    <div class="cta-banner-bg"></div>
+    <div class="section-container cta-banner-inner">
+        <h2 class="cta-banner-title">Ready to start your English journey?</h2>
+        <p class="cta-banner-desc">
+            Join thousands of students who have already transformed their careers and lives through English.
+        </p>
+        <div class="cta-banner-actions">
+            <button (click)="openRegister()" class="btn-cta-primary">
+                <span>Create Free Account</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <button (click)="openStudentLogin()" class="btn-cta-secondary">Sign In Instead</button>
+        </div>
+    </div>
+</section>
+
+<!-- ── Contact ────────────────────────────────────────────────────────────── -->
+<section id="contact" class="section-contact">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-eyebrow">Get In Touch</span>
+            <h2 class="section-title">Contact Us</h2>
+            <p class="section-desc">
+                Have questions about our courses or want to schedule a free trial lesson? 
+                We'd love to hear from you.
+            </p>
+        </div>
+
+        <div class="contact-grid">
+            <div class="contact-card">
+                <div class="contact-card-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <h4 class="contact-card-heading">Visit Us</h4>
+                <p class="contact-card-text">
+                    123 Education Avenue<br>
+                    Downtown Campus<br>
+                    Open Mon-Sat, 8AM - 8PM
+                </p>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-card-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </div>
+                <h4 class="contact-card-heading">Call Us</h4>
+                <p class="contact-card-text">
+                    Main Office: +216 71 123 456<br>
+                    Student Support: +216 71 789 012<br>
+                    Available 24/7
+                </p>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-card-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <h4 class="contact-card-heading">Email Us</h4>
+                <p class="contact-card-text">
+                    General: info&#64;jungleinenglish.com<br>
+                    Admissions: apply&#64;jungleinenglish.com<br>
+                    Support: help&#64;jungleinenglish.com
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+<footer class="site-footer">
+    <div class="section-container">
+        <div class="footer-top">
+            <!-- Brand -->
+            <div class="footer-brand">
+                <div class="footer-brand-row">
+                    <div class="brand-icon brand-icon-sm">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 3 6 3s6-1.9 6-3v-5"/></svg>
+                    </div>
+                    <span class="footer-brand-name">Jungle In English</span>
+                </div>
+                <p class="footer-brand-desc">
+                    Empowering learners worldwide with outstanding English education since 2009.
+                </p>
+                <div class="footer-socials">
+                    <a href="#" class="footer-social-link" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="footer-social-link" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="footer-social-link" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="footer-social-link" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+
+            <!-- Quick links -->
+            <div class="footer-col">
+                <h5 class="footer-col-heading">Quick Links</h5>
+                <ul class="footer-col-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#history">Our History</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Courses -->
+            <div class="footer-col">
+                <h5 class="footer-col-heading">Our Courses</h5>
+                <ul class="footer-col-links">
+                    <li><a href="#">General English</a></li>
+                    <li><a href="#">Business English</a></li>
+                    <li><a href="#">IELTS Preparation</a></li>
+                    <li><a href="#">Kids &amp; Teens</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div class="footer-col">
+                <h5 class="footer-col-heading">Contact</h5>
+                <ul class="footer-col-links footer-contact-list">
+                    <li>
+                        <i class="bi bi-geo-alt"></i>
+                        <span>123 Education Avenue</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-telephone"></i>
+                        <span>+216 71 123 456</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-envelope"></i>
+                        <span>info&#64;jungleinenglish.com</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Bottom -->
+        <div class="footer-bottom" (dblclick)="openAdminLogin()">
+            <p>&copy; 2024 Jungle In English. All rights reserved.</p>
+            <div class="footer-bottom-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     STUDENT LOGIN MODAL
+════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="showStudentLoginModal" class="modal active" (click)="closeAllModals()">
+    <div class="modal-content modal-premium" (click)="$event.stopPropagation()">
+        <!-- Decorative top gradient bar -->
+        <div class="modal-top-bar"></div>
+        <div class="modal-body">
+            <div class="modal-header-row">
+                <div class="modal-icon-wrap modal-icon-teal">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 3 6 3s6-1.9 6-3v-5"/></svg>
+                </div>
+                <div>
+                    <h2 class="modal-title">Welcome Back</h2>
+                    <p class="modal-subtitle">Sign in to continue learning</p>
+                </div>
+                <button (click)="closeAllModals()" class="modal-close-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div *ngIf="errorMessage" class="modal-alert modal-alert-error">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>{{ errorMessage }}</span>
+            </div>
+            <div *ngIf="successMessage" class="modal-alert modal-alert-success">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>{{ successMessage }}</span>
+            </div>
+
+            <form [formGroup]="loginForm" (ngSubmit)="onStudentLogin()" class="modal-form">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <div class="form-input-wrap">
+                        <svg class="form-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <input type="email" formControlName="email" class="form-input form-input-icon-pad"
+                            [class.form-input-error]="fieldInvalid(loginForm, 'email')" placeholder="your@email.com">
+                    </div>
+                    <p *ngIf="getFieldError(loginForm, 'email')" class="form-error">{{ getFieldError(loginForm, 'email') }}</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <div class="form-input-wrap">
+                        <svg class="form-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <input type="password" formControlName="password" class="form-input form-input-icon-pad"
+                            [class.form-input-error]="fieldInvalid(loginForm, 'password')" placeholder="Enter password">
+                    </div>
+                    <p *ngIf="getFieldError(loginForm, 'password')" class="form-error">{{ getFieldError(loginForm, 'password') }}</p>
+                </div>
+
+                <div class="form-row-between">
+                    <label class="form-checkbox-wrap">
+                        <input type="checkbox" class="form-checkbox">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="form-link">Forgot password?</a>
+                </div>
+
+                <button type="submit" [disabled]="isLoading" class="btn-form-primary">
+                    {{ isLoading ? 'Signing in...' : 'Sign In' }}
+                </button>
+
+                <div class="form-divider">
+                    <span>Don't have an account?</span>
+                </div>
+
+                <button type="button" (click)="switchToRegister()" class="btn-form-secondary">
+                    Create Account
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     ADMIN LOGIN MODAL
+════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="showAdminLoginModal" class="modal active" (click)="closeAllModals()">
+    <div class="modal-content modal-premium" (click)="$event.stopPropagation()">
+        <div class="modal-top-bar modal-top-bar-dark"></div>
+        <div class="modal-body">
+            <div class="modal-header-row">
+                <div class="modal-icon-wrap modal-icon-dark">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div>
+                    <h2 class="modal-title">Admin Access</h2>
+                    <p class="modal-subtitle">Administration panel</p>
+                </div>
+                <button (click)="closeAllModals()" class="modal-close-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div *ngIf="errorMessage" class="modal-alert modal-alert-error">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>{{ errorMessage }}</span>
+            </div>
+            <div *ngIf="successMessage" class="modal-alert modal-alert-success">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>{{ successMessage }}</span>
+            </div>
+
+            <form [formGroup]="adminLoginForm" (ngSubmit)="onAdminLogin()" class="modal-form">
+                <div class="form-group">
+                    <label class="form-label">Admin Email</label>
+                    <div class="form-input-wrap">
+                        <svg class="form-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <input type="email" formControlName="email" class="form-input form-input-icon-pad"
+                            [class.form-input-error]="fieldInvalid(adminLoginForm, 'email')"
+                            placeholder="admin@englishschool.com">
+                    </div>
+                    <p *ngIf="getFieldError(adminLoginForm, 'email')" class="form-error">{{ getFieldError(adminLoginForm, 'email') }}</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <div class="form-input-wrap">
+                        <svg class="form-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <input type="password" formControlName="password" class="form-input form-input-icon-pad"
+                            [class.form-input-error]="fieldInvalid(adminLoginForm, 'password')" placeholder="Enter password">
+                    </div>
+                    <p *ngIf="getFieldError(adminLoginForm, 'password')" class="form-error">{{ getFieldError(adminLoginForm, 'password') }}</p>
+                </div>
+
+                <div class="form-row-between">
+                    <label class="form-checkbox-wrap">
+                        <input type="checkbox" class="form-checkbox">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="form-link">Forgot password?</a>
+                </div>
+
+                <button type="submit" [disabled]="isLoading" class="btn-form-primary btn-form-dark">
+                    {{ isLoading ? 'Signing in...' : 'Sign In as Admin' }}
+                </button>
+
+                <div class="admin-warning">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <div>
+                        <p class="admin-warning-title">Restricted Access</p>
+                        <p class="admin-warning-text">This area is reserved for administrators only.</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     REGISTER MODAL
+════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="showRegisterModal" class="modal active" (click)="closeAllModals()">
+    <div class="modal-content modal-premium" (click)="$event.stopPropagation()">
+        <div class="modal-top-bar modal-top-bar-coral"></div>
+        <div class="modal-body">
+            <div class="modal-header-row">
+                <div class="modal-icon-wrap modal-icon-coral">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                </div>
+                <div>
+                    <h2 class="modal-title">Create Account</h2>
+                    <p class="modal-subtitle">Start your learning journey</p>
+                </div>
+                <button (click)="closeAllModals()" class="modal-close-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div *ngIf="errorMessage" class="modal-alert modal-alert-error">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>{{ errorMessage }}</span>
+            </div>
+            <div *ngIf="successMessage" class="modal-alert modal-alert-success">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>{{ successMessage }}</span>
+            </div>
+
+            <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="modal-form">
+                <div class="form-row-2col">
+                    <div class="form-group">
+                        <label class="form-label">First Name</label>
+                        <input type="text" formControlName="firstName" class="form-input"
+                            [class.form-input-error]="fieldInvalid(registerForm, 'firstName')" placeholder="John">
+                        <p *ngIf="getFieldError(registerForm, 'firstName')" class="form-error">{{ getFieldError(registerForm, 'firstName') }}</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" formControlName="lastName" class="form-input"
+                            [class.form-input-error]="fieldInvalid(registerForm, 'lastName')" placeholder="Doe">
+                        <p *ngIf="getFieldError(registerForm, 'lastName')" class="form-error">{{ getFieldError(registerForm, 'lastName') }}</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <div class="form-input-wrap">
+                        <svg class="form-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <input type="email" formControlName="email" class="form-input form-input-icon-pad"
+                            [class.form-input-error]="fieldInvalid(registerForm, 'email')" placeholder="your@email.com">
+                    </div>
+                    <p *ngIf="getFieldError(registerForm, 'email')" class="form-error">{{ getFieldError(registerForm, 'email') }}</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <div class="form-input-wrap">
+                        <svg class="form-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <input type="password" formControlName="password" class="form-input form-input-icon-pad"
+                            [class.form-input-error]="fieldInvalid(registerForm, 'password')"
+                            placeholder="Min. 6 characters">
+                    </div>
+                    <p *ngIf="getFieldError(registerForm, 'password')" class="form-error">{{ getFieldError(registerForm, 'password') }}</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <div class="form-input-wrap">
+                        <svg class="form-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <input type="password" formControlName="confirmPassword" class="form-input form-input-icon-pad"
+                            [class.form-input-error]="passwordMismatch" placeholder="Re-enter password">
+                    </div>
+                    <p *ngIf="passwordMismatch" class="form-error">Passwords do not match.</p>
+                </div>
+
+                <div class="form-checkbox-row">
+                    <input type="checkbox" class="form-checkbox" required>
+                    <label class="form-checkbox-label">
+                        I agree to the <a href="#" class="form-link-inline">Terms of Service</a>
+                        and <a href="#" class="form-link-inline">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <button type="submit" [disabled]="isLoading" class="btn-form-primary btn-form-coral">
+                    {{ isLoading ? 'Creating account...' : 'Create Account' }}
+                </button>
+
+                <div class="form-divider">
+                    <span>Already have an account?</span>
+                </div>
+
+                <button type="button" (click)="switchToLogin()" class="btn-form-secondary">
+                    Sign In
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,104 @@
+<div class="admin-wrapper">
+  <!-- HEADER SECTION -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1 class="page-title">Challenges Management</h1>
+      <p class="page-subtitle">Monitor individual student participation and performance.</p>
+    </div>
+    
+    <div class="header-actions">
+      <nav class="sub-nav">
+        <a class="nav-link" routerLink="/admin/challenges">Challenges</a>
+        <a class="nav-link active" routerLink="/admin/student-stats">Stats</a>
+        <a class="nav-link" routerLink="/admin/badges">Badges</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar">
+    <div class="action-group">
+      <button class="btn btn--secondary" (click)="loadAllData()" [disabled]="loading">
+        <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i> Refresh Data
+      </button>
+    </div>
+
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" [(ngModel)]="nameQuery" (ngModelChange)="applyFilter()" placeholder="Search by Student ID..." class="search-input" />
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA TABLE -->
+  <div class="table-container" *ngIf="!loading">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Total Score</th>
+          <th>Challenges Played</th>
+          <th class="text-right">History</th>
+        </tr>
+      </thead>
+      <tbody *ngFor="let g of filteredGroups">
+        <tr class="table-row" [class.expanded]="isExpanded(g.idUser)">
+          <td>
+            <div class="student-id-cell">
+              <div class="id-icon">#</div>
+              <div class="id-value">Student ID: {{ g.idUser }}</div>
+            </div>
+          </td>
+          <td>
+            <span class="score-badge">
+              <i class="fas fa-trophy"></i> {{ g.totalScore }} pts
+            </span>
+          </td>
+          <td>
+            <div class="cell-main">{{ g.challenges.length }} Challenges</div>
+          </td>
+          <td class="text-right">
+            <button class="expand-btn" [class.active]="isExpanded(g.idUser)" (click)="toggleDetails(g.idUser)">
+              <i class="fas fa-chevron-down"></i>
+            </button>
+          </td>
+        </tr>
+        
+        <!-- EXPANDED HISTORY ROW -->
+        <tr *ngIf="isExpanded(g.idUser)" class="expanded-row">
+          <td colspan="4" class="expanded-content">
+            <div class="history-inner">
+              <h4 class="history-title"><i class="fas fa-history"></i> Participation History</h4>
+              <div class="history-grid">
+                <div class="history-card" *ngFor="let c of g.challenges">
+                  <div class="hist-info">
+                    <span class="hist-title">{{ c.challenge?.title || 'Unknown Challenge' }}</span>
+                    <span class="hist-type">{{ c.challenge?.type?.replace('_', ' ') }}</span>
+                  </div>
+                  <div class="hist-meta">
+                    <div class="hist-score">+{{ c.progress || 0 }} pts</div>
+                    <div class="hist-date">{{ c.endDate | date:'mediumDate' }}</div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="g.challenges.length === 0" class="empty-list-msg">No challenge history found.</div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" *ngIf="filteredGroups.length === 0">
+      <div class="empty-state__visual"><i class="fas fa-user-slash"></i></div>
+      <h3 class="empty-state__title">No students found</h3>
+      <p class="empty-state__text">No student statistics match your current search.</p>
+    </div>
+  </div>
+
+  <!-- LOADER -->
+  <div *ngIf="loading" style="padding: 100px; text-align: center;">
+    <i class="fas fa-spinner fa-spin fa-3x" style="color: #83C5BE;"></i>
+  </div>
+</div>

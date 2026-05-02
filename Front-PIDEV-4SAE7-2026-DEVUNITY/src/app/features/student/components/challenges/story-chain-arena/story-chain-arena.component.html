@@ -1,0 +1,179 @@
+<div class="arena-wrapper">
+
+  <!-- ═══════════════════════════════════════
+       MAIN LAYOUT
+  ═══════════════════════════════════════ -->
+  <div class="arena-body">
+
+    <!-- ─── STORY MAIN: GAME AREA ─── -->
+    <main class="story-main">
+      <!-- Error Banner -->
+      <div class="error-banner" *ngIf="errorMsg">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ errorMsg }}
+      </div>
+
+      <!-- ─── LOBBY VIEW ─── -->
+      <div class="lobby-view" *ngIf="!session?.gameStarted && !session?.gameEnded">
+        <div class="lobby-card">
+          <div class="lobby-illustration">
+            <div class="illustration-circle">
+              <i class="fas fa-feather-alt"></i>
+            </div>
+            <div class="sparkle s1">✦</div>
+            <div class="sparkle s2">✦</div>
+            <div class="sparkle s3">✦</div>
+          </div>
+
+          <h2 class="lobby-title">Story Chain</h2>
+          <p class="lobby-subtitle">Collaborate to write a unique story. Each player adds one sentence at a time!</p>
+
+          <div class="lobby-stats">
+            <div class="lobby-stat">
+              <span class="lobby-stat__value">{{ session?.maxSentences || 20 }}</span>
+              <span class="lobby-stat__label">Max Sentences</span>
+            </div>
+            <div class="lobby-stat-divider"></div>
+            <div class="lobby-stat">
+              <span class="lobby-stat__value">{{ activePlayers.length }}</span>
+              <span class="lobby-stat__label">Writers</span>
+            </div>
+          </div>
+
+          <button class="btn-start" [disabled]="activePlayers.length < 2" (click)="startGame()">
+            <i class="fas fa-pen-fancy"></i>
+            Start Writing
+          </button>
+
+          <p class="lobby-hint" *ngIf="activePlayers.length < 2">
+            <i class="fas fa-info-circle"></i>
+            Need 2 writers to begin!
+          </p>
+        </div>
+      </div>
+
+      <!-- ─── ACTIVE GAME ─── -->
+      <div class="game-view" *ngIf="session?.gameStarted && !session?.gameEnded">
+
+        <!-- Story Paper -->
+        <div class="story-paper">
+          <div class="story-paper__header">
+            <span class="paper-title"><i class="fas fa-scroll"></i> The Story So Far</span>
+            <span class="sentence-counter">{{ session?.currentStory?.length }} / {{ session?.maxSentences }}</span>
+          </div>
+
+          <div class="story-content" #storyScroll>
+            <p *ngFor="let sentence of session?.currentStory; let i = index"
+               class="story-sentence">
+              <span class="sentence-number">{{ i + 1 }}</span>
+              {{ sentence }}
+            </p>
+            <div class="typing-indicator" *ngIf="!isMyTurn()">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="typing-label">Someone is writing...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Section -->
+        <div class="input-section" [class.input-section--active]="isMyTurn()">
+          <div class="turn-status" [class.turn-status--active]="isMyTurn()">
+            <i class="fas" [ngClass]="isMyTurn() ? 'fa-pen-nib' : 'fa-hourglass-half'"></i>
+            <span>{{ isMyTurn() ? "It's your turn to write!" : "Waiting for " + getActivePlayerName() + "..." }}</span>
+          </div>
+
+          <div class="input-wrapper" *ngIf="isMyTurn()">
+            <textarea
+              [(ngModel)]="sentenceInput"
+              (keyup.enter)="submitSentence()"
+              placeholder="Write the next sentence of the story..."
+              class="sentence-textarea"
+              #sentenceField
+            ></textarea>
+
+            <div class="input-footer">
+              <span class="char-count">
+                {{ sentenceInput.length }} characters
+              </span>
+              <button class="btn-submit" (click)="submitSentence()" [disabled]="!sentenceInput.trim()">
+                Send Sentence <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── END VIEW ─── -->
+      <div class="end-view" *ngIf="session?.gameEnded">
+        <div class="end-card">
+          <div class="end-icon">
+            <i class="fas fa-book"></i>
+          </div>
+          <h2 class="end-title">Story Completed!</h2>
+          <p class="end-subtitle">You and your fellow writers have finished the tale.</p>
+
+          <div class="story-display">
+            <p *ngFor="let sentence of session?.currentStory; let i = index" class="final-sentence">
+              {{ sentence }}
+            </p>
+          </div>
+
+          <button class="btn-back" (click)="leaveArena()">
+            <i class="fas fa-home"></i>
+            Back to Challenges
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- ─── RIGHT SIDEBAR: WRITERS & INFO ─── -->
+    <aside class="writers-sidebar">
+      <div class="sidebar-top">
+        <button class="back-btn" (click)="leaveArena()">
+          <i class="fas fa-chevron-left"></i>
+          <span>Back</span>
+        </button>
+
+        <div class="sidebar-challenge-info" *ngIf="session">
+          <div class="challenge-badge">
+            <i class="fas fa-book-open"></i>
+            <span>Story Chain</span>
+          </div>
+          <h1 class="challenge-title">{{ session.roomId }}</h1>
+        </div>
+      </div>
+
+      <div class="sidebar-header">
+        <i class="fas fa-users"></i>
+        <span>Writers</span>
+        <span class="writers-count">{{ activePlayers.length }}</span>
+      </div>
+
+      <div class="writers-list">
+        <div *ngFor="let p of activePlayers; let i = index"
+             class="writer-card"
+             [class.writer-card--active]="session?.currentPlayerIndex === i && session?.gameStarted">
+
+          <div class="writer-avatar"
+               [class.writer-avatar--active]="session?.currentPlayerIndex === i && session?.gameStarted">
+            {{ p.username ? p.username.charAt(0).toUpperCase() : '?' }}
+            <span class="turn-dot" *ngIf="session?.currentPlayerIndex === i && session?.gameStarted"></span>
+          </div>
+
+          <div class="writer-info">
+            <div class="writer-name">
+              {{ p.username }}
+              <span *ngIf="p.username === username" class="me-badge">You</span>
+            </div>
+            <div class="writer-status"
+                  [class.writer-status--writing]="session?.currentPlayerIndex === i && session?.gameStarted">
+              <span class="status-dot"></span>
+              {{ (session?.currentPlayerIndex === i && session?.gameStarted) ? 'Writing...' : 'Waiting' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>

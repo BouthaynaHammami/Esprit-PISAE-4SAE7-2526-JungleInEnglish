@@ -1,0 +1,45 @@
+<!-- employee-recruitments.component.html -->
+<div class="re-page">
+
+  <div class="re-header">
+    <div>
+      <h1 class="re-title">💼 Open Recruitments</h1>
+      <p class="re-subtitle">Browse available positions and apply to the ones that match your profile.</p>
+    </div>
+    <div class="re-toolbar">
+      <label>Filter Status</label>
+      <select [(ngModel)]="filterStatus" (ngModelChange)="loadRecruitments()" class="re-select">
+        <option value="OPEN">Open</option>
+        <option value="CLOSED">Closed</option>
+        <option value="">All</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="re-loading">Loading positions…</div>
+
+  <div *ngIf="!loading && recruitments.length === 0" class="re-empty">
+    No open positions at the moment. Check back later!
+  </div>
+
+  <div class="re-grid">
+    <div *ngFor="let r of recruitments" class="re-card">
+      <div class="re-card-body">
+        <div class="re-pos-title">{{ r.positionTitle }}</div>
+        <div class="re-dept">{{ r.department }}</div>
+        <p style="font-size: 13px; opacity: 0.6; line-height: 1.4; margin-bottom: 0;">
+          Join our team and help us build the future of education together.
+        </p>
+      </div>
+      <div class="re-card-foot">
+        <span class="re-pill" [ngClass]="r.status === 'OPEN' ? 're-pill--open' : 're-pill--closed'">
+          {{ r.status || 'OPEN' }}
+        </span>
+        <button class="re-btn re-btn--primary" (click)="applyTo(r)" [disabled]="r.status !== 'OPEN'">
+          📨 Apply Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>English Certification Certificate</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:ital,wght@0,300;0,400;0,700;1,300&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a1a2e;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+      padding: 40px 20px;
+      font-family: 'Lato', sans-serif;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-action {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Lato', sans-serif;
+    }
+
+    .btn-print {
+      background: #157c78;
+      color: white;
+      box-shadow: 0 4px 14px rgba(21,124,120,0.4);
+    }
+
+    .btn-download {
+      background: #c9a227;
+      color: white;
+      box-shadow: 0 4px 14px rgba(201,162,39,0.4);
+    }
+
+    .btn-action:hover { transform: translateY(-2px); opacity: 0.9; }
+
+    .cert-wrapper {
+      width: 900px;
+      max-width: 100%;
+      background: #ffffff;
+      border: 3px solid #c9a227;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    }
+
+    .cert-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border: 1.5px solid rgba(201,162,39,0.45);
+      border-radius: 2px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .wave-top-left {
+      position: absolute;
+      top: 0; left: 0;
+      width: 260px;
+      height: 200px;
+      background: linear-gradient(135deg, #0d5c5c 0%, #157c78 60%, transparent 100%);
+      border-radius: 0 0 100% 0;
+      z-index: 1;
+    }
+
+    .wave-bottom-right {
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 220px;
+      height: 160px;
+      background: linear-gradient(315deg, #0d5c5c 0%, #157c78 60%, transparent 100%);
+      border-radius: 100% 0 0 0;
+      z-index: 1;
+    }
+
+    .ribbon-top {
+      position: absolute;
+      top: 28px; left: -14px;
+      width: 230px;
+      height: 13px;
+      background: linear-gradient(90deg, #c9a227, #f0d060, #c9a227);
+      transform: rotate(30deg);
+      z-index: 2;
+      border-radius: 2px;
+      box-shadow: 0 2px 6px rgba(201,162,39,0.5);
+    }
+
+    .ribbon-bottom {
+      position: absolute;
+      bottom: 28px; right: -14px;
+      width: 210px;
+      height: 13px;
+      background: linear-gradient(90deg, #c9a227, #f0d060, #c9a227);
+      transform: rotate(30deg);
+      z-index: 2;
+      border-radius: 2px;
+      box-shadow: 0 2px 6px rgba(201,162,39,0.5);
+    }
+
+    .seal-left {
+      position: absolute;
+      top: 50%;
+      left: 30px;
+      transform: translateY(-50%);
+      z-index: 5;
+    }
+
+    .seal-circle {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #5c3d11, #2d1a00);
+      border: 4px solid #c9a227;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 3px rgba(201,162,39,0.3), 0 6px 20px rgba(0,0,0,0.4);
+      text-align: center;
+    }
+
+    .seal-circle span {
+      font-family: 'Cinzel', serif;
+      font-size: 8px;
+      font-weight: 700;
+      color: #f0d060;
+      letter-spacing: 0.08em;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .seal-star { font-size: 18px; margin-bottom: 2px; display: block; }
+
+    .badge-award {
+      position: absolute;
+      top: 22px;
+      right: 24px;
+      z-index: 5;
+    }
+
+    .badge-outer {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #1a6b65, #0a3a37);
+      border: 4px solid #c9a227;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 3px rgba(201,162,39,0.4), 0 8px 24px rgba(0,0,0,0.4);
+      text-align: center;
+    }
+
+    .badge-text-best {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      font-weight: 700;
+      color: #f0d060;
+      letter-spacing: 0.06em;
+      display: block;
+    }
+
+    .badge-star { font-size: 22px; line-height: 1.1; display: block; }
+
+    .badge-text-award {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      font-weight: 400;
+      color: rgba(240,208,96,0.8);
+      letter-spacing: 0.1em;
+      display: block;
+    }
+
+    .cert-content {
+      position: relative;
+      z-index: 3;
+      padding: 48px 150px 44px 150px;
+      text-align: center;
+    }
+
+    .cert-logo {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: #888;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .cert-title-main {
+      font-family: 'Cinzel', serif;
+      font-size: 54px;
+      font-weight: 700;
+      color: #1a1a1a;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .cert-title-sub {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      font-weight: 400;
+      color: #888;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .gold-bar {
+      display: inline-block;
+      background: linear-gradient(90deg, #c9a227, #f0d060, #c9a227);
+      color: #2d1a00;
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      padding: 5px 28px;
+      border-radius: 2px;
+      margin-bottom: 18px;
+    }
+
+    .cert-name {
+      font-family: 'Cinzel', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: #1a1a1a;
+      letter-spacing: 0.02em;
+      margin-bottom: 16px;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 16px;
+    }
+
+    .cert-body {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.7;
+      font-style: italic;
+      font-weight: 300;
+      margin-bottom: 16px;
+      max-width: 540px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cert-level-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #f0f9f8;
+      border: 1.5px solid #157c78;
+      border-radius: 99px;
+      padding: 6px 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #157c78;
+      margin-bottom: 10px;
+    }
+
+    .cert-score-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 28px;
+      font-weight: 300;
+    }
+
+    .cert-score-val {
+      font-weight: 700;
+      color: #1a1a1a;
+      font-size: 15px;
+    }
+
+    .cert-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .cert-divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+    }
+
+    .cert-divider-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #c9a227;
+      flex-shrink: 0;
+    }
+
+    .cert-signatures {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 16px;
+    }
+
+    .sig-block { text-align: center; min-width: 150px; }
+
+    .sig-line {
+      width: 140px;
+      height: 1px;
+      background: #1a1a1a;
+      margin: 0 auto 6px;
+    }
+
+    .sig-name {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: #1a1a1a;
+      letter-spacing: 0.05em;
+    }
+
+    .sig-role {
+      font-size: 9px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 2px;
+    }
+
+    .cert-qr {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .qr-box {
+      width: 64px;
+      height: 64px;
+      border: 1.5px solid #ddd;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f9f9f9;
+      overflow: hidden;
+    }
+
+    .qr-box img { width: 100%; height: 100%; object-fit: contain; }
+
+    .qr-placeholder {
+      font-size: 9px;
+      color: #bbb;
+      text-align: center;
+      padding: 4px;
+      line-height: 1.3;
+    }
+
+    .qr-label {
+      font-size: 8px;
+      color: #bbb;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .cert-date {
+      font-size: 11px;
+      color: #aaa;
+      font-style: italic;
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    @media print {
+      body { background: white; padding: 0; min-height: auto; }
+      .actions { display: none; }
+      .cert-wrapper { width: 100%; box-shadow: none; }
+    }
+
+    @media (max-width: 700px) {
+      .cert-content { padding: 36px 80px 32px 80px; }
+      .cert-title-main { font-size: 38px; }
+      .cert-name { font-size: 24px; }
+      .seal-left { left: 8px; }
+      .seal-circle { width: 70px; height: 70px; }
+      .badge-outer { width: 76px; height: 76px; }
+      .badge-award { right: 8px; }
+      .cert-signatures { flex-direction: column; align-items: center; gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="actions">
+    <button class="btn-action btn-print" onclick="window.print()">🖨️ Print Certificate</button>
+    <button class="btn-action btn-download" onclick="window.print()">⬇️ Download PDF</button>
+  </div>
+
+  <div class="cert-wrapper" id="certificate">
+
+    <div class="wave-top-left"></div>
+    <div class="wave-bottom-right"></div>
+    <div class="ribbon-top"></div>
+    <div class="ribbon-bottom"></div>
+
+    <div class="seal-left">
+      <div class="seal-circle">
+        <span class="seal-star">⭐</span>
+        <span>YOUR</span>
+        <span>SEAL</span>
+      </div>
+    </div>
+
+    <div class="badge-award">
+      <div class="badge-outer">
+        <span class="badge-text-best">BEST</span>
+        <span class="badge-star">🏆</span>
+        <span class="badge-text-award">AWARD</span>
+      </div>
+    </div>
+
+    <div class="cert-content">
+
+      <div class="cert-logo">🎓 EduCert — Language Institute</div>
+      <div class="cert-title-main">Certificate</div>
+      <div class="cert-title-sub">of Appreciation</div>
+      <div class="gold-bar">Proudly Presented To</div>
+
+      <div class="cert-name" id="cert-name">Name Surname</div>
+
+      <div class="cert-body">
+        This certificate is proudly awarded to the above named individual in recognition of
+        successfully completing the official English Language Proficiency Examination and
+        demonstrating outstanding command of the language.
+      </div>
+
+      <div>
+        <span class="cert-level-pill" id="cert-level">
+          🎯 Level: <strong>—</strong>
+        </span>
+      </div>
+
+      <div class="cert-score-row">
+        Final Score:&nbsp;<span class="cert-score-val" id="cert-score">—%</span>
+      </div>
+
+      <div class="cert-divider">
+        <div class="cert-divider-line"></div>
+        <div class="cert-divider-dot"></div>
+        <div class="cert-divider-line"></div>
+      </div>
+
+      <div class="cert-signatures">
+
+        <div class="sig-block">
+          <div class="sig-line"></div>
+          <div class="sig-name">M. Firas Najjar</div>
+          <div class="sig-role">Academic Director</div>
+        </div>
+
+        <div class="cert-qr">
+          <div class="qr-box" id="qr-box">
+            <div class="qr-placeholder">Scan to<br>Verify</div>
+          </div>
+          <div class="qr-label">Verification</div>
+        </div>
+
+        <div class="sig-block">
+          <div class="sig-line"></div>
+          <div class="sig-name">Ala Rami</div>
+          <div class="sig-role">Chief Examiner</div>
+        </div>
+
+      </div>
+
+      <div class="cert-date" id="cert-date"></div>
+
+    </div>
+  </div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+
+  // ✅ Lire d'abord depuis l'URL (passé par Angular)
+  let name = params.get('name') || '';
+
+  // ✅ Fallback : lire depuis le JWT si l'URL ne contient pas le nom
+  if (!name) {
+    try {
+      const token = localStorage.getItem('jwt_token');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const firstName = payload.firstName || payload.firstname || payload.given_name || '';
+        const lastName  = payload.lastName  || payload.lastname  || payload.family_name || '';
+        name = `${firstName} ${lastName}`.trim();
+        if (!name) {
+          name = payload.name || payload.fullName || payload.full_name || payload.sub || '';
+        }
+      }
+    } catch(e) {
+      console.log('JWT parse error', e);
+    }
+  }
+
+  if (!name) name = 'Student';
+
+  const level = params.get('level') || '—';
+  const score = params.get('score') || '—';
+  const qr    = params.get('qr')    || '';
+
+  const date = new Date().toLocaleDateString('en-US', {
+    year: 'numeric', month: 'long', day: 'numeric'
+  });
+
+  document.getElementById('cert-name').textContent = name;
+
+  document.getElementById('cert-level').innerHTML =
+    `🎯 Level: <strong>${level}</strong>`;
+
+  document.getElementById('cert-score').textContent = score + '%';
+
+  document.getElementById('cert-date').textContent = 'Issued on: ' + date;
+
+  if (qr) {
+    const img = document.createElement('img');
+    img.src = qr.startsWith('data:') ? qr : 'data:image/png;base64,' + qr;
+    const box = document.getElementById('qr-box');
+    box.innerHTML = '';
+    box.appendChild(img);
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,247 @@
+<div class="max-w-7xl mx-auto px-6 py-8">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-[#006D77] heading-font">Manage Courses</h1>
+            <p class="text-gray-500 mt-1">Create, edit, and delete courses</p>
+        </div>
+        <button (click)="openAddForm()"
+            class="px-5 py-2.5 bg-[#006D77] text-white font-semibold rounded-lg hover:bg-[#005560] transition-colors flex items-center gap-2">
+            + Add Course
+        </button>
+    </div>
+
+    <!-- Sub Navbar -->
+    <div class="flex gap-1 mb-8 border-b border-gray-200">
+        <a routerLink="../courses" routerLinkActive="border-b-2 border-[#006D77] text-[#006D77] bg-[#006D77]/5"
+            class="px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors">
+            📚 Courses
+        </a>
+        <a routerLink="../lessons" routerLinkActive="border-b-2 border-[#006D77] text-[#006D77] bg-[#006D77]/5"
+            class="px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors">
+            📖 Lessons
+        </a>
+        <a routerLink="../quizzes" routerLinkActive="border-b-2 border-[#006D77] text-[#006D77] bg-[#006D77]/5"
+            class="px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors">
+            🧠 Quizzes
+        </a>
+        <a routerLink="../enrollments" routerLinkActive="border-b-2 border-[#006D77] text-[#006D77] bg-[#006D77]/5"
+            class="px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors">
+            🎓 Enrollments
+        </a>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage"
+        class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm font-medium">
+        ✅ {{ successMessage }}
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error && !showForm" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+        ⚠️ {{ error }}
+        <button (click)="loadCourses()" class="ml-3 underline hover:no-underline">Retry</button>
+    </div>
+
+    <!-- Add / Edit Form -->
+    <div *ngIf="showForm" class="mb-8 bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-5">{{ isEditing ? 'Edit Course' : 'New Course' }}</h2>
+
+        <div *ngIf="error" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+            ⚠️ {{ error }}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <!-- Title -->
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Title <span class="text-red-500">*</span></label>
+                <input [(ngModel)]="formData.title" type="text" placeholder="e.g. English B1 - Intermediate"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006D77]">
+            </div>
+
+            <!-- Description -->
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea [(ngModel)]="formData.description" rows="3" placeholder="Course description..."
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006D77] resize-none"></textarea>
+            </div>
+
+            <!-- Level -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Level <span class="text-red-500">*</span></label>
+                <select [(ngModel)]="formData.level"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006D77]">
+                    <option *ngFor="let lvl of levels" [value]="lvl">{{ lvl }}</option>
+                </select>
+            </div>
+
+            <!-- Price -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Price (TND)</label>
+                <input [(ngModel)]="formData.price" type="number" min="0" placeholder="0"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006D77]">
+            </div>
+
+            <!-- Number of Lessons -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Number of Lessons</label>
+                <input [(ngModel)]="formData.lessonsNumber" type="number" min="0" placeholder="0"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006D77]">
+            </div>
+
+            <!-- Image Upload -->
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Course Image</label>
+
+                <!-- Image preview -->
+                <div *ngIf="imagePreviewUrl || formData.imageUrl" class="mb-3">
+                    <img [src]="imagePreviewUrl || formData.imageUrl" alt="Course image"
+                        class="w-40 h-24 object-cover rounded-lg border border-gray-200 shadow-sm">
+                    <p *ngIf="imagePreviewUrl" class="text-xs text-[#006D77] mt-1">New image selected</p>
+                    <p *ngIf="!imagePreviewUrl && formData.imageUrl" class="text-xs text-gray-400 mt-1">Current image</p>
+                </div>
+
+                <!-- File input styled -->
+                <label
+                    class="flex items-center gap-3 w-full border-2 border-dashed border-gray-300 hover:border-[#006D77] rounded-lg px-4 py-3 cursor-pointer transition-colors group">
+                    <span class="text-2xl">🖼️</span>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-700 group-hover:text-[#006D77] transition-colors">
+                            {{ newImageFile ? newImageFile.name : 'Click to upload image' }}
+                        </p>
+                        <p class="text-xs text-gray-400">JPG, PNG or WebP</p>
+                    </div>
+                    <input type="file" accept="image/*" (change)="onImageSelected($event)" class="hidden">
+                </label>
+            </div>
+
+            <!-- Visibility Toggle -->
+            <div class="md:col-span-2">
+                <label class="flex items-center gap-3 cursor-pointer select-none w-fit">
+                    <div class="relative">
+                        <input type="checkbox" [(ngModel)]="formData.isHidden" class="sr-only peer">
+                        <div class="w-10 h-6 bg-gray-200 rounded-full peer-checked:bg-[#006D77] transition-colors"></div>
+                        <div class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+                    </div>
+                    <span class="text-sm font-medium text-gray-700">Hide this course from students</span>
+                </label>
+                <p class="text-xs text-gray-400 mt-1.5 ml-13">When hidden, the course won't appear in the student catalog.</p>
+            </div>
+        </div>
+
+        <div class="flex gap-3 mt-6">
+            <button (click)="saveCourse()" [disabled]="isSaving"
+                class="px-6 py-2.5 bg-[#006D77] text-white font-semibold rounded-lg hover:bg-[#005560] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                {{ isSaving ? 'Saving...' : (isEditing ? 'Update Course' : 'Create Course') }}
+            </button>
+            <button (click)="cancelForm()"
+                class="px-6 py-2.5 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-20">
+        <div class="text-center">
+            <div class="w-12 h-12 border-4 border-[#006D77] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-gray-500">Loading courses...</p>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && courses.length === 0 && !error" class="text-center py-20">
+        <p class="text-5xl mb-4">📚</p>
+        <p class="text-gray-500 text-lg mb-4">No courses yet.</p>
+        <button (click)="openAddForm()"
+            class="px-5 py-2.5 bg-[#006D77] text-white font-semibold rounded-lg hover:bg-[#005560] transition-colors">
+            + Add First Course
+        </button>
+    </div>
+
+    <!-- Courses Table -->
+    <div *ngIf="!isLoading && courses.length > 0"
+        class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Image</th>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Title</th>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Level</th>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Price</th>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Lessons</th>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Visibility</th>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Description</th>
+                    <th class="text-right px-5 py-3 font-semibold text-gray-600">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let course of courses" class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+
+                    <!-- Image -->
+                    <td class="px-5 py-4">
+                        <img *ngIf="course.imageUrl" [src]="course.imageUrl" alt="{{ course.title }}"
+                            class="w-14 h-10 object-cover rounded-lg border border-gray-200 shadow-sm">
+                        <div *ngIf="!course.imageUrl"
+                            class="w-14 h-10 rounded-lg bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-300 text-lg">
+                            🖼️
+                        </div>
+                    </td>
+
+                    <!-- Title -->
+                    <td class="px-5 py-4 font-medium text-gray-900">{{ course.title }}</td>
+
+                    <!-- Level -->
+                    <td class="px-5 py-4">
+                        <span class="px-2.5 py-1 bg-[#006D77] bg-opacity-10 text-[#006D77] rounded-full text-xs font-semibold">
+                            {{ course.level }}
+                        </span>
+                    </td>
+
+                    <!-- Price -->
+                    <td class="px-5 py-4 text-gray-600">
+                        {{ course.price === 0 ? 'Free' : (course.price | number:'1.2-2') + ' TND' }}
+                    </td>
+
+                    <!-- Lessons -->
+                    <td class="px-5 py-4 text-gray-600">{{ course.lessonsNumber ?? 0 }}</td>
+
+                    <!-- Visibility -->
+                    <td class="px-5 py-4">
+                        <button (click)="toggleVisibility(course)"
+                            [class]="course.isHidden
+                                ? 'px-2.5 py-1 bg-gray-100 text-gray-500 rounded-full text-xs font-semibold hover:bg-red-100 hover:text-red-600 transition-colors'
+                                : 'px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold hover:bg-gray-100 hover:text-gray-500 transition-colors'">
+                            {{ course.isHidden ? '🚫 Hidden' : '✅ Visible' }}
+                        </button>
+                    </td>
+
+                    <!-- Description -->
+                    <td class="px-5 py-4 text-gray-500 max-w-xs truncate">{{ course.description || '—' }}</td>
+
+                    <!-- Actions -->
+                    <td class="px-5 py-4 text-right">
+                        <button (click)="manageCourse(course.courseId)"
+                            class="px-3 py-1.5 text-xs font-semibold text-[#006D77] border border-[#006D77] rounded-lg hover:bg-[#006D77] hover:text-white transition-colors mr-2">
+                            Manage
+                        </button>
+                        <button (click)="openEditForm(course)"
+                            class="px-3 py-1.5 text-xs font-semibold text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors mr-2">
+                            Edit Info
+                        </button>
+                        <button (click)="deleteCourse(course)"
+                            class="px-3 py-1.5 text-xs font-semibold text-red-600 border border-red-300 rounded-lg hover:bg-red-600 hover:text-white transition-colors">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="px-5 py-3 bg-gray-50 border-t border-gray-200 text-sm text-gray-500">
+            {{ courses.length }} course{{ courses.length !== 1 ? 's' : '' }} total
+        </div>
+    </div>
+
+</div>

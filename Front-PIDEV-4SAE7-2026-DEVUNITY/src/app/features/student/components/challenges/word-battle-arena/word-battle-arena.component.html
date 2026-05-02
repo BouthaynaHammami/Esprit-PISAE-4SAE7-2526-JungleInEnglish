@@ -1,0 +1,218 @@
+<div class="arena-wrapper">
+
+  <!-- ═══════════ BODY ═══════════ -->
+  <div class="arena-body">
+
+    <!-- ─── BATTLE MAIN: GAME AREA ─── -->
+    <main class="battle-main">
+      <!-- Error Banner -->
+      <div class="error-banner" *ngIf="errorMsg">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ errorMsg }}
+      </div>
+
+      <!-- LOBBY -->
+      <div class="lobby-view" *ngIf="!session?.gameStarted && !session?.gameEnded">
+        <div class="lobby-card">
+          <div class="lobby-illustration">
+            <div class="illustration-circle">
+              <i class="fas fa-bolt"></i>
+            </div>
+            <div class="sparkle s1">✦</div>
+            <div class="sparkle s2">✦</div>
+            <div class="sparkle s3">✦</div>
+          </div>
+
+          <h2 class="lobby-title">Ready for Battle?</h2>
+          <p class="lobby-subtitle">Take turns submitting words that match the theme. Make a mistake — you're eliminated!</p>
+
+          <div class="lobby-stats">
+            <div class="lobby-stat">
+              <span class="lobby-stat__value">{{ session?.wordTheme || 'Free' }}</span>
+              <span class="lobby-stat__label">Theme</span>
+            </div>
+            <div class="lobby-stat-divider"></div>
+            <div class="lobby-stat">
+              <span class="lobby-stat__value">{{ activePlayers.length }}</span>
+              <span class="lobby-stat__label">Fighters</span>
+            </div>
+            <div class="lobby-stat-divider"></div>
+            <div class="lobby-stat">
+              <span class="lobby-stat__value">{{ session?.timeLimitSeconds || 30 }}s</span>
+              <span class="lobby-stat__label">Per Turn</span>
+            </div>
+          </div>
+
+          <button class="btn-start" [disabled]="activePlayers.length < 2" (click)="startGame()">
+            <i class="fas fa-play"></i>
+            Start Battle
+          </button>
+          <p class="lobby-hint" *ngIf="activePlayers.length < 2">
+            <i class="fas fa-info-circle"></i>
+            Need 2 fighters to begin!
+          </p>
+        </div>
+      </div>
+
+      <!-- ACTIVE GAME -->
+      <div class="game-view" *ngIf="session?.gameStarted && !session?.gameEnded">
+
+        <!-- Game Info Bar -->
+        <div class="game-info-bar">
+          <div class="info-chip">
+            <i class="fas fa-tag"></i>
+            <span>{{ session?.wordTheme || 'Free Theme' }}</span>
+          </div>
+          <div class="info-chip" *ngIf="session?.allowedLetters">
+            <i class="fas fa-font"></i>
+            <span>Letters: <strong>{{ session?.allowedLetters }}</strong></span>
+          </div>
+          <div class="info-chip info-chip--forbidden" *ngIf="session?.forbiddenWords">
+            <i class="fas fa-ban"></i>
+            <span>Forbidden: <strong>{{ session?.forbiddenWords }}</strong></span>
+          </div>
+          <div class="timer-chip" [class.timer-chip--urgent]="timeLeft <= 5">
+            <i class="fas fa-clock"></i>
+            <span>{{ timeLeft }}s</span>
+          </div>
+        </div>
+
+        <!-- Word Log -->
+        <div class="word-log" #scrollMe [scrollTop]="scrollMe.scrollHeight">
+          <div class="word-log__empty" *ngIf="!session?.usedWords || (session?.usedWords?.length || 0) === 0">
+            <i class="fas fa-feather"></i>
+            <p>Be the first to play a word!</p>
+          </div>
+          <div *ngFor="let word of session?.usedWords" class="word-bubble">
+            <i class="fas fa-check-circle"></i>
+            {{ word }}
+          </div>
+        </div>
+
+        <!-- Input Zone -->
+        <div class="input-panel">
+          <div class="my-turn-input" *ngIf="isMyTurn()">
+            <div class="input-header">
+              <span class="your-turn-badge">
+                <i class="fas fa-bolt"></i> Your Turn!
+              </span>
+            </div>
+            <div class="input-row">
+              <input type="text"
+                     [(ngModel)]="wordInput"
+                     (keyup.enter)="submitWord()"
+                     placeholder="Type a word matching the theme..."
+                     class="word-input"
+                     #wordField />
+              <button class="btn-submit" (click)="submitWord()" [disabled]="!wordInput.trim()">
+                <i class="fas fa-paper-plane"></i>
+                Submit
+              </button>
+            </div>
+          </div>
+
+          <div class="wait-zone" *ngIf="!isMyTurn()">
+            <div class="wait-animation">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+            <p class="wait-text">Waiting for <strong>{{ getActivePlayerName() }}</strong>...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- END VIEW -->
+      <div class="end-view" *ngIf="session?.gameEnded">
+        <div class="end-card">
+          <div class="end-icon">
+            <i class="fas fa-crown"></i>
+          </div>
+          <h2 class="end-title">Battle Over!</h2>
+
+          <div class="winner-box" *ngIf="activePlayers.length === 1">
+            <p class="winner-label">🏆 Champion</p>
+            <span class="winner-name">{{ activePlayers[0].username }}</span>
+          </div>
+          <div class="winner-box" *ngIf="activePlayers.length === 0">
+            <p>Draw — everyone was eliminated!</p>
+          </div>
+
+          <button class="btn-back" (click)="leaveArena()">
+            <i class="fas fa-home"></i>
+            Back to Challenges
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- ─── RIGHT SIDEBAR: FIGHTERS & INFO ─── -->
+    <aside class="fighters-sidebar">
+      <div class="sidebar-top">
+        <button class="back-btn" (click)="leaveArena()">
+          <i class="fas fa-chevron-left"></i>
+          <span>Back</span>
+        </button>
+
+        <div class="sidebar-challenge-info" *ngIf="session">
+          <div class="challenge-badge">
+            <i class="fas fa-bolt"></i>
+            <span>Word Battle Royale</span>
+          </div>
+          <h1 class="challenge-title">{{ session.wordTheme || 'Open Theme' }}</h1>
+        </div>
+      </div>
+
+      <div class="sidebar-header">
+        <i class="fas fa-shield-alt"></i>
+        <span>Fighters</span>
+        <span class="count-chip">{{ activePlayers.length }}</span>
+      </div>
+
+      <div class="player-list">
+        <div *ngFor="let p of activePlayers; let i = index"
+             class="player-card"
+             [class.player-card--active]="session?.currentPlayerIndex === i && session?.gameStarted">
+
+          <div class="player-avatar"
+               [class.player-avatar--active]="session?.currentPlayerIndex === i && session?.gameStarted">
+            {{ p.username ? p.username.charAt(0).toUpperCase() : '?' }}
+            <span class="turn-dot" *ngIf="session?.currentPlayerIndex === i && session?.gameStarted"></span>
+          </div>
+
+          <div class="player-info">
+            <span class="player-name">
+              {{ p.username }}
+              <small *ngIf="p.username === username" class="me-badge">You</small>
+            </span>
+            <span class="player-status player-status--active"
+                  *ngIf="session?.currentPlayerIndex === i && session?.gameStarted">
+              <span class="blink-dot"></span> Playing...
+            </span>
+            <span class="player-status player-status--waiting"
+                  *ngIf="!(session?.currentPlayerIndex === i && session?.gameStarted)">
+              Waiting
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="eliminated-section" *ngIf="eliminatedPlayers.length > 0">
+        <div class="sidebar-header sidebar-header--elim">
+          <i class="fas fa-skull-crossbones"></i>
+          <span>Eliminated</span>
+        </div>
+        <div class="player-list">
+          <div *ngFor="let p of eliminatedPlayers" class="player-card player-card--eliminated">
+            <div class="player-avatar player-avatar--elim">
+              {{ p.username ? p.username.charAt(0).toUpperCase() : '?' }}
+            </div>
+            <div class="player-info">
+              <span class="player-name">{{ p.username }}</span>
+              <small class="elim-reason">{{ p.eliminationReason }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>

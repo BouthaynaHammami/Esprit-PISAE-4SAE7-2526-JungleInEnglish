@@ -1,0 +1,179 @@
+<!-- admin-test-niveau.component.html -->
+<div class="page">
+
+  <div class="page-header">
+    <h1>Level Test Management</h1>
+    <p class="muted">Manage test subjects and monitor student assessments.</p>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn" [class.active]="activeTab === 'subjects'" (click)="activeTab = 'subjects'; mode = 'LIST'">
+      📚 Test Subjects
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'submissions'" (click)="activeTab = 'submissions'; loadAllSubmissions()">
+      📋 Submissions
+      <span *ngIf="allTentatives.length > 0" class="tab-badge">{{ allTentatives.length }}</span>
+    </button>
+  </div>
+
+  <!-- ========================= -->
+  <!-- SUBJECTS TAB              -->
+  <!-- ========================= -->
+  <div *ngIf="activeTab === 'subjects'">
+
+    <!-- LIST VIEW -->
+    <div *ngIf="mode === 'LIST'">
+      <div class="card filters">
+        <div class="filters-left">
+          <button class="btn btn-primary" (click)="openNewSubject()">+ New Test Subject</button>
+          <button class="btn btn-soft" (click)="loadSubjects()">Refresh</button>
+        </div>
+      </div>
+
+      <div *ngIf="loadingSubjects" class="loading-state card">Loading subjects...</div>
+
+      <div *ngIf="!loadingSubjects && subjects.length === 0" class="empty-state card">
+        No test subjects found. Create one to get started.
+      </div>
+
+      <div class="grid" *ngIf="!loadingSubjects && subjects.length > 0">
+        <div class="card item" *ngFor="let s of subjects">
+          <div class="title">{{ s.title }}</div>
+          <div class="meta">
+            <span class="pill">⏱️ {{ s.time }} min</span>
+            <span class="pill muted-pill">ID: #{{ s.id }}</span>
+          </div>
+          <p class="desc">{{ s.description }}</p>
+          <div class="actions">
+            <button class="btn btn-secondary" (click)="openEditSubject(s)">Edit</button>
+            <button class="btn btn-accent" (click)="deleteSubject(s.id!)">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM VIEW -->
+    <div *ngIf="mode === 'FORM'">
+      <div class="card">
+        <div class="form-header">
+          <div>
+            <h3>{{ isEdit ? 'Edit' : 'Create' }} Test Subject</h3>
+            <p class="muted">Define the writing task for students.</p>
+          </div>
+          <button class="btn btn-soft" (click)="cancelForm()">← Back</button>
+        </div>
+
+        <div class="form">
+          <div class="row">
+            <div class="col">
+              <label>Subject Title</label>
+              <input [(ngModel)]="subjectForm.tstitle" placeholder="Ex: Career Aspirations & Future Goals" />
+            </div>
+            <div class="col">
+              <label>Time Limit (minutes)</label>
+              <input type="number" [(ngModel)]="subjectForm.time" placeholder="Ex: 20" min="1" max="120" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label>Writing Prompt / Description</label>
+              <textarea rows="6" [(ngModel)]="subjectForm.description"
+                        placeholder="Enter the detailed instructions for the student..."></textarea>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" (click)="saveSubject()"
+                    [disabled]="!subjectForm.tstitle || !subjectForm.description">
+              {{ isEdit ? 'Update Subject' : 'Save Subject' }}
+            </button>
+            <button class="btn btn-secondary" (click)="cancelForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================= -->
+  <!-- SUBMISSIONS TAB           -->
+  <!-- ========================= -->
+  <div *ngIf="activeTab === 'submissions'">
+
+    <!-- Stats Row -->
+    <div class="stats-row" *ngIf="!loadingTentatives && allTentatives.length > 0">
+      <div class="stat-card">
+        <span class="stat-value">{{ allTentatives.length }}</span>
+        <span class="stat-label">Total Submissions</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value pending-val">{{ pendingCount }}</span>
+        <span class="stat-label">Awaiting Correction</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value corrected-val">{{ correctedCount }}</span>
+        <span class="stat-label">Corrected</span>
+      </div>
+    </div>
+
+    <div *ngIf="loadingTentatives" class="loading-state card">Loading submissions...</div>
+
+    <div *ngIf="!loadingTentatives && allTentatives.length === 0" class="empty-state card">
+      No submissions yet. Students will appear here once they complete their tests.
+    </div>
+
+    <!-- Submissions Table -->
+    <div class="card" *ngIf="!loadingTentatives && allTentatives.length > 0" style="padding: 0; overflow: hidden;">
+      <table class="submissions-table">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Student</th>
+            <th>Status</th>
+            <th>Score</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let t of allTentatives">
+            <tr class="main-row" (click)="toggleExpand(t.id)" [class.expanded]="expandedId === t.id">
+              <td><strong>{{ t.subject?.title ?? '—' }}</strong></td>
+              <td>
+                <span class="student-name">{{ getStudentName(t.userId) }}</span>
+              </td>
+              <td>
+                <span [class]="'badge ' + getStatusClass(t.status)">{{ t.status ?? 'PENDING' }}</span>
+              </td>
+              <td>
+                <span class="score-pill" *ngIf="t.score !== null && t.score !== undefined">{{ t.score }}/100</span>
+                <span class="muted-text" *ngIf="t.score === null || t.score === undefined">—</span>
+              </td>
+              <td>
+                <span class="expand-icon">{{ expandedId === t.id ? '▲' : '▼' }}</span>
+              </td>
+            </tr>
+            <!-- Expanded Row -->
+            <tr *ngIf="expandedId === t.id" class="detail-row">
+              <td colspan="6">
+                <div class="detail-panel">
+                  <div class="detail-section">
+                    <h5>✍️ Student Response</h5>
+                    <div class="text-block">{{ t.paragraph ?? 'No response recorded.' }}</div>
+                  </div>
+                  <div class="detail-section" *ngIf="t.status === 'CORRECTED'">
+                    <h5>🖊️ Tutor Feedback</h5>
+                    <div class="text-block feedback">{{ t.tutorFeedback ?? 'No feedback provided.' }}</div>
+                    <div class="score-display">Final Score: <strong>{{ t.score }}/100</strong></div>
+                  </div>
+                  <div class="detail-section" *ngIf="t.status !== 'CORRECTED'">
+                    <p class="muted">This submission is awaiting evaluation by a tutor.</p>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

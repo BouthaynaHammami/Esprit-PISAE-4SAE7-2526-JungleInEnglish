@@ -1,0 +1,114 @@
+<div class="profile-page">
+
+    <div class="profile-grid">
+        
+        <!-- SIDEBAR: AVATAR & QUICK STATS -->
+        <aside class="sidebar-card card animate-in">
+            <div class="avatar-wrapper">
+                <div class="avatar-circle">
+                    <span>{{ avatarLetter }}</span>
+                </div>
+            </div>
+
+            <h1 class="profile-name">{{ displayName }}</h1>
+            <div class="rank-badge">{{ rank }}</div>
+
+            <div class="main-stats-row">
+                <div class="stat-box">
+                    <span class="val">{{ completedChallenges }}</span>
+                    <span class="lab">Challenges</span>
+                </div>
+                <div class="stat-box">
+                    <span class="val">{{ totalScore }}</span>
+                    <span class="lab">Points</span>
+                </div>
+                <div class="stat-box">
+                    <span class="val">{{ badgesCount }}</span>
+                    <span class="lab">Badges</span>
+                </div>
+            </div>
+
+            <!-- Profile Actions -->
+            <div class="profile-actions">
+                <button (click)="logout()" class="btn-logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Log Out</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT: DETAILS & PROGRESS -->
+        <main class="details-section animate-in" style="animation-delay: 0.1s;">
+            
+            <h2>Account Details</h2>
+
+            <div class="info-cards">
+                <!-- Email Item -->
+                <div class="info-item">
+                    <div class="icon-box">📧</div>
+                    <div class="item-text">
+                        <span class="info-label">Email Address</span>
+                        <span class="info-value">{{ email }}</span>
+                    </div>
+                </div>
+
+                <!-- Role Item -->
+                <div class="info-item">
+                    <div class="icon-box">🎓</div>
+                    <div class="item-text">
+                        <span class="info-label">Member Role</span>
+                        <span class="info-value" [ngClass]="getRoleBadgeClass()">{{ role }}</span>
+                    </div>
+                </div>
+
+                <!-- Member ID Item -->
+                <div class="info-item">
+                    <div class="icon-box">🪪</div>
+                    <div class="item-text">
+                        <span class="info-label">Student ID</span>
+                        <span class="info-value">#{{ userId }}</span>
+                    </div>
+                </div>
+
+                <!-- Expiry Item -->
+                <div class="info-item">
+                    <div class="icon-box">🕐</div>
+                    <div class="item-text">
+                        <span class="info-label">Session Status</span>
+                        <span class="info-value">{{ expiryDate }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Tracker -->
+            <section class="progress-card card animate-in" style="animation-delay: 0.2s;">
+                <div class="progress-header">
+                    <h3>Learning Mastery</h3>
+                    <span class="stat-label">{{ xpProgress }}% to next rank</span>
+                </div>
+                <div class="xp-bar-outer">
+                    <div class="xp-bar-inner" [style.width.%]="xpProgress"></div>
+                </div>
+                <p class="subtitle mt-3" style="font-size: 13px; opacity: 0.7;">
+                    Complete more challenges to unlock the <strong>Polyglot Champion</strong> rank!
+                </p>
+            </section>
+
+            <!-- Recent Achievements -->
+            <section class="badges-section animate-in" style="animation-delay: 0.3s;">
+                <h3>Linguistic Proficiency</h3>
+                <div class="badge-wrapper">
+                    <div class="profile-badge" title="Grammar King">👑</div>
+                    <div class="profile-badge" title="Vocabulary Master">📚</div>
+                    <div class="profile-badge" title="Streak Starter">🔥</div>
+                    <div class="profile-badge" title="Community Hero">🤝</div>
+                    <div class="profile-badge" title="Fast Learner">⚡</div>
+                    <div class="profile-badge" title="Emoji Decoder">🧩</div>
+                </div>
+            </section>
+
+        </main>
+
+    </div>
+
+</div>

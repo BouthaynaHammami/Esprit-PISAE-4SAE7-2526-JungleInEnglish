@@ -1,0 +1,114 @@
+<!-- employee-applications.component.html -->
+<div class="re-page">
+
+  <div class="re-header">
+    <h1 class="re-title">📨 My Applications</h1>
+    <p class="re-subtitle">Track your hiring journey and apply for new opportunities.</p>
+  </div>
+
+  <!-- Success / Error / Login Info -->
+  <div *ngIf="!currentUserId" class="re-alert re-alert--error">
+    ⚠️ Session issue detected: Please log out and log back in to sync your application history.
+  </div>
+  <div *ngIf="submitSuccess" class="re-alert re-alert--success">
+    ✅ Application submitted successfully! We'll get back to you soon.
+  </div>
+  <div *ngIf="submitError" class="re-alert re-alert--error">⚠️ {{ submitError }}</div>
+
+  <div class="re-grid">
+
+    <!-- LEFT: Apply Form -->
+    <div class="re-card">
+      <div class="re-card-head">
+        <h2 class="re-card-title">Apply to a Position</h2>
+      </div>
+      <div class="re-card-body">
+        <div class="re-form-group">
+          <label>Select Recruitment</label>
+          <div *ngIf="loadingRecruitments" class="re-loading">Loading positions…</div>
+          <select *ngIf="!loadingRecruitments" [(ngModel)]="selectedRecruitmentId" class="re-control">
+            <option [ngValue]="null">-- Choose a position --</option>
+            <option *ngFor="let r of getAvailableRecruitments()" [ngValue]="r.id">
+              {{ r.positionTitle }} ({{ r.department }})
+            </option>
+          </select>
+          <div *ngIf="!loadingRecruitments && recruitments.length > 0 && getAvailableRecruitments().length === 0" class="re-info-text">
+            ✨ You have applied for all available positions!
+          </div>
+        </div>
+        <div class="re-form-group">
+          <label>Cover Letter / Response</label>
+          <textarea [(ngModel)]="form.reponse" class="re-control"
+                    placeholder="Why are you a good fit for this role?"></textarea>
+        </div>
+        <div class="re-form-group">
+          <label>CV Link (URL)</label>
+          <div style="display:flex; gap:8px">
+            <input [(ngModel)]="form.cv" class="re-control" style="flex:1" placeholder="https://drive.google.com/…" />
+            <button class="re-btn re-btn--secondary" style="height:46px; padding:0 12px" title="Preview"
+                    (click)="togglePreview()" [disabled]="!form.cv">👁️</button>
+          </div>
+          <div *ngIf="showPreview && form.cv" class="re-preview-box">
+            <iframe [src]="getSafeViewerUrl(form.cv)" frameborder="0" style="width:100%; height:300px; border-radius:10px"></iframe>
+          </div>
+        </div>
+        <button class="re-btn re-btn--primary"
+                (click)="submitApplication()"
+                [disabled]="submitting || !selectedRecruitmentId || !form.reponse?.trim()">
+          {{ submitting ? 'Submitting…' : '📤 Submit Application' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT: My History -->
+    <div class="re-card">
+      <div class="re-card-head">
+        <h2 class="re-card-title">My Application History</h2>
+      </div>
+      <div class="re-card-body">
+        <div *ngIf="loadingApplications" class="re-loading">
+          <div class="re-spinner"></div>
+          <div>Fetching your history...</div>
+        </div>
+
+        <div *ngIf="!loadingApplications && myApplications.length === 0" class="re-empty">
+          <p>You haven't submitted any applications yet.</p>
+          <p style="font-size: 11px; margin-top: 8px; opacity: 0.7;">(Note: Try submitting a new application to verify your history is working.)</p>
+        </div>
+        <div *ngFor="let a of myApplications" class="re-item">
+          <div class="re-item-head">
+            <span class="re-item-title">{{ a.recruitment?.positionTitle ?? 'Position #' + a.recruitment?.id }}</span>
+            <span class="re-pill" [ngClass]="{
+              're-pill--accepted': a.status === 'ACCEPTED',
+              're-pill--rejected': a.status === 'REJECTED',
+              're-pill--pending': a.status === 'PENDING' || !a.status
+            }">{{ a.status ?? 'PENDING' }}</span>
+          </div>
+
+          <!-- Interview Details Box -->
+          <div *ngIf="a.status === 'ACCEPTED' && a.interview" class="re-interview-box">
+            <div class="re-interview-header">
+              <span class="re-interview-type">{{ a.interview.meetingStatus }}</span>
+              <span class="re-interview-title">{{ a.interview.title }}</span>
+            </div>
+            <div class="re-interview-info">
+              <div class="re-info-row">
+                <span class="re-info-icon">📅</span>
+                <span>{{ a.interview.startDateTime | date:'medium' }} ({{ a.interview.durationMinutes }} min)</span>
+              </div>
+              <div *ngIf="a.interview.meetingLink" class="re-info-row">
+                <span class="re-info-icon">🔗</span>
+                <a [href]="a.interview.meetingLink" target="_blank" class="re-interview-link">Join Meeting / View Location</a>
+              </div>
+            </div>
+          </div>
+
+          <p *ngIf="a.reponse" class="re-item-note">{{ a.reponse }}</p>
+          <a *ngIf="a.cv" [href]="a.cv" target="_blank" class="re-link">📄 View CV ↗</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

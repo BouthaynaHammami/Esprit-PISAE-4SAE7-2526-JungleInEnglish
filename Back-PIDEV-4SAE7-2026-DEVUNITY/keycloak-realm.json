@@ -1,0 +1,44 @@
+{
+  "realm": "devunity",
+  "enabled": true,
+  "displayName": "DevUnity",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "sslRequired": "none",
+  "clients": [
+    {
+      "clientId": "devunity-app",
+      "name": "DevUnity Application",
+      "enabled": true,
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:4200/*",
+        "http://localhost:8081/*"
+      ],
+      "webOrigins": [
+        "http://localhost:4200",
+        "http://localhost:8081",
+        "http://localhost:8082"
+      ],
+      "protocol": "openid-connect",
+      "attributes": {
+        "access.token.lifespan": "86400"
+      }
+    }
+  ],
+  "roles": {
+    "realm": [
+      { "name": "ADMIN",   "composite": false },
+      { "name": "STUDENT", "composite": false },
+      { "name": "TUTOR",   "composite": false },
+      { "name": "EMPLOYE", "composite": false },
+      { "name": "COMPANY", "composite": false }
+    ]
+  }
+}

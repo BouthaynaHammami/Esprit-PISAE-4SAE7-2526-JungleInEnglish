@@ -1,0 +1,62 @@
+<div class="space-y-5">
+  <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">📅 Create Course Schedule</h3>
+  <p class="text-sm text-gray-500 -mt-3">The system will auto-verify tutor role, course existence, and block overlaps.</p>
+
+  <div *ngIf="error"
+    class="px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-medium">
+    ❌ {{ error }}
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+    <!-- Class Name -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-semibold text-gray-700">🏫 Class Name</label>
+      <input type="text" [(ngModel)]="className" placeholder="e.g. C001"
+        class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none" />
+    </div>
+
+    <!-- Tutor Email -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-semibold text-gray-700">👤 Tutor Email</label>
+      <input type="email" [(ngModel)]="tutorEmail" placeholder="e.g. tutor@devunity.tn"
+        class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none" />
+    </div>
+
+    <!-- Course ID -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-semibold text-gray-700">📘 Course ID</label>
+      <input type="number" [(ngModel)]="courseId" placeholder="e.g. 3" min="1"
+        class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none" />
+    </div>
+
+    <!-- Room Name -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-semibold text-gray-700">🚪 Room Name</label>
+      <input type="text" [(ngModel)]="roomName" placeholder="e.g. C001"
+        class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none" />
+    </div>
+
+    <!-- Start Time -->
+    <div class="flex flex-col gap-1.5 sm:col-span-2">
+      <label class="text-sm font-semibold text-gray-700">🕐 Start Date & Time</label>
+      <input type="datetime-local" [(ngModel)]="startTime"
+        class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none" />
+      <p class="text-xs text-gray-400">Session automatically lasts 3 hours.</p>
+    </div>
+
+  </div>
+
+  <!-- Actions -->
+  <div class="flex gap-3 pt-2">
+    <button (click)="submit()" [disabled]="isSubmitting"
+      class="flex-1 py-2.5 bg-[#006D77] text-white font-semibold rounded-xl hover:bg-[#005962] disabled:opacity-60 transition-all text-sm">
+      <span *ngIf="!isSubmitting">✅ Create Schedule</span>
+      <span *ngIf="isSubmitting">Creating…</span>
+    </button>
+    <button (click)="cancel()"
+      class="px-5 py-2.5 bg-gray-100 text-gray-600 font-semibold rounded-xl hover:bg-gray-200 transition-all text-sm">
+      Cancel
+    </button>
+  </div>
+</div>

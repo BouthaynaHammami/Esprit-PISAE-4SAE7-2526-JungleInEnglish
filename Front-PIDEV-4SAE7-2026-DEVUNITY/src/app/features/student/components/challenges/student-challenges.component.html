@@ -1,0 +1,763 @@
+<!-- ===================================================================
+     DECORATIVE BACKGROUND SHAPES
+=================================================================== -->
+<div class="bg-decor">
+  <div class="bg-orb bg-orb--1"></div>
+  <div class="bg-orb bg-orb--2"></div>
+  <div class="bg-orb bg-orb--3"></div>
+  <div class="bg-sphere bg-sphere--1"></div>
+  <div class="bg-sphere bg-sphere--2"></div>
+  <div class="bg-sphere bg-sphere--3"></div>
+  <div class="bg-sphere bg-sphere--4"></div>
+  <div class="bg-plane">
+    <svg width="90" height="60" viewBox="0 0 90 60" fill="none">
+      <path d="M5 50 L85 10 L50 30 L85 10 L60 55 L50 30 L5 50Z" fill="url(#planeGrad)" opacity="0.18"/>
+      <defs><linearGradient id="planeGrad" x1="0" y1="0" x2="90" y2="60"><stop stop-color="#5ad0d0"/><stop offset="1" stop-color="#83C5BE" stop-opacity="0.3"/></linearGradient></defs>
+    </svg>
+  </div>
+</div>
+
+<!-- ───────────────────────────────────────────
+     LOADING STATE
+─────────────────────────────────────────────── -->
+<div *ngIf="loading" class="flex items-center justify-center min-h-[60vh]">
+    <div class="flex flex-col items-center gap-4">
+        <div class="w-14 h-14 border-4 border-[#006D77] border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-gray-500 font-medium">Loading your challenges...</p>
+    </div>
+</div>
+
+<!-- ───────────────────────────────────────────
+     ERROR STATE
+─────────────────────────────────────────────── -->
+<div *ngIf="!loading && errorMsg" class="flex items-center justify-center min-h-[60vh]">
+    <div class="bg-red-50 border border-red-200 rounded-2xl p-8 text-center max-w-md">
+        <span class="text-4xl">⚠️</span>
+        <p class="mt-3 text-red-600 font-medium">{{ errorMsg }}</p>
+    </div>
+</div>
+
+<!-- ===================================================================
+     MAIN PAGE
+=================================================================== -->
+
+
+<div *ngIf="!loading && !errorMsg" class="page">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <span class="breadcrumb__back">&#8249;</span>
+    <a routerLink="/student/dashboard">Home</a>
+    <span class="breadcrumb__sep">&#8250;</span>
+    <strong>Challenges</strong>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <h1>Language Challenges</h1>
+    <p>Test your skills with exciting challenges and earn badges</p>
+  </header>
+
+  <!-- Two-column layout -->
+  <div class="layout">
+
+    <!-- LEFT: Challenge cards -->
+    <div class="layout__main">
+
+      <!-- Level selector -->
+      <div class="level-selector-bar">
+        <span class="level-label">Select Level:</span>
+        <div class="level-buttons">
+          <button *ngFor="let l of levels"
+                  class="level-btn"
+                  [class.active]="level === l"
+                  (click)="selectLevel(l)">
+            {{ l }}
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 1: TYPE SELECTION -->
+      <div *ngIf="step === 'TYPE'" class="types-grid">
+        <article *ngFor="let t of types; let i = index"
+                 class="challenge-type-card glass"
+                 [style.--card-delay]="(i * 0.07) + 's'">
+
+          <div class="challenge-type-card__icon">
+            <i *ngIf="t === 'MYSTERY_WORD'" class="fa fa-search"></i>
+            <i *ngIf="t === 'SENTENCE_BUILDER'" class="fa fa-align-left"></i>
+            <i *ngIf="t === 'EMOJI_WORD'" class="fa fa-magic"></i>
+            <i *ngIf="t === 'WORD_BATTLE_ROYALE'" class="fa fa-bolt"></i>
+            <i *ngIf="t === 'STORY_CHAIN'" class="fa fa-book"></i>
+            <i *ngIf="t === 'SPEED_TRANSLATION_RACE'" class="fa fa-globe"></i>
+          </div>
+
+          <div class="challenge-type-card__content">
+            <h3 class="challenge-type-card__title">{{ formatType(t) }}</h3>
+            <p class="challenge-type-card__desc">
+              <span *ngIf="t === 'MYSTERY_WORD'">The ultimate detective test. Guess the word with clever hints.</span>
+              <span *ngIf="t === 'SENTENCE_BUILDER'">Master syntax by rebuilding scrambled sentences from scratch.</span>
+              <span *ngIf="t === 'EMOJI_WORD'">The future of language. Decode emojis into meaningful words.</span>
+              <span *ngIf="t === 'WORD_BATTLE_ROYALE'">Real-time multiplayer word arena. Prove you're the absolute best!</span>
+              <span *ngIf="t === 'STORY_CHAIN'">Collaborative storytelling arena. Join forces with other writers to build an epic tale!</span>
+              <span *ngIf="t === 'SPEED_TRANSLATION_RACE'">Competitive fast-paced translation race. Translate phrases as correctly and quickly as possible!</span>
+            </p>
+            <div class="challenge-type-card__badge" [class.multiplayer]="t === 'WORD_BATTLE_ROYALE' || t === 'STORY_CHAIN' || t === 'SPEED_TRANSLATION_RACE'">
+              {{ (t === 'WORD_BATTLE_ROYALE' || t === 'STORY_CHAIN' || t === 'SPEED_TRANSLATION_RACE') ? 'Multiplayer' : 'Solo' }}
+            </div>
+          </div>
+
+          <div class="challenge-type-card__action">
+            <!-- For Solo challenges (not multiplayer) -->
+            <button *ngIf="t !== 'WORD_BATTLE_ROYALE' && t !== 'STORY_CHAIN' && t !== 'SPEED_TRANSLATION_RACE'" class="btn-play" (click)="quickPlaySession(t)" title="Start your challenge now">
+              Let's Play
+            </button>
+            <!-- For Multiplayer challenges -->
+            <button *ngIf="t === 'WORD_BATTLE_ROYALE' || t === 'STORY_CHAIN' || t === 'SPEED_TRANSLATION_RACE'" class="btn-play" (click)="chooseType(t)">
+              Enter Arena
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <!-- === SESSION MODE === -->
+
+      <!-- SESSION STEP: PLAY CHALLENGES -->
+      <div *ngIf="step === 'SESSION_PLAY'" class="sc-arena-wrapper">
+
+        <!-- ─── Loading ─── -->
+        <div *ngIf="!activeSession || !sessionCurrentChallenge" class="sc-loading">
+          <div class="sc-spinner"></div>
+          <p>Launching your session...</p>
+        </div>
+
+        <!-- ─── PLAYING STATE ─── -->
+        <div *ngIf="activeSession && sessionCurrentChallenge && sessionGameStatus === 'PLAYING'" class="sc-game" [@fadeInAnimation]>
+
+          <!-- HEADER -->
+          <header class="sc-header">
+            <div class="sc-header__left">
+              <button class="sc-back-btn" (click)="goBackSession()">
+                <i class="fas fa-chevron-left"></i>
+                <span>Back</span>
+              </button>
+            </div>
+
+            <div class="sc-header__center">
+              <div class="sc-challenge-badge">
+                <i class="fas fa-puzzle-piece"></i>
+                <span>{{ formatType(sessionSelectedType || '') }}</span>
+              </div>
+              <h1 class="sc-challenge-title">{{ sessionCurrentChallenge.title }}</h1>
+            </div>
+
+            <div class="sc-header__right">
+              <div class="sc-stat-chip sc-stat-chip--score">
+                <i class="fa fa-trophy"></i>
+                <span>{{ sessionScore || 0 }}</span>
+              </div>
+              <div class="sc-stat-chip sc-stat-chip--hearts">
+                <i class="fa fa-heart"></i>
+                <span>{{ remainingHearts }}</span>
+              </div>
+              <div class="sc-timer-chip"
+                   [class.sc-timer-chip--warn]="sessionTimeLeft <= 30"
+                   [class.sc-timer-chip--urgent]="sessionTimeLeft <= 10">
+                <i class="fas fa-clock"></i>
+                <span>{{ sessionTimeLeft }}s</span>
+              </div>
+            </div>
+          </header>
+
+          <!-- PROGRESS BAR -->
+          <div class="sc-progress-bar">
+            <div class="sc-progress-bar__fill"
+                 [style.width.%]="(sessionTimeLeft / (activeSession.sessionDurationSeconds || 180)) * 100">
+            </div>
+            <span class="sc-progress-label">{{ ((sessionTimeLeft / (activeSession.sessionDurationSeconds || 180)) * 100).toFixed(0) }}%</span>
+          </div>
+
+          <!-- CHALLENGE CARD -->
+          <div class="sc-body">
+
+            <!-- ─── MYSTERY WORD ─── -->
+            <div *ngIf="sessionCurrentChallenge.type === 'MYSTERY_WORD'" class="sc-card" [@slideInAnimation]>
+              <div class="sc-card__header">
+                <span class="sc-card__label"><i class="fas fa-scroll"></i> Mystery Word</span>
+                <span class="sc-level-badge">{{ sessionSelectedLevel }}</span>
+              </div>
+              <p class="sc-description">{{ sessionCurrentChallenge.description }}</p>
+
+              <!-- Hints -->
+              <div class="sc-hints" *ngIf="hintsList && hintsList.length > 0">
+                <div class="sc-hints__header">
+                  <span class="sc-hints__title"><i class="fas fa-lightbulb"></i> Hints</span>
+                  <span class="sc-hints__counter">{{ currentHintIndex + 1 }}/{{ hintsList.length }}</span>
+                </div>
+                <div class="sc-hints__grid">
+                  <div *ngFor="let hint of hintsList; let i = index"
+                       class="sc-hint-pill"
+                       [class.sc-hint-pill--unlocked]="i <= currentHintIndex"
+                       [class.sc-hint-pill--locked]="i > currentHintIndex">
+                    <span *ngIf="i <= currentHintIndex"><i class="fas fa-check-circle"></i> {{ hint }}</span>
+                    <span *ngIf="i > currentHintIndex"><i class="fas fa-lock"></i> Locked</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sc-input-panel">
+                <div class="sc-input-row">
+                  <input type="text" [(ngModel)]="sessionAnswer" name="answer"
+                         class="sc-input" placeholder="What's the word?"
+                         [disabled]="sessionGameStatus !== 'PLAYING' || showAnswerFeedback || isFinished"
+                         (keyup.enter)="submitSessionAnswer()" autocomplete="off" />
+                  <button class="sc-btn-submit"
+                          [disabled]="!sessionAnswer.trim() || sessionGameStatus !== 'PLAYING' || showAnswerFeedback || isFinished"
+                          (click)="submitSessionAnswer()">
+                    <i class="fas fa-paper-plane"></i> Submit
+                  </button>
+                </div>
+              </div>
+
+              <div *ngIf="showAnswerFeedback" class="sc-feedback"
+                   [class.sc-feedback--correct]="sessionAnswerFeedback === 'CORRECT'"
+                   [class.sc-feedback--incorrect]="sessionAnswerFeedback === 'INCORRECT'"
+                   [@fadeInAnimation]>
+                <i class="fas" [class.fa-check-circle]="sessionAnswerFeedback === 'CORRECT'"
+                               [class.fa-times-circle]="sessionAnswerFeedback === 'INCORRECT'"></i>
+                {{ feedbackMessage }}
+              </div>
+            </div>
+
+            <!-- ─── SENTENCE BUILDER ─── -->
+            <div *ngIf="sessionCurrentChallenge.type === 'SENTENCE_BUILDER'" class="sc-card" [@slideInAnimation]>
+              <div class="sc-card__header">
+                <span class="sc-card__label"><i class="fas fa-align-left"></i> Sentence Builder</span>
+                <span class="sc-level-badge">{{ sessionSelectedLevel }}</span>
+              </div>
+              <p class="sc-description">{{ sessionCurrentChallenge.description }}</p>
+
+              <div class="sc-scrambled-box">
+                <p class="sc-scrambled-label">Rearrange these words:</p>
+                <div class="sc-scrambled-words">{{ sessionCurrentChallenge.scrambledSentence }}</div>
+              </div>
+
+              <div class="sc-input-panel">
+                <div class="sc-input-row">
+                  <input type="text" [(ngModel)]="sessionAnswer" name="answer"
+                         class="sc-input" placeholder="Rebuild the sentence..."
+                         [disabled]="sessionGameStatus !== 'PLAYING' || showAnswerFeedback || isFinished"
+                         (keyup.enter)="submitSessionAnswer()" autocomplete="off" />
+                  <button class="sc-btn-submit"
+                          [disabled]="!sessionAnswer.trim() || showAnswerFeedback || isFinished"
+                          (click)="submitSessionAnswer()">
+                    <i class="fas fa-check"></i> Check
+                  </button>
+                </div>
+              </div>
+
+              <div *ngIf="showAnswerFeedback" class="sc-feedback"
+                   [class.sc-feedback--correct]="sessionAnswerFeedback === 'CORRECT'"
+                   [class.sc-feedback--incorrect]="sessionAnswerFeedback === 'INCORRECT'"
+                   [@fadeInAnimation]>
+                <i class="fas" [class.fa-check-circle]="sessionAnswerFeedback === 'CORRECT'"
+                               [class.fa-times-circle]="sessionAnswerFeedback === 'INCORRECT'"></i>
+                {{ feedbackMessage }}
+              </div>
+            </div>
+
+            <!-- ─── EMOJI WORD ─── -->
+            <div *ngIf="sessionCurrentChallenge.type === 'EMOJI_WORD'" class="sc-card" [@slideInAnimation]>
+              <div class="sc-card__header">
+                <span class="sc-card__label"><i class="fas fa-smile"></i> Emoji Word</span>
+                <span class="sc-level-badge">{{ sessionSelectedLevel }}</span>
+              </div>
+
+              <div class="sc-emoji-display">{{ sessionCurrentChallenge.emojiPrompt }}</div>
+              <p class="sc-description">{{ sessionCurrentChallenge.description }}</p>
+
+              <div class="sc-input-panel">
+                <div class="sc-input-row">
+                  <input type="text" [(ngModel)]="sessionAnswer" name="answer"
+                         class="sc-input" placeholder="What word is this?"
+                         [disabled]="sessionGameStatus !== 'PLAYING' || showAnswerFeedback || isFinished"
+                         (keyup.enter)="submitSessionAnswer()" autocomplete="off" />
+                  <button class="sc-btn-submit"
+                          [disabled]="!sessionAnswer.trim() || showAnswerFeedback || isFinished"
+                          (click)="submitSessionAnswer()">
+                    <i class="fas fa-paper-plane"></i> Submit
+                  </button>
+                </div>
+                <p class="sc-input-hint"><kbd>Enter</kbd> to submit quickly</p>
+              </div>
+
+              <div *ngIf="showAnswerFeedback" class="sc-feedback"
+                   [class.sc-feedback--correct]="sessionAnswerFeedback === 'CORRECT'"
+                   [class.sc-feedback--incorrect]="sessionAnswerFeedback === 'INCORRECT'"
+                   [@fadeInAnimation]>
+                <i class="fas" [class.fa-check-circle]="sessionAnswerFeedback === 'CORRECT'"
+                               [class.fa-times-circle]="sessionAnswerFeedback === 'INCORRECT'"></i>
+                {{ feedbackMessage }}
+              </div>
+            </div>
+
+            <!-- Tip -->
+            <div class="sc-tip" *ngIf="sessionTimeLeft > 120">
+              <i class="fas fa-lightbulb"></i>
+              Answer carefully to maximize your score!
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ─── SESSION END ─── -->
+        <div *ngIf="(sessionGameStatus === 'TIMEOUT' || sessionGameStatus === 'COMPLETED') && activeSession"
+             class="sc-end-overlay" [@fadeInAnimation]>
+          <div class="sc-end-card">
+            <div class="sc-end-icon">
+              <i class="fas" [class.fa-clock]="sessionGameStatus === 'TIMEOUT'"
+                             [class.fa-trophy]="sessionGameStatus === 'COMPLETED'"></i>
+            </div>
+            <h2 class="sc-end-title">
+              {{ sessionGameStatus === 'TIMEOUT' ? "Time's Up!" : "Session Complete!" }}
+            </h2>
+            <p class="sc-end-subtitle">Here are your results for this session:</p>
+
+            <div class="sc-results-grid">
+              <div class="sc-result-box sc-result-box--score">
+                <span class="sc-result-label">Final Score</span>
+                <span class="sc-result-value">{{ sessionScore }}</span>
+              </div>
+              <div class="sc-result-box sc-result-box--correct">
+                <span class="sc-result-label">Correct</span>
+                <span class="sc-result-value">{{ sessionCorrectCount }}</span>
+              </div>
+              <div class="sc-result-box sc-result-box--wrong">
+                <span class="sc-result-label">Wrong</span>
+                <span class="sc-result-value">{{ sessionWrongCount }}</span>
+              </div>
+            </div>
+
+            <button class="sc-btn-close" (click)="goBackSession()">
+              <i class="fas fa-home"></i>
+              Close & Continue
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: AVAILABLE CHALLENGES LIST -->
+      <div *ngIf="step === 'CHALLENGES'" class="challenges-section">
+        <div class="challenges-section__header">
+          <button class="btn-back" (click)="goBack()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+          <div class="challenges-section__title">
+            <span class="challenges-section__label">{{ formatType(type) }}</span>
+            <h2>{{ level }} Level Missions</h2>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div *ngIf="availableChallenges.length === 0" class="challenges-empty">
+          <div class="challenges-empty__icon">🤔</div>
+          <h3 class="challenges-empty__title">No challenges available</h3>
+          <p class="challenges-empty__desc">Check back soon for new challenges at this level</p>
+        </div>
+
+        <!-- Challenges grid -->
+        <div *ngIf="availableChallenges.length > 0" class="challenges-grid">
+          <article *ngFor="let c of availableChallenges; let i = index"
+                   class="chal-card animate-in"
+                   [style.--card-delay]="(i * 0.07) + 's'"
+                   (click)="startChallenge(c)">
+
+            <!-- Card Top Section -->
+            <div class="chal-card__top">
+              <h3 class="chal-card__title">{{ c.title }}</h3>
+              
+              <!-- Badges Row -->
+              <div class="chal-card__badges" *ngIf="c.type || c.timeLimitSeconds || c.maxAttempts || c.maxParticipants">
+                <span *ngIf="c.type === 'WORD_BATTLE_ROYALE' || c.type === 'STORY_CHAIN' || c.type === 'SPEED_TRANSLATION_RACE'" class="chal-badge chal-badge--multiplayer">
+                  <span class="chal-badge__icon"><i class="fas fa-users"></i></span> Multiplayer
+                </span>
+                <span *ngIf="c.timeLimitSeconds" class="chal-badge chal-badge--time">
+                  <span class="chal-badge__icon"><i class="far fa-clock"></i></span> {{ c.timeLimitSeconds }}s
+                </span>
+                <span *ngIf="c.maxAttempts && c.type !== 'WORD_BATTLE_ROYALE' && c.type !== 'STORY_CHAIN' && c.type !== 'SPEED_TRANSLATION_RACE'" class="chal-badge chal-badge--attempts">
+                  <span class="chal-badge__icon"><i class="fas fa-redo"></i></span> {{ c.maxAttempts }}
+                </span>
+                <span *ngIf="c.allowedLetters" class="chal-badge chal-badge--letters">
+                  <span class="chal-badge__icon"><i class="fas fa-font"></i></span> Letters: {{ c.allowedLetters }}
+                </span>
+                <span *ngIf="c.forbiddenWords" class="chal-badge chal-badge--forbidden">
+                  <span class="chal-badge__icon"><i class="fas fa-ban"></i></span> Forbidden: {{ c.forbiddenWords }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <p *ngIf="c.description" class="chal-card__desc">{{ c.description }}</p>
+
+            <!-- Divider -->
+            <div class="chal-card__divider"></div>
+
+            <!-- Card Bottom Section -->
+            <div class="chal-card__bottom">
+              <!-- Metadata -->
+              <div class="chal-card__meta">
+                <span class="chal-meta__item" *ngIf="c.level">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  <span class="chal-meta__label">{{ c.level }}</span>
+                </span>
+                <span class="chal-meta__item" *ngIf="c.pointsPerCorrectAnswer">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 12a4 4 0 1 0 8 0 4 4 0 0 0-8 0"/><path d="M12 6v6l4.5 2.25"/></svg>
+                  <span class="chal-meta__label">{{ c.pointsPerCorrectAnswer }} pts</span>
+                </span>
+              </div>
+
+              <!-- Button -->
+              <button class="chal-card__btn">
+                <span>Start</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+
+            <!-- Featured accent (optional visual enhancement) -->
+            <div class="chal-card__accent"></div>
+          </article>
+        </div>
+      </div>
+
+      <!-- STEP 3: PLAY CHALLENGE — REDESIGNED -->
+      <div *ngIf="step === 'PLAY'" class="play-section-redesigned">
+        <!-- Loading State -->
+        <div *ngIf="!activeStudentChallenge" class="play-loading glass">
+          <div class="loading-spinner"></div>
+          <p>Loading your challenge...</p>
+        </div>
+
+        <!-- Active Challenge -->
+        <div *ngIf="activeStudentChallenge && gameStatus === 'PLAYING'" class="play-active-game">
+          
+          <!-- PREMIUM GAME HEADER -->
+          <div class="game-header-redesigned">
+            <button class="btn-back-game" (click)="goBack()" title="Back to challenges">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+            </button>
+
+            <div class="game-header-content">
+              <div class="game-title-section">
+                <h2 class="game-title">{{ activeStudentChallenge.challenge?.title }}</h2>
+                <span class="game-level-badge">{{ activeStudentChallenge.challenge?.level }}</span>
+              </div>
+
+              <!-- Hearts Display for MYSTERY_WORD -->
+              <div *ngIf="activeStudentChallenge.challenge?.type === 'MYSTERY_WORD'" class="hearts-display">
+                <span class="hearts-icon">❤️</span>
+                <span class="hearts-number">{{ remainingAttempts }}</span>
+              </div>
+
+              <div class="game-progress-counter">
+                <span class="counter-text">Challenge Progress</span>
+              </div>
+            </div>
+
+            <!-- Circular Timer -->
+            <div class="game-timer-premium" *ngIf="timeLeft > 0" [class.timer-warning]="timeLeft <= 10" [class.timer-critical]="timeLeft <= 5">
+              <svg class="timer-circle" width="80" height="80" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.2"/>
+                <circle class="timer-ring" cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="3" 
+                        stroke-linecap="round" stroke-dasharray="220" [style.strokeDashoffset]="getTimerDashoffset()"/>
+              </svg>
+              <div class="timer-display">
+                <span class="timer-seconds">{{ timeLeft }}</span>
+                <span class="timer-unit">s</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CHALLENGE CARD PREMIUM -->
+          <div class="challenge-card-premium glass">
+            <div class="challenge-card-header">
+              <h3 class="challenge-prompt-title">{{ activeStudentChallenge.challenge?.description || activeStudentChallenge.challenge?.title || "Guess the word!" }}</h3>
+            </div>
+
+            <!-- MYSTERY_WORD Challenge -->
+            <div *ngIf="activeStudentChallenge.challenge?.type === 'MYSTERY_WORD'" class="challenge-type-content mystery-word-game">
+              <!-- Hints Display -->
+              <div class="hints-display-premium" *ngIf="hintsList.length > 0">
+                <div class="hints-label">Hints Available:</div>
+                <div class="hints-grid">
+                  <div *ngFor="let hint of hintsList; let i = index" 
+                       class="hint-card"
+                       [class.revealed]="i <= currentHintIndex"
+                       [title]="i <= currentHintIndex ? hint : 'Locked'">
+                    <span class="hint-icon" *ngIf="i <= currentHintIndex">💡</span>
+                    <span class="hint-text" *ngIf="i <= currentHintIndex">{{ hint }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Input Section -->
+              <form (ngSubmit)="submitAnswer()" class="answer-form-premium">
+                <div class="input-group">
+                  <input type="text" 
+                         [(ngModel)]="answer" 
+                         name="answer"
+                         placeholder="What's the word?"
+                         class="input-premium"
+                         [disabled]="gameStatus !== 'PLAYING'"
+                         (keyup.enter)="submitAnswer()" 
+                         autocomplete="off" />
+                  <button type="submit" class="btn-submit-premium" [disabled]="!answer.trim() || gameStatus !== 'PLAYING'">
+                    <span class="btn-text">Submit</span>
+                    <span class="btn-arrow">→</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- SENTENCE_BUILDER Challenge -->
+            <div *ngIf="activeStudentChallenge.challenge?.type === 'SENTENCE_BUILDER'" class="challenge-type-content sentence-builder-game">
+              <div class="word-bank-premium">
+                <p class="bank-label">Available Words</p>
+                <div class="words-container-premium">
+                  <div *ngFor="let word of availableWords; let i = index"
+                       class="word-chip-premium"
+                       draggable="true"
+                       (dragstart)="onDragStart($event, i, 'BANK')"
+                       (click)="toggleWord(i, 'BANK')">
+                    {{ word }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="sentence-builder-premium"
+                   (dragover)="allowDrop($event)"
+                   (drop)="onDrop($event, 'BUILDER')">
+                <p class="builder-label">Build Your Sentence</p>
+                <div class="builder-container-premium">
+                  <div *ngFor="let word of selectedWords; let i = index"
+                       class="word-chip-premium selected"
+                       draggable="true"
+                       (dragstart)="onDragStart($event, i, 'BUILDER')"
+                       (click)="toggleWord(i, 'BUILDER')">
+                    {{ word }}
+                  </div>
+                  <div *ngIf="selectedWords.length === 0" class="placeholder-premium">
+                    Drag or click words...
+                  </div>
+                </div>
+              </div>
+
+              <div class="builder-actions-premium">
+                <button class="btn-reset-premium" (click)="resetSentence()" [disabled]="selectedWords.length === 0">
+                  Reset
+                </button>
+                <button class="btn-submit-premium" (click)="checkSentenceAnswer()" [disabled]="selectedWords.length === 0">
+                  <span class="btn-text">Check</span>
+                  <span class="btn-arrow">✓</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- EMOJI_WORD Challenge -->
+            <div *ngIf="activeStudentChallenge.challenge?.type === 'EMOJI_WORD'" class="challenge-type-content emoji-word-game">
+              <div class="emoji-large">{{ activeStudentChallenge.challenge?.emojiPrompt }}</div>
+
+              <form (ngSubmit)="submitAnswer()" class="answer-form-premium">
+                <div class="input-group">
+                  <input type="text" 
+                         [(ngModel)]="answer" 
+                         name="answer"
+                         placeholder="What word does this represent?"
+                         class="input-premium"
+                         [disabled]="gameStatus !== 'PLAYING'"
+                         (keyup.enter)="submitAnswer()" 
+                         autocomplete="off" />
+                  <button type="submit" class="btn-submit-premium" [disabled]="!answer.trim() || gameStatus !== 'PLAYING'">
+                    <span class="btn-text">Submit</span>
+                    <span class="btn-arrow">→</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Tip Section -->
+          <div class="tip-banner">
+            <span class="tip-icon">💡</span>
+            <p class="tip-text">Answer carefully to maximize your score!</p>
+          </div>
+
+          <!-- Error Alert -->
+          <div *ngIf="showIncorrectAlert" class="alert-banner alert-error">
+            <span class="alert-icon">✖</span>
+            <p class="alert-text">Incorrect answer. Try again!</p>
+          </div>
+
+          <!-- Error Message -->
+          <div *ngIf="errorMsg" class="alert-banner alert-error">
+            <span class="alert-icon">⚠️</span>
+            <p class="alert-text">{{ errorMsg }}</p>
+          </div>
+        </div>
+
+        <!-- Game Result State -->
+        <div *ngIf="activeStudentChallenge && gameStatus !== 'PLAYING'" class="game-result-overlay glass">
+          <div class="result-content">
+            <div class="result-icon" [class.won]="gameStatus === 'WON'" [class.lost]="gameStatus === 'LOST'" [class.timeout]="gameStatus === 'TIMEOUT'">
+              <span *ngIf="gameStatus === 'WON'">🎉</span>
+              <span *ngIf="gameStatus === 'LOST'">❌</span>
+              <span *ngIf="gameStatus === 'TIMEOUT'">⌛</span>
+            </div>
+
+            <h3 class="result-title" [class.won]="gameStatus === 'WON'" [class.lost]="gameStatus === 'LOST'">
+              <span *ngIf="gameStatus === 'WON'">Challenge Won!</span>
+              <span *ngIf="gameStatus === 'LOST'">Challenge Failed</span>
+              <span *ngIf="gameStatus === 'TIMEOUT'">Time's Up</span>
+            </h3>
+
+            <div class="result-score">{{ gainedScore }} points earned</div>
+
+            <!-- New Badges -->
+            <div *ngIf="newlyEarnedBadges.length > 0" class="earned-badges-section">
+              <p class="badges-label">New Badges Unlocked!</p>
+              <div class="badges-display">
+                <div *ngFor="let badge of newlyEarnedBadges" class="badge-item" (click)="openBadgeDetails(badge)">
+                  <img [src]="badge.imageUrl || 'assets/badges/default.png'" [alt]="badge.name" [title]="badge.name" />
+                </div>
+              </div>
+            </div>
+
+            <div class="result-actions">
+              <button class="btn-retry-premium" (click)="retryChallenge()">
+                <span class="btn-icon">🔄</span> Try Again
+              </button>
+              <button class="btn-next-premium" (click)="playAnotherChallenge()">
+                <span class="btn-icon">→</span> Next Challenge
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section *ngIf="(allBadges.length > 0 || newlyEarnedBadges.length > 0) && step !== 'TYPE'" class="badge-hero glass animate-in">
+        <div class="badge-hero__top">
+          <div>
+            <span class="section-label">Badges</span>
+            <h2>Vos trophées et récompenses</h2>
+            <p>Chaque badge gagné renforce votre progression. Gardez vos trophées visibles et visez le prochain niveau.</p>
+          </div>
+          <div *ngIf="newlyEarnedBadges.length > 0" class="badge-hero__pill">
+            <span>Nouvelle récompense débloquée</span>
+          </div>
+        </div>
+
+        <div *ngIf="allBadges.length > 0" class="badge-list-premium">
+          <div *ngFor="let badge of allBadges; let i = index" 
+               class="badge-row animate-in"
+               [class.new-badge]="isBadgeNew(badge)"
+               [style.--badge-delay]="getBadgeDelay(i)"
+               (click)="openBadgeDetails(badge)">
+            
+
+            <div class="badge-row__content">
+              <div class="badge-row__header">
+                <h3 class="badge-row__title">{{ badge.name }}</h3>
+                <span class="badge-row__tier" [attr.data-tier]="getBadgeTier(badge)">
+                  {{ getBadgeTier(badge) }}
+                </span>
+              </div>
+              <p class="badge-row__description">{{ badge.description || 'Achievement unlocked for your outstanding performance.' }}</p>
+            </div>
+
+            <div class="badge-row__meta">
+              <div class="points-tag">
+                <i class="fas fa-bolt"></i>
+                <span>{{ badge.pointsRequired }} pts</span>
+              </div>
+              <button class="badge-row__action">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="allBadges.length === 0" class="badge-empty-state">
+          <div class="badge-empty-state__icon">🏆</div>
+          <h3>Pas encore de badge</h3>
+          <p>Terminez une mission pour voir votre première récompense apparaître ici.</p>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- RIGHT: Stats sidebar -->
+    <aside class="layout__sidebar">
+      <div class="sidebar-card glass">
+        <div class="sidebar-card__header">
+          <h2 class="sidebar-card__title">My Progress</h2>
+          <div class="progress-pulse"></div>
+        </div>
+
+        <div class="sidebar-stats">
+          <div class="stat-item premium">
+            <div class="stat-info">
+              <div class="stat-icon-box score">
+                <i class="fas fa-star"></i>
+              </div>
+              <span class="stat-label">Total Points</span>
+            </div>
+            <span class="stat-value highlight">{{ totalScore }}</span>
+          </div>
+          
+          <div class="stat-item premium">
+            <div class="stat-info">
+              <div class="stat-icon-box badges">
+                <i class="fas fa-medal"></i>
+              </div>
+              <span class="stat-label">Badges Earned</span>
+            </div>
+            <span class="stat-value">{{ allBadges.length }}</span>
+          </div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div *ngIf="allBadges.length > 0" class="badges-section">
+          
+          <div class="badges-grid-premium">
+            <div *ngFor="let b of allBadges" class="badge-wrapper" (click)="openBadgeDetails(b)">
+              <div class="badge-frame" [title]="b.name">
+                <img [src]="b.imageUrl || 'assets/badges/default.png'"
+                     [alt]="b.name"
+                     class="badge-icon" 
+                     onerror="this.src='https://cdn-icons-png.flaticon.com/512/10044/10044163.png'"/>
+              </div>
+              <div class="badge-tooltip">{{ b.name }}</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<!-- BADGE DETAILS MODAL -->
+<div *ngIf="showBadgePopup" class="modal-overlay" (click)="closeBadgePopup()">
+  <div class="modal-content glass" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="closeBadgePopup()">&times;</button>
+    <div class="badge-details" *ngIf="selectedBadge">
+      <img [src]="selectedBadge.imageUrl || 'assets/badges/default.png'" alt="{{ selectedBadge.name }}" class="badge-large" />
+      <h3>{{ selectedBadge.name }}</h3>
+      <p>{{ selectedBadge.description }}</p>
+      <div class="badge-points">Required Points: {{ selectedBadge.pointsRequired }}</div>
+    </div>
+  </div>
+</div>

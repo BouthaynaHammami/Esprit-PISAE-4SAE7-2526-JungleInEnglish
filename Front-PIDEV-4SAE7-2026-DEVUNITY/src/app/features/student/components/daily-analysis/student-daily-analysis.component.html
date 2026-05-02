@@ -1,0 +1,226 @@
+<div class="page">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a href="/dashboard" class="breadcrumb__link">Dashboard</a>
+    <span class="breadcrumb__sep">/</span>
+    <strong>Daily Summary</strong>
+  </div>
+
+  <!-- Hero Section -->
+  <div class="hero">
+    <h1>Daily Summary</h1>
+    <p>Overview of your tasks across Certifications & Community Events</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading analysis...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading" class="content">
+    <!-- Summary Cards Grid -->
+    <div class="summary-grid">
+      <div class="stat-card">
+        <div class="stat-card__icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="stat-card__content">
+          <h3>{{ totalTasks }}</h3>
+          <p>Total Tasks</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--todo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+        </div>
+        <div class="stat-card__content">
+          <h3>{{ totalTodo }}</h3>
+          <p>To Do</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--doing">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        </div>
+        <div class="stat-card__content">
+          <h3>{{ totalDoing }}</h3>
+          <p>In Progress</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--done">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="stat-card__content">
+          <h3>{{ totalDone }}</h3>
+          <p>Completed</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--overdue">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3.05h16.94a2 2 0 0 0 1.71-3.05L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="stat-card__content">
+          <h3>{{ totalOverdue }}</h3>
+          <p>Overdue</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--completion">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"></polyline></svg>
+        </div>
+        <div class="stat-card__content">
+          <h3>{{ completionRate }}%</h3>
+          <p>Completion Rate</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overall Progress -->
+    <div class="progress-section glass">
+      <h3 class="progress-section__title">Overall Progress</h3>
+      <div class="progress-wrapper">
+        <div class="progress-bar-outer">
+          <div class="progress-bar-inner" [style.width.%]="completionRate"></div>
+        </div>
+        <p class="progress-text">{{ totalDone }} of {{ totalTasks }} tasks completed</p>
+      </div>
+    </div>
+
+    <!-- Modules Grid -->
+    <div class="modules-grid">
+      <!-- Certifications Module -->
+      <div class="module-card glass" *ngIf="certifAnalysis">
+        <div class="module-header module-header--certif">
+          <div class="module-header__content">
+            <h3 class="module-title">Certifications</h3>
+            <span class="module-date">{{ certifAnalysis.date | date:'MMM dd, yyyy' }}</span>
+          </div>
+        </div>
+
+        <div class="module-stats">
+          <div class="module-stat">
+            <span class="module-stat__value">{{ certifAnalysis.totalTasks }}</span>
+            <span class="module-stat__label">Total</span>
+          </div>
+          <div class="module-stat">
+            <span class="module-stat__value module-stat__value--todo">{{ certifAnalysis.todoCount }}</span>
+            <span class="module-stat__label">To Do</span>
+          </div>
+          <div class="module-stat">
+            <span class="module-stat__value module-stat__value--doing">{{ certifAnalysis.doingCount }}</span>
+            <span class="module-stat__label">In Progress</span>
+          </div>
+          <div class="module-stat">
+            <span class="module-stat__value module-stat__value--done">{{ certifAnalysis.doneCount }}</span>
+            <span class="module-stat__label">Done</span>
+          </div>
+          <div class="module-stat">
+            <span class="module-stat__value module-stat__value--overdue">{{ certifAnalysis.overdueCount }}</span>
+            <span class="module-stat__label">Overdue</span>
+          </div>
+        </div>
+
+        <!-- Due Today Section -->
+        <div *ngIf="certifAnalysis.tasksDueToday?.length" class="task-section">
+          <h4 class="task-section__title">Due Today</h4>
+          <div class="task-list">
+            <div *ngFor="let t of certifAnalysis.tasksDueToday" class="task-item">
+              <span class="task-badge" [class]="'task-badge--' + t.status.toLowerCase()">{{ t.status }}</span>
+              <span class="task-item__title">{{ t.title }}</span>
+              <span class="task-item__time">{{ t.deadline | date:'HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overdue Section -->
+        <div *ngIf="certifAnalysis.overdueTasks?.length" class="task-section task-section--overdue">
+          <h4 class="task-section__title">Overdue</h4>
+          <div class="task-list">
+            <div *ngFor="let t of certifAnalysis.overdueTasks" class="task-item task-item--overdue">
+              <span class="task-badge task-badge--overdue">OVERDUE</span>
+              <span class="task-item__title">{{ t.title }}</span>
+              <span class="task-item__time task-item__time--overdue">{{ t.deadline | date:'MMM d, HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!certifAnalysis.tasksDueToday?.length && !certifAnalysis.overdueTasks?.length" class="empty-state">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <p>No tasks due today or overdue</p>
+        </div>
+      </div>
+
+      <!-- Events Module -->
+      <div class="module-card glass" *ngIf="eventsAnalysis">
+        <div class="module-header module-header--events">
+          <div class="module-header__content">
+            <h3 class="module-title">Community Events</h3>
+            <span class="module-date">{{ eventsAnalysis.date | date:'MMM dd, yyyy' }}</span>
+          </div>
+        </div>
+
+        <div class="module-stats">
+          <div class="module-stat">
+            <span class="module-stat__value">{{ eventsAnalysis.totalTasks }}</span>
+            <span class="module-stat__label">Total</span>
+          </div>
+          <div class="module-stat">
+            <span class="module-stat__value module-stat__value--todo">{{ eventsAnalysis.todoCount }}</span>
+            <span class="module-stat__label">To Do</span>
+          </div>
+          <div class="module-stat">
+            <span class="module-stat__value module-stat__value--doing">{{ eventsAnalysis.doingCount }}</span>
+            <span class="module-stat__label">In Progress</span>
+          </div>
+          <div class="module-stat">
+            <span class="module-stat__value module-stat__value--done">{{ eventsAnalysis.doneCount }}</span>
+            <span class="module-stat__label">Done</span>
+          </div>
+          <div class="module-stat">
+            <span class="module-stat__value module-stat__value--overdue">{{ eventsAnalysis.overdueCount }}</span>
+            <span class="module-stat__label">Overdue</span>
+          </div>
+        </div>
+
+        <!-- Due Today Section -->
+        <div *ngIf="eventsAnalysis.tasksDueToday?.length" class="task-section">
+          <h4 class="task-section__title">Due Today</h4>
+          <div class="task-list">
+            <div *ngFor="let t of eventsAnalysis.tasksDueToday" class="task-item">
+              <span class="task-badge" [class]="'task-badge--' + t.status.toLowerCase()">{{ t.status }}</span>
+              <span class="task-item__title">{{ t.title }}</span>
+              <span class="task-item__time">{{ t.deadline | date:'HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overdue Section -->
+        <div *ngIf="eventsAnalysis.overdueTasks?.length" class="task-section task-section--overdue">
+          <h4 class="task-section__title">Overdue</h4>
+          <div class="task-list">
+            <div *ngFor="let t of eventsAnalysis.overdueTasks" class="task-item task-item--overdue">
+              <span class="task-badge task-badge--overdue">OVERDUE</span>
+              <span class="task-item__title">{{ t.title }}</span>
+              <span class="task-item__time task-item__time--overdue">{{ t.deadline | date:'MMM d, HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!eventsAnalysis.tasksDueToday?.length && !eventsAnalysis.overdueTasks?.length" class="empty-state">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <p>No tasks due today or overdue</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

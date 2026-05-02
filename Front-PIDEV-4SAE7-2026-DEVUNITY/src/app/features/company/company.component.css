@@ -1,0 +1,369 @@
+/* =======================================================
+   COMPANY DASHBOARD DESIGN SYSTEM
+   Standardized Teal Palette: #006D77, #83C5BE, #EDF6F9, #FFDDD2, #E29578
+   ======================================================= */
+
+:host {
+    display: block;
+    --primary: #006D77;
+    --primary-soft: #83C5BE;
+    --bg-main: #EDF6F9;
+    --accent-soft: #FFDDD2;
+    --accent: #E29578;
+    --white: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+}
+
+.dashboard-wrapper {
+    min-height: 100vh;
+    background: var(--bg-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--text-main);
+}
+
+/* =======================================================
+   PREMIUM NAVBAR
+   ======================================================= */
+.glass-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 109, 119, 0.1);
+    padding: 0 40px;
+    height: 72px;
+}
+
+.nav-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-icon {
+    background: linear-gradient(135deg, var(--primary), var(--primary-soft));
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 109, 119, 0.2);
+}
+
+.brand-name {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.brand-name span {
+    color: var(--accent);
+}
+
+.page-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-pill {
+    background: white;
+    padding: 6px 16px;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(0, 109, 119, 0.1);
+}
+
+.user-icon {
+    color: var(--primary-soft);
+}
+
+.user-email {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.logout-btn {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.logout-btn:hover {
+    background: var(--accent);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* =======================================================
+   MAIN LAYOUT & STATS
+   ======================================================= */
+.main-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid rgba(0, 109, 119, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 109, 119, 0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 109, 119, 0.08);
+}
+
+.stat-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.stat-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* =======================================================
+   TABLE SECTION
+   ======================================================= */
+.table-container {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    padding: 0;
+    border: 1px solid rgba(0, 109, 119, 0.05);
+}
+
+.shadow-premium {
+    box-shadow: 0 20px 50px rgba(0, 109, 119, 0.06);
+}
+
+.table-header {
+    padding: 30px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 109, 119, 0.05);
+}
+
+.table-title-group h2 {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary);
+    margin: 0;
+}
+
+.table-title-group p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 4px 0 0;
+}
+
+.total-pill {
+    background: var(--bg-main);
+    color: var(--primary);
+    padding: 6px 16px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.scrollable-table {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #fdfdfd;
+    padding: 16px 40px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary-soft);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(0, 109, 119, 0.03);
+}
+
+.table-row {
+    transition: background 0.2s;
+}
+
+.table-row:hover {
+    background: rgba(131, 197, 190, 0.03);
+}
+
+td {
+    padding: 20px 40px;
+    border-bottom: 1px solid rgba(0, 109, 119, 0.03);
+}
+
+/* CELL STYLES */
+.profile-cell {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(226, 149, 120, 0.15);
+}
+
+.name-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.sub {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.level-badge {
+    background: var(--primary);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.progress-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 180px;
+}
+
+.progress-bar-bg {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-main);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-text {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-muted);
+}
+
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-active { background: #dcfce7; color: #15803d; }
+.status-completed { background: var(--accent-soft); color: var(--accent); }
+.status-paused { background: #f1f5f9; color: #64748b; }
+
+.date-cell {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+    .glass-navbar { padding: 0 20px; }
+    .main-content { padding: 20px; }
+    .nav-center { display: none; }
+}

@@ -1,0 +1,134 @@
+$primary: #006D77;
+$primary-light: #e0f5f5;
+$danger: #e74c3c;
+$warning: #f39c12;
+$success: #27ae60;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-400: #ced4da;
+$gray-600: #6c757d;
+$gray-800: #343a40;
+$radius: 12px;
+$shadow: 0 2px 12px rgba(0,0,0,.08);
+
+.analysis-container { padding: 24px; min-height: 100vh; background: $gray-100; }
+
+.analysis-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+  h2 { font-size: 1.5rem; font-weight: 700; color: $gray-800; margin: 0; }
+  .subtitle { color: $gray-600; font-size: 0.875rem; margin: 4px 0 0; }
+}
+
+/* ─── Summary Cards ───────────────────────────── */
+.summary-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px;
+}
+
+.summary-card {
+  background: #fff; border-radius: $radius; box-shadow: $shadow; padding: 20px; display: flex; align-items: center; gap: 16px;
+}
+
+.card-icon {
+  width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1.1rem; color: #fff; flex-shrink: 0;
+  &.blue { background: #3498db; }
+  &.red { background: $danger; }
+  &.orange { background: $warning; }
+  &.green { background: $success; }
+  &.dark-red { background: #c0392b; }
+  &.teal { background: $primary; }
+}
+
+.card-info { display: flex; flex-direction: column; }
+.card-value { font-size: 1.5rem; font-weight: 700; color: $gray-800; line-height: 1; }
+.card-label { font-size: 0.8rem; color: $gray-600; margin-top: 4px; }
+
+/* ─── Progress Bar ────────────────────────────── */
+.progress-section {
+  background: #fff; border-radius: $radius; box-shadow: $shadow; padding: 24px; margin-bottom: 28px;
+  h3 { margin: 0 0 12px; font-size: 1rem; font-weight: 600; color: $gray-800; }
+}
+
+.progress-bar-outer {
+  width: 100%; height: 12px; background: $gray-200; border-radius: 6px; overflow: hidden;
+}
+
+.progress-bar-inner {
+  height: 100%; background: linear-gradient(90deg, $primary, $success); border-radius: 6px;
+  transition: width 0.6s ease;
+}
+
+.progress-text { font-size: 0.85rem; color: $gray-600; margin: 8px 0 0; }
+
+/* ─── Module Cards ────────────────────────────── */
+.modules-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;
+}
+
+.module-card {
+  background: #fff; border-radius: $radius; box-shadow: $shadow; overflow: hidden;
+}
+
+.module-header {
+  padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; color: #fff;
+  h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+  &.certif { background: linear-gradient(135deg, $primary, darken($primary, 10%)); }
+  &.events { background: linear-gradient(135deg, #8e44ad, #6c3483); }
+}
+
+.module-date { font-size: 0.8rem; opacity: 0.8; }
+
+.module-stats {
+  display: flex; gap: 0; border-bottom: 1px solid $gray-200;
+}
+
+.stat {
+  flex: 1; text-align: center; padding: 14px 8px; border-right: 1px solid $gray-200;
+  &:last-child { border-right: none; }
+}
+
+.stat-count { display: block; font-size: 1.3rem; font-weight: 700; color: $gray-800;
+  &.todo { color: $danger; }
+  &.doing { color: $warning; }
+  &.done { color: $success; }
+  &.overdue { color: #c0392b; }
+}
+
+.stat-label { font-size: 0.7rem; color: $gray-600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ─── Task sections ───────────────────────────── */
+.task-section {
+  padding: 16px 20px;
+  h4 { margin: 0 0 10px; font-size: 0.85rem; font-weight: 600; color: $gray-800; }
+  & + .task-section { border-top: 1px solid $gray-200; }
+}
+
+.overdue-section h4 { color: $danger; }
+
+.mini-task {
+  display: flex; align-items: center; gap: 10px; padding: 8px 0;
+  border-bottom: 1px solid $gray-100;
+  &:last-child { border-bottom: none; }
+}
+
+.mini-status {
+  font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;
+  &.todo { background: #fce4ec; color: $danger; }
+  &.doing { background: #fff8e1; color: $warning; }
+  &.done { background: #e8f5e9; color: $success; }
+  &.overdue-badge { background: $danger; color: #fff; }
+}
+
+.mini-title { flex: 1; font-size: 0.85rem; color: $gray-800; }
+.mini-deadline { font-size: 0.75rem; color: $gray-600; }
+.text-red { color: $danger !important; }
+
+.no-tasks { padding: 20px; text-align: center; color: $gray-600; font-size: 0.85rem; }
+
+/* ─── Shared ──────────────────────────────────── */
+.loading-state { text-align: center; padding: 60px 0; color: $gray-600; }
+.spinner { width: 36px; height: 36px; border: 3px solid $gray-200; border-top-color: $primary; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.btn-primary { background: $primary; color: #fff; &:hover { background: darken($primary, 8%); } }

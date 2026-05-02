@@ -1,0 +1,177 @@
+<!-- ══════════════════════════════════════════════
+     DECORATIVE BACKGROUND SHAPES
+══════════════════════════════════════════════ -->
+<div class="bg-decor">
+  <div class="bg-orb bg-orb--1"></div>
+  <div class="bg-orb bg-orb--2"></div>
+  <div class="bg-orb bg-orb--3"></div>
+  <div class="bg-sphere bg-sphere--1"></div>
+  <div class="bg-sphere bg-sphere--2"></div>
+  <div class="bg-sphere bg-sphere--3"></div>
+  <div class="bg-sphere bg-sphere--4"></div>
+  <div class="bg-plane">
+    <svg width="90" height="60" viewBox="0 0 90 60" fill="none">
+      <path d="M5 50 L85 10 L50 30 L85 10 L60 55 L50 30 L5 50Z" fill="url(#planeGrad)" opacity="0.18"/>
+      <defs><linearGradient id="planeGrad" x1="0" y1="0" x2="90" y2="60"><stop stop-color="#5ad0d0"/><stop offset="1" stop-color="#83C5BE" stop-opacity="0.3"/></linearGradient></defs>
+    </svg>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────
+     LOADING STATE
+──────────────────────────────────────────── -->
+<div *ngIf="loading" class="flex items-center justify-center min-h-[60vh]">
+    <div class="flex flex-col items-center gap-4">
+        <div class="w-14 h-14 border-4 border-[#006D77] border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-gray-500 font-medium">Loading your courses…</p>
+    </div>
+</div>
+
+<!-- ──────────────────────────────────────────
+     ERROR STATE
+──────────────────────────────────────────── -->
+<div *ngIf="!loading && error" class="flex items-center justify-center min-h-[60vh]">
+    <div class="bg-red-50 border border-red-200 rounded-2xl p-8 text-center max-w-md">
+        <span class="text-4xl">⚠️</span>
+        <p class="mt-3 text-red-600 font-medium">{{ error }}</p>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MAIN PAGE
+══════════════════════════════════════════════ -->
+<main *ngIf="!loading && !error" class="page">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <span class="breadcrumb__back">&#8249;</span>
+    <a routerLink="/student/dashboard">Home</a>
+    <span class="breadcrumb__sep">&#8250;</span>
+    <strong>Courses</strong>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <h1>Explore Courses</h1>
+    <p>Browse and enroll in our premium English learning courses</p>
+  </header>
+
+  <!-- Two-column layout -->
+  <div class="layout">
+
+    <!-- LEFT: Course cards -->
+    <div class="layout__main">
+
+      <!-- Search bar -->
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search courses..." [(ngModel)]="searchTerm">
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="filteredCourses.length === 0 && courses.length === 0" class="empty-state">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <p class="empty-state__title">No courses available</p>
+        <p class="empty-state__sub">Check back soon for new course releases</p>
+      </div>
+
+      <!-- No search results state -->
+      <div *ngIf="filteredCourses.length === 0 && courses.length > 0" class="empty-state">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <p class="empty-state__title">No courses found</p>
+        <p class="empty-state__sub">Try searching with different keywords</p>
+      </div>
+
+      <!-- Courses grid (premium card design) -->
+      <div *ngIf="filteredCourses.length > 0" class="courses-grid">
+        <article *ngFor="let course of filteredCourses; let i = index"
+                 class="course-card glass"
+                 [style.--card-delay]="(i * 0.07) + 's'">
+
+          <!-- Image side with level badge -->
+          <div class="course-card__img-side">
+            <img *ngIf="course.imageUrl"
+                 [src]="course.imageUrl"
+                 alt="{{ course.title }}" class="course-card__img">
+            <div *ngIf="!course.imageUrl" class="course-card__img-ph">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(90,208,208,0.35)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+            <div class="course-level-badge"
+                 [ngClass]="{ 'orange': i % 2 === 0, 'teal': i % 2 !== 0 }">
+              <span class="course-level-text">{{ course.level }}</span>
+            </div>
+          </div>
+
+          <!-- Content side -->
+          <div class="course-card__body">
+            <div class="course-card__header">
+              <h3 class="course-card__title">{{ course.title }}</h3>
+              <span class="course-card__pill"
+                    [ngClass]="{ 'pill--enrolled': isEnrolled(course), 'pill--locked': !isEnrolled(course) }">
+                <svg *ngIf="isEnrolled(course)" width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z" fill="#006D77"/>
+                </svg>
+                <svg *ngIf="!isEnrolled(course)" width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#E29578"/>
+                </svg>
+                {{ isEnrolled(course) ? 'Enrolled' : 'Available' }}
+              </span>
+            </div>
+
+            <p *ngIf="course.description" class="course-card__desc">{{ course.description }}</p>
+
+            <div class="course-card__separator"></div>
+
+            <div class="course-card__footer">
+              <div class="course-card__meta">
+                <span class="course-card__meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5h16M6 12.5h12M6 5.5h12"/></svg>
+                  {{ course.lessonsNumber ?? 0 }} lessons
+                </span>
+                <span class="course-card__meta-item" *ngIf="getEnrollment(course)?.progress !== undefined">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  {{ getEnrollment(course)?.progress ?? 0 }}% complete
+                </span>
+              </div>
+
+              <div class="course-card__actions">
+                <button *ngIf="isEnrolled(course)"
+                        (click)="openCourse(course)"
+                        class="btn-continue">
+                  Continue Learning
+                </button>
+                <div *ngIf="!isEnrolled(course)" class="badge-locked">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Not enrolled
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- RIGHT: Course info sidebar -->
+    <aside class="layout__sidebar" *ngIf="filteredCourses.length > 0">
+      <div class="sidebar-card glass">
+        <h2 class="sidebar-card__title">My Courses</h2>
+
+        <div class="sidebar-stats">
+          <div class="stat-item">
+            <span class="stat-label">Enrolled</span>
+            <span class="stat-value">{{ enrolledCourseIds.size }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Available</span>
+            <span class="stat-value">{{ courses.length - enrolledCourseIds.size }}</span>
+          </div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <p class="sidebar-card__terms">Browse available courses and enroll to start learning. Track your progress as you complete each lesson and quiz.</p>
+      </div>
+    </aside>
+
+  </div>
+</main>

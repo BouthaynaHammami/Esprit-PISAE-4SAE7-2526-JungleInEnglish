@@ -1,0 +1,312 @@
+<div class="bg-decor">
+  <div class="bg-orb bg-orb--1"></div>
+  <div class="bg-orb bg-orb--2"></div>
+  <div class="bg-orb bg-orb--3"></div>
+  <div class="bg-sphere bg-sphere--1"></div>
+  <div class="bg-sphere bg-sphere--2"></div>
+  <div class="bg-sphere bg-sphere--3"></div>
+  <div class="bg-sphere bg-sphere--4"></div>
+  <div class="bg-plane">
+    <svg width="90" height="60" viewBox="0 0 90 60" fill="none">
+      <path d="M5 50 L85 10 L50 30 L85 10 L60 55 L50 30 L5 50Z" fill="url(#planeGrad)" opacity="0.18"/>
+      <defs><linearGradient id="planeGrad" x1="0" y1="0" x2="90" y2="60"><stop stop-color="#5ad0d0"/><stop offset="1" stop-color="#83C5BE" stop-opacity="0.3"/></linearGradient></defs>
+    </svg>
+  </div>
+</div>
+
+<div *ngIf="successMessage || errorMessage" class="ev-toast" [class.ev-toast--success]="successMessage" [class.ev-toast--error]="errorMessage">
+  <div class="ev-toast__ico">
+    <svg *ngIf="successMessage" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    <svg *ngIf="errorMessage" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+  </div>
+  <span>{{ successMessage || errorMessage }}</span>
+</div>
+
+<div *ngIf="showDiscountModal" class="ev-overlay">
+  <div class="ev-overlay__bg" (click)="showDiscountModal = false"></div>
+  <div class="ev-modal" (click)="$event.stopPropagation()">
+    <div class="ev-modal__bar"></div>
+    <div class="ev-modal__head">
+      <div class="ev-modal__head-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2 7h7l-5.7 4.2L17 22l-5-3.3L7 22l1.7-8.8L3 9h7l2-7z"/></svg>
+      </div>
+      <h2>{{ discountTitle || 'Discount unlocked' }}</h2>
+      <button class="ev-modal__x" (click)="showDiscountModal = false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ev-modal__body">
+      <p class="ev-modal__evt-name">{{ discountContext }}</p>
+      <p class="ev-modal__meta-r">Profitez de votre réduction sur vos prochaines commandes et locations.</p>
+      <div class="ev-modal__btns">
+        <button class="ev-btn ev-btn--prim" (click)="showDiscountModal = false">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showWalletModal" class="ev-overlay ev-overlay--dark" (click)="closeWalletModal()">
+  <div class="ev-overlay__bg"></div>
+  <div class="ev-modal" (click)="$event.stopPropagation()">
+    <div class="ev-modal__bar"></div>
+    <div class="ev-modal__head">
+      <div class="ev-modal__head-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M4 11h16"/></svg>
+      </div>
+      <h2>Library Wallet</h2>
+      <button class="ev-modal__x" (click)="closeWalletModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ev-modal__body">
+      <div class="wallet-tabs">
+        <button class="tab-btn" [class.tab-btn--active]="walletTab === 'overview'" (click)="setWalletTab('overview')">Overview</button>
+        <button class="tab-btn" [class.tab-btn--active]="walletTab === 'history'" (click)="setWalletTab('history')">Transactions</button>
+      </div>
+      <div *ngIf="walletTab === 'overview'" class="wallet-summary">
+        <div class="sidebar-card__label">Current Balance</div>
+        <div class="wallet-balance">{{ wallet?.balance | number:'1.2-2' }} TND</div>
+        <div class="wallet-grid">
+          <div>
+            <span class="sidebar-card__label">Currency</span>
+            <p>TND</p>
+          </div>
+          <div>
+            <span class="sidebar-card__label">Available</span>
+            <p>{{ wallet?.balance | number:'1.2-2' }} TND</p>
+          </div>
+        </div>
+        <form [formGroup]="rechargeForm" (ngSubmit)="wallet && rechargeForm.valid ? rechargeForm.reset() : null">
+          <label class="sidebar-card__label">Recharge Amount</label>
+          <input type="number" class="sidebar-card__input" formControlName="amount" placeholder="Enter amount" min="1">
+          <button type="button" class="sidebar-card__submit" (click)="openWalletModal()">Recharge</button>
+        </form>
+      </div>
+      <div *ngIf="walletTab === 'history'" class="wallet-history">
+        <div *ngIf="walletTransactions.length === 0" class="empty-state">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <p class="empty-state__title">No wallet activity</p>
+          <p class="empty-state__sub">Your recent transactions will appear here.</p>
+        </div>
+        <div *ngIf="walletTransactions.length > 0" class="transaction-list">
+          <div *ngFor="let tx of walletTransactions" class="transaction-item">
+            <span>{{ tx.description || tx.type || 'Transaction' }}</span>
+            <strong>{{ tx.amount | number:'1.2-2' }} TND</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showRentModal" class="ev-overlay">
+  <div class="ev-overlay__bg" (click)="closeRentModal()"></div>
+  <div class="ev-modal" (click)="$event.stopPropagation()">
+    <div class="ev-modal__bar"></div>
+    <div class="ev-modal__head">
+      <div class="ev-modal__head-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M4 11h16"/></svg>
+      </div>
+      <h2>Rent Book</h2>
+      <button class="ev-modal__x" (click)="closeRentModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ev-modal__body">
+      <h3 class="ev-modal__evt-name">{{ selectedBook?.title }}</h3>
+      <div *ngIf="selectedBook && getBookImageSrc(selectedBook)" class="ev-modal__img">
+        <img [src]="getBookImageSrc(selectedBook)" alt="Book cover">
+      </div>
+      <div class="ev-modal__metas">
+        <div class="ev-modal__meta-r">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M4 11h16"/></svg>
+          {{ selectedBook?.author?.name || 'Unknown author' }}
+        </div>
+        <div class="ev-modal__meta-r">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l5 5L22 4"/></svg>
+          Available: {{ selectedBook ? getAvailableStock(selectedBook) : 0 }} copies
+        </div>
+        <div class="ev-modal__meta-r">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z"/></svg>
+          Rental price: {{ getRentalPriceConverted(selectedBook, rentForm.get('currency')?.value || 'TND') | number:'1.2-2' }} {{ rentForm.get('currency')?.value || 'TND' }} / day
+        </div>
+      </div>
+      <form [formGroup]="rentForm" (ngSubmit)="submitRent()">
+        <label class="sidebar-card__label">Start Date</label>
+        <input type="date" class="sidebar-card__input" formControlName="startDate">
+        <label class="sidebar-card__label">Due Date</label>
+        <input type="date" class="sidebar-card__input" formControlName="dueDate">
+        <label class="sidebar-card__label">Currency</label>
+        <select class="sidebar-card__select" formControlName="currency">
+          <option value="TND">TND</option>
+          <option value="EUR">EUR</option>
+          <option value="USD">USD</option>
+        </select>
+        <label class="sidebar-card__label">Payment Mode</label>
+        <select class="sidebar-card__select" formControlName="paymentMode">
+          <option value="CAISSE">Caisse</option>
+          <option value="WALLET">Wallet</option>
+        </select>
+        <div class="ev-modal__btns">
+          <button type="button" class="ev-btn ev-btn--ghost" (click)="closeRentModal()">Cancel</button>
+          <button type="submit" class="ev-btn ev-btn--prim" [disabled]="isLoading">
+            <span *ngIf="!isLoading">Confirm Rent</span>
+            <span *ngIf="isLoading" class="ev-btn__ld"><span class="ev-spin"></span> Renting...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showOrderModal" class="ev-overlay">
+  <div class="ev-overlay__bg" (click)="closeOrderModal()"></div>
+  <div class="ev-modal" (click)="$event.stopPropagation()">
+    <div class="ev-modal__bar"></div>
+    <div class="ev-modal__head">
+      <div class="ev-modal__head-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h14v12H5z"/><path d="M8 6v12"/></svg>
+      </div>
+      <h2>Order Book</h2>
+      <button class="ev-modal__x" (click)="closeOrderModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ev-modal__body">
+      <h3 class="ev-modal__evt-name">{{ selectedBook?.title }}</h3>
+      <div *ngIf="selectedBook && getBookImageSrc(selectedBook)" class="ev-modal__img">
+        <img [src]="getBookImageSrc(selectedBook)" alt="Book cover">
+      </div>
+      <div class="ev-modal__metas">
+        <div class="ev-modal__meta-r">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M4 11h16"/></svg>
+          Price per copy: {{ getSalePriceConverted(selectedBook, orderForm.get('currency')?.value || 'TND') | number:'1.2-2' }} {{ orderForm.get('currency')?.value || 'TND' }}
+        </div>
+        <div class="ev-modal__meta-r">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l5 5L22 4"/></svg>
+          Stock available: {{ selectedBook ? getAvailableStock(selectedBook) : 0 }}
+        </div>
+      </div>
+      <form [formGroup]="orderForm" (ngSubmit)="submitOrder()">
+        <label class="sidebar-card__label">Quantity</label>
+        <input type="number" class="sidebar-card__input" formControlName="qty" min="1">
+        <label class="sidebar-card__label">Currency</label>
+        <select class="sidebar-card__select" formControlName="currency">
+          <option value="TND">TND</option>
+          <option value="EUR">EUR</option>
+          <option value="USD">USD</option>
+        </select>
+        <label class="sidebar-card__label">Payment Mode</label>
+        <select class="sidebar-card__select" formControlName="paymentMode">
+          <option value="CAISSE">Caisse</option>
+          <option value="WALLET">Wallet</option>
+        </select>
+        <div class="ev-modal__btns">
+          <button type="button" class="ev-btn ev-btn--ghost" (click)="closeOrderModal()">Cancel</button>
+          <button type="submit" class="ev-btn ev-btn--prim" [disabled]="isLoading">
+            <span *ngIf="!isLoading">Confirm Order</span>
+            <span *ngIf="isLoading" class="ev-btn__ld"><span class="ev-spin"></span> Ordering...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<main class="page">
+  <nav class="breadcrumb">
+    <span class="breadcrumb__back">&#8249;</span>
+    <a routerLink="/student/dashboard">Home</a>
+    <span class="breadcrumb__sep">&#8250;</span>
+    <strong>Library</strong>
+  </nav>
+
+  <header class="hero">
+    <h1>Library Collection</h1>
+    <p>Browse academic resources, request rentals, and place orders with the same premium experience.</p>
+  </header>
+
+  <div class="tabs-bar">
+    <div class="tabs-group">
+      <button class="tab-btn tab-btn--active">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Browse Books
+        <span class="tab-count">{{ filteredBooks.length }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="layout__main">
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" [(ngModel)]="searchQuery" (input)="onSearch()" placeholder="Search books, authors, ISBN...">
+      </div>
+
+      <div *ngIf="filteredBooks.length === 0" class="empty-state">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><path d="M3 6h18M4 6v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6"/><path d="M8 6V4a4 4 0 0 1 8 0v2"/></svg>
+        <p class="empty-state__title">No books found</p>
+        <p class="empty-state__sub">Try another search term or refresh the library.</p>
+      </div>
+
+      <div *ngIf="filteredBooks.length > 0" class="events-list">
+        <article *ngFor="let book of filteredBooks; let i = index" class="event-card glass" [style.--card-delay]="(i * 0.07) + 's'">
+          <div class="event-card__img-side">
+            <img *ngIf="getBookImageSrc(book)" [src]="getBookImageSrc(book)" [alt]="book.title" class="event-card__img">
+            <div *ngIf="!getBookImageSrc(book)" class="event-card__img-ph">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(90,208,208,0.35)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+            <div class="event-card__date-badge" [class.orange]="isBookUnavailable(book)" [class.teal]="!isBookUnavailable(book)">
+              <span class="event-card__date-month">{{ isBookUnavailable(book) ? 'OUT' : 'IN' }}</span>
+              <span class="event-card__date-day">{{ getAvailableStock(book) }}</span>
+            </div>
+          </div>
+          <div class="event-card__body">
+            <div class="event-card__header">
+              <h3 class="event-card__title">{{ book.title }}</h3>
+              <span class="event-card__pill" [class.pill--demand]="book.status === 'AVAILABLE'" [class.pill--rated]="book.status !== 'AVAILABLE'">
+                {{ book.status === 'AVAILABLE' ? 'Available' : 'Unavailable' }}
+              </span>
+            </div>
+            <p class="event-card__desc">{{ book.category?.name || book.author?.name || book.isbn || 'Book details unavailable.' }}</p>
+            <div class="event-card__separator"></div>
+            <div class="event-card__footer">
+              <div class="event-card__meta">
+                <span class="event-card__meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2A7 7 0 0 0 5 9v5A7 7 0 0 0 12 21h0A7 7 0 0 0 19 14V9A7 7 0 0 0 12 2z"/></svg>
+                  {{ book.author?.name || 'Unknown Author' }}
+                </span>
+                <span class="event-card__meta-item" *ngIf="book.category?.name">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+                  {{ book.category?.name }}
+                </span>
+              </div>
+              <div class="event-card__actions">
+                <button *ngIf="!isBookUnavailable(book)" (click)="openRentModal(book)" class="btn-register">Rent</button>
+                <button *ngIf="!isBookUnavailable(book)" (click)="openOrderModal(book)" class="btn-register">Order</button>
+                <div *ngIf="isBookUnavailable(book)" class="badge-registered">Out of stock</div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <aside class="layout__sidebar">
+      <div class="sidebar-card glass">
+        <h2 class="sidebar-card__title">Library Wallet</h2>
+        <label class="sidebar-card__label">Balance</label>
+        <div class="wallet-balance">{{ wallet?.balance | number:'1.2-2' }} TND</div>
+        <button class="sidebar-card__submit" type="button" (click)="openWalletModal()">Manage Wallet</button>
+        <p class="sidebar-card__terms">View your balance, top up, and pay directly for rentals and orders.</p>
+      </div>
+      <div class="sidebar-card glass">
+        <h2 class="sidebar-card__title">Quick Actions</h2>
+        <label class="sidebar-card__label">Search</label>
+        <input class="sidebar-card__input" type="text" [(ngModel)]="searchQuery" (input)="onSearch()" placeholder="Search title, author, ISBN">
+        <button class="sidebar-card__submit" type="button" (click)="loadBooks()">Refresh Books</button>
+        <p class="sidebar-card__terms">Use the main search bar for fast filtering and refresh the library list.</p>
+      </div>
+    </aside>
+  </div>
+</main>

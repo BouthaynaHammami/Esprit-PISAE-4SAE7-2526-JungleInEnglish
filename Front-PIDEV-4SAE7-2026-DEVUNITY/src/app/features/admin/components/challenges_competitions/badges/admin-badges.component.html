@@ -1,0 +1,138 @@
+<div class="admin-wrapper">
+  <!-- HEADER SECTION -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1 class="page-title">Challenges Management</h1>
+      <p class="page-subtitle">Manage badges for gamification and student recognition.</p>
+    </div>
+    
+    <div class="header-actions">
+      <nav class="sub-nav">
+        <a class="nav-link" routerLink="/admin/challenges">Challenges</a>
+        <a class="nav-link" routerLink="/admin/student-stats">Stats</a>
+        <a class="nav-link active" routerLink="/admin/badges">Badges</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar" *ngIf="!showInlineForm">
+    <div class="action-group">
+      <button class="btn btn--primary" (click)="startCreate()">
+        <i class="fas fa-plus"></i> New Badge
+      </button>
+      <button class="btn btn--secondary" (click)="loadAll()" [disabled]="loading">
+        <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i> Refresh
+      </button>
+    </div>
+
+    <div class="action-group">
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" [(ngModel)]="nameQuery" (ngModelChange)="applyFilter()" placeholder="Search badges by name..." class="search-input" />
+        </div>
+      </div>
+      <select class="filter-select" [(ngModel)]="pointsFilter" (ngModelChange)="applyFilter()">
+        <option value="">All Points</option>
+        <option value="0-50">0 - 50</option>
+        <option value="51-100">51 - 100</option>
+        <option value="101-200">101 - 200</option>
+        <option value="200+">200+</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- INLINE FORM -->
+  <div class="inline-editor" *ngIf="showInlineForm">
+    <div class="editor-header">
+      <h2 class="editor-title">{{ isEdit ? 'Edit Badge' : 'Create New Badge' }}</h2>
+      <p class="editor-subtitle">Fill in the details below to add or update a badge.</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Badge Name *</label>
+          <input formControlName="name" class="form-input" placeholder="e.g. Grammar Guru" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Points Required *</label>
+          <input type="number" formControlName="pointsRequired" class="form-input" placeholder="100" />
+        </div>
+        <div class="form-group full-width">
+          <label class="form-label">Badge Image URL</label>
+          <input formControlName="imageUrl" class="form-input" placeholder="https://..." />
+        </div>
+        <div class="form-group full-width">
+          <label class="form-label">Description</label>
+          <textarea formControlName="description" class="form-input" rows="3" placeholder="Describe how to earn this badge..."></textarea>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button class="btn btn--secondary" type="button" (click)="cancelForm()">Cancel</button>
+        <button class="btn btn--primary" type="submit" [disabled]="loading || form.invalid">
+          <i class="fas fa-check"></i> {{ isEdit ? 'Update Badge' : 'Create Badge' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- DATA TABLE -->
+  <div class="table-container" *ngIf="!loading && !showInlineForm">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Badge</th>
+          <th>Requirements</th>
+          <th>Description</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of filtered" class="table-row">
+          <td>
+            <div style="display:flex; align-items:center; gap:15px;">
+              <div class="badge-preview">
+                <img *ngIf="b.imageUrl" [src]="b.imageUrl" [alt]="b.name" />
+                <span *ngIf="!b.imageUrl">🏅</span>
+              </div>
+              <div class="cell-main">{{ b.name }}</div>
+            </div>
+          </td>
+          <td>
+            <span class="points-badge">
+              <i class="fas fa-star"></i> {{ b.pointsRequired }} Points
+            </span>
+          </td>
+          <td>
+            <div class="cell-sub">{{ (b.description | slice:0:60) + ((b.description?.length ?? 0) > 60 ? '...' : '') }}</div>
+          </td>
+          <td class="text-right">
+            <div class="row-actions">
+              <button class="action-btn edit-btn" (click)="onEdit(b)">
+                <i class="fas fa-edit"></i> <span>Edit</span>
+              </button>
+              <button class="action-btn delete-btn" (click)="onDelete(b)">
+                <i class="fas fa-trash"></i> <span>Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" *ngIf="filtered.length === 0">
+      <div class="empty-state__visual"><i class="fas fa-medal"></i></div>
+      <h3 class="empty-state__title">No badges found</h3>
+      <p class="empty-state__text">Try adjusting your filters or create a new badge.</p>
+    </div>
+  </div>
+
+  <!-- LOADER -->
+  <div *ngIf="loading" style="padding: 100px; text-align: center;">
+    <i class="fas fa-spinner fa-spin fa-3x" style="color: #83C5BE;"></i>
+  </div>
+</div>

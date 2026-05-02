@@ -1,0 +1,67 @@
+<div class="p-8 space-y-6">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+            <h1 class="text-3xl font-bold text-[#006D77] heading-font">{{ pageTitle }}</h1>
+            <p class="text-gray-500 mt-1">All complaints you created from tutor planning.</p>
+        </div>
+        <button (click)="loadMine()"
+            class="px-4 py-2 bg-[#006D77] text-white text-sm font-semibold rounded-lg hover:bg-[#005962] transition-colors">
+            Refresh
+        </button>
+    </div>
+
+    <div *ngIf="successMessage"
+        class="flex items-center gap-3 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm font-medium">
+        <span>✅</span><span>{{ successMessage }}</span>
+    </div>
+
+    <div *ngIf="error"
+        class="flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-medium">
+        <span>❌</span><span>{{ error }}</span>
+    </div>
+
+    <div *ngIf="isLoading" class="flex justify-center py-16">
+        <div class="w-10 h-10 border-4 border-[#006D77]/30 border-t-[#006D77] rounded-full animate-spin"></div>
+    </div>
+
+    <div *ngIf="!isLoading && complaints.length === 0" class="bg-white border border-gray-100 rounded-2xl p-14 text-center text-gray-400">
+        <div class="text-5xl mb-3">📭</div>
+        <p class="font-semibold">No complaints found.</p>
+    </div>
+
+    <div *ngIf="!isLoading && complaints.length > 0" class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">ID</th>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Subject</th>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Room</th>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Status</th>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Answer</th>
+                    <th class="text-right px-5 py-3 font-semibold text-gray-600">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let c of complaints" class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                    <td class="px-5 py-4 text-gray-500">#{{ c.complaintId }}</td>
+                    <td class="px-5 py-4 font-medium text-gray-900">{{ c.subject }}</td>
+                    <td class="px-5 py-4 text-gray-600">{{ c.room?.name || '-' }}</td>
+                    <td class="px-5 py-4">
+                        <span [class]="c.status
+                            ? 'px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold'
+                            : 'px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold'">
+                            {{ c.status ? 'Answered' : 'Pending' }}
+                        </span>
+                    </td>
+                    <td class="px-5 py-4 text-gray-600 max-w-sm truncate">{{ c.answer || '-' }}</td>
+                    <td class="px-5 py-4 text-right">
+                        <button (click)="deleteComplaint(c)"
+                            class="px-3 py-1.5 text-xs font-semibold text-red-600 border border-red-300 rounded-lg hover:bg-red-600 hover:text-white transition-colors">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

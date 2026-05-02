@@ -1,0 +1,47 @@
+// src/app/core/models/recruitment.model.ts
+
+export type RecruitmentStatus = 'OPEN' | 'CLOSED' | 'CANCELLED';
+export type ApplicantStatus   = 'PENDING' | 'ACCEPTED' | 'REJECTED';
+export type MeetingStatus     = 'SCHEDULED' | 'DONE' | 'CANCELLED' | 'ENLIGNE' | 'PRESENTIEL';
+
+export interface Recruitment {
+  id?: number;
+  positionTitle: string;
+  department: string;
+  status?: RecruitmentStatus;
+  openedAt?: string | Date;
+  interviews?: Interview[];
+  applicants?: Applicant[];
+}
+
+export interface Interview {
+  id?: number;
+  title: string;
+  startDateTime?: string | Date;
+  durationMinutes?: number;
+  meetingLink?: string;
+  userId?: number;
+  meetingStatus?: MeetingStatus;
+  recruitment?: Partial<Recruitment>;
+}
+
+export interface Applicant {
+  id?: number;
+  date?: string | Date;
+  reponse?: string;
+  userId?: number;
+  firstName?: string;
+  lastName?: string;
+  cv?: string;
+  status?: ApplicantStatus;
+  recruitment?: Partial<Recruitment>;
+  interview?: Partial<Interview>;
+}
+
+export interface UserDTO {
+  userId: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+}

@@ -1,0 +1,83 @@
+/* Palette & design tokens for premium dashboard */
+:root {
+  --brand-900: #006D77;
+  --brand-700: #83C5BE;
+  --bg-surface: #EDF6F9;
+  --accent-100: #FFDDD2;
+  --accent-500: #E29578;
+  --glass-1: rgba(255,255,255,0.82);
+  --glass-2: rgba(255,255,255,0.6);
+  --text-primary: #052b2b;
+  --muted: #64748b;
+  --radius-lg: 18px;
+  --card-elev: 0 20px 50px rgba(2,6,23,0.08);
+  --glass-blur: 12px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+  Global Styles — shared across all components
+═══════════════════════════════════════════════════════════════════════ */
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Body reset */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(180deg, var(--bg-surface), #f7fbfb);
+  color: var(--text-primary);
+}
+
+/* Heading font utility */
+.heading-font {
+  font-family: 'Playfair Display', serif;
+}
+
+/* ── Modal (global — used by landing + potentially other components) ── */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* ── Form inputs (global) ────────────────────────────────────────────── */
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  color: #111827;
+  background: #fafafa;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.form-input:focus {
+  border-color: #006D77;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 109, 119, 0.1);
+}

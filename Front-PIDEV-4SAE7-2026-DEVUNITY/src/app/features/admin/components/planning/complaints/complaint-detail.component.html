@@ -1,0 +1,79 @@
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
+
+    <!-- Card header -->
+    <div class="flex justify-between items-start mb-5">
+        <div>
+            <h3 class="text-xl font-bold text-gray-800">Complaint #{{ complaint.complaintId }}</h3>
+            <span [class]="complaint.status
+        ? 'inline-block mt-1 px-2.5 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-semibold'
+        : 'inline-block mt-1 px-2.5 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold'">
+                {{ complaint.status ? '✅ Answered' : '⏳ Pending' }}
+            </span>
+        </div>
+        <button (click)="closed.emit()"
+            class="px-4 py-1.5 text-sm font-semibold text-gray-500 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+            ✕ Close
+        </button>
+    </div>
+
+    <!-- Info grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-gray-50 rounded-xl p-4 sm:col-span-2">
+            <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Subject</p>
+            <p class="text-gray-800 font-semibold">{{ complaint.subject }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4 sm:col-span-2">
+            <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Description</p>
+            <p class="text-gray-700 leading-relaxed">{{ complaint.description }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Room</p>
+            <p class="text-gray-800 font-medium">{{ complaint.room ? complaint.room.name : '—' }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Schedule</p>
+            <p class="text-gray-800 font-medium">#{{ complaint.schedule?.scheduleId || '—' }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Complainant</p>
+            <p class="text-gray-800 font-medium">{{ complaint.complainantEmail || '—' }}</p>
+            <p class="text-xs text-gray-500 mt-1">{{ complaint.complainantRole || '—' }}</p>
+        </div>
+        <div *ngIf="complaint.answer" class="bg-green-50 border border-green-200 rounded-xl p-4">
+            <p class="text-xs text-green-600 uppercase tracking-wide font-semibold mb-1">Admin Answer</p>
+            <p class="text-gray-700 leading-relaxed">{{ complaint.answer }}</p>
+        </div>
+    </div>
+
+    <!-- Answer form -->
+    <div *ngIf="showAnswerForm">
+        <div class="border-t border-gray-100 pt-5">
+            <h4 class="text-sm font-bold text-gray-700 mb-3">💬 Submit Answer</h4>
+
+            <div *ngIf="error" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                ⚠️ {{ error }}
+            </div>
+
+            <form [formGroup]="answerForm" (ngSubmit)="submitAnswer()">
+                <textarea formControlName="answer" rows="4" placeholder="Type your answer here..."
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006D77] resize-none mb-1">
+        </textarea>
+                <p *ngIf="answerForm.get('answer')?.invalid && answerForm.get('answer')?.touched"
+                    class="text-xs text-red-500 mb-3">Answer must be at least 5 characters.</p>
+                <button type="submit" [disabled]="isSubmitting"
+                    class="px-6 py-2.5 bg-[#006D77] text-white font-semibold rounded-lg hover:bg-[#005560] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                    {{ isSubmitting ? 'Submitting...' : 'Submit Answer' }}
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit answer button when already answered -->
+    <div *ngIf="!showAnswerForm" class="border-t border-gray-100 pt-4">
+        <button (click)="showAnswerForm = true"
+            class="px-4 py-2 text-sm font-semibold text-[#006D77] border border-[#006D77] rounded-lg hover:bg-[#006D77] hover:text-white transition-colors">
+            ✏️ Edit Answer
+        </button>
+    </div>
+
+</div>

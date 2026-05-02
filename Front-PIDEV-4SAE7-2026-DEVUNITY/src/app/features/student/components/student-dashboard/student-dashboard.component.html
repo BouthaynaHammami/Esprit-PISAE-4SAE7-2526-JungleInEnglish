@@ -1,0 +1,232 @@
+<!-- ============================================================
+     STUDENT DASHBOARD — Matching provided HTML template exactly
+     Adapted for Angular (routerLink, no navbar since shell has it)
+     ============================================================ -->
+<div class="dashboard">
+
+  <div class="dashboard-shell">
+
+    <!-- Sidebar removed per user request (left column) -->
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="dashboard-main">
+
+      <!-- ===== HERO ===== -->
+      <section class="hero">
+        <div class="hero-text">
+          <h1>Welcome Back, {{ displayName }}!</h1>
+          <p>Ready to continue learning?</p>
+        </div>
+
+        <div class="hero-visual">
+          <div class="blob one"></div>
+          <div class="blob two"></div>
+          <div class="blob three"></div>
+          <div class="books-stack">
+            <div class="base-ring"></div>
+            <div class="book b1"></div>
+            <div class="book b2"></div>
+            <div class="book b3"></div>
+            <div class="cap"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== ENGLISH COURSES ===== -->
+      <section>
+        <h2 class="section-title">English Courses</h2>
+        <div class="courses">
+
+          <article class="course-card">
+            <div class="course-image">
+              <svg width="52" height="52" fill="none" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" fill="#006D77" opacity="0.6"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="#83C5BE" opacity="0.6"/></svg>
+            </div>
+            <div class="course-content">
+              <h3>Vocabulary &amp; Grammar</h3>
+              <p class="course-meta">5 Lessons</p>
+              <div class="progress-row"><span>60%</span><span class="course-meta">2 lessons left</span></div>
+              <div class="progress"><span style="width:60%"></span></div>
+              <div class="course-footer">
+                <a routerLink="../courses" class="btn btn-primary">Continue</a>
+                <div class="mini-icon">&#x22EF;</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="course-card">
+            <div class="course-image img-coral">
+              <svg width="52" height="52" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#E29578" opacity="0.3"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#E29578" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="9" x2="9.01" y2="9" stroke="#E29578" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="9" x2="15.01" y2="9" stroke="#E29578" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div class="course-content">
+              <h3>English Conversation</h3>
+              <p class="course-meta">3 Lessons</p>
+              <div class="progress-row"><span>80%</span><span class="course-meta">1 lesson left</span></div>
+              <div class="progress sky"><span style="width:80%"></span></div>
+              <div class="course-footer">
+                <a routerLink="../courses" class="btn btn-light">Continue</a>
+                <div class="mini-icon">&#x2661;</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="course-card">
+            <div class="course-image img-teal">
+              <svg width="52" height="52" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#83C5BE" opacity="0.3"/><path d="M8 12l3 3 5-6" stroke="#006D77" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="course-content">
+              <h3>Business English</h3>
+              <p class="course-meta">4 Lessons</p>
+              <div class="progress-row"><span>100%</span><span class="course-meta">Completed</span></div>
+              <div class="progress blue"><span style="width:100%"></span></div>
+              <div class="course-footer">
+                <span class="btn complete-btn">Complete</span>
+                <div class="mini-icon">&#x2713;</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="course-card">
+            <div class="course-image img-dark">
+              <svg width="52" height="52" fill="none" viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6" stroke="#83C5BE" stroke-width="2" opacity="0.6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" fill="#83C5BE" opacity="0.4"/></svg>
+            </div>
+            <div class="course-content">
+              <h3>Listening &amp; Comprehension</h3>
+              <p class="course-meta">6 Lessons</p>
+              <div class="progress-row"><span>25%</span><span class="course-meta">5 lessons left</span></div>
+              <div class="progress"><span style="width:25%"></span></div>
+              <div class="course-footer">
+                <a routerLink="../courses" class="btn btn-primary">Resume</a>
+                <div class="mini-icon">&#x279C;</div>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ===== UPCOMING ENGLISH LESSONS + CALENDAR ===== -->
+      <section>
+        <h2 class="section-title">Upcoming English Lessons</h2>
+        <div class="schedule-grid">
+          <div class="lessons-wrap">
+
+            <article class="lesson-card">
+              <div class="date-badge teal">
+                <div class="day">11</div>
+                <div class="month">APR</div>
+              </div>
+              <div class="lesson-info">
+                <h4>Pronunciation Workshop</h4>
+                <p>2:00 PM - 3:00 PM</p>
+              </div>
+              <a routerLink="../courses" class="btn btn-light">View Lesson</a>
+            </article>
+
+            <article class="lesson-card">
+              <div class="date-badge orange">
+                <div class="day">12</div>
+                <div class="month">APR</div>
+              </div>
+              <div class="lesson-info">
+                <h4>Practice Daily Conversations</h4>
+                <p>10:00 AM - 11:00 AM</p>
+              </div>
+              <a routerLink="../courses" class="btn btn-light">Join Lesson</a>
+            </article>
+
+          </div>
+
+          <aside class="calendar-card">
+            <div class="calendar-head">
+              <span>April 2026</span>
+              <div class="calendar-nav">
+                <div class="circle-btn">&#x2039;</div>
+                <div class="circle-btn">&#x203A;</div>
+              </div>
+            </div>
+
+            <div class="weekdays">
+              <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+            </div>
+
+            <div class="days">
+              <div></div><div></div><div></div><div>1</div><div>2</div><div>3</div><div>4</div>
+              <div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div><div class="active">11</div>
+              <div>12</div><div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div>18</div>
+              <div>19</div><div>20</div><div>21</div><div>22</div><div>23</div><div>24</div><div>25</div>
+              <div>26</div><div>27</div><div>28</div><div>29</div><div>30</div><div></div><div></div>
+            </div>
+
+            <a routerLink="../events" class="btn btn-primary cal-btn">View Calendar</a>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ===== MY ENGLISH CERTIFICATES ===== -->
+      <section>
+        <div class="certificates-head">
+          <h2 class="section-title title-no-margin">My English Certificates</h2>
+          <a routerLink="../certificates" class="btn btn-light">View All</a>
+        </div>
+
+        <div class="certificates">
+          <article class="certificate-card">
+            <div class="cert-top">
+              <div class="cert-icon">
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6" fill="#006D77" opacity="0.3"/><path d="M8 14l-2 8 6-3 6 3-2-8" fill="#006D77" opacity="0.2"/></svg>
+              </div>
+              <div class="cert-title">
+                <h4>English Conversation</h4>
+                <p>Awarded on 30 Sep 2023</p>
+              </div>
+            </div>
+            <div class="cert-footer">
+              <small>Interactive speaking track</small>
+              <a routerLink="../certificates" class="btn cert-btn">Continue</a>
+            </div>
+          </article>
+
+          <article class="certificate-card orange">
+            <div class="cert-top">
+              <div class="cert-icon">
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="#E29578" opacity="0.3"/></svg>
+              </div>
+              <div class="cert-title">
+                <h4>Business English</h4>
+                <p>Awarded on 13 Jul 2023</p>
+              </div>
+            </div>
+            <div class="cert-footer">
+              <small>English business path</small>
+              <a routerLink="../certificates" class="btn btn-light">View Lesson</a>
+            </div>
+          </article>
+
+          <article class="certificate-card blue">
+            <div class="cert-top">
+              <div class="cert-icon">
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" fill="#83C5BE" opacity="0.3"/><line x1="8" y1="21" x2="16" y2="21" stroke="#83C5BE" stroke-width="2"/><line x1="12" y1="17" x2="12" y2="21" stroke="#83C5BE" stroke-width="2"/></svg>
+              </div>
+              <div class="cert-title">
+                <h4>Academic Writing</h4>
+                <p>Awarded on 09 Jun 2023</p>
+              </div>
+            </div>
+            <div class="cert-footer">
+              <small>Writing for academic purposes</small>
+              <a routerLink="../certificates" class="btn btn-light">Details</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+</div>
+
+<!-- FAB Chat Button -->
+<a routerLink="../complaints" class="fab">
+  <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</a>

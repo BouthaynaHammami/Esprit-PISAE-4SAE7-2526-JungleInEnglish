@@ -1,0 +1,104 @@
+<nav class="glass-navbar" role="navigation" aria-label="Main navigation">
+  <div class="nav-content">
+
+    <!-- BRAND -->
+    <a routerLink="/student/dashboard" class="brand" aria-label="Jungle in English Home">
+      <div class="brand-icon">
+        <i class="bi bi-translate"></i>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">JUNGLE <span>IN ENGLISH</span></span>
+      </div>
+    </a>
+
+    <!-- CENTER LINKS (desktop) -->
+    <div class="nav-center desktop-only">
+      <a *ngFor="let item of mainNav"
+         [routerLink]="item.link"
+         routerLinkActive="active"
+         class="nav-link">
+        <i [class]="'bi ' + item.icon + ' nav-icon'"></i>
+        <span>{{ item.label }}</span>
+      </a>
+
+      <div class="nav-more-container">
+        <button class="nav-link more-btn" [class.active]="dropdownOpen" (click)="toggleDropdown()" title="More Menu">
+          <i class="bi bi-list fs-4"></i>
+        </button>
+
+        <div class="dropdown-menu glass-dropdown animate-fade-in" *ngIf="dropdownOpen">
+          <a *ngFor="let item of moreNav"
+             [routerLink]="item.link"
+             routerLinkActive="active"
+             class="dropdown-item"
+             (click)="closeDropdown()">
+            <i [class]="'bi ' + item.icon"></i>
+            <span>{{ item.label }}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT : CTA + PROFILE -->
+    <div class="nav-right">
+
+      <!-- Profile (desktop) -->
+      <div class="user-info desktop-only">
+        <div class="avatar-sm">
+          <span class="avatar-letter">{{ avatarLetter }}</span>
+        </div>
+        <span class="user-email">{{ displayName }}</span>
+      </div>
+
+      <a routerLink="profile" routerLinkActive="active" class="profile-btn desktop-only" title="Profile">
+        <i class="bi bi-person-gear"></i>
+      </a>
+
+      <button (click)="logout()" class="logout-btn" title="Disconnect" type="button">
+        <i class="bi bi-box-arrow-right"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- subtle gradient stroke -->
+  <div class="navbar-border-accent" aria-hidden="true"></div>
+</nav>
+
+<!-- MOBILE MENU OVERLAY -->
+<div class="mobile-menu" [class.open]="mobileMenuOpen" role="dialog" aria-modal="true">
+  <div class="mobile-menu-inner">
+    <div class="mobile-top">
+      <a routerLink="/student/dashboard" class="brand-mobile">
+        <div class="brand-icon"><i class="bi bi-translate"></i></div>
+        <div class="brand-text">
+          <span class="brand-name">JUNGLE IN ENGLISH</span>
+          <span class="brand-sub">Premium Student</span>
+        </div>
+      </a>
+      <button class="close-mobile" (click)="toggleMobileMenu()" aria-label="Close menu">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="mobile-nav-list">
+      <a *ngFor="let item of nav" [routerLink]="item.link" (click)="toggleMobileMenu()" class="mobile-nav-item">
+        <i [class]="'bi ' + item.icon"></i>
+        <span>{{ item.label }}</span>
+      </a>
+    </div>
+
+    <!-- mobile CTA removed as requested -->
+
+    <div class="mobile-profile">
+      <div class="avatar-lg">{{ avatarLetter }}</div>
+      <div class="profile-info">
+        <div class="name">{{ displayName }}</div>
+        <a routerLink="profile" (click)="toggleMobileMenu()">View profile</a>
+      </div>
+      <button (click)="logout()" class="logout-mobile">Logout</button>
+    </div>
+  </div>
+</div>
+
+<div class="navbar-spacer"></div>

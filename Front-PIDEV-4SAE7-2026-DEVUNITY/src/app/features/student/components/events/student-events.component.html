@@ -1,0 +1,420 @@
+<!-- ══════════════════════════════════════════════
+     DECORATIVE BACKGROUND SHAPES
+══════════════════════════════════════════════ -->
+<div class="bg-decor">
+  <div class="bg-orb bg-orb--1"></div>
+  <div class="bg-orb bg-orb--2"></div>
+  <div class="bg-orb bg-orb--3"></div>
+  <div class="bg-sphere bg-sphere--1"></div>
+  <div class="bg-sphere bg-sphere--2"></div>
+  <div class="bg-sphere bg-sphere--3"></div>
+  <div class="bg-sphere bg-sphere--4"></div>
+  <div class="bg-plane">
+    <svg width="90" height="60" viewBox="0 0 90 60" fill="none">
+      <path d="M5 50 L85 10 L50 30 L85 10 L60 55 L50 30 L5 50Z" fill="url(#planeGrad)" opacity="0.18"/>
+      <defs><linearGradient id="planeGrad" x1="0" y1="0" x2="90" y2="60"><stop stop-color="#5ad0d0"/><stop offset="1" stop-color="#83C5BE" stop-opacity="0.3"/></linearGradient></defs>
+    </svg>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     TOAST
+══════════════════════════════════════════════ -->
+<div *ngIf="showAlert" class="ev-toast"
+  [ngClass]="{ 'ev-toast--success': alertType==='success', 'ev-toast--info': alertType==='info', 'ev-toast--error': alertType==='error' }">
+  <div class="ev-toast__ico">
+    <svg *ngIf="alertType==='success'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    <svg *ngIf="alertType==='info'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    <svg *ngIf="alertType==='error'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+  </div>
+  <span>{{ alertMessage }}</span>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     REGISTER MODAL
+══════════════════════════════════════════════ -->
+<div *ngIf="showRegisterModal" class="ev-overlay">
+  <div class="ev-overlay__bg" (click)="closeRegisterModal()"></div>
+  <div class="ev-modal" (click)="$event.stopPropagation()">
+    <div class="ev-modal__bar"></div>
+    <div class="ev-modal__head">
+      <div class="ev-modal__head-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <h2>Register for Event</h2>
+      <button class="ev-modal__x" (click)="closeRegisterModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ev-modal__body">
+      <h3 class="ev-modal__evt-name">{{ selectedEvent?.title }}</h3>
+      <div *ngIf="selectedEvent?.imageUrl || selectedEvent?.image_url" class="ev-modal__img">
+        <img [src]="selectedEvent?.imageUrl || selectedEvent?.image_url" alt="Event">
+      </div>
+      <div class="ev-modal__metas">
+        <div class="ev-modal__meta-r">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          {{ selectedEvent?.startDate | date:'dd MMM yyyy · HH:mm' }}
+        </div>
+        <div class="ev-modal__meta-r">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          {{ selectedEvent?.location }}
+        </div>
+        <div class="ev-modal__meta-r">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          {{ selectedEvent?.capacity }} seats
+        </div>
+      </div>
+      <textarea [(ngModel)]="comment" rows="3" placeholder="Add a comment (optional)..." class="ev-modal__ta"></textarea>
+      <div class="ev-modal__btns">
+        <button class="ev-btn ev-btn--ghost" (click)="closeRegisterModal()">Cancel</button>
+        <button class="ev-btn ev-btn--prim" (click)="confirmRegister()" [disabled]="isRegistering">
+          <span *ngIf="!isRegistering">Confirm Registration</span>
+          <span *ngIf="isRegistering" class="ev-btn__ld"><span class="ev-spin"></span> Registering...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     CANCEL MODAL
+══════════════════════════════════════════════ -->
+<div *ngIf="showCancelModal" class="ev-overlay">
+  <div class="ev-overlay__bg" (click)="closeCancelModal()"></div>
+  <div class="ev-modal ev-modal--sm" (click)="$event.stopPropagation()">
+    <div class="ev-modal__bar ev-modal__bar--red"></div>
+    <div class="ev-modal__head ev-modal__head--red">
+      <div class="ev-modal__head-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <h2>Cancel Registration</h2>
+      <button class="ev-modal__x" (click)="closeCancelModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ev-modal__body" style="text-align:center">
+      <div class="ev-cancel-ico">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <p class="ev-cancel-msg">Are you sure you want to cancel your registration for</p>
+      <p class="ev-cancel-name">{{ registrationToCancel?.events?.title }}</p>
+      <p class="ev-cancel-date">{{ registrationToCancel?.events?.startDate | date:'dd MMM yyyy · HH:mm' }}</p>
+      <p class="ev-cancel-warn">This action cannot be undone.</p>
+      <div class="ev-modal__btns">
+        <button class="ev-btn ev-btn--ghost" (click)="closeCancelModal()" [disabled]="cancellingId === registrationToCancel?.id">Keep it</button>
+        <button class="ev-btn ev-btn--dang" (click)="confirmCancel()" [disabled]="cancellingId === registrationToCancel?.id">
+          <span *ngIf="cancellingId !== registrationToCancel?.id">Yes, Cancel</span>
+          <span *ngIf="cancellingId === registrationToCancel?.id" class="ev-btn__ld"><span class="ev-spin ev-spin--w"></span> Cancelling...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     TICKET / QR MODAL — REAL PHYSICAL TICKET
+══════════════════════════════════════════════ -->
+<div *ngIf="showQRModal" class="ev-overlay ev-overlay--dark" (click)="closeQRModal()">
+  <div class="ev-ticket-wrap" (click)="$event.stopPropagation()">
+    <button class="ev-ticket__close" (click)="closeQRModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="ev-ticket">
+      <div class="ev-ticket__main">
+        <div class="ev-ticket__brand-bar">
+          <span class="ev-ticket__brand-name">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 10 3 12 0v-5"/></svg>
+            Jungle In English
+          </span>
+          <span class="ev-ticket__brand-type">EVENT TICKET</span>
+        </div>
+        <div class="ev-ticket__banner">
+          <img *ngIf="currentTicket?.eventImage || currentTicket?.imageUrl || currentTicket?.image_url"
+               [src]="currentTicket?.eventImage || currentTicket?.imageUrl || currentTicket?.image_url"
+               class="ev-ticket__banner-img" alt="Event">
+          <div *ngIf="!currentTicket?.eventImage && !currentTicket?.imageUrl && !currentTicket?.image_url"
+               class="ev-ticket__banner-fb"></div>
+          <div class="ev-ticket__banner-overlay"></div>
+          <h2 class="ev-ticket__event-name">{{ currentTicket?.eventTitle }}</h2>
+        </div>
+        <div class="ev-ticket__fields">
+          <div class="ev-ticket__field">
+            <span class="ev-ticket__field-label">DATE & TIME</span>
+            <span class="ev-ticket__field-value">{{ currentTicket?.eventDate | date:'EEE, dd MMM yyyy - HH:mm' }}</span>
+          </div>
+          <div class="ev-ticket__field">
+            <span class="ev-ticket__field-label">VENUE</span>
+            <span class="ev-ticket__field-value">{{ currentTicket?.eventLocation }}</span>
+          </div>
+          <div class="ev-ticket__field">
+            <span class="ev-ticket__field-label">ATTENDEE</span>
+            <span class="ev-ticket__field-value ev-ticket__field-value--name">{{ currentTicket?.holderName }}</span>
+          </div>
+          <div class="ev-ticket__field-row">
+            <div class="ev-ticket__field">
+              <span class="ev-ticket__field-label">ISSUED</span>
+              <span class="ev-ticket__field-value">{{ currentTicket?.generatedAt | date:'dd MMM yyyy' }}</span>
+            </div>
+            <div class="ev-ticket__field">
+              <span class="ev-ticket__field-label">TYPE</span>
+              <span class="ev-ticket__field-value ev-ticket__field-value--admit">ADMIT ONE</span>
+            </div>
+            <div class="ev-ticket__field">
+              <span class="ev-ticket__field-label">STATUS</span>
+              <span class="ev-ticket__field-value ev-ticket__field-value--confirmed">CONFIRMED</span>
+            </div>
+          </div>
+        </div>
+        <div class="ev-ticket__barcode-strip">
+          <span class="ev-ticket__barcode-text">{{ currentTicket?.ticketId }}</span>
+          <span class="ev-ticket__serial">NO. {{ currentTicket?.ticketId }}</span>
+        </div>
+      </div>
+      <div class="ev-ticket__perforation">
+        <div class="ev-ticket__perf-notch ev-ticket__perf-notch--top"></div>
+        <div class="ev-ticket__perf-dots"></div>
+        <div class="ev-ticket__perf-notch ev-ticket__perf-notch--bottom"></div>
+      </div>
+      <div class="ev-ticket__stub">
+        <div class="ev-ticket__stub-brand">JUNGLE IN ENGLISH</div>
+        <div class="ev-ticket__qr-area">
+          <div class="ev-ticket__qr-white">
+            <img *ngIf="qrCodeImage" [src]="qrCodeImage" alt="QR Code" class="ev-ticket__qr-img">
+          </div>
+        </div>
+        <div class="ev-ticket__stub-id">{{ currentTicket?.ticketId }}</div>
+        <div class="ev-ticket__stub-scan">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 7 4"/><polyline points="20 7 20 4 17 4"/><polyline points="4 17 4 20 7 20"/><polyline points="20 17 20 20 17 20"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+          SCAN AT ENTRANCE
+        </div>
+        <div class="ev-ticket__stub-date">
+          {{ currentTicket?.eventDate | date:'dd' }}
+          <span>{{ currentTicket?.eventDate | date:'MMM yyyy' }}</span>
+        </div>
+        <div class="ev-ticket__stub-serial">NO. {{ currentTicket?.ticketId }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     MAIN PAGE
+══════════════════════════════════════════════ -->
+<main class="page">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <span class="breadcrumb__back">&#8249;</span>
+    <a routerLink="/student/dashboard">Home</a>
+    <span class="breadcrumb__sep">&#8250;</span>
+    <strong>Events</strong>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <h1>Upcoming Events</h1>
+    <p>Explore and register for our community and educational events</p>
+  </header>
+
+  <!-- Tabs (below hero, above content) -->
+  <div class="tabs-bar">
+    <div class="tabs-group">
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'all'" (click)="activeTab = 'all'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        All Events
+        <span class="tab-count">{{ events.length }}</span>
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'registrations'" (click)="activeTab = 'registrations'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+        My Registrations
+        <span class="tab-count" *ngIf="myRegistrations.length > 0">{{ myRegistrations.length }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Two-column layout -->
+  <div class="layout">
+
+    <!-- LEFT: Event cards -->
+    <div class="layout__main">
+
+      <!-- ── ALL EVENTS TAB ── -->
+      <div *ngIf="activeTab === 'all'">
+
+        <!-- Search bar inside list panel -->
+        <div class="search-bar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" [(ngModel)]="searchQuery" placeholder="Search events...">
+          <div class="search-divider"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <input type="text" [(ngModel)]="locationQuery" placeholder="Location...">
+        </div>
+
+        <!-- Empty state -->
+        <div *ngIf="filteredEvents.length === 0" class="empty-state">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <p class="empty-state__title">No events found</p>
+          <p class="empty-state__sub">Try adjusting your search filters</p>
+        </div>
+
+        <!-- Event cards list -->
+        <div *ngIf="filteredEvents.length > 0" class="events-list">
+          <article *ngFor="let event of filteredEvents; let i = index"
+                   class="event-card glass"
+                   [style.--card-delay]="(i * 0.07) + 's'">
+
+            <!-- Image side with date badge -->
+            <div class="event-card__img-side">
+              <img *ngIf="event.imageUrl || event.image_url"
+                   [src]="event.imageUrl || event.image_url"
+                   alt="{{ event.title }}" class="event-card__img">
+              <div *ngIf="!event.imageUrl && !event.image_url" class="event-card__img-ph">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(90,208,208,0.35)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+              <div class="event-card__date-badge"
+                   [ngClass]="{ 'orange': i % 2 === 0, 'teal': i % 2 !== 0 }">
+                <span class="event-card__date-month">{{ event.startDate | date:'MMM' | uppercase }}</span>
+                <span class="event-card__date-day">{{ event.startDate | date:'dd' }}</span>
+              </div>
+            </div>
+
+            <!-- Content side -->
+            <div class="event-card__body">
+              <div class="event-card__header">
+                <h3 class="event-card__title">{{ event.title }}</h3>
+                <span class="event-card__pill"
+                      [ngClass]="{ 'pill--demand': event.status === 'REGISTRATION_OPEN', 'pill--rated': event.status !== 'REGISTRATION_OPEN' }">
+                  <svg *ngIf="event.status === 'REGISTRATION_OPEN'" width="12" height="12" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z" fill="#f6a13f"/>
+                  </svg>
+                  <svg *ngIf="event.status !== 'REGISTRATION_OPEN'" width="12" height="12" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#5ad0d0"/>
+                  </svg>
+                  {{ getStatusLabel(event.status) === 'Open' ? 'High Demand' : getStatusLabel(event.status) === 'Completed' ? 'Top-rated' : getStatusLabel(event.status) }}
+                </span>
+              </div>
+
+              <p *ngIf="event.description" class="event-card__desc">{{ event.description }}</p>
+
+              <div class="event-card__separator"></div>
+
+              <div class="event-card__footer">
+                <div class="event-card__meta">
+                  <span class="event-card__meta-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    {{ event.startDate | date:'hh:mm a' }}
+                    <span *ngIf="event.endDate"> - {{ event.endDate | date:'hh:mm a' }}</span>
+                  </span>
+                  <span class="event-card__meta-item" *ngIf="event.location">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    {{ event.location }}
+                  </span>
+                </div>
+
+                <div class="event-card__actions">
+                  <button *ngIf="event.status === 'REGISTRATION_OPEN' && !isAlreadyRegistered(event.eventId ?? event.id)"
+                          (click)="openRegisterModal(event)" class="btn-register">
+                    Register
+                  </button>
+                  <div *ngIf="isAlreadyRegistered(event.eventId ?? event.id)" class="badge-registered">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Registered
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+
+      <!-- ── MY REGISTRATIONS TAB ── -->
+      <div *ngIf="activeTab === 'registrations'">
+
+        <div *ngIf="myRegistrations.length === 0" class="empty-state">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+          <p class="empty-state__title">No registrations yet</p>
+          <p class="empty-state__sub">Browse All Events to find your first one!</p>
+        </div>
+
+        <div *ngIf="myRegistrations.length > 0" class="events-list">
+          <article *ngFor="let r of myRegistrations; let i = index"
+                   class="reg-card glass"
+                   [class.reg-card--cancelled]="r.status === 'CANCELLED'"
+                   [style.--card-delay]="(i * 0.07) + 's'">
+
+            <div class="reg-card__stripe"
+                 [style.background]="r.status === 'CONFIRMED' ? 'linear-gradient(180deg, #5ad0d0, #30bfc3)' :
+                                     r.status === 'WAITLISTED' ? 'linear-gradient(180deg, #f6a13f, #f28c34)' :
+                                     'linear-gradient(180deg, #f16b6b, #e55555)'"></div>
+
+            <div class="reg-card__body">
+              <div class="reg-card__top">
+                <h3>{{ r.events?.title }}</h3>
+                <span class="reg-badge"
+                      [ngClass]="{ 'reg-badge--ok': r.status==='CONFIRMED', 'reg-badge--wait': r.status==='WAITLISTED', 'reg-badge--no': r.status==='CANCELLED' }">
+                  <svg *ngIf="r.status==='CONFIRMED'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg *ngIf="r.status==='WAITLISTED'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <svg *ngIf="r.status==='CANCELLED'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  {{ r.status }}
+                </span>
+              </div>
+              <div class="reg-card__meta">
+                <span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  {{ r.events?.startDate | date:'dd MMM yyyy · HH:mm' }}
+                </span>
+              </div>
+              <div class="reg-card__actions">
+                <button *ngIf="r.status === 'CONFIRMED'" (click)="openQR(r.id)" class="ev-btn ev-btn--ticket">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M6 14h.01"/><path d="M10 14h4"/></svg>
+                  View Ticket
+                </button>
+                <button *ngIf="r.status !== 'CANCELLED'" (click)="openCancelModal(r)" [disabled]="cancellingId === r.id" class="ev-btn ev-btn--can">
+                  <span *ngIf="cancellingId !== r.id">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Cancel
+                  </span>
+                  <span *ngIf="cancellingId === r.id" class="ev-btn__ld"><span class="ev-spin"></span> Cancelling...</span>
+                </button>
+                <div *ngIf="r.status === 'CANCELLED'" class="cancelled-label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  Cancelled
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Register sidebar -->
+    <aside class="layout__sidebar" *ngIf="activeTab === 'all'">
+      <div class="sidebar-card glass">
+        <h2 class="sidebar-card__title">Register for an Event</h2>
+
+        <label class="sidebar-card__label">Select Event</label>
+        <select class="sidebar-card__select" [(ngModel)]="selectedEvent">
+          <option [ngValue]="null" disabled selected>Choose an event...</option>
+          <option *ngFor="let event of filteredEvents" [ngValue]="event">{{ event.title }}</option>
+        </select>
+
+        <label class="sidebar-card__label">Comments</label>
+        <input type="text" class="sidebar-card__input" [(ngModel)]="comment" placeholder="(Optional)">
+
+        <button class="sidebar-card__submit" (click)="selectedEvent && openRegisterModal(selectedEvent)" [disabled]="!selectedEvent">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Register Now
+        </button>
+
+        <p class="sidebar-card__terms">By registering, you agree to our <a href="javascript:void(0)">Terms of Service</a> and <a href="javascript:void(0)">Privacy Policy</a>.</p>
+      </div>
+    </aside>
+
+  </div>
+</main>

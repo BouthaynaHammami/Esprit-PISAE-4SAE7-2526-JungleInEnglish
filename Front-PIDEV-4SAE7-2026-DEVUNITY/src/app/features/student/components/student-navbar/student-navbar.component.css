@@ -1,0 +1,198 @@
+/* =======================================================
+   STUDENT NAVBAR — GLASSMORPHISM / PREMIUM
+   Clean, minimal, memorable UI with subtle motion
+   ======================================================= */
+
+.glass-navbar {
+  --nav-height: 72px;
+  --primary: var(--brand-900);
+  --accent: var(--accent-500);
+  --muted: var(--muted);
+  --glass-bg: rgba(255,255,255,0.58);
+  --glass-strong: rgba(255,255,255,0.72);
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: var(--nav-height);
+  padding: 8px 36px;
+  display: flex;
+  align-items: center;
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(250,250,250,0.56));
+  box-shadow: 0 6px 30px rgba(2,6,23,0.12);
+  isolation: isolate;
+  transition: backdrop-filter 240ms ease, box-shadow 240ms ease, transform 240ms ease;
+}
+
+.navbar-border-accent {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 4px;
+  height: 2px;
+  pointer-events: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(226,149,120,0.65), rgba(0,109,119,0.65));
+  filter: blur(6px);
+  opacity: 0.16;
+}
+
+.nav-content {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* --- BRAND --- */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand-icon {
+  background: linear-gradient(135deg, var(--primary), #83c5be);
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 8px 24px rgba(6,22,23,0.14);
+  transition: transform 220ms cubic-bezier(.2,.9,.3,1);
+}
+
+.brand:hover .brand-icon { transform: translateY(-2px) scale(1.02); }
+
+.brand-text { display:flex; flex-direction:column; line-height:1; }
+.brand-name { font-size:16px; font-weight:800; color:var(--primary); letter-spacing:0.6px }
+.brand-name span { color: var(--accent); font-weight:800; margin-left:6px }
+.brand-sub { font-size:10px; color:#83c5be; text-transform:uppercase; letter-spacing:1px }
+
+/* --- CENTER LINKS --- */
+.nav-center {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:6px;
+  border-radius:999px;
+  background: #ffffff;
+  border: 1px solid rgba(14, 77, 74, 0.08);
+}
+
+.nav-icon { font-size:16px; color:var(--primary); opacity:0.9 }
+
+.nav-link {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 16px;
+  border-radius:999px;
+  text-decoration:none;
+  color:var(--muted);
+  font-size:14px;
+  font-weight:600;
+  transition: all 220ms cubic-bezier(0.2,0.9,0.3,1);
+}
+
+.nav-link:hover { color: var(--primary); transform: translateY(-3px); }
+
+.nav-link.active {
+  color: #fff;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  box-shadow: 0 8px 24px rgba(6,22,23,0.18);
+}
+
+.nav-link.active .nav-icon { color: rgba(255,255,255,0.95) }
+
+/* subtle underline for active when compact */
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+}
+
+/* --- RIGHT --- */
+.nav-right { display:flex; align-items:center; gap:12px }
+
+/* mobile menu button removed — styles cleared */
+
+/* CTA removed — styles intentionally left minimal in case of future reinstatement */
+
+.user-info {
+  display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:999px;
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+.avatar-sm { width:36px; height:36px; border-radius:50%; display:flex;align-items:center;justify-content:center; color:white;
+  background: linear-gradient(135deg,var(--primary), #83c5be); box-shadow: 0 6px 20px rgba(6,22,23,0.12) }
+.avatar-letter { font-weight:800 }
+.user-email { font-weight:700; color:var(--primary); font-size:13px }
+
+.profile-btn { width:44px;height:44px;border-radius:10px; display:flex;align-items:center;justify-content:center; background:transparent; color:var(--primary); border:1px solid rgba(0,0,0,0.04) }
+.profile-btn:hover { background: rgba(0,0,0,0.03) }
+
+.logout-btn { width:44px;height:44px;border-radius:10px;background:linear-gradient(90deg,#ffd2c2,#ffd2c2); color:var(--accent); border:none; display:flex;align-items:center;justify-content:center }
+.logout-btn:hover { transform: rotate(8deg); box-shadow: 0 12px 36px rgba(226,149,120,0.12) }
+
+.navbar-spacer { height: var(--nav-height) }
+
+/* MORE DROPDOWN */
+.nav-more-container { position:relative }
+.more-btn { border:none; background:transparent; width:44px;height:44px;border-radius:10px; display:flex;align-items:center;justify-content:center; color:var(--primary) }
+.more-btn.active { background: linear-gradient(90deg, rgba(0,109,119,0.95), rgba(226,149,120,0.95)); color:white }
+
+.dropdown-menu { position:absolute; top:calc(100% + 12px); right:0; min-width:260px; padding:10px; border-radius:14px;
+  background: #ffffff; box-shadow: 0 18px 40px rgba(6,22,23,0.12); border:1px solid rgba(0,0,0,0.06); }
+
+.dropdown-item { display:flex; gap:12px; align-items:center; padding:12px 14px; border-radius:10px; color:#0f172a; font-weight:700; text-decoration:none }
+.dropdown-item i { color:var(--primary); font-size:16px }
+.dropdown-item:hover { transform:translateX(6px); background: rgba(0,109,119,0.04); color:var(--primary) }
+
+/* MOBILE MENU */
+.mobile-menu { position:fixed; inset:0; top: var(--nav-height); display:flex; justify-content:flex-end; pointer-events:none; opacity:0; transition: all 280ms cubic-bezier(.2,.9,.3,1); }
+.mobile-menu .mobile-menu-inner { width:360px; max-width:92vw; height:calc(100vh - var(--nav-height)); margin-left:auto; padding:18px; border-radius:12px 0 0 12px; background: #ffffff; box-shadow: 0 40px 80px rgba(2,6,23,0.18); transform: translateX(30px); transition: transform 320ms cubic-bezier(.2,.9,.3,1) }
+.mobile-menu.open { pointer-events:auto; opacity:1 }
+.mobile-menu.open .mobile-menu-inner { transform: translateX(0) }
+
+.mobile-top { display:flex; align-items:center; justify-content:space-between; gap:12px }
+.brand-mobile { display:flex; gap:12px; align-items:center; text-decoration:none }
+.close-mobile { border:none; background:transparent; font-size:20px; padding:6px }
+
+.mobile-nav-list { margin-top:18px; display:flex; flex-direction:column; gap:8px }
+.mobile-nav-item { display:flex; gap:12px; align-items:center; padding:12px; border-radius:10px; text-decoration:none; color:#042028; font-weight:700 }
+.mobile-nav-item i { font-size:18px; color:var(--primary) }
+
+.mobile-cta { display:none }
+.mobile-profile { display:flex; align-items:center; gap:12px; margin-top:20px }
+.avatar-lg { width:56px; height:56px; border-radius:12px; display:flex;align-items:center;justify-content:center; background:linear-gradient(135deg,var(--primary),#83c5be); color:white; font-weight:900 }
+.profile-info .name { font-weight:800 }
+.logout-mobile { margin-left:auto; border:none; background:transparent; color:var(--primary); font-weight:800 }
+
+/* HIDE/SHOW helpers for breakpoints */
+.desktop-only { display:flex }
+@media (max-width: 1024px) {
+  .glass-navbar { padding: 8px 18px }
+  .desktop-only { display:none }
+}
+
+@media (max-width: 768px) {
+  .nav-link span { display:none }
+  .nav-link { padding:8px 10px }
+}
+
+/* --- Animations --- */
+.animate-fade-in { animation: fadeIn 240ms cubic-bezier(.2,.9,.3,1) }
+@keyframes fadeIn { from { opacity:0; transform: translateY(-8px) scale(.98) } to { opacity:1; transform: translateY(0) scale(1) } }
+

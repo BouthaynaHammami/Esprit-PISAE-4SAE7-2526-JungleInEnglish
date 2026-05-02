@@ -1,0 +1,145 @@
+<div class="offers-container">
+  
+  <header class="offers-header">
+    <div class="header-content">
+      <h1 class="main-title">Business <span>Offers</span></h1>
+      <p class="subtitle">Invest in your team's growth with our premium English learning paths.</p>
+    </div>
+    <button class="refresh-btn" (click)="refresh()" [disabled]="loading">
+      <svg [class.spin]="loading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+      <span>Sync Offers</span>
+    </button>
+  </header>
+
+  <div *ngIf="loading && !offers.length" class="loading-state">
+    <div class="loader"></div>
+    <p>Curating the best offers for you...</p>
+  </div>
+
+  <div *ngIf="errorMsg" class="error-banner">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <span>{{ errorMsg }}</span>
+  </div>
+
+  <!-- OFFERS GRID -->
+  <div class="offers-grid" *ngIf="offers.length">
+    <div class="offer-card" *ngFor="let offer of offers">
+      
+      <div class="card-wave"></div>
+      
+      <div class="card-content">
+        <h3 class="offer-name">{{ offer.name }}</h3>
+        <p class="offer-desc">{{ offer.description }}</p>
+
+        <div class="offer-meta">
+          <div class="meta-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+            <span>Level {{ offer.level }}</span>
+          </div>
+          <div class="meta-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>{{ offer.durationHours }} Hours</span>
+          </div>
+          <div class="meta-item price">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            <span>{{ offer.price | number:'1.2-2' }} TND</span>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button class="details-btn" (click)="openCourses(offer)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>Details</span>
+          </button>
+          <button class="request-btn" (click)="openRequest(offer)">
+            <span>Request Access</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- COURSES MODAL -->
+  <div class="modal-overlay" *ngIf="showCoursesModal && selectedOffer" (click)="closeCourses()">
+    <div class="details-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 class="modal-title">Included Courses</h2>
+          <p class="modal-subtitle">Learning path for: <strong>{{ selectedOffer.name }}</strong></p>
+        </div>
+        <button class="close-modal-alt" (click)="closeCourses()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-body scrollable">
+        <div class="course-item" *ngFor="let course of selectedOfferCourses">
+          <div class="course-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          </div>
+          <div class="course-info">
+            <h4 class="course-title">{{ course.title }}</h4>
+            <p class="course-description">{{ course.description }}</p>
+          </div>
+        </div>
+        <div *ngIf="!selectedOfferCourses.length" class="empty-courses">
+          <p>No specific courses listed for this offer.</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="confirm-request-btn" (click)="closeCourses()">Got it</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- REQUEST MODAL -->
+  <div class="modal-overlay" *ngIf="showRequestForm && selectedOffer" (click)="closeRequest()">
+    <div class="request-modal" (click)="$event.stopPropagation()">
+      
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 class="modal-title">Request Offer</h2>
+          <p class="modal-subtitle">Inviting employees for: <strong>{{ selectedOffer.name }}</strong></p>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <label class="input-label">Employee Emails</label>
+        <p class="input-hint">Enter emails separated by comma, semicolon or line breaks.</p>
+        <textarea
+          [(ngModel)]="emailsText"
+          rows="6"
+          class="modern-textarea"
+          placeholder="e.g. employee@company.com; manager@company.com">
+        </textarea>
+
+        <div *ngIf="invitations.length" class="invitation-results">
+          <div class="success-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>{{ invitations.length }} Invitations Created Successfully</span>
+          </div>
+          <div class="invitation-list">
+            <div class="invitation-row" *ngFor="let i of invitations">
+              <span class="inv-email">{{ i.email }}</span>
+              <span class="inv-status">{{ i.status }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="cancel-modal-btn" (click)="closeRequest()">Discard</button>
+        <button class="confirm-request-btn" (click)="sendRequest()" [disabled]="loading || !emailsText.trim()">
+          <span *ngIf="!loading">Send Invitations</span>
+          <div *ngIf="loading" class="mini-loader"></div>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

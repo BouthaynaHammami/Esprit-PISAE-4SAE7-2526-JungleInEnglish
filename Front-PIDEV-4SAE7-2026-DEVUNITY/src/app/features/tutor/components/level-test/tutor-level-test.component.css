@@ -1,0 +1,150 @@
+/* src/app/features/tutor/components/level-test/tutor-level-test.component.css */
+.page-container {
+  padding: 2.5rem;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+.page-header h1 {
+  font-size: 2.25rem;
+  font-weight: 850;
+  color: #006D77;
+  letter-spacing: -0.02em;
+}
+
+.subtitle { color: #64748b; margin-bottom: 2rem; }
+
+/* Grid & Cards */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.assessment-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+}
+
+.card-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.id-tag { font-size: 0.75rem; font-weight: 700; color: #94a3b8; }
+
+.subject-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.paragraph-preview {
+  background: #f1f5f9;
+  padding: 1rem;
+  border-radius: 12px;
+  max-height: 120px;
+  overflow: hidden;
+  position: relative;
+}
+
+.paragraph-preview p {
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.grading-modal {
+  width: 100%;
+  max-width: 650px;
+  padding: 2.5rem;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.2);
+}
+
+.full-paragraph-view {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #1e293b;
+}
+
+/* Buttons */
+.btn {
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary { background: #006D77; color: white; }
+.btn-primary:hover { transform: scale(1.02); filter: brightness(1.1); }
+
+.btn-secondary { background: #f1f5f9; color: #64748b; }
+.btn-soft { background: #FFDDD2; color: #5a2a1c; }
+
+/* States */
+.badge-warning { background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; }
+
+.premium-input {
+  width: 100%;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  padding: 0.85rem;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.premium-input:focus {
+  border-color: #006D77;
+  outline: none;
+}
+
+.spinner {
+  width: 40px; height: 40px;
+  border: 4px solid #f1f5f9;
+  border-top: 4px solid #006D77;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem;
+}
+
+.icon-btn {
+  background: transparent;
+  font-size: 1.5rem;
+  color: #64748b;
+  line-height: 1;
+  padding: 4px 10px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
