@@ -13,7 +13,7 @@ pipeline {
     environment {
         BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
         FRONTEND_PATH = 'Front-PIDEV-4SAE7-2026-DEVUNITY'
-        SONAR_HOST_URL = 'http://192.168.100.10:9000'
+        SONAR_HOST_URL = 'http://192.168.22.130:9000'
         MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
     }
 
