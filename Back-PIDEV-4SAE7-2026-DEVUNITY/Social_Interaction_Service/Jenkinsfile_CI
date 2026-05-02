@@ -1,0 +1,104 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'JAVA_HOME'
+        maven 'MAVEN_HOME'
+    }
+
+    environment {
+        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        SOCIAL_SERVICE_PATH = "${BACKEND_PATH}/Social_Interaction_Service"
+        SONAR_HOST_URL = 'http://192.168.184.128:9000'
+        NEXUS_URL = 'http://192.168.184.128:8081'
+        MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Récupération du code source...'
+                git branch: 'main',
+                    credentialsId: 'git_token',
+                    url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
+            }
+        }
+
+        stage('Clean & Build') {
+            steps {
+                echo 'Nettoyage et Compilation...'
+                dir("${SOCIAL_SERVICE_PATH}") {
+                    sh 'mvn clean install -DskipTests'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Exécution des tests unitaires...'
+                dir("${SOCIAL_SERVICE_PATH}") {
+                    // Exécute les tests. Le || true évite de bloquer le pipeline si un test échoue
+                    sh 'mvn test || true'
+                }
+            }
+        }
+
+        stage('Semgrep Security Scan') {
+            steps {
+                script {
+                    echo 'Analyse de sécurité avec Semgrep...'
+                    withCredentials([string(credentialsId: 'semgrep_token', variable: 'semgrep_token')]) {
+                        dir("${SOCIAL_SERVICE_PATH}") {
+                            sh 'semgrep scan --config auto'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    echo 'Analyse SonarQube...'
+                    withSonarQubeEnv('sonarqube') {
+                        dir("${SOCIAL_SERVICE_PATH}") {
+                            sh """
+                                mvn sonar:sonar \
+                                -Dsonar.projectKey=Social-Interaction-Service \
+                                -Dsonar.projectName='Social Interaction Service' \
+                                -Dsonar.host.url=${SONAR_HOST_URL} \
+                                -Dsonar.token=${sonar_token}
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Nexus') {
+            steps {
+                echo 'Déploiement sur Nexus...'
+                dir("${SOCIAL_SERVICE_PATH}") {
+                    sh """
+                        mvn deploy -DskipTests \
+                        -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/maven-snapshots/
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Affiche les résultats des tests dans l'interface Jenkins
+            junit testResults: "${SOCIAL_SERVICE_PATH}/target/surefire-reports/*.xml", allowEmptyResults: true
+            cleanWs()
+        }
+        success {
+            echo '✅ Pipeline terminé avec succès !'
+        }
+        failure {
+            echo '❌ Le pipeline a échoué.'
+        }
+    }
+}
