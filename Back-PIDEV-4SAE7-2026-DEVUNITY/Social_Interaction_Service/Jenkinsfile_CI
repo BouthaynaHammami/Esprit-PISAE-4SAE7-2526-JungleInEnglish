@@ -46,10 +46,13 @@ pipeline {
         stage('Semgrep Security Scan') {
             steps {
                 script {
-                    echo 'Analyse de sécurité avec Semgrep...'
-                    withCredentials([string(credentialsId: 'semgrep_token', variable: 'semgrep_token')]) {
-                        dir("${SOCIAL_SERVICE_PATH}") {
-                            sh 'semgrep scan --config auto --json'
+                    echo 'Analyse de sécurité avec Semgrep via Docker...'
+                    withCredentials([string(credentialsId: 'semgrep_token', variable: 'SEMGREP_APP_TOKEN')]) {
+                        // Utilisation de l'image Docker officielle pour éviter les problèmes de permissions hôte
+                        docker.image('semgrep/semgrep').inside("-e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN}") {
+                            dir("${SOCIAL_SERVICE_PATH}") {
+                                sh 'semgrep scan --config auto'
+                            }
                         }
                     }
                 }
@@ -60,15 +63,18 @@ pipeline {
             steps {
                 script {
                     echo 'Analyse SonarQube...'
-                    withSonarQubeEnv('sonarqube') {
-                        dir("${SOCIAL_SERVICE_PATH}") {
-                            sh """
-                                mvn sonar:sonar \
-                                -Dsonar.projectKey=Social-Interaction-Service \
-                                -Dsonar.projectName='Social Interaction Service' \
-                                -Dsonar.host.url=${SONAR_HOST_URL} \
-                                -Dsonar.token=${sonar_token}
-                            """
+                    // Récupération sécurisée du token depuis les Credentials Jenkins
+                    withCredentials([string(credentialsId: 'sonar_token', variable: 'SONAR_TOKEN')]) {
+                        withSonarQubeEnv('sonarqube') {
+                            dir("${SOCIAL_SERVICE_PATH}") {
+                                sh """
+                                    mvn sonar:sonar \
+                                    -Dsonar.projectKey=Social-Interaction-Service \
+                                    -Dsonar.projectName='Social Interaction Service' \
+                                    -Dsonar.host.url=${SONAR_HOST_URL} \
+                                    -Dsonar.token=${SONAR_TOKEN}
+                                """
+                            }
                         }
                     }
                 }
