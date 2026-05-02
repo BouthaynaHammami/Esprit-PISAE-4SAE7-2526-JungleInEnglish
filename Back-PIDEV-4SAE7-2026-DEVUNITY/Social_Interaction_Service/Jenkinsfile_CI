@@ -49,7 +49,7 @@ pipeline {
                     echo 'Analyse de sécurité avec Semgrep...'
                     withCredentials([string(credentialsId: 'semgrep_token', variable: 'semgrep_token')]) {
                         dir("${SOCIAL_SERVICE_PATH}") {
-                            sh 'semgrep scan --config auto'
+                            sh '/home/bouthayna/.local/bin/semgrep scan --config auto'
                         }
                     }
                 }
