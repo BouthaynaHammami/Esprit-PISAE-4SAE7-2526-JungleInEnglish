@@ -89,12 +89,13 @@ pipeline {
                         dir("${BACKEND_PATH}/Academic_Management_Service") {
                             sh """
                                 mvn sonar:sonar \
-                                -Dsonar.projectKey=DevUnity-Microservices \
-                                -Dsonar.projectName='DevUnity Microservices' \
+                                -Dsonar.projectKey=Academic-Management-Service \
+                                -Dsonar.projectName='Academic Management Service' \
                                 -Dsonar.host.url=${SONAR_HOST_URL} \
-                                -Dsonar.java.binaries=**/target/classes \
-                                -Dsonar.java.test.binaries=**/target/test-classes \
-                                -Dsonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco/jacoco.xml
+                                -Dsonar.java.binaries=target/classes \
+                                -Dsonar.java.test.binaries=target/test-classes \
+                                -Dsonar.sources=src/main/java \
+                                -Dsonar.tests=src/test/java
                             """
                         }
                     }
