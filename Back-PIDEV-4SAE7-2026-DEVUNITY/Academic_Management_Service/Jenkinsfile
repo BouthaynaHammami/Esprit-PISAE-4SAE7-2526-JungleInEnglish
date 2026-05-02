@@ -5,18 +5,15 @@ pipeline {
     }
 
     options {
-        // Conserver seulement les 5 derniers builds pour économiser l'espace
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
-        // Éviter les builds concurrents
         disableConcurrentBuilds()
-        // Timeout global
         timeout(time: 1, unit: 'HOURS')
     }
 
     environment {
         BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
         FRONTEND_PATH = 'Front-PIDEV-4SAE7-2026-DEVUNITY'
-        SONAR_HOST_URL = 'http://192.168.100.10:9000' // Changez selon votre config
+        SONAR_HOST_URL = 'http://192.168.100.10:9000'
         MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
     }
 
@@ -62,11 +59,6 @@ pipeline {
                         }
                     }
                 }
-
-
-
-
-
             }
         }
 
@@ -86,11 +78,6 @@ pipeline {
                         }
                     }
                 }
-
-
-
-
-
             }
         }
 
@@ -113,10 +100,9 @@ pipeline {
             }
         }
 
+    }  // ← closes stages
 
-
-
-
+    // ← post is now correctly outside stages, inside pipeline
     post {
         success {
             echo '✅ Build réussi pour tous les microservices !'
@@ -125,17 +111,17 @@ pipeline {
             echo '❌ Build échoué !'
         }
         always {
-            // Publier les rapports de tests
-            junit testResults: "${BACKEND_PATH}/**/target/surefire-reports/*.xml", allowEmptyResults: true
+            junit testResults: "${BACKEND_PATH}/**/target/surefire-reports/*.xml",
+                  allowEmptyResults: true
 
-            // Nettoyage complet du workspace avec patterns spécifiques
             cleanWs deleteDirs: true, patterns: [
-                [pattern: '**/target/**', type: 'INCLUDE'],
+                [pattern: '**/target/**',       type: 'INCLUDE'],
                 [pattern: '**/node_modules/**', type: 'INCLUDE'],
-                [pattern: '**/.m2/**', type: 'INCLUDE'],
-                [pattern: '**/build/**', type: 'INCLUDE'],
-                [pattern: '**/*.log', type: 'INCLUDE']
+                [pattern: '**/.m2/**',          type: 'INCLUDE'],
+                [pattern: '**/build/**',         type: 'INCLUDE'],
+                [pattern: '**/*.log',            type: 'INCLUDE']
             ]
         }
     }
-}
+
+}  // ← closes pipeline
