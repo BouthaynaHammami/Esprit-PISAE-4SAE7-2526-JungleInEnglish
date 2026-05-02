@@ -14,6 +14,7 @@ pipeline {
         BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
         FRONTEND_PATH = 'Front-PIDEV-4SAE7-2026-DEVUNITY'
         SONAR_HOST_URL = 'http://192.168.22.130:9000'
+        NEXUS_URL = 'http://192.168.22.130:8081'
         MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
     }
 
@@ -138,9 +139,7 @@ pipeline {
                                         -Dsonar.projectName='Discovery Service' \
                                         -Dsonar.host.url=${SONAR_HOST_URL} \
                                         -Dsonar.java.binaries=target/classes \
-                                        -Dsonar.java.test.binaries=target/test-classes \
-                                        -Dsonar.sources=src/main/java \
-                                        -Dsonar.tests=src/test/java
+                                        -Dsonar.sources=src/main/java
                                     """
                                 }
                             }
@@ -158,12 +157,45 @@ pipeline {
                                         -Dsonar.projectName='API Gateway' \
                                         -Dsonar.host.url=${SONAR_HOST_URL} \
                                         -Dsonar.java.binaries=target/classes \
-                                        -Dsonar.java.test.binaries=target/test-classes \
-                                        -Dsonar.sources=src/main/java \
-
+                                        -Dsonar.sources=src/main/java
                                     """
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Nexus') {
+            parallel {
+                stage('Deploy Academic') {
+                    steps {
+                        dir("${BACKEND_PATH}/Academic_Management_Service") {
+                            sh """
+                                mvn deploy -DskipTests \
+                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/Devunity-snapshots/
+                            """
+                        }
+                    }
+                }
+                stage('Deploy Discovery') {
+                    steps {
+                        dir("${BACKEND_PATH}/Discovery_Service") {
+                            sh """
+                                mvn deploy -DskipTests \
+                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/Devunity-snapshots/
+                            """
+                        }
+                    }
+                }
+                stage('Deploy API Gateway') {
+                    steps {
+                        dir("${BACKEND_PATH}/API_Gateway") {
+                            sh """
+                                mvn deploy -DskipTests \
+                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/Devunity-snapshots/
+                            """
                         }
                     }
                 }
@@ -173,7 +205,7 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build réussi pour tous les microservices !'
+            echo '✅ Build, analyse et déploiement Nexus réussis !'
         }
         failure {
             echo '❌ Build échoué !'
