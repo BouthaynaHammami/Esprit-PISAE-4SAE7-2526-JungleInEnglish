@@ -86,7 +86,7 @@ pipeline {
                 echo 'Analyse SonarQube...'
                 script {
                     withSonarQubeEnv('sonarqube') {
-                        dir("${BACKEND_PATH}") {
+                        dir("${BACKEND_PATH}/Academic_Management_Service") {
                             sh """
                                 mvn sonar:sonar \
                                 -Dsonar.projectKey=DevUnity-Microservices \
