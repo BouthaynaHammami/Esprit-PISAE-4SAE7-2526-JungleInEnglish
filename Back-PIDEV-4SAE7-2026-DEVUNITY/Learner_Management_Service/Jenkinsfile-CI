@@ -22,13 +22,17 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Learner_Management_Service') {
+                    sh 'mvn clean package -DskipTests'
+                }
             }
         }
 
         stage('Unit Tests') {
             steps {
-                sh 'mvn test'
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Learner_Management_Service') {
+                    sh 'mvn test'
+                }
             }
             post {
                 always {
@@ -39,12 +43,14 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh '''
-                        mvn sonar:sonar \
-                          -Dsonar.projectKey=${SONAR_PROJECT} \
-                          -Dsonar.projectName=${SONAR_PROJECT}
-                    '''
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Learner_Management_Service') {
+                    withSonarQubeEnv('SonarQube') {
+                        sh '''
+                            mvn sonar:sonar \
+                              -Dsonar.projectKey=${SONAR_PROJECT} \
+                              -Dsonar.projectName=${SONAR_PROJECT}
+                        '''
+                    }
                 }
             }
         }
@@ -59,8 +65,10 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} .'
-                sh 'docker tag ${DOCKERHUB_REPO}:${IMAGE_TAG} ${DOCKERHUB_REPO}:latest'
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Learner_Management_Service') {
+                    sh 'docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} .'
+                    sh 'docker tag ${DOCKERHUB_REPO}:${IMAGE_TAG} ${DOCKERHUB_REPO}:latest'
+                }
             }
         }
 
@@ -84,12 +92,12 @@ pipeline {
         success {
             mail to: 'islemraissi789@gmail.com',
                  subject: "✅ CI PASSED - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "Build passed.\nSonarQube scan passed.\nDocker image pushed.\n\nCheck: ${env.BUILD_URL}"
+                 body: "Build passed.\nSonarQube scan passed.\nDocker image pushed to DockerHub.\n\nCheck: ${env.BUILD_URL}"
         }
         failure {
             mail to: 'islemraissi789@gmail.com',
                  subject: "❌ CI FAILED - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "Build failed at stage. Check logs:\n${env.BUILD_URL}"
+                 body: "Build failed. Check logs:\n${env.BUILD_URL}"
         }
     }
 }
