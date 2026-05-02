@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private readonly baseUrl = `${environment.apiUrl}/activities/api/api/notifications`;
+  private readonly baseUrl = `${environment.apiUrl}/activities/api/notifications`;
   
   private unreadCountSubject = new BehaviorSubject<number>(0);
   public unreadCount$ = this.unreadCountSubject.asObservable();
@@ -22,7 +22,7 @@ export class NotificationService {
   constructor(private http: HttpClient, private authService: AuthService) {
     // Only start polling if user is logged in and has appropriate role
     const userRole = this.authService.getUserRole();
-    if (userRole === 'ADMIN' || userRole === 'EMPLOYE') {
+    if (userRole === 'ADMIN' || userRole === 'EMPLOYE' || userRole === 'STUDENT') {
       // Test the service first before starting polling
       this.testServiceAvailability();
     } else {

@@ -46,6 +46,11 @@ export class StudentKanbanCertifComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.userId = this.authService.getUserId() ?? 0;
+    if (!this.userId) {
+      this.loading = false;
+      this.showAlertMessage('Could not identify user. Please log in again.', 'error');
+      return;
+    }
     this.loadBoard();
   }
 
@@ -179,13 +184,17 @@ export class StudentKanbanCertifComponent implements OnInit, OnDestroy {
       position: this.tasks.filter(t => t.status === 'TODO').length
     };
 
+    console.log('[StudentKanbanCertif] Sending payload:', JSON.stringify(payload, null, 2));
     this.kanbanService.createTask(payload).subscribe({
       next: () => {
         this.closeAddForm();
         this.loadBoard();
         this.showAlertMessage('Task created successfully', 'success');
       },
-      error: () => {
+      error: (err) => {
+        console.error('[StudentKanbanCertif] Status:', err.status);
+        console.error('[StudentKanbanCertif] Error body:', JSON.stringify(err.error, null, 2));
+        console.error('[StudentKanbanCertif] Full error:', err);
         this.showAlertMessage('Failed to create task', 'error');
       }
     });

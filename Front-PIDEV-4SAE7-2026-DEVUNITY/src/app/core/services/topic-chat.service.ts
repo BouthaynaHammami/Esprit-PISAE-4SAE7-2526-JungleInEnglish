@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import SockJS from 'sockjs-client';
 import { Client, Message, StompSubscription } from '@stomp/stompjs';
 import { ChatMessage } from '../models/chat-message.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +20,8 @@ export class TopicChatService {
   public messages$ = this.messagesSubject.asObservable();
   public connected$ = this.connectedSubject.asObservable();
 
-  private readonly WS_URL = 'http://localhost:8085/socials/api/ws-chat';
-  private readonly API_URL = 'http://localhost:8085/socials/api/api/chat';
+  private readonly WS_URL = environment.socialWsUrl;
+  private readonly API_URL = environment.socialApiUrl;
 
   constructor(private http: HttpClient) {}
 

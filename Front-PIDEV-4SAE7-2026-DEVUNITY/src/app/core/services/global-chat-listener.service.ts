@@ -4,13 +4,14 @@ import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { UnreadMessagesService } from './unread-messages.service';
 import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GlobalChatListenerService {
   private stompClient: Client | null = null;
-  private readonly WS_URL = 'http://localhost:8081/ws-chat';
+  private readonly WS_URL = environment.socialWsUrl;
   private username = '';
   private openChats = new Set<number>();
 

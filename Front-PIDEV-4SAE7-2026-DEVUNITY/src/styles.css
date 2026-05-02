@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Palette & design tokens for premium dashboard */
 :root {
   --brand-900: #006D77;

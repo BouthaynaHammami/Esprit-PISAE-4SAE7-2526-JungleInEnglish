@@ -52,6 +52,11 @@ export class StudentKanbanEventsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.userId = this.authService.getUserId() ?? 0;
+    if (!this.userId) {
+      this.loading = false;
+      this.showAlertMessage('Could not identify user. Please log in again.', 'error');
+      return;
+    }
     this.loadBoard();
 
     // Connect to WebSocket and listen for reminder notifications

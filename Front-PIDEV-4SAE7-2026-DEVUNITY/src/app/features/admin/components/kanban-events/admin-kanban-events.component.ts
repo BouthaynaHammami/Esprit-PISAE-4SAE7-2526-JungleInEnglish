@@ -43,6 +43,11 @@ export class AdminKanbanEventsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.userId = this.authService.getUserId() ?? 0;
+    if (!this.userId) {
+      console.error('[AdminKanbanEvents] No userId found, cannot load board');
+      this.loading = false;
+      return;
+    }
     this.loadBoard();
 
     // Connect to WebSocket and listen for reminder notifications

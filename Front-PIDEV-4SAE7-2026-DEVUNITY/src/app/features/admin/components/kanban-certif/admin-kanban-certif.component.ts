@@ -45,6 +45,11 @@ export class AdminKanbanCertifComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.userId = this.authService.getUserId() ?? 0;
+    if (!this.userId) {
+      console.error('[AdminKanbanCertif] No userId found, cannot load board');
+      this.loading = false;
+      return;
+    }
     this.loadBoard();
 
     // Connect to WebSocket and listen for reminder notifications
@@ -176,13 +181,25 @@ export class AdminKanbanCertifComponent implements OnInit, OnDestroy {
       position: this.editingTask?.position ?? this.getTasksByStatus(this.formStatus).length
     };
 
+    console.log('[AdminKanbanCertif] Sending payload:', JSON.stringify(payload, null, 2));
+
     if (this.editingTask && this.editingTask.id) {
       this.kanbanService.updateTask(this.editingTask.id, payload).subscribe({
-        next: () => { this.closeForm(); this.loadBoard(); }
+        next: () => { this.closeForm(); this.loadBoard(); },
+        error: (err) => {
+          console.error('[AdminKanbanCertif] Update task failed:', err);
+          console.error('[AdminKanbanCertif] Status:', err.status);
+          console.error('[AdminKanbanCertif] Error body:', JSON.stringify(err.error, null, 2));
+        }
       });
     } else {
       this.kanbanService.createTask(payload).subscribe({
-        next: () => { this.closeForm(); this.loadBoard(); }
+        next: () => { this.closeForm(); this.loadBoard(); },
+        error: (err) => {
+          console.error('[AdminKanbanCertif] Create task failed:', err);
+          console.error('[AdminKanbanCertif] Status:', err.status);
+          console.error('[AdminKanbanCertif] Error body:', JSON.stringify(err.error, null, 2));
+        }
       });
     }
   }

@@ -5,49 +5,95 @@ import SockJS from 'sockjs-client';
 import { Client, Message, StompSubscription } from '@stomp/stompjs';
 import { ChatMessage } from '../models/chat-message.model';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatWebsocketService {
   private stompClient: Client | null = null;
+  private fgRetryCount = 0;
+  private readonly FG_MAX_RETRIES = 3;
   private messagesSubject = new BehaviorSubject<ChatMessage[]>([]);
   private connectedSubject = new BehaviorSubject<boolean>(false);
   private unreadCountSubject = new BehaviorSubject<number>(0);
   private subscription: StompSubscription | null = null;
   private backgroundSubscription: StompSubscription | null = null;
+  private backgroundClient: Client | null = null;
   private isChatOpen = false;
+  private bgRetryCount = 0;
+  private readonly BG_MAX_RETRIES = 3;
 
   public messages$ = this.messagesSubject.asObservable();
   public connected$ = this.connectedSubject.asObservable();
   public unreadCount$ = this.unreadCountSubject.asObservable();
 
-  private readonly WS_URL = 'http://localhost:8085/socials/api/ws-chat';
-  private readonly API_URL = 'http://localhost:8085/socials/api/api/chat';
+  private readonly WS_URL = environment.socialWsUrl;
+  private readonly API_URL = environment.socialApiUrl;
 
-  constructor(private http: HttpClient) {
-    // Start background listener on service creation
-    this.startBackgroundListener();
+  constructor(private http: HttpClient, private authService: AuthService) {
+    // Background listener is only started when the user explicitly calls
+    // initBackgroundListener() after login — NOT automatically on construction,
+    // to avoid infinite reconnect loops when the backend is not reachable.
+  }
+
+  /**
+   * Call this once after a successful login to start tracking unread messages.
+   * Performs an HTTP preflight check first — if the chat service is down (503/0),
+   * no WebSocket connection is attempted and no console spam occurs.
+   */
+  initBackgroundListener(): void {
+    if (!this.authService.isLoggedIn()) return;
+    if (this.backgroundClient?.active) return;
+
+    // Preflight: ping the REST history endpoint before opening WebSocket
+    this.http.get(`${this.API_URL}/history`, { observe: 'response' }).subscribe({
+      next: () => this.startBackgroundListener(),
+      error: (err) => {
+        if (err.status === 0 || err.status === 503 || err.status === 502 || err.status === 504) {
+          console.warn('[Chat] Social service unavailable (preflight failed). Chat features disabled.');
+        } else {
+          // Service is reachable (e.g. 401/403) — attempt WebSocket anyway
+          this.startBackgroundListener();
+        }
+      }
+    });
+  }
+
+  /**
+   * Stop the background listener (call on logout).
+   */
+  stopBackgroundListener(): void {
+    if (this.backgroundClient?.active) {
+      this.backgroundClient.deactivate();
+      this.backgroundClient = null;
+    }
+    if (this.backgroundSubscription) {
+      this.backgroundSubscription = null;
+    }
   }
 
   connect(username: string): void {
     this.isChatOpen = true;
-    this.unreadCountSubject.next(0); // Reset unread count when opening chat
-    
-    if (this.stompClient?.connected) {
-      console.log('Already connected');
-      return;
-    }
+    this.unreadCountSubject.next(0);
 
-    // Load message history first
+    if (this.stompClient?.connected) return;
+
+    // Load history — if this fails with 503/0, the service is down: skip WebSocket
     this.loadHistory().subscribe({
       next: (history) => {
         this.messagesSubject.next(history);
         this.connectWebSocket(username);
       },
       error: (err) => {
-        console.error('Failed to load history:', err);
-        this.connectWebSocket(username);
+        if (err.status === 0 || err.status === 503 || err.status === 502 || err.status === 504) {
+          console.warn('[Chat] Social service unavailable. Chat is offline.');
+          // leave stompClient null — UI should show "disconnected" state
+        } else {
+          // Service reachable but history failed (e.g. empty) — still try WebSocket
+          this.connectWebSocket(username);
+        }
       }
     });
   }
@@ -65,63 +111,88 @@ export class ChatWebsocketService {
   }
 
   private connectWebSocket(username: string): void {
+    this.fgRetryCount = 0;
+
     this.stompClient = new Client({
       webSocketFactory: () => new SockJS(this.WS_URL),
-      reconnectDelay: 5000,
+      reconnectDelay: 0, // managed manually
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
-      debug: (str) => console.log('[STOMP]', str),
-      
+      debug: () => {},
+
       onConnect: () => {
-        console.log('✅ Connected to WebSocket');
+        this.fgRetryCount = 0;
+        console.log('[Chat] Connected to WebSocket');
         this.connectedSubject.next(true);
-        
-        // Subscribe to public messages
+
         this.subscription = this.stompClient!.subscribe('/topic/public', (message: Message) => {
           const chatMessage: ChatMessage = JSON.parse(message.body);
           chatMessage.timestamp = new Date(chatMessage.timestamp || Date.now());
-          
-          // Generate messageId if not present
+
           if (!chatMessage.messageId && chatMessage.type === 'CHAT') {
             chatMessage.messageId = this.generateMessageId();
           }
-          
+
           const currentMessages = this.messagesSubject.value;
           this.messagesSubject.next([...currentMessages, chatMessage]);
         });
 
-        // Announce user joined
         this.sendJoinMessage(username);
       },
 
       onDisconnect: () => {
-        console.log('❌ Disconnected from WebSocket');
+        console.log('[Chat] Disconnected from WebSocket');
         this.connectedSubject.next(false);
+        this.scheduleForegroundReconnect(username);
       },
 
       onStompError: (frame) => {
-        console.error('❌ STOMP error:', frame);
+        console.error('[Chat] STOMP error:', frame);
         this.connectedSubject.next(false);
+      },
+
+      onWebSocketError: () => {
+        this.connectedSubject.next(false);
+        this.scheduleForegroundReconnect(username);
       }
     });
 
     this.stompClient.activate();
   }
 
+  private scheduleForegroundReconnect(username: string): void {
+    if (!this.isChatOpen || !this.stompClient) return;
+
+    this.fgRetryCount++;
+    if (this.fgRetryCount > this.FG_MAX_RETRIES) {
+      console.warn(`[Chat] Chat service unavailable after ${this.FG_MAX_RETRIES} attempts. Stopped retrying.`);
+      this.stompClient?.deactivate();
+      this.stompClient = null;
+      return;
+    }
+
+    const delay = 5000 * Math.pow(2, this.fgRetryCount - 1);
+    console.log(`[Chat] Reconnect attempt ${this.fgRetryCount}/${this.FG_MAX_RETRIES} in ${delay / 1000}s`);
+    setTimeout(() => {
+      if (this.isChatOpen && this.stompClient) {
+        this.stompClient.activate();
+      }
+    }, delay);
+  }
+
   disconnect(username: string): void {
     this.isChatOpen = false;
-    
+
     if (this.stompClient?.connected) {
       this.sendLeaveMessage(username);
-      
+
       if (this.subscription) {
         this.subscription.unsubscribe();
       }
-      
+
       this.stompClient.deactivate();
       this.connectedSubject.next(false);
       // DON'T clear messages - keep them for when user reopens chat
-      // this.messagesSubject.next([]);
     }
   }
 
@@ -206,38 +277,64 @@ export class ChatWebsocketService {
   }
 
   private startBackgroundListener(): void {
-    const backgroundClient = new Client({
+    this.bgRetryCount = 0;
+
+    this.backgroundClient = new Client({
       webSocketFactory: () => new SockJS(this.WS_URL),
-      reconnectDelay: 5000,
+      // reconnectDelay is managed manually below — set to 0 to disable auto-retry
+      reconnectDelay: 0,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
-      debug: (str) => console.log('[STOMP Background]', str),
-      
+      debug: () => {}, // silence STOMP verbose logs
+
       onConnect: () => {
-        console.log('✅ Background listener connected for global chat');
-        
-        // Subscribe to public messages in background
-        this.backgroundSubscription = backgroundClient.subscribe('/topic/public', (message: Message) => {
+        this.bgRetryCount = 0; // reset on successful connect
+        console.log('[Chat] Background listener connected');
+
+        this.backgroundSubscription = this.backgroundClient!.subscribe('/topic/public', (message: Message) => {
           const chatMessage: ChatMessage = JSON.parse(message.body);
-          
-          // Only increment unread count if chat is closed and message is CHAT type
+
           if (!this.isChatOpen && chatMessage.type === 'CHAT') {
             const currentCount = this.unreadCountSubject.value;
             this.unreadCountSubject.next(currentCount + 1);
-            console.log('📬 New message while chat closed. Unread count:', currentCount + 1);
           }
         });
       },
 
       onDisconnect: () => {
-        console.log('❌ Background listener disconnected');
+        this.scheduleBackgroundReconnect();
       },
 
-      onStompError: (frame) => {
-        console.error('❌ Background STOMP error:', frame);
+      onStompError: () => {
+        this.scheduleBackgroundReconnect();
+      },
+
+      onWebSocketError: () => {
+        this.scheduleBackgroundReconnect();
       }
     });
 
-    backgroundClient.activate();
+    this.backgroundClient.activate();
+  }
+
+  private scheduleBackgroundReconnect(): void {
+    if (!this.backgroundClient) return; // stopped intentionally
+
+    this.bgRetryCount++;
+    if (this.bgRetryCount > this.BG_MAX_RETRIES) {
+      console.warn(`[Chat] Background listener: chat service unavailable after ${this.BG_MAX_RETRIES} attempts. Giving up.`);
+      this.backgroundClient.deactivate();
+      this.backgroundClient = null;
+      return;
+    }
+
+    // Exponential backoff: 5s, 10s, 20s
+    const delay = 5000 * Math.pow(2, this.bgRetryCount - 1);
+    console.log(`[Chat] Background listener retry ${this.bgRetryCount}/${this.BG_MAX_RETRIES} in ${delay / 1000}s`);
+    setTimeout(() => {
+      if (this.backgroundClient) {
+        this.backgroundClient.activate();
+      }
+    }, delay);
   }
 }

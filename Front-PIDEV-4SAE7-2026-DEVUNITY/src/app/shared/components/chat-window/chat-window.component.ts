@@ -62,6 +62,9 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewChecked 
     const email = this.authService.getUserEmail() || 'Anonymous';
     this.username = this.extractUsername(email);
 
+    // Start background listener now that we know the user is active
+    this.chatService.initBackgroundListener();
+
     // Subscribe to unread count
     this.unreadSubscription = this.chatService.unreadCount$.subscribe(count => {
       this.unreadCount = count;
@@ -127,10 +130,13 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewChecked 
     this.messagesSubscription?.unsubscribe();
     this.connectedSubscription?.unsubscribe();
     this.unreadSubscription?.unsubscribe();
-    
+
     if (this.isConnected) {
       this.chatService.disconnect(this.username);
     }
+
+    // Stop background WebSocket listener when the component is destroyed (e.g. on logout)
+    this.chatService.stopBackgroundListener();
   }
 
   toggleChat(): void {

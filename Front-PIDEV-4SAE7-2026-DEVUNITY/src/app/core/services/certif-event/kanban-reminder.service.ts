@@ -1,14 +1,19 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ReminderNotification } from '../../models/kanban-task.model';
+import { environment } from '../../../../environments/environment';
 declare var SockJS: any;
 declare var Stomp: any;
+
+const MAX_RETRIES = 3;
 
 @Injectable({ providedIn: 'root' })
 export class KanbanReminderService implements OnDestroy {
 
   private academicClient: any = null;
   private communityClient: any = null;
+  private academicRetries = 0;
+  private communityRetries = 0;
 
   /** Emits every reminder notification received from either service */
   readonly reminder$ = new Subject<ReminderNotification>();
@@ -18,7 +23,13 @@ export class KanbanReminderService implements OnDestroy {
    * Call this once when the user logs in or when the kanban board initializes.
    */
   connect(userId: number): void {
+    if (!userId || userId === 0) {
+      console.warn('[KanbanReminderService] Invalid userId, skipping WS connection');
+      return;
+    }
     console.log('[KanbanReminderService] Connecting for userId:', userId);
+    this.academicRetries = 0;
+    this.communityRetries = 0;
     this.connectAcademic(userId);
     this.connectCommunity(userId);
   }
@@ -40,12 +51,12 @@ export class KanbanReminderService implements OnDestroy {
   private connectAcademic(userId: number): void {
     if (this.academicClient) return;
 
-    // Connect directly to Academic service (port 8086) — bypasses gateway WS issues
-    const socket = new SockJS('http://localhost:8086/academics/api/ws-reminders');
+    const socket = new SockJS(environment.academicWsUrl);
     this.academicClient = Stomp.over(socket);
     this.academicClient.debug = null; // silence debug logs
 
     this.academicClient.connect({}, () => {
+      this.academicRetries = 0;
       this.academicClient.subscribe(
         `/topic/reminders/${userId}`,
         (message: any) => {
@@ -57,23 +68,27 @@ export class KanbanReminderService implements OnDestroy {
       );
     }, (error: any) => {
       console.error('[KanbanReminderService] Academic WS error:', error);
-      // Reconnect after 5s
-      setTimeout(() => {
-        this.academicClient = null;
-        this.connectAcademic(userId);
-      }, 5000);
+      this.academicClient = null;
+      this.academicRetries++;
+      if (this.academicRetries > MAX_RETRIES) {
+        console.warn(`[KanbanReminderService] Academic WS unavailable after ${MAX_RETRIES} attempts. Stopped retrying.`);
+        return;
+      }
+      const delay = 5000 * Math.pow(2, this.academicRetries - 1);
+      console.log(`[KanbanReminderService] Academic WS retry ${this.academicRetries}/${MAX_RETRIES} in ${delay / 1000}s`);
+      setTimeout(() => this.connectAcademic(userId), delay);
     });
   }
 
   private connectCommunity(userId: number): void {
     if (this.communityClient) return;
 
-    // Connect directly to Community service (port 8084) — bypasses gateway WS issues
-    const socket = new SockJS('http://localhost:8084/communities/api/ws-reminders');
+    const socket = new SockJS(environment.communityWsUrl);
     this.communityClient = Stomp.over(socket);
     this.communityClient.debug = null; // silence debug logs
 
     this.communityClient.connect({}, () => {
+      this.communityRetries = 0;
       console.log('[KanbanReminderService] Community WS connected for user', userId);
       this.communityClient.subscribe(
         `/topic/reminders/${userId}`,
@@ -87,11 +102,15 @@ export class KanbanReminderService implements OnDestroy {
       );
     }, (error: any) => {
       console.error('[KanbanReminderService] Community WS error:', error);
-      // Reconnect after 5s
-      setTimeout(() => {
-        this.communityClient = null;
-        this.connectCommunity(userId);
-      }, 5000);
+      this.communityClient = null;
+      this.communityRetries++;
+      if (this.communityRetries > MAX_RETRIES) {
+        console.warn(`[KanbanReminderService] Community WS unavailable after ${MAX_RETRIES} attempts. Stopped retrying.`);
+        return;
+      }
+      const delay = 5000 * Math.pow(2, this.communityRetries - 1);
+      console.log(`[KanbanReminderService] Community WS retry ${this.communityRetries}/${MAX_RETRIES} in ${delay / 1000}s`);
+      setTimeout(() => this.connectCommunity(userId), delay);
     });
   }
 

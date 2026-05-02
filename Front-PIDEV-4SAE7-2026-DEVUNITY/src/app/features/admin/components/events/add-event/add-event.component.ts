@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { EventService } from '../../../../../core/services/certif-event/event.service';
 import { RegistrationService } from '../../../../../core/services/certif-event/registration.service';
 import { EventStatus } from '../../../../../core/models/event.model';
@@ -62,7 +63,8 @@ export class AddEventComponent implements OnInit {
 
   constructor(
     private eventService: EventService,
-    private registrationService: RegistrationService
+    private registrationService: RegistrationService,
+    @Inject(PLATFORM_ID) private platformId: object
   ) {}
 
   ngOnInit(): void {
@@ -142,11 +144,13 @@ export class AddEventComponent implements OnInit {
 
     if (!this.event.status) {
       this.errorMessage = 'Please select a status ❌';
+      this.scrollToTop();
       return;
     }
 
     if (!this.selectedFile && this.editingId === null) {
       this.errorMessage = 'Please select an image ❌';
+      this.scrollToTop();
       return;
     }
 
@@ -155,8 +159,10 @@ export class AddEventComponent implements OnInit {
     const formData = new FormData();
     formData.append('title', this.event.title);
     formData.append('description', this.event.description);
-    formData.append('startDate', this.event.startDate);
-    formData.append('endDate', this.event.endDate);
+    // Normalize datetime-local value: browser omits seconds ("2026-05-02T14:30")
+    // but Spring Boot LocalDateTime parser requires full ISO format ("2026-05-02T14:30:00")
+    formData.append('startDate', this.normalizeDateTime(this.event.startDate));
+    formData.append('endDate',   this.normalizeDateTime(this.event.endDate));
     formData.append('location', this.event.location);
     formData.append('capacity', String(this.event.capacity));
     formData.append('status', this.event.status as string);
@@ -164,6 +170,10 @@ export class AddEventComponent implements OnInit {
     if (this.selectedFile) {
       formData.append('image', this.selectedFile);
     }
+
+    // Debug: log what we're sending
+    console.log('[AddEvent] Submitting FormData:');
+    formData.forEach((value, key) => console.log(`  ${key}:`, value));
 
     const request = this.editingId
       ? this.eventService.updateEventWithImage(this.editingId, formData)
@@ -178,8 +188,35 @@ export class AddEventComponent implements OnInit {
       },
       error: (err: any) => {
         this.isLoading = false;
-        console.error(err);
-        this.errorMessage = 'Request failed ❌';
+        console.error('[AddEvent] Request failed:', err);
+        console.error('[AddEvent] Status:', err.status);
+        console.error('[AddEvent] Error body:', JSON.stringify(err.error, null, 2));
+        if (err.error instanceof Blob) {
+          err.error.text().then((t: string) => console.error('[AddEvent] Error blob text:', t));
+        }
+
+        // Extract the most useful part of the backend error body
+        const backendMsg: string =
+          (typeof err.error === 'string' ? err.error : null) ||
+          err.error?.message ||
+          err.error?.error ||
+          err.message ||
+          'Unknown error';
+
+        if (err.status === 400) {
+          this.errorMessage = `Validation error (400): ${backendMsg} ❌`;
+        } else if (err.status === 413) {
+          this.errorMessage = 'Image file is too large. Please use a smaller image ❌';
+        } else if (err.status === 415) {
+          this.errorMessage = 'Unsupported file type. Use PNG, JPG, or WebP ❌';
+        } else if (err.status === 500) {
+          this.errorMessage = `Server error (500): ${backendMsg} ❌`;
+        } else if (err.status === 503 || err.status === 0) {
+          this.errorMessage = 'Community service is currently unavailable. Please try again later ❌';
+        } else {
+          this.errorMessage = `Request failed (${err.status}): ${backendMsg} ❌`;
+        }
+        this.scrollToTop();
       }
     });
   }
@@ -279,5 +316,23 @@ export class AddEventComponent implements OnInit {
 
   prevPage(): void {
     if (this.currentPage > 1) { this.currentPage--; }
+  }
+
+  private scrollToTop(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  /**
+   * The datetime-local input produces "2026-05-02T14:30" (no seconds).
+   * Spring Boot's LocalDateTime parser requires the full ISO format: "2026-05-02T14:30:00".
+   */
+  private normalizeDateTime(value: string): string {
+    if (!value) return value;
+    // Already has seconds (length >= 19) — return as-is
+    if (value.length >= 19) return value;
+    // Has only HH:mm — append :00
+    return value + ':00';
   }
 }

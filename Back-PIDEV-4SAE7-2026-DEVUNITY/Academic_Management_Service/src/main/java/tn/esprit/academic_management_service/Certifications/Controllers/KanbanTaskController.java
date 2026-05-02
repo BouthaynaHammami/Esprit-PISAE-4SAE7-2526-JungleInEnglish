@@ -32,19 +32,19 @@ public class KanbanTaskController {
 
     @PutMapping("/tasks/{id}")
     public ResponseEntity<KanbanTask> updateTask(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody KanbanTaskDTO dto) {
         return ResponseEntity.ok(kanbanTaskService.updateTask(id, dto));
     }
 
     @DeleteMapping("/tasks/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTask(@PathVariable("id") Long id) {
         kanbanTaskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/tasks/{id}")
-    public ResponseEntity<KanbanTask> getTask(@PathVariable Long id) {
+    public ResponseEntity<KanbanTask> getTask(@PathVariable("id") Long id) {
         return ResponseEntity.ok(kanbanTaskService.getTask(id));
     }
 
@@ -54,15 +54,15 @@ public class KanbanTaskController {
 
     /** Get the full board (all columns) for a user */
     @GetMapping("/board/{userId}")
-    public ResponseEntity<List<KanbanTask>> getBoard(@PathVariable Long userId) {
+    public ResponseEntity<List<KanbanTask>> getBoard(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(kanbanTaskService.getBoard(userId));
     }
 
     /** Get a single column for a user */
     @GetMapping("/board/{userId}/column/{status}")
     public ResponseEntity<List<KanbanTask>> getColumn(
-            @PathVariable Long userId,
-            @PathVariable String status) {
+            @PathVariable("userId") Long userId,
+            @PathVariable("status") String status) {
         return ResponseEntity.ok(kanbanTaskService.getColumn(userId, status));
     }
 
@@ -73,7 +73,7 @@ public class KanbanTaskController {
     /** Move a task to a different column / position (drag & drop) */
     @PatchMapping("/tasks/{id}/move")
     public ResponseEntity<KanbanTask> moveTask(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody KanbanMoveDTO moveDTO) {
         return ResponseEntity.ok(kanbanTaskService.moveTask(id, moveDTO));
     }
@@ -83,7 +83,7 @@ public class KanbanTaskController {
     // =====================================================
 
     @GetMapping("/daily-analysis/{userId}")
-    public ResponseEntity<DailyAnalysisDTO> getDailyAnalysis(@PathVariable Long userId) {
+    public ResponseEntity<DailyAnalysisDTO> getDailyAnalysis(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(kanbanTaskService.getDailyAnalysis(userId));
     }
 }
