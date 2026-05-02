@@ -27,50 +27,60 @@ pipeline {
             }
         }
 
-        stage('Clean All Microservices') {
-            steps {
-                echo 'Nettoyage de tous les microservices...'
-                dir("${BACKEND_PATH}") {
-                    sh 'mvn clean'
-                }
-            }
-        }
-
-        stage('Build Microservices') {
+        stage('Clean') {
             parallel {
-                stage('Discovery Service') {
-                    steps {
-                        dir("${BACKEND_PATH}/Discovery_Service") {
-                            sh 'mvn clean install -DskipTests'
-                        }
-                    }
-                }
-                stage('API Gateway') {
-                    steps {
-                        dir("${BACKEND_PATH}/API_Gateway") {
-                            sh 'mvn clean install -DskipTests'
-                        }
-                    }
-                }
-                stage('Academic Management') {
+                stage('Clean Academic') {
                     steps {
                         dir("${BACKEND_PATH}/Academic_Management_Service") {
-                            sh 'mvn clean install -DskipTests'
+                            sh 'mvn clean'
+                        }
+                    }
+                }
+                stage('Clean Discovery') {
+                    steps {
+                        dir("${BACKEND_PATH}/Discovery_Service") {
+                            sh 'mvn clean'
+                        }
+                    }
+                }
+                stage('Clean API Gateway') {
+                    steps {
+                        dir("${BACKEND_PATH}/API_Gateway") {
+                            sh 'mvn clean'
                         }
                     }
                 }
             }
         }
 
-        stage('Test Microservices') {
+        stage('Build') {
             parallel {
-                stage('Test Discovery') {
+                stage('Build Academic') {
                     steps {
-                        dir("${BACKEND_PATH}/Discovery_Service") {
-                            sh 'mvn test || true'
+                        dir("${BACKEND_PATH}/Academic_Management_Service") {
+                            sh 'mvn install -DskipTests'
                         }
                     }
                 }
+                stage('Build Discovery') {
+                    steps {
+                        dir("${BACKEND_PATH}/Discovery_Service") {
+                            sh 'mvn install -DskipTests'
+                        }
+                    }
+                }
+                stage('Build API Gateway') {
+                    steps {
+                        dir("${BACKEND_PATH}/API_Gateway") {
+                            sh 'mvn install -DskipTests'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+            parallel {
                 stage('Test Academic') {
                     steps {
                         dir("${BACKEND_PATH}/Academic_Management_Service") {
@@ -78,34 +88,89 @@ pipeline {
                         }
                     }
                 }
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                echo 'Analyse SonarQube...'
-                script {
-                    withSonarQubeEnv('sonarqube') {
-                        dir("${BACKEND_PATH}/Academic_Management_Service") {
-                            sh """
-                                mvn sonar:sonar \
-                                -Dsonar.projectKey=Academic-Management-Service \
-                                -Dsonar.projectName='Academic Management Service' \
-                                -Dsonar.host.url=${SONAR_HOST_URL} \
-                                -Dsonar.java.binaries=target/classes \
-                                -Dsonar.java.test.binaries=target/test-classes \
-                                -Dsonar.sources=src/main/java \
-                                -Dsonar.tests=src/test/java
-                            """
+                stage('Test Discovery') {
+                    steps {
+                        dir("${BACKEND_PATH}/Discovery_Service") {
+                            sh 'mvn test || true'
+                        }
+                    }
+                }
+                stage('Test API Gateway') {
+                    steps {
+                        dir("${BACKEND_PATH}/API_Gateway") {
+                            sh 'mvn test || true'
                         }
                     }
                 }
             }
         }
 
-    }  // ← closes stages
+        stage('SonarQube Analysis') {
+            parallel {
+                stage('Sonar Academic') {
+                    steps {
+                        script {
+                            withSonarQubeEnv('sonarqube') {
+                                dir("${BACKEND_PATH}/Academic_Management_Service") {
+                                    sh """
+                                        mvn sonar:sonar \
+                                        -Dsonar.projectKey=Academic-Management-Service \
+                                        -Dsonar.projectName='Academic Management Service' \
+                                        -Dsonar.host.url=${SONAR_HOST_URL} \
+                                        -Dsonar.java.binaries=target/classes \
+                                        -Dsonar.java.test.binaries=target/test-classes \
+                                        -Dsonar.sources=src/main/java \
+                                        -Dsonar.tests=src/test/java
+                                    """
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('Sonar Discovery') {
+                    steps {
+                        script {
+                            withSonarQubeEnv('sonarqube') {
+                                dir("${BACKEND_PATH}/Discovery_Service") {
+                                    sh """
+                                        mvn sonar:sonar \
+                                        -Dsonar.projectKey=Discovery-Service \
+                                        -Dsonar.projectName='Discovery Service' \
+                                        -Dsonar.host.url=${SONAR_HOST_URL} \
+                                        -Dsonar.java.binaries=target/classes \
+                                        -Dsonar.java.test.binaries=target/test-classes \
+                                        -Dsonar.sources=src/main/java \
+                                        -Dsonar.tests=src/test/java
+                                    """
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('Sonar API Gateway') {
+                    steps {
+                        script {
+                            withSonarQubeEnv('sonarqube') {
+                                dir("${BACKEND_PATH}/API_Gateway") {
+                                    sh """
+                                        mvn sonar:sonar \
+                                        -Dsonar.projectKey=API-Gateway \
+                                        -Dsonar.projectName='API Gateway' \
+                                        -Dsonar.host.url=${SONAR_HOST_URL} \
+                                        -Dsonar.java.binaries=target/classes \
+                                        -Dsonar.java.test.binaries=target/test-classes \
+                                        -Dsonar.sources=src/main/java \
+                                        -Dsonar.tests=src/test/java
+                                    """
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-    // ← post is now correctly outside stages, inside pipeline
     post {
         success {
             echo '✅ Build réussi pour tous les microservices !'
@@ -121,10 +186,9 @@ pipeline {
                 [pattern: '**/target/**',       type: 'INCLUDE'],
                 [pattern: '**/node_modules/**', type: 'INCLUDE'],
                 [pattern: '**/.m2/**',          type: 'INCLUDE'],
-                [pattern: '**/build/**',         type: 'INCLUDE'],
-                [pattern: '**/*.log',            type: 'INCLUDE']
+                [pattern: '**/build/**',        type: 'INCLUDE'],
+                [pattern: '**/*.log',           type: 'INCLUDE']
             ]
         }
     }
-
-}  // ← closes pipeline
+}
