@@ -110,37 +110,40 @@ pipeline {
             parallel {
                 stage('Snyk Academic') {
                     steps {
-                        withCredentials([string(credentialsId: 'snyk', variable: 'SNYK_TOKEN')]) {
-                            dir("${BACKEND_PATH}/Academic_Management_Service") {
-                                sh """
-                                    snyk auth ${SNYK_TOKEN}
-                                    snyk test --file=pom.xml --severity-threshold=high || true
-                                """
-                            }
+                        dir("${BACKEND_PATH}/Academic_Management_Service") {
+                            snykSecurity(
+                                snykInstallation: 'snyk',
+                                snykTokenId: 'snyk-api-token',
+                                failOnIssues: false,
+                                monitorProjectOnBuild: true,
+                                additionalArguments: '--file=pom.xml --severity-threshold=high'
+                            )
                         }
                     }
                 }
                 stage('Snyk Discovery') {
                     steps {
-                        withCredentials([string(credentialsId: 'snyk', variable: 'SNYK_TOKEN')]) {
-                            dir("${BACKEND_PATH}/Discovery_Service") {
-                                sh """
-                                    snyk auth ${SNYK_TOKEN}
-                                    snyk test --file=pom.xml --severity-threshold=high || true
-                                """
-                            }
+                        dir("${BACKEND_PATH}/Discovery_Service") {
+                            snykSecurity(
+                                snykInstallation: 'snyk',
+                                snykTokenId: 'snyk-api-token',
+                                failOnIssues: false,
+                                monitorProjectOnBuild: true,
+                                additionalArguments: '--file=pom.xml --severity-threshold=high'
+                            )
                         }
                     }
                 }
                 stage('Snyk API Gateway') {
                     steps {
-                        withCredentials([string(credentialsId: 'snyk', variable: 'SNYK_TOKEN')]) {
-                            dir("${BACKEND_PATH}/API_Gateway") {
-                                sh """
-                                    snyk auth ${SNYK_TOKEN}
-                                    snyk test --file=pom.xml --severity-threshold=high || true
-                                """
-                            }
+                        dir("${BACKEND_PATH}/API_Gateway") {
+                            snykSecurity(
+                                snykInstallation: 'snyk',
+                                snykTokenId: 'snyk-api-token',
+                                failOnIssues: false,
+                                monitorProjectOnBuild: true,
+                                additionalArguments: '--file=pom.xml --severity-threshold=high'
+                            )
                         }
                     }
                 }
