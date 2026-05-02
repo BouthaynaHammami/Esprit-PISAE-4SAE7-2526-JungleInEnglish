@@ -1,0 +1,141 @@
+pipeline {
+    agent any
+    tools {
+        jdk 'jdk17'
+    }
+
+    options {
+        // Conserver seulement les 5 derniers builds pour économiser l'espace
+        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+        // Éviter les builds concurrents
+        disableConcurrentBuilds()
+        // Timeout global
+        timeout(time: 1, unit: 'HOURS')
+    }
+
+    environment {
+        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        FRONTEND_PATH = 'Front-PIDEV-4SAE7-2026-DEVUNITY'
+        SONAR_HOST_URL = 'http://192.168.100.10:9000' // Changez selon votre config
+        MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Récupération du code source...'
+                git branch: 'main',
+                    credentialsId: 'gittokens',
+                    url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
+            }
+        }
+
+        stage('Clean All Microservices') {
+            steps {
+                echo 'Nettoyage de tous les microservices...'
+                dir("${BACKEND_PATH}") {
+                    sh 'mvn clean'
+                }
+            }
+        }
+
+        stage('Build Microservices') {
+            parallel {
+                stage('Discovery Service') {
+                    steps {
+                        dir("${BACKEND_PATH}/Discovery_Service") {
+                            sh 'mvn clean install -DskipTests'
+                        }
+                    }
+                }
+                stage('API Gateway') {
+                    steps {
+                        dir("${BACKEND_PATH}/API_Gateway") {
+                            sh 'mvn clean install -DskipTests'
+                        }
+                    }
+                }
+                stage('Academic Management') {
+                    steps {
+                        dir("${BACKEND_PATH}/Academic_Management_Service") {
+                            sh 'mvn clean install -DskipTests'
+                        }
+                    }
+                }
+
+
+
+
+
+            }
+        }
+
+        stage('Test Microservices') {
+            parallel {
+                stage('Test Discovery') {
+                    steps {
+                        dir("${BACKEND_PATH}/Discovery_Service") {
+                            sh 'mvn test || true'
+                        }
+                    }
+                }
+                stage('Test Academic') {
+                    steps {
+                        dir("${BACKEND_PATH}/Academic_Management_Service") {
+                            sh 'mvn test'
+                        }
+                    }
+                }
+
+
+
+
+
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Analyse SonarQube...'
+                script {
+                    withSonarQubeEnv('sonarqube') {
+                        dir("${BACKEND_PATH}") {
+                            sh """
+                                mvn sonar:sonar \
+                                -Dsonar.projectKey=DevUnity-Microservices \
+                                -Dsonar.projectName='DevUnity Microservices' \
+                                -Dsonar.host.url=${SONAR_HOST_URL} \
+                                -Dsonar.java.binaries=target/classes
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
+
+    post {
+        success {
+            echo '✅ Build réussi pour tous les microservices !'
+        }
+        failure {
+            echo '❌ Build échoué !'
+        }
+        always {
+            // Publier les rapports de tests
+            junit testResults: "${BACKEND_PATH}/**/target/surefire-reports/*.xml", allowEmptyResults: true
+
+            // Nettoyage complet du workspace avec patterns spécifiques
+            cleanWs deleteDirs: true, patterns: [
+                [pattern: '**/target/**', type: 'INCLUDE'],
+                [pattern: '**/node_modules/**', type: 'INCLUDE'],
+                [pattern: '**/.m2/**', type: 'INCLUDE'],
+                [pattern: '**/build/**', type: 'INCLUDE'],
+                [pattern: '**/*.log', type: 'INCLUDE']
+            ]
+        }
+    }
+}
