@@ -5,16 +5,16 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class StudentChallengeServiceImplTest {
+class StudentChallengeSessionServiceImplTest {
 
     @Test
     void shouldReferenceTargetServiceClass() {
-        assertEquals("StudentChallengeServiceImpl", StudentChallengeServiceImpl.class.getSimpleName());
+        assertEquals("StudentChallengeSessionServiceImpl", StudentChallengeSessionServiceImpl.class.getSimpleName());
     }
 
     @Test
     void shouldDeclareAtLeastOneNonSyntheticMethod() {
-        long methodCount = java.util.Arrays.stream(StudentChallengeServiceImpl.class.getDeclaredMethods())
+        long methodCount = java.util.Arrays.stream(StudentChallengeSessionServiceImpl.class.getDeclaredMethods())
                 .filter(method -> !method.isSynthetic())
                 .count();
 
