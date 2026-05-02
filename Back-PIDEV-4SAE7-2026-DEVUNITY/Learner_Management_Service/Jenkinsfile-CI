@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         DOCKERHUB_REPO = "chelba/learner-management-service"
-        NEXUS_REPO     = "192.168.32.133:8082/Learner_Management_Service"
         IMAGE_TAG      = "v${BUILD_NUMBER}"
         SONAR_PROJECT  = "Learner_Management_Service"
     }
