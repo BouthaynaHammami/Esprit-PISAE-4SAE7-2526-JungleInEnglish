@@ -106,6 +106,47 @@ pipeline {
             }
         }
 
+        stage('Snyk Security Scan') {
+            parallel {
+                stage('Snyk Academic') {
+                    steps {
+                        withCredentials([string(credentialsId: 'snyk', variable: 'SNYK_TOKEN')]) {
+                            dir("${BACKEND_PATH}/Academic_Management_Service") {
+                                sh """
+                                    snyk auth ${SNYK_TOKEN}
+                                    snyk test --file=pom.xml --severity-threshold=high || true
+                                """
+                            }
+                        }
+                    }
+                }
+                stage('Snyk Discovery') {
+                    steps {
+                        withCredentials([string(credentialsId: 'snyk', variable: 'SNYK_TOKEN')]) {
+                            dir("${BACKEND_PATH}/Discovery_Service") {
+                                sh """
+                                    snyk auth ${SNYK_TOKEN}
+                                    snyk test --file=pom.xml --severity-threshold=high || true
+                                """
+                            }
+                        }
+                    }
+                }
+                stage('Snyk API Gateway') {
+                    steps {
+                        withCredentials([string(credentialsId: 'snyk', variable: 'SNYK_TOKEN')]) {
+                            dir("${BACKEND_PATH}/API_Gateway") {
+                                sh """
+                                    snyk auth ${SNYK_TOKEN}
+                                    snyk test --file=pom.xml --severity-threshold=high || true
+                                """
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         stage('SonarQube Analysis') {
             parallel {
                 stage('Sonar Academic') {
@@ -174,7 +215,7 @@ pipeline {
                         dir("${BACKEND_PATH}/Academic_Management_Service") {
                             sh """
                                 mvn deploy -DskipTests \
-                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/Devunity-snapshots/
+                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/maven-snapshots/
                             """
                         }
                     }
@@ -184,7 +225,7 @@ pipeline {
                         dir("${BACKEND_PATH}/Discovery_Service") {
                             sh """
                                 mvn deploy -DskipTests \
-                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/Devunity-snapshots/
+                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/maven-snapshots/
                             """
                         }
                     }
@@ -194,7 +235,7 @@ pipeline {
                         dir("${BACKEND_PATH}/API_Gateway") {
                             sh """
                                 mvn deploy -DskipTests \
-                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/Devunity-snapshots/
+                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/maven-snapshots/
                             """
                         }
                     }
@@ -205,10 +246,10 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build, analyse et déploiement Nexus réussis !'
+            echo '✅ Build, sécurité, analyse et déploiement Nexus réussis !'
         }
         failure {
-            echo '❌ Build échoué !'
+            echo '❌ Pipeline échoué !'
         }
         always {
             junit testResults: "${BACKEND_PATH}/**/target/surefire-reports/*.xml",
