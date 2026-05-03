@@ -142,10 +142,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <!-- The test class JungleInEnglishUserApplicationTests lives in the wrong
-                         package (leftover from project rename) and cannot find @SpringBootApplication.
-                         Tests are skipped here; run with -DskipTests=false to re-enable. -->
-                    <skipTests>true</skipTests>
+                    <skipTests>false</skipTests>
                 </configuration>
             </plugin>
             <plugin>
