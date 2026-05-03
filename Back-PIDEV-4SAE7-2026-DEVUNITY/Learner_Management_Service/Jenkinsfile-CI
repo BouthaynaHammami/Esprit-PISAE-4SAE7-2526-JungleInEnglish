@@ -30,13 +30,16 @@ pipeline {
         stage('OWASP Dependency Check') {
             steps {
                 dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Learner_Management_Service') {
-                    dependencyCheck additionalArguments: '''
-                        --scan ./
-                        --format XML
-                        --format HTML
-                        --out ./dependency-check-report
-                        --prettyPrint
-                    ''', odcInstallation: 'OWASP-DC'
+                    withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_KEY')]) {
+                        dependencyCheck additionalArguments: """
+                            --scan ./
+                            --format XML
+                            --format HTML
+                            --out ./dependency-check-report
+                            --nvdApiKey ${NVD_KEY}
+                            --prettyPrint
+                        """, odcInstallation: 'OWASP-DC'
+                    }
                 }
             }
             post {
