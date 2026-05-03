@@ -1,4 +1,4 @@
-package tn.esprit.learner_management_service.UserManagement.Config;
+package tn.esprit.learner_managment_service.UserManagement.Config;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
