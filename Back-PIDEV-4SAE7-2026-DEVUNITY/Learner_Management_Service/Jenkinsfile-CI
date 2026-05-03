@@ -40,6 +40,13 @@ pipeline {
                     }
                 }
         }
+        stage('Deploy to Nexus') {
+            steps {
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Learner_Management_Service') {
+                    sh 'mvn deploy -DskipTests'
+                }
+            }
+        }
 
         stage('SonarQube Analysis') {
             steps {
