@@ -1,19 +1,17 @@
 pipeline {
     agent any
-
     tools {
         jdk 'JAVA_HOME'
         maven 'MAVEN_HOME'
     }
-
     environment {
         BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
         SOCIAL_SERVICE_PATH = "${BACKEND_PATH}/Social_Interaction_Service"
         SONAR_HOST_URL = 'http://192.168.184.128:9000'
         NEXUS_URL = 'http://192.168.184.128:8081'
         MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
+        DOCKER_IMAGE = 'hbouthayna/social-interaction-service'
     }
-
     stages {
         stage('Checkout') {
             steps {
@@ -23,7 +21,6 @@ pipeline {
                     url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
             }
         }
-
         stage('Clean & Build') {
             steps {
                 echo 'Nettoyage et Compilation...'
@@ -32,17 +29,14 @@ pipeline {
                 }
             }
         }
-
         stage('Test') {
             steps {
                 echo 'Exécution des tests unitaires...'
                 dir("${SOCIAL_SERVICE_PATH}") {
-                    // Exécute les tests. Le || true évite de bloquer le pipeline si un test échoue
                     sh 'mvn test || true'
                 }
             }
         }
-
         stage('Semgrep Security Scan') {
             steps {
                 script {
@@ -61,12 +55,10 @@ pipeline {
                 }
             }
         }
-
         stage('SonarQube Analysis') {
             steps {
                 script {
                     echo 'Analyse SonarQube...'
-                    // Récupération sécurisée du token depuis les Credentials Jenkins
                     withCredentials([string(credentialsId: 'sonar_token', variable: 'SONAR_TOKEN')]) {
                         withSonarQubeEnv('sonarqube') {
                             dir("${SOCIAL_SERVICE_PATH}") {
@@ -83,23 +75,57 @@ pipeline {
                 }
             }
         }
-
         stage('Deploy to Nexus') {
             steps {
                 echo 'Déploiement sur Nexus...'
                 dir("${SOCIAL_SERVICE_PATH}") {
-                    sh """
-                        mvn deploy -DskipTests \
-                        -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/maven-snapshots/
-                    """
+                    withCredentials([usernamePassword(
+                        credentialsId: 'nexus_token',
+                        usernameVariable: 'NEXUS_USER',
+                        passwordVariable: 'NEXUS_PASS'
+                    )]) {
+                        sh """
+                            mvn deploy -DskipTests \
+                            -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/maven-snapshots/ \
+                            -Dusername=${NEXUS_USER} \
+                            -Dpassword=${NEXUS_PASS}
+                        """
+                    }
+                }
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                echo 'Construction de l image Docker...'
+                dir("${SOCIAL_SERVICE_PATH}") {
+                    script {
+                        dockerImage = docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
+                    }
+                }
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                echo 'Push de l image sur Docker Hub...'
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'docker_token',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
+                        sh """
+                            echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
+                            docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                            docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest
+                            docker push ${DOCKER_IMAGE}:latest
+                        """
+                    }
                 }
             }
         }
     }
-
     post {
         always {
-            // Affiche les résultats des tests dans l'interface Jenkins
             junit testResults: "${SOCIAL_SERVICE_PATH}/target/surefire-reports/*.xml", allowEmptyResults: true
             cleanWs()
         }
