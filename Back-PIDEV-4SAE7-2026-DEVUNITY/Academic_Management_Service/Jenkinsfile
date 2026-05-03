@@ -16,8 +16,8 @@ pipeline {
         SONAR_HOST_URL = 'http://192.168.22.130:9000'
         NEXUS_URL = 'http://192.168.22.130:8081'
         MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
-        DOCKER_REGISTRY = 'chaibimarwa'
-        REGISTRY_CREDENTIAL = 'REGISTRY_CREDENTIAL'
+        DOCKER_REGISTRY = 'your-dockerhub-username'
+        REGISTRY_CREDENTIAL = 'dockerhub-credentials-id'
     }
 
     stages {
@@ -317,11 +317,43 @@ pipeline {
                 }
             }
         }
+
+        stage('Trivy Image Scan') {
+            parallel {
+                stage('Trivy Academic') {
+                    steps {
+                        sh """
+                            trivy image --exit-code 0 --severity HIGH,CRITICAL \
+                            --no-progress --format table \
+                            ${DOCKER_REGISTRY}/academic-management-service:${BUILD_NUMBER}
+                        """
+                    }
+                }
+                stage('Trivy Discovery') {
+                    steps {
+                        sh """
+                            trivy image --exit-code 0 --severity HIGH,CRITICAL \
+                            --no-progress --format table \
+                            ${DOCKER_REGISTRY}/discovery-service:${BUILD_NUMBER}
+                        """
+                    }
+                }
+                stage('Trivy API Gateway') {
+                    steps {
+                        sh """
+                            trivy image --exit-code 0 --severity HIGH,CRITICAL \
+                            --no-progress --format table \
+                            ${DOCKER_REGISTRY}/api-gateway:${BUILD_NUMBER}
+                        """
+                    }
+                }
+            }
+        }
     }
 
     post {
         success {
-            echo '✅ Build, sécurité, analyse, déploiement Nexus et Docker réussis !'
+            echo '✅ Build, sécurité, analyse, déploiement Nexus, Docker et Trivy réussis !'
         }
         failure {
             echo '❌ Pipeline échoué !'
