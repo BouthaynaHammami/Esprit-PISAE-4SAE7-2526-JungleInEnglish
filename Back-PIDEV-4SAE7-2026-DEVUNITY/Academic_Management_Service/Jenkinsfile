@@ -16,6 +16,8 @@ pipeline {
         SONAR_HOST_URL = 'http://192.168.22.130:9000'
         NEXUS_URL = 'http://192.168.22.130:8081'
         MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
+        DOCKER_REGISTRY = 'chaibimarwa'
+        REGISTRY_CREDENTIAL = 'REGISTRY_CREDENTIAL'
     }
 
     stages {
@@ -245,11 +247,107 @@ pipeline {
                 }
             }
         }
+
+        stage('Build Docker Images') {
+            parallel {
+                stage('Build Image Academic') {
+                    steps {
+                        script {
+                            dockerImageAcademic = docker.build(
+                                "${DOCKER_REGISTRY}/academic-management-service:${BUILD_NUMBER}",
+                                "-f ${BACKEND_PATH}/Academic_Management_Service/Dockerfile ."
+                            )
+                        }
+                    }
+                }
+                stage('Build Image Discovery') {
+                    steps {
+                        script {
+                            dockerImageDiscovery = docker.build(
+                                "${DOCKER_REGISTRY}/discovery-service:${BUILD_NUMBER}",
+                                "-f ${BACKEND_PATH}/Discovery_Service/Dockerfile ."
+                            )
+                        }
+                    }
+                }
+                stage('Build Image API Gateway') {
+                    steps {
+                        script {
+                            dockerImageGateway = docker.build(
+                                "${DOCKER_REGISTRY}/api-gateway:${BUILD_NUMBER}",
+                                "-f ${BACKEND_PATH}/API_Gateway/Dockerfile ."
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker Images') {
+            parallel {
+                stage('Push Image Academic') {
+                    steps {
+                        script {
+                            docker.withRegistry('', REGISTRY_CREDENTIAL) {
+                                dockerImageAcademic.push("${BUILD_NUMBER}")
+                                dockerImageAcademic.push('latest')
+                            }
+                        }
+                    }
+                }
+                stage('Push Image Discovery') {
+                    steps {
+                        script {
+                            docker.withRegistry('', REGISTRY_CREDENTIAL) {
+                                dockerImageDiscovery.push("${BUILD_NUMBER}")
+                                dockerImageDiscovery.push('latest')
+                            }
+                        }
+                    }
+                }
+                stage('Push Image API Gateway') {
+                    steps {
+                        script {
+                            docker.withRegistry('', REGISTRY_CREDENTIAL) {
+                                dockerImageGateway.push("${BUILD_NUMBER}")
+                                dockerImageGateway.push('latest')
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Trivy Image Scan') {
+            steps {
+                sh """
+                    trivy image --exit-code 0 --severity HIGH,CRITICAL \
+                    --no-progress --format table \
+                    --timeout 15m \
+                    --scanners vuln \
+                    ${DOCKER_REGISTRY}/academic-management-service:${BUILD_NUMBER}
+                """
+                sh """
+                    trivy image --exit-code 0 --severity HIGH,CRITICAL \
+                    --no-progress --format table \
+                    --timeout 15m \
+                    --scanners vuln \
+                    ${DOCKER_REGISTRY}/discovery-service:${BUILD_NUMBER}
+                """
+                sh """
+                    trivy image --exit-code 0 --severity HIGH,CRITICAL \
+                    --no-progress --format table \
+                    --timeout 15m \
+                    --scanners vuln \
+                    ${DOCKER_REGISTRY}/api-gateway:${BUILD_NUMBER}
+                """
+            }
+        }
     }
 
     post {
         success {
-            echo '✅ Build, sécurité, analyse et déploiement Nexus réussis !'
+            echo '✅ Build, sécurité, analyse, déploiement Nexus, Docker et Trivy réussis !'
         }
         failure {
             echo '❌ Pipeline échoué !'
