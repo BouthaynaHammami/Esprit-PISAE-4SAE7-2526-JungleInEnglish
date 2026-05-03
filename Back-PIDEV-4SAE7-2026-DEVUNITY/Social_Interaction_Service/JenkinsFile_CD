@@ -1,0 +1,112 @@
+pipeline {
+    agent any
+    
+    tools {
+        jdk 'JAVA_HOME'
+        maven 'MAVEN_HOME'
+    }
+
+    environment {
+        // Project Paths
+        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        SOCIAL_SERVICE_PATH = "${BACKEND_PATH}/Social_Interaction_Service"
+        
+        // Docker Configuration
+        DOCKER_IMAGE = 'hbouthayna/social-interaction-service'
+        
+        // Helm Configuration
+        HELM_CHART_PATH = "${SOCIAL_SERVICE_PATH}/charts/social-interaction"
+        KUBE_CREDENTIALS_ID = 'kubeconfig'
+        NAMESPACE = 'dev-unity'
+        
+        // Slack Configuration
+        SLACK_CHANNEL = '#dev-unity-cd'
+        
+        // JMeter Configuration
+        JMETER_PATH = '/usr/bin/jmeter' // Adjust to your JMeter installation path
+    }
+
+    stages {
+        stage('1. Helm Deploy ☸️') {
+            steps {
+                script {
+                    echo 'Deploying to Kubernetes using Helm...'
+                    withKubeConfig([credentialsId: "${KUBE_CREDENTIALS_ID}"]) {
+                        sh """
+                            helm upgrade --install social-interaction ${HELM_CHART_PATH} \
+                            --set image.repository=${DOCKER_IMAGE} \
+                            --set image.tag=${BUILD_NUMBER} \
+                            --namespace ${NAMESPACE} --create-namespace
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('2. Wait & Verify ✅') {
+            steps {
+                script {
+                    echo 'Waiting for deployment to complete...'
+                    withKubeConfig([credentialsId: "${KUBE_CREDENTIALS_ID}"]) {
+                        sh "kubectl rollout status deployment/social-interaction -n ${NAMESPACE} --timeout=300s"
+                    }
+                }
+            }
+        }
+
+        stage('3. JMeter Performance Tests ⚡') {
+            steps {
+                script {
+                    echo 'Running JMeter Performance Tests...'
+                    dir("${SOCIAL_SERVICE_PATH}") {
+                        // Ensure performance-test.jmx exists in the directory
+                        sh "${JMETER_PATH} -n -t performance-test.jmx -l results.jtl"
+                    }
+                }
+            }
+            post {
+                always {
+                    // Archive results and display them using the Performance Plugin
+                    perfReport sourceDataFiles: "${SOCIAL_SERVICE_PATH}/results.jtl"
+                    archiveArtifacts artifacts: "${SOCIAL_SERVICE_PATH}/results.jtl"
+                }
+            }
+        }
+
+        stage('4. Prometheus/Grafana 📊') {
+            steps {
+                script {
+                    echo '--- Monitoring Information ---'
+                    echo "Service is being monitored by Prometheus."
+                    echo "Check dashboards at: http://grafana.dev-unity.local"
+                    // Optional: Call Grafana API to annotate the deployment
+                }
+            }
+        }
+
+        stage('5. Slack Notify 🔔') {
+            steps {
+                script {
+                    def color = currentBuild.currentResult == 'SUCCESS' ? 'good' : 'danger'
+                    def message = """
+                        *CD Pipeline for Social Interaction Service*
+                        *Result:* ${currentBuild.currentResult}
+                        *Build:* <${env.BUILD_URL}|#${env.BUILD_NUMBER}>
+                        *Environment:* Kubernetes (Namespace: ${NAMESPACE})
+                    """.stripIndent()
+                    
+                    slackSend(channel: "${SLACK_CHANNEL}", color: color, message: message)
+                }
+            }
+        }
+    }
+
+    post {
+        failure {
+            echo '❌ Pipeline CD FAILED'
+        }
+        success {
+            echo '✅ Pipeline CD SUCCESS'
+        }
+    }
+}
