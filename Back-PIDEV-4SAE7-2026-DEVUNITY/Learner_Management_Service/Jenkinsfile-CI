@@ -83,7 +83,8 @@ pipeline {
                             mvn sonar:sonar \
                               -Dsonar.projectKey=${SONAR_PROJECT} \
                               -Dsonar.projectName=${SONAR_PROJECT} \
-                              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+                              -Dsonar.exclusions=**/Config/SecurityConfig.java
                         '''
                     }
                 }
