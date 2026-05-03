@@ -16,8 +16,8 @@ pipeline {
         SONAR_HOST_URL = 'http://192.168.22.130:9000'
         NEXUS_URL = 'http://192.168.22.130:8081'
         MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
-        DOCKER_REGISTRY = 'your-dockerhub-username'
-        REGISTRY_CREDENTIAL = 'dockerhub-credentials-id'
+        DOCKER_REGISTRY = 'chaibimarwa'
+        REGISTRY_CREDENTIAL = 'REGISTRY_CREDENTIAL'
     }
 
     stages {
