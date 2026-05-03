@@ -27,6 +27,24 @@ pipeline {
                 }
             }
         }
+        stage('OWASP Dependency Check') {
+            steps {
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Learner_Management_Service') {
+                    dependencyCheck additionalArguments: '''
+                        --scan ./
+                        --format XML
+                        --format HTML
+                        --out ./dependency-check-report
+                        --prettyPrint
+                    ''', odcInstallation: 'OWASP-DC'
+                }
+            }
+            post {
+                always {
+                    dependencyCheckPublisher pattern: '**/dependency-check-report/dependency-check-report.xml'
+                }
+            }
+        }
 
         stage('Unit Tests') {
             steps {
