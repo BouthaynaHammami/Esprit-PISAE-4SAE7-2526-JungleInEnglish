@@ -319,40 +319,28 @@ pipeline {
         }
 
         stage('Trivy Image Scan') {
-            parallel {
-                stage('Trivy Academic') {
-                    steps {
-                        sh """
-                            trivy image --exit-code 0 --severity HIGH,CRITICAL \
-                            --no-progress --format table \
-                            --timeout 15m \
-                            --scanners vuln \
-                            ${DOCKER_REGISTRY}/academic-management-service:${BUILD_NUMBER}
-                        """
-                    }
-                }
-                stage('Trivy Discovery') {
-                    steps {
-                        sh """
-                            trivy image --exit-code 0 --severity HIGH,CRITICAL \
-                            --no-progress --format table \
-                            --timeout 15m \
-                            --scanners vuln \
-                            ${DOCKER_REGISTRY}/discovery-service:${BUILD_NUMBER}
-                        """
-                    }
-                }
-                stage('Trivy API Gateway') {
-                    steps {
-                        sh """
-                            trivy image --exit-code 0 --severity HIGH,CRITICAL \
-                            --no-progress --format table \
-                            --timeout 15m \
-                            --scanners vuln \
-                            ${DOCKER_REGISTRY}/api-gateway:${BUILD_NUMBER}
-                        """
-                    }
-                }
+            steps {
+                sh """
+                    trivy image --exit-code 0 --severity HIGH,CRITICAL \
+                    --no-progress --format table \
+                    --timeout 15m \
+                    --scanners vuln \
+                    ${DOCKER_REGISTRY}/academic-management-service:${BUILD_NUMBER}
+                """
+                sh """
+                    trivy image --exit-code 0 --severity HIGH,CRITICAL \
+                    --no-progress --format table \
+                    --timeout 15m \
+                    --scanners vuln \
+                    ${DOCKER_REGISTRY}/discovery-service:${BUILD_NUMBER}
+                """
+                sh """
+                    trivy image --exit-code 0 --severity HIGH,CRITICAL \
+                    --no-progress --format table \
+                    --timeout 15m \
+                    --scanners vuln \
+                    ${DOCKER_REGISTRY}/api-gateway:${BUILD_NUMBER}
+                """
             }
         }
     }
