@@ -10,13 +10,13 @@ from app.model_loader import ModelArtifacts, load_artifacts, prepare_features
 from app.schemas import DropoutPredictionRequest, DropoutPredictionResponse
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("ml_dropout_service")
+logger = logging.getLogger("ml_service")
 
 MODEL_PATH = os.getenv("MODEL_PATH", "models/churn_prediction.joblib")
-APP_NAME = os.getenv("EUREKA_APP_NAME", "ml-dropout-service")
+APP_NAME = os.getenv("EUREKA_APP_NAME", "ml-service")
 SERVICE_PORT = int(os.getenv("SERVICE_PORT", "8090"))
 
-app = FastAPI(title="ML Dropout Service", version="1.0.0")
+app = FastAPI(title="ML Service", version="1.0.0")
 router = APIRouter(prefix="/ml/api")
 
 artifacts: ModelArtifacts | None = None

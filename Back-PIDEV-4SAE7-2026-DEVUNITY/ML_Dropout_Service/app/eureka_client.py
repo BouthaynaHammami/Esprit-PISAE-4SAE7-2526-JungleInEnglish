@@ -12,7 +12,7 @@ except ImportError:
     EUREKA_AVAILABLE = False
     eureka_client = None
 
-logger = logging.getLogger("ml_dropout_service")
+logger = logging.getLogger("ml_service")
 
 
 def _resolve_host() -> str:
