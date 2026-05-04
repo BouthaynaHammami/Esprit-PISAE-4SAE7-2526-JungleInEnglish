@@ -13,11 +13,11 @@ pipeline {
     }
 
     environment {
-        BACKEND_PATH   = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
-        SERVICE_DIR    = "${BACKEND_PATH}/Activity_Management_Service"
-        MAVEN_OPTS     = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
+        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        SERVICE_DIR  = "${BACKEND_PATH}/Activity_Management_Service"
+        MAVEN_OPTS   = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
+        // ✅ IP confirmée fonctionnelle (docker exec jenkins curl http://172.17.0.1:9000 → UP)
         SONAR_HOST_URL = 'http://172.17.0.1:9000'
-        SONAR_TOKEN    = credentials('sonar-token')
     }
 
     stages {
@@ -78,8 +78,8 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 dir("${SERVICE_DIR}") {
-                    echo "🔍 Analyse SonarQube → ${SONAR_HOST_URL}..."
-                    // ✅ withCredentials évite l'interpolation Groovy du token (sécurité)
+                    echo '🔍 Analyse SonarQube → http://172.17.0.1:9000'
+                    // ✅ withCredentials → token jamais exposé via Groovy interpolation
                     withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN_VAL')]) {
                         sh '''
                             mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
