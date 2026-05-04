@@ -13,19 +13,18 @@ pipeline {
     }
 
     environment {
-        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
-        MAVEN_OPTS = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
-
-        // Jenkins tourne probablement en Docker,
-        // donc localhost pointe vers Jenkins lui-même et NON SonarQube
-        SONAR_HOST_URL = 'http://host.docker.internal:9000'
-
-        SONAR_TOKEN = credentials('sonar-token')
+        BACKEND_PATH    = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        SERVICE_DIR     = "${BACKEND_PATH}/Activity_Management_Service"
+        MAVEN_OPTS      = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
+        SONAR_HOST_URL  = 'http://host.docker.internal:9000'
+        SONAR_TOKEN     = credentials('sonar-token')
     }
 
     stages {
 
+        // ─────────────────────────────────────────────
         stage('Checkout') {
+        // ─────────────────────────────────────────────
             steps {
                 echo '📥 Récupération du code source...'
                 git branch: 'main',
@@ -34,55 +33,89 @@ pipeline {
             }
         }
 
+        // ─────────────────────────────────────────────
         stage('Clean') {
+        // ─────────────────────────────────────────────
             steps {
-                dir("${BACKEND_PATH}/Activity_Management_Service") {
+                dir("${SERVICE_DIR}") {
+                    echo '🧹 Nettoyage du workspace Maven...'
                     sh 'mvn clean'
                 }
             }
         }
 
+        // ─────────────────────────────────────────────
         stage('Build') {
+        // ─────────────────────────────────────────────
             steps {
-                dir("${BACKEND_PATH}/Activity_Management_Service") {
+                dir("${SERVICE_DIR}") {
+                    echo '🔨 Compilation sans tests...'
                     sh 'mvn install -DskipTests'
                 }
             }
         }
 
+        // ─────────────────────────────────────────────
         stage('Test') {
+        // ─────────────────────────────────────────────
             steps {
-                dir("${BACKEND_PATH}/Activity_Management_Service") {
+                dir("${SERVICE_DIR}") {
                     echo '🧪 Exécution des tests...'
-                    sh 'mvn test -e'
+                    // -fae : run ALL tests before failing (fail at end)
+                    // -e   : affiche les stack traces complètes
+                    // || true : ne bloque pas le pipeline, le résultat
+                    //           est géré par le junit publisher ci-dessous
+                    sh 'mvn test -fae -e || true'
+                }
+            }
+            post {
+                always {
+                    dir("${SERVICE_DIR}") {
+                        // ── Affiche les erreurs dans la console Jenkins ──
+                        sh '''
+                            echo "============================================"
+                            echo "       RAPPORT DES TESTS (erreurs)"
+                            echo "============================================"
+                            find target/surefire-reports -name "*.txt" \
+                                 -exec echo "\\n--- {} ---" \\; \
+                                 -exec grep -A 20 "FAILED\\|Exception\\|ERROR" {} \\; \
+                                 2>/dev/null || echo "Aucun rapport .txt trouvé"
+                        '''
+
+                        // ── Publie les résultats XML dans Jenkins UI ──
+                        junit testResults: 'target/surefire-reports/*.xml',
+                              allowEmptyResults: true,
+                              skipPublishingChecks: false
+                    }
                 }
             }
         }
 
+        // ─────────────────────────────────────────────
         stage('SonarQube Analysis') {
-            when {
-                expression { currentBuild.currentResult == 'SUCCESS' }
-            }
+        // ─────────────────────────────────────────────
+            // Lance même si des tests ont échoué (résultats utiles pour Sonar)
             steps {
-                dir("${BACKEND_PATH}/Activity_Management_Service") {
-                    echo "🔍 Analyse SonarQube via ${SONAR_HOST_URL}..."
-
+                dir("${SERVICE_DIR}") {
+                    echo "🔍 Analyse SonarQube → ${SONAR_HOST_URL}..."
                     sh """
                         mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
                             -Dsonar.projectKey=activity-management-service \
                             -Dsonar.projectName=ActivityManagementService \
                             -Dsonar.host.url=${SONAR_HOST_URL} \
-                            -Dsonar.token=${SONAR_TOKEN}
+                            -Dsonar.token=${SONAR_TOKEN} \
+                            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+                            -Dsonar.junit.reportPaths=target/surefire-reports
                     """
                 }
             }
         }
 
+        // ─────────────────────────────────────────────
         stage('Quality Gate') {
-            when {
-                expression { currentBuild.currentResult == 'SUCCESS' }
-            }
+        // ─────────────────────────────────────────────
             steps {
+                echo '🚦 Vérification du Quality Gate SonarQube...'
                 timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
@@ -90,29 +123,32 @@ pipeline {
         }
     }
 
+    // ───────────────────────────────────────────────
     post {
-
+    // ───────────────────────────────────────────────
         success {
             echo '✅ Pipeline terminé avec succès !'
         }
 
+        unstable {
+            // Jenkins marque le build UNSTABLE (jaune) quand des tests échouent
+            echo '⚠️ Pipeline terminé avec des tests en échec — vérifie les rapports JUnit.'
+        }
+
         failure {
-            echo '❌ Pipeline échoué ! Vérifie Jenkins / Docker / SonarQube.'
+            echo '❌ Pipeline échoué ! Vérifie Jenkins / SonarQube / logs ci-dessus.'
         }
 
         always {
-            echo '📊 Publication des résultats...'
-
-            junit testResults: "${BACKEND_PATH}/Activity_Management_Service/target/surefire-reports/*.xml",
-                  allowEmptyResults: true
+            echo '📦 Archivage des artefacts de diagnostic...'
 
             archiveArtifacts artifacts: '**/*.dump, **/*.dumpstream',
                               allowEmptyArchive: true
 
             cleanWs deleteDirs: true, patterns: [
-                [pattern: '**/target/**', type: 'INCLUDE'],
-                [pattern: '**/.m2/**', type: 'INCLUDE'],
-                [pattern: '**/*.log', type: 'INCLUDE']
+                [pattern: '**/target/**',  type: 'INCLUDE'],
+                [pattern: '**/.m2/**',     type: 'INCLUDE'],
+                [pattern: '**/*.log',      type: 'INCLUDE']
             ]
         }
     }
