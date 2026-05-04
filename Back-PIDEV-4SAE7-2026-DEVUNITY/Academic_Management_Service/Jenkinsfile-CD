@@ -35,6 +35,8 @@ pipeline {
                         sh 'kubectl apply -f ${K8S_DIR}/eureka_deployment.yml '
                         sh 'kubectl apply -f ${K8S_DIR}/Api_Gateway_Deployment.yml '
                         sh 'kubectl apply -f ${K8S_DIR}/Academic_Management_Deployment.yml '
+                        sh 'kubectl apply -f ${K8S_DIR}/prometheus.yml '
+                        sh 'kubectl apply -f ${K8S_DIR}/grafana.yml '
                     }
                 }
         stage('Verify Deployment') {
