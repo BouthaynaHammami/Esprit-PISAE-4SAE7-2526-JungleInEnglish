@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: academic-management-service   # ✅ lowercase + hyphens only (K8s naming convention)
+  name: academic-management-service
   namespace: devunity
 spec:
   replicas: 1
@@ -20,7 +20,7 @@ spec:
             - containerPort: 8083
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:mysql://mysql-service:3306/Academic_Management?createDatabaseIfNotExist=true"
+              value: "jdbc:mysql://mysql-service.devunity.svc.cluster.local:3306/Academic_Management?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"  # ✅ full DNS
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -33,8 +33,10 @@ spec:
                   key: mysql-root-password
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: "update"
+            - name: SPRING_JPA_DATABASE_PLATFORM
+              value: "org.hibernate.dialect.MySQL8Dialect"   # ✅ fixes Dialect error
             - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-              value: "http://eureka-server.devunity.svc.cluster.local:8761/eureka"   # ✅ use K8s DNS, not IP
+              value: "http://eureka-server.devunity.svc.cluster.local:8761/eureka"
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
               value: "true"
             - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
@@ -45,16 +47,21 @@ spec:
               value: "devunity"
             - name: KEYCLOAK_RESOURCE
               value: "devunity-app"
-            - name: KEYCLOAK_ADMIN_USERNAME    # ⚠️ move to a Secret (not plain text)
-              value: "admin"
-            - name: KEYCLOAK_ADMIN_PASSWORD    # ⚠️ move to a Secret (not plain text)
-              value: "admin123"
+            - name: KEYCLOAK_ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: keycloak-admin-username  # ✅ moved to secret
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: keycloak-admin-password  # ✅ moved to secret
             - name: SERVER_PORT
               value: "8083"
             - name: SERVER_SERVLET_CONTEXT_PATH
-              value: "/academics/api"          # ✅ fixed: was "/learners/api" (wrong service!)
+              value: "/academics/api"
           imagePullPolicy: Always
-
 ---
 apiVersion: v1
 kind: Service
