@@ -90,8 +90,6 @@ pipeline {
             }
         }
 
-       
-
         stage('Deploy to Nexus') {
             steps {
                 dir("${SERVICE_DIR}") {
