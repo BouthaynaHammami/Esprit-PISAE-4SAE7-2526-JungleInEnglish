@@ -35,7 +35,7 @@ pipeline {
                         sh """
                             helm upgrade --install social-interaction ${HELM_CHART_PATH} \
                             --set image.repository=${DOCKER_IMAGE} \
-                            --set image.tag=${BUILD_NUMBER} \
+                            --set image.tag=latest \
                             --namespace ${NAMESPACE} --create-namespace
                         """
                     }
