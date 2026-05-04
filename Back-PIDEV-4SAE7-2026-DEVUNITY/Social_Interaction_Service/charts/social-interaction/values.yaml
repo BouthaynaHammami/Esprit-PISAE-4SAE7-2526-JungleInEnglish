@@ -4,7 +4,7 @@
 # déploiement via --set dans le Jenkinsfile_CD (credentials Jenkins).
 # ---------------------------------------------------------------
 
-replicaCount: 2   # ≥2 pour rolling update sans downtime
+replicaCount: 1   # Réduit à 1 pour debug – à remettre à 2 en production
 
 image:
   repository: hbouthayna/social-interaction-service
