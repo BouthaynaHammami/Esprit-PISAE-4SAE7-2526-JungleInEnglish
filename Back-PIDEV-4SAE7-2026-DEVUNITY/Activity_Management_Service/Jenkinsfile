@@ -1,0 +1,71 @@
+pipeline {
+    agent any
+    tools {
+        jdk 'jdk17'
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+        disableConcurrentBuilds()
+        timeout(time: 1, unit: 'HOURS')
+    }
+
+    environment {
+        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Récupération du code source...'
+                git branch: 'main',
+                    credentialsId: 'gittokens',
+                    url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
+            }
+        }
+
+        stage('Clean') {
+            steps {
+                dir("${BACKEND_PATH}/Activity_Management_Service") {
+                    sh 'mvn clean'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir("${BACKEND_PATH}/Activity_Management_Service") {
+                    sh 'mvn install -DskipTests'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                dir("${BACKEND_PATH}/Activity_Management_Service") {
+                    sh 'mvn test'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Tests réussis pour Activity Management Service !'
+        }
+        failure {
+            echo '❌ Tests échoués pour Activity Management Service !'
+        }
+        always {
+            junit testResults: "${BACKEND_PATH}/Activity_Management_Service/target/surefire-reports/*.xml",
+                  allowEmptyResults: true
+
+            cleanWs deleteDirs: true, patterns: [
+                [pattern: '**/target/**',       type: 'INCLUDE'],
+                [pattern: '**/.m2/**',          type: 'INCLUDE'],
+                [pattern: '**/*.log',           type: 'INCLUDE']
+            ]
+        }
+    }
+}
