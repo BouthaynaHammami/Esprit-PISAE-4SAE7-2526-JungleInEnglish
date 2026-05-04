@@ -73,7 +73,17 @@ pipeline {
                 }
             }
         }
-
+stage('Debug Token') {
+    steps {
+        withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN_VAL')]) {
+            sh '''
+                echo "Longueur du token : $(echo -n $SONAR_TOKEN_VAL | wc -c)"
+                curl -u "$SONAR_TOKEN_VAL:" \
+                     http://192.168.72.128:9000/api/authentication/validate
+            '''
+        }
+    }
+}
         stage('SonarQube Analysis') {
             steps {
                 dir("${SERVICE_DIR}") {
