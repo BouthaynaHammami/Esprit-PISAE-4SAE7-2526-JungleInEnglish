@@ -2,51 +2,118 @@ pipeline {
     agent any
 
     tools {
-        maven "maven3"   // ⚠️ doit matcher Jenkins
-        jdk "jdk17"      // ⚠️ ou configure JDK21 dans Jenkins
+        jdk 'jdk17'
+        maven 'maven3'
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+        disableConcurrentBuilds()
+        timeout(time: 1, unit: 'HOURS')
     }
 
     environment {
-        SONAR_HOST_URL = "http://sonarqube:9000"
+        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        MAVEN_OPTS = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
+
+        // Jenkins tourne probablement en Docker,
+        // donc localhost pointe vers Jenkins lui-même et NON SonarQube
+        SONAR_HOST_URL = 'http://host.docker.internal:9000'
+
+        SONAR_TOKEN = credentials('sonar-token')
     }
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
+                echo '📥 Récupération du code source...'
                 git branch: 'main',
+                    credentialsId: 'devops',
                     url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
             }
         }
 
-        stage('Clean Build') {
+        stage('Clean') {
             steps {
-                sh 'mvn clean compile'
+                dir("${BACKEND_PATH}/Activity_Management_Service") {
+                    sh 'mvn clean'
+                }
             }
         }
 
-        stage('Run Tests') {
+        stage('Build') {
             steps {
-                sh 'mvn test'
+                dir("${BACKEND_PATH}/Activity_Management_Service") {
+                    sh 'mvn install -DskipTests'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                dir("${BACKEND_PATH}/Activity_Management_Service") {
+                    echo '🧪 Exécution des tests...'
+                    sh 'mvn test -e'
+                }
             }
         }
 
         stage('SonarQube Analysis') {
+            when {
+                expression { currentBuild.currentResult == 'SUCCESS' }
+            }
             steps {
-                withSonarQubeEnv('SonarQube') {
+                dir("${BACKEND_PATH}/Activity_Management_Service") {
+                    echo "🔍 Analyse SonarQube via ${SONAR_HOST_URL}..."
+
                     sh """
-                        mvn sonar:sonar \
-                        -Dsonar.projectKey=activity-management-service \
-                        -Dsonar.projectName=ActivityManagementService
+                        mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
+                            -Dsonar.projectKey=activity-management-service \
+                            -Dsonar.projectName=ActivityManagementService \
+                            -Dsonar.host.url=${SONAR_HOST_URL} \
+                            -Dsonar.token=${SONAR_TOKEN}
                     """
                 }
             }
         }
 
-        stage('Build Package') {
-            steps {
-                sh 'mvn package -DskipTests'
+        stage('Quality Gate') {
+            when {
+                expression { currentBuild.currentResult == 'SUCCESS' }
             }
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+    }
+
+    post {
+
+        success {
+            echo '✅ Pipeline terminé avec succès !'
+        }
+
+        failure {
+            echo '❌ Pipeline échoué ! Vérifie Jenkins / Docker / SonarQube.'
+        }
+
+        always {
+            echo '📊 Publication des résultats...'
+
+            junit testResults: "${BACKEND_PATH}/Activity_Management_Service/target/surefire-reports/*.xml",
+                  allowEmptyResults: true
+
+            archiveArtifacts artifacts: '**/*.dump, **/*.dumpstream',
+                              allowEmptyArchive: true
+
+            cleanWs deleteDirs: true, patterns: [
+                [pattern: '**/target/**', type: 'INCLUDE'],
+                [pattern: '**/.m2/**', type: 'INCLUDE'],
+                [pattern: '**/*.log', type: 'INCLUDE']
+            ]
         }
     }
 }
