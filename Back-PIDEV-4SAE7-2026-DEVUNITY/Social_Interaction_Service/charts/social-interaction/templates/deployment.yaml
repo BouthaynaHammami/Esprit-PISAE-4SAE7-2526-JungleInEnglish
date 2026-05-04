@@ -38,14 +38,21 @@ spec:
                   name: {{ include "social-interaction.fullname" . }}-db-secret
                   key: db-password
 
-            # ── Elasticsearch ─ password depuis le Secret K8s ──
+            # ── Elasticsearch ─ HTTP sans SSL (xpack.security désactivé) ──
             - name: SPRING_ELASTICSEARCH_URIS
               value: {{ .Values.config.elasticsearchUrl | quote }}
+            - name: SPRING_ELASTICSEARCH_USERNAME
+              value: {{ .Values.config.elasticsearchUsername | default "elastic" | quote }}
             - name: SPRING_ELASTICSEARCH_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "social-interaction.fullname" . }}-db-secret
                   key: elasticsearch-password
+            # Désactiver SSL côté client Spring (ES tourne sans xpack)
+            - name: SPRING_ELASTICSEARCH_SSL_VERIFICATION_MODE
+              value: "none"
+            - name: SPRING_AUTOCONFIGURE_EXCLUDE
+              value: "org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration"
 
             # ── Eureka ─ URL interne Kubernetes (plus localhost) ──
             - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
@@ -56,17 +63,17 @@ spec:
             httpGet:
               path: /socials/api/actuator/health
               port: 8085
-            initialDelaySeconds: 90    # Spring Boot met ~60-90s à démarrer
+            initialDelaySeconds: 120   # Laisser MySQL + ES démarrer avant Spring Boot
             periodSeconds: 15
-            failureThreshold: 3
+            failureThreshold: 5        # Tolérer plus d'échecs avant de tuer le pod
 
           readinessProbe:
             httpGet:
               path: /socials/api/actuator/health
               port: 8085
-            initialDelaySeconds: 30
+            initialDelaySeconds: 90    # Spring Boot + connexions DB/ES ~60-90s
             periodSeconds: 10
-            failureThreshold: 3
+            failureThreshold: 6        # 60s de grâce supplémentaires
 
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

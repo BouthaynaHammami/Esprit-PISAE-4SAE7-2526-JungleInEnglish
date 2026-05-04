@@ -90,7 +90,17 @@ pipeline {
                         )
 
                         if (status != 0) {
-                            echo "❌ Rollout échoué – déclenchement du rollback Helm"
+                            echo "❌ Rollout échoué – collecte des logs de diagnostic"
+                            sh """
+                                echo "=== DESCRIBE PODS ==="
+                                kubectl describe pod -n ${NAMESPACE} -l 'app.kubernetes.io/instance=social-interaction' || true
+                                echo "=== LOGS POD (dernières 100 lignes) ==="
+                                kubectl logs -n ${NAMESPACE} -l 'app.kubernetes.io/instance=social-interaction' --tail=100 --previous || \
+                                kubectl logs -n ${NAMESPACE} -l 'app.kubernetes.io/instance=social-interaction' --tail=100 || true
+                                echo "=== EVENTS NAMESPACE ==="
+                                kubectl get events -n ${NAMESPACE} --sort-by='.lastTimestamp' | tail -20 || true
+                            """
+                            echo "❌ Déclenchement du rollback Helm"
                             sh "helm rollback social-interaction 0 --namespace ${NAMESPACE}"
                             error("Déploiement échoué – rollback Helm effectué automatiquement")
                         }

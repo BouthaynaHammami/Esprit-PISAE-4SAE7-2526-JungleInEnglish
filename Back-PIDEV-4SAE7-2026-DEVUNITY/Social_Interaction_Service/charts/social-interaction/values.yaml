@@ -20,16 +20,18 @@ config:
   # Valeurs vides – INJECTÉES via Jenkins credentials (withCredentials)
   dbUsername: ""
   dbPassword: ""
+  # ES sans SSL (xpack.security désactivé dans elasticsearch.yaml)
   elasticsearchUrl: "http://elasticsearch-service:9200"
+  elasticsearchUsername: "elastic"
   elasticsearchPassword: ""
 
 resources:
   limits:
-    cpu: 500m
-    memory: 512Mi
+    cpu: 700m
+    memory: 900Mi   # Spring Boot + Elasticsearch client nécessite ~700-800Mi minimum
   requests:
-    cpu: 200m
-    memory: 256Mi
+    cpu: 300m
+    memory: 512Mi
 
 nodeSelector: {}
 tolerations: []

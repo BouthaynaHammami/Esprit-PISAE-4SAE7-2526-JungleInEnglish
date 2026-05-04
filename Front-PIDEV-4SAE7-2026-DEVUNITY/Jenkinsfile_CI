@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'NODE_HOME'   // Configuré dans Manage Jenkins → Tools → NodeJS
+    }
+
     environment {
         FRONT_PATH        = 'Front-PIDEV-4SAE7-2026-DEVUNITY'
         SONAR_HOST_URL    = 'http://192.168.19.128:9000'
