@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-social
+  labels:
+    app: mysql-social
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-social
+  template:
+    metadata:
+      labels:
+        app: mysql-social
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0.32
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              value: "Social_Interaction"
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "social-interaction.fullname" . }}-db-secret
+                  key: db-username
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "social-interaction.fullname" . }}-db-secret
+                  key: db-password
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "social-interaction.fullname" . }}-db-secret
+                  key: db-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  selector:
+    app: mysql-social
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
