@@ -2,13 +2,12 @@ pipeline {
     agent any
 
     tools {
-        maven "Maven3"
-        jdk "JDK21"
+        maven "maven3"   // ⚠️ doit matcher Jenkins
+        jdk "jdk17"      // ⚠️ ou configure JDK21 dans Jenkins
     }
 
     environment {
         SONAR_HOST_URL = "http://sonarqube:9000"
-        SONAR_TOKEN = credentials('sonar-token')
     }
 
     stages {
@@ -16,7 +15,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/your-repo/activity-management-service.git'
+                    url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
             }
         }
 
@@ -38,9 +37,7 @@ pipeline {
                     sh """
                         mvn sonar:sonar \
                         -Dsonar.projectKey=activity-management-service \
-                        -Dsonar.projectName=ActivityManagementService \
-                        -Dsonar.host.url=${SONAR_HOST_URL} \
-                        -Dsonar.login=${SONAR_TOKEN}
+                        -Dsonar.projectName=ActivityManagementService
                     """
                 }
             }
@@ -50,16 +47,6 @@ pipeline {
             steps {
                 sh 'mvn package -DskipTests'
             }
-        }
-    }
-
-    post {
-        success {
-            echo "✅ Build and SonarQube analysis successful"
-        }
-
-        failure {
-            echo "❌ Pipeline failed"
         }
     }
 }
