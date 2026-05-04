@@ -22,5 +22,14 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: {{ .Values.config.dbUrl | quote }}
+            - name: SPRING_DATASOURCE_USERNAME
+              value: {{ .Values.config.dbUsername | quote }}
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: {{ .Values.config.dbPassword | quote }}
+            - name: SPRING_ELASTICSEARCH_URIS
+              value: {{ .Values.config.elasticsearchUrl | quote }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

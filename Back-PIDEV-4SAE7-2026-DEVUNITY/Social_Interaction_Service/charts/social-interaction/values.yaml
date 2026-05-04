@@ -7,7 +7,14 @@ image:
 
 service:
   type: ClusterIP
-  port: 8081
+  port: 8085 # Matches server.port in application.properties
+
+config:
+  hostIp: "192.168.184.128"
+  dbUrl: "jdbc:mysql://192.168.184.128:3306/Social_Interaction?createDatabaseIfNotExist=true"
+  dbUsername: "root"
+  dbPassword: ""
+  elasticsearchUrl: "http://192.168.184.128:9200" # Changed to http if not using SSL on host, or keep https if configured
 
 resources:
   limits:
