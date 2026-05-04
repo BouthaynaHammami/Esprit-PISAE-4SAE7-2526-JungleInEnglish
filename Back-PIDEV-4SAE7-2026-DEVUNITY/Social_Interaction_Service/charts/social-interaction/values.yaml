@@ -28,10 +28,10 @@ config:
 resources:
   limits:
     cpu: 700m
-    memory: 900Mi   # Spring Boot + Elasticsearch client nécessite ~700-800Mi minimum
+    memory: 1Gi     # Augmenté de 900Mi à 1Gi pour plus de stabilité
   requests:
     cpu: 300m
-    memory: 512Mi
+    memory: 768Mi   # Augmenté de 512Mi à 768Mi
 
 nodeSelector: {}
 tolerations: []

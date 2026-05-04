@@ -63,17 +63,17 @@ spec:
             httpGet:
               path: /socials/api/actuator/health
               port: 8085
-            initialDelaySeconds: 120   # Laisser MySQL + ES démarrer avant Spring Boot
+            initialDelaySeconds: 180   # Augmenté de 120 à 180
             periodSeconds: 15
-            failureThreshold: 5        # Tolérer plus d'échecs avant de tuer le pod
+            failureThreshold: 5
 
           readinessProbe:
             httpGet:
               path: /socials/api/actuator/health
               port: 8085
-            initialDelaySeconds: 90    # Spring Boot + connexions DB/ES ~60-90s
+            initialDelaySeconds: 120    # Augmenté de 90 à 120
             periodSeconds: 10
-            failureThreshold: 6        # 60s de grâce supplémentaires
+            failureThreshold: 6
 
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
