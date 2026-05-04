@@ -48,7 +48,7 @@ pipeline {
                 script {
                     echo 'Waiting for deployment to complete...'
                     withKubeConfig([credentialsId: "${KUBE_CREDENTIALS_ID}"]) {
-                        sh "kubectl rollout status deployment/social-interaction -n ${NAMESPACE} --timeout=300s"
+                        sh "kubectl rollout status deployment/social-interaction -n ${NAMESPACE} --timeout=600s"
                     }
                 }
             }
