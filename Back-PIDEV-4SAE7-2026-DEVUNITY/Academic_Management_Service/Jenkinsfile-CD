@@ -29,6 +29,7 @@ pipeline {
                     steps {
                         sh 'kubectl apply -f ${K8S_DIR}/namespace.yml '
                         sh 'kubectl apply -f ${K8S_DIR}/mysql-secret.yml '
+                        sh 'kubectl apply -f ${K8S_DIR}/Configmap.yml '
                         sh 'kubectl apply -f ${K8S_DIR}/mysql_deployment.yml '
                         sh 'kubectl apply -f ${K8S_DIR}/keyckloak_deployment.yml '
                         sh 'kubectl apply -f ${K8S_DIR}/eureka_deployment.yml '
