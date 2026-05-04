@@ -1,4 +1,3 @@
-# api-gateway deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,18 +17,24 @@ spec:
         - name: api-gateway
           image: chaibimarwa/api-gateway:latest
           ports:
-            - containerPort: 8081
+            - containerPort: 8081  # gateway
+            - containerPort: 8082  # actuator/prometheus
           env:
             - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-              value: "http://eureka-server:8761/eureka"
+              value: "http://eureka-server.devunity.svc.cluster.local:8761/eureka"  # ✅ full DNS
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
               value: "true"
+            - name: MANAGEMENT_SERVER_PORT
+              value: "8082"                    # ✅ actuator on separate port
             - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
               value: "*"
             - name: MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED
               value: "true"
+            - name: MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED
+              value: "true"
             - name: MANAGEMENT_ENDPOINTS_WEB_BASE_PATH
               value: "/actuator"
+          imagePullPolicy: Always
 ---
 apiVersion: v1
 kind: Service
@@ -39,8 +44,12 @@ metadata:
 spec:
   selector:
     app: api-gateway
+  type: NodePort
   ports:
-    - port: 8081
+    - name: gateway
+      port: 8081
       targetPort: 8081
       nodePort: 30007
-  type: NodePort  # NodePort so frontend (Angular) can reach it
+    - name: actuator
+      port: 8082
+      targetPort: 8082  # ✅ expose actuator port

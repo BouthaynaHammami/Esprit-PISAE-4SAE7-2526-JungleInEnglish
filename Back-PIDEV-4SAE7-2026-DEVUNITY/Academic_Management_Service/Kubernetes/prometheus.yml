@@ -69,23 +69,13 @@ data:
             replacement: $1:$2
             target_label: __address__
 
-      # ✅ uses full DNS name
-      - job_name: 'academic-management-service'
-        metrics_path: '/academics/api/actuator/prometheus'
-        static_configs:
-          - targets: ['academic-management-svc.devunity.svc.cluster.local:8083']
-
-      # ✅ uses full DNS name
-      - job_name: 'eureka-server'
-        metrics_path: '/actuator/prometheus'
-        static_configs:
-          - targets: ['eureka-server.devunity.svc.cluster.local:8761']
+     
 
       # ✅ api-gateway actuator on port 8082 (separate management port)
       - job_name: 'api-gateway'
         metrics_path: '/actuator/prometheus'
         static_configs:
-          - targets: ['api-gateway.devunity.svc.cluster.local:8082']
+          - targets: ['api-gateway.devunity.svc.cluster.local:8081']
 ---
 apiVersion: apps/v1
 kind: Deployment
