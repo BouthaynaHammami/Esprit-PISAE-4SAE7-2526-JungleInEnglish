@@ -13,9 +13,9 @@ pipeline {
     }
 
     environment {
-        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
-        SERVICE_DIR  = "${BACKEND_PATH}/Activity_Management_Service"
-        MAVEN_OPTS   = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
+        BACKEND_PATH   = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        SERVICE_DIR    = "${BACKEND_PATH}/Activity_Management_Service"
+        MAVEN_OPTS     = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
         SONAR_HOST_URL = 'http://192.168.72.128:9000'
     }
 
@@ -73,19 +73,28 @@ pipeline {
                 }
             }
         }
-
+stage('Debug Token') {
+    steps {
+        withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN_VAL')]) {
+            sh '''
+                echo "Longueur du token : $(echo -n $SONAR_TOKEN_VAL | wc -c)"
+                curl -u "$SONAR_TOKEN_VAL:" \
+                     http://192.168.72.128:9000/api/authentication/validate
+            '''
+        }
+    }
+}
         stage('SonarQube Analysis') {
             steps {
                 dir("${SERVICE_DIR}") {
                     echo '🔍 Analyse SonarQube → http://192.168.72.128:9000'
-                    // ✅ withCredentials → token jamais exposé via Groovy interpolation
                     withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN_VAL')]) {
                         sh '''
                             mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
                                 -Dsonar.projectKey=activity-management-service \
                                 -Dsonar.projectName=ActivityManagementService \
                                 -Dsonar.host.url=http://192.168.72.128:9000 \
-                                -Dsonar.login=$SONAR_TOKEN_VAL \
+                                -Dsonar.token=$SONAR_TOKEN_VAL \
                                 -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
                                 -Dsonar.junit.reportPaths=target/surefire-reports
                         '''
@@ -96,12 +105,13 @@ pipeline {
 
         stage('Quality Gate') {
             steps {
-                echo '🚦 Vérification Quality Gate...'
+                echo '🚦 Vérification Quality Gate SonarQube...'
                 timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
             }
         }
+
     }
 
     post {
