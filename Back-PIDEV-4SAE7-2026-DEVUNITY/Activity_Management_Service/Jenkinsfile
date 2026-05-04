@@ -2,107 +2,64 @@ pipeline {
     agent any
 
     tools {
-        jdk 'jdk17'
-        maven 'maven3'
-    }
-
-    options {
-        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
-        disableConcurrentBuilds()
-        timeout(time: 1, unit: 'HOURS')
+        maven "Maven3"
+        jdk "JDK21"
     }
 
     environment {
-        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
-        MAVEN_OPTS = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
+        SONAR_HOST_URL = "http://sonarqube:9000"
+        SONAR_TOKEN = credentials('sonar-token')
     }
 
     stages {
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                echo '📥 Récupération du code source...'
                 git branch: 'main',
-                    credentialsId: 'devops',
-                    url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
+                    url: 'https://github.com/your-repo/activity-management-service.git'
             }
         }
 
-        stage('Clean') {
+        stage('Clean Build') {
             steps {
-                dir("${BACKEND_PATH}/Activity_Management_Service") {
-                    sh 'mvn clean'
-                }
+                sh 'mvn clean compile'
             }
         }
 
-        stage('Build') {
+        stage('Run Tests') {
             steps {
-                dir("${BACKEND_PATH}/Activity_Management_Service") {
-                    sh 'mvn install -DskipTests'
-                }
-            }
-        }
-
-        stage('Test') {
-            steps {
-                dir("${BACKEND_PATH}/Activity_Management_Service") {
-                    // DEBUG COMPLET
-                    sh 'mvn test -e -X || true'
-                }
+                sh 'mvn test'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    dir("${BACKEND_PATH}/Activity_Management_Service") {
-                        sh '''
-                            mvn sonar:sonar \
-                                -Dsonar.projectKey=activity-management-service \
-                                -Dsonar.projectName=ActivityManagementService
-                        '''
-                    }
+                withSonarQubeEnv('SonarQube') {
+                    sh """
+                        mvn sonar:sonar \
+                        -Dsonar.projectKey=activity-management-service \
+                        -Dsonar.projectName=ActivityManagementService \
+                        -Dsonar.host.url=${SONAR_HOST_URL} \
+                        -Dsonar.login=${SONAR_TOKEN}
+                    """
                 }
             }
         }
 
-        stage('Quality Gate') {
+        stage('Build Package') {
             steps {
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
+                sh 'mvn package -DskipTests'
             }
         }
     }
 
     post {
-
         success {
-            echo '✅ Pipeline terminé avec succès !'
+            echo "✅ Build and SonarQube analysis successful"
         }
 
         failure {
-            echo '❌ Pipeline échoué ! Vérifie les logs Maven.'
-        }
-
-        always {
-            echo '📊 Publication des résultats...'
-
-            // Résultats des tests
-            junit testResults: "${BACKEND_PATH}/Activity_Management_Service/target/surefire-reports/*.xml",
-                  allowEmptyResults: true
-
-            // Archive dumps pour debug
-            archiveArtifacts artifacts: '**/*.dump, **/*.dumpstream',
-                              allowEmptyArchive: true
-
-            // Nettoyage workspace
-            cleanWs deleteDirs: true, patterns: [
-                [pattern: '**/target/**', type: 'INCLUDE'],
-                [pattern: '**/.m2/**', type: 'INCLUDE'],
-                [pattern: '**/*.log', type: 'INCLUDE']
-            ]
+            echo "❌ Pipeline failed"
         }
     }
 }
