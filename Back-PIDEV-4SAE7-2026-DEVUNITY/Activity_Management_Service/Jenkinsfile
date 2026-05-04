@@ -85,7 +85,7 @@ pipeline {
                                 -Dsonar.projectKey=activity-management-service \
                                 -Dsonar.projectName=ActivityManagementService \
                                 -Dsonar.host.url=http://192.168.72.128:9000 \
-                                -Dsonar.token=$SONAR_TOKEN_VAL \
+                                -Dsonar.login=$SONAR_TOKEN_VAL \
                                 -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
                                 -Dsonar.junit.reportPaths=target/surefire-reports
                         '''
