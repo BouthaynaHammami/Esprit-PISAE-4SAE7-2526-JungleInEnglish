@@ -115,7 +115,7 @@ pipeline {
             steps {
                 script {
                     echo "Déclenchement du pipeline CD avec IMAGE_TAG=${BUILD_NUMBER}"
-                    build job: 'social-interaction-CD',
+                    build job: 'DevUnity-Social-Pipeline-CD',
                           parameters: [string(name: 'IMAGE_TAG', value: "${BUILD_NUMBER}")],
                           wait: false   // ne bloque pas le CI, le CD s'exécute en parallèle
                 }
