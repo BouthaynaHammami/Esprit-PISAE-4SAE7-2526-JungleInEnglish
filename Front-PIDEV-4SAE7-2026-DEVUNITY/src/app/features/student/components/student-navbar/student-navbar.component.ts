@@ -33,6 +33,7 @@ export class StudentNavbarComponent implements OnInit {
   nav: NavItem[] = [
     { label: 'Dashboard', short: 'Home', icon: 'bi-grid-fill', link: '/student/dashboard' },
     { label: 'Join Offer', short: 'Join', icon: 'bi-rocket-takeoff-fill', link: '/student/join-offer' },
+    { label: 'Help out the platform', short: 'Help', icon: 'bi-heart-fill', link: '/student/dropout-form' },
     { label: 'Courses', short: 'Courses', icon: 'bi-book-fill', link: '/student/courses' },
     { label: 'Class', short: 'Class', icon: 'bi-calendar-week-fill', link: '/student/class' },
     { label: 'Complaints', short: 'Compl', icon: 'bi-chat-square-text-fill', link: '/student/complaints' },

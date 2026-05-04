@@ -33,6 +33,8 @@ import { AdminStudentStatsComponent } from './components/challenges_competitions
 import { AdminOfferComponent } from './components/business_english_learning/offer/admin-offer.component';
 import { AdminEmployeeInvitationComponent } from './components/business_english_learning/employee-invitations/admin-employee-invitation.component';
 
+import { AdminDropoutFormsComponent } from './components/dropout-forms/admin-dropout-forms.component';
+
 const routes: Routes = [
   {
     path: '',
@@ -73,6 +75,7 @@ const routes: Routes = [
       { path: 'kanban-certif', component: AdminKanbanCertifComponent },
       { path: 'kanban-events', component: AdminKanbanEventsComponent },
       { path: 'daily-analysis', component: AdminDailyAnalysisComponent },
+      { path: 'dropout-forms', component: AdminDropoutFormsComponent },
 
       { path: 'profile', component: AdminProfileComponent },
     ]

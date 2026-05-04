@@ -1,0 +1,291 @@
+<div class="dropout-form-container">
+  <!-- Header with description -->
+  <div class="form-header">
+    <h1 class="form-title">📋 Help us Improve Your Learning Experience</h1>
+    <div class="form-description">
+      <div class="description-card">
+        <div class="description-icon">💡</div>
+        <div class="description-content">
+          <h2>Why Your Feedback Matters</h2>
+          <p>This questionnaire helps us understand your learning journey better. Your honest responses will help us:</p>
+          <ul>
+            <li><strong>Identify support gaps:</strong> We can pinpoint areas where students need more help</li>
+            <li><strong>Personalize your experience:</strong> Tailor our platform to match your learning style</li>
+            <li><strong>Prevent dropouts:</strong> Early intervention to keep you on track</li>
+            <li><strong>Improve our services:</strong> Your insights drive real platform improvements</li>
+          </ul>
+          <p class="highlight">🎯 By completing this form, you directly contribute to making "Jungle In English" better for everyone!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Section -->
+  <div class="form-section">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="dropout-form">
+      <!-- Success Message -->
+      <div *ngIf="success" class="alert alert-success">
+        <div class="alert-icon">✅</div>
+        <div class="alert-content">
+          <h3>Thank You!</h3>
+          <p>Your response has been recorded successfully.</p>
+          <p *ngIf="prediction" class="prediction-info">
+            <strong>Assessment:</strong> Based on your responses, our system predicts: <span class="prediction-label" [ngClass]="{'dropout-yes': prediction.dropout === 'yes', 'dropout-no': prediction.dropout === 'no'}">
+              {{ prediction.dropout === 'yes' ? '⚠️ Potential risk' : '✅ On track' }}
+            </span>
+            <span class="prediction-prob" *ngIf="prediction.probability"> ({{ (prediction.probability * 100).toFixed(1) }}% confidence)</span>
+          </p>
+          <p class="redirect-info">Redirecting you back to dashboard...</p>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="alert alert-error">
+        <div class="alert-icon">❌</div>
+        <div class="alert-content">
+          <h3>Oops! Something went wrong</h3>
+          <p>{{ error }}</p>
+        </div>
+      </div>
+
+      <!-- Form Grid -->
+      <div class="form-grid">
+        <!-- Motivation Level -->
+        <div class="form-group">
+          <label for="motivation_level" class="form-label">
+            <span class="label-icon">🎯</span> Motivation Level (1-10)
+          </label>
+          <input 
+            type="range" 
+            id="motivation_level" 
+            formControlName="motivation_level"
+            min="1" 
+            max="10" 
+            class="form-range"
+          />
+          <div class="range-value">{{ form.get('motivation_level')?.value }}/10</div>
+        </div>
+
+        <!-- Weekly Study Hours -->
+        <div class="form-group">
+          <label for="weekly_study_hours" class="form-label">
+            <span class="label-icon">📚</span> Weekly Study Hours
+          </label>
+          <input 
+            type="number" 
+            id="weekly_study_hours" 
+            formControlName="weekly_study_hours"
+            min="0" 
+            step="0.5"
+            class="form-input"
+            placeholder="e.g., 5.5"
+          />
+        </div>
+
+        <!-- Free Time Per Week -->
+        <div class="form-group">
+          <label for="free_time_hours_per_week" class="form-label">
+            <span class="label-icon">🕐</span> Free Time Per Week (hours)
+          </label>
+          <input 
+            type="number" 
+            id="free_time_hours_per_week" 
+            formControlName="free_time_hours_per_week"
+            min="0" 
+            step="0.5"
+            class="form-input"
+            placeholder="e.g., 10"
+          />
+        </div>
+
+        <!-- Satisfaction Level -->
+        <div class="form-group">
+          <label for="satisfaction_level" class="form-label">
+            <span class="label-icon">😊</span> Satisfaction Level (1-10)
+          </label>
+          <input 
+            type="range" 
+            id="satisfaction_level" 
+            formControlName="satisfaction_level"
+            min="1" 
+            max="10" 
+            class="form-range"
+          />
+          <div class="range-value">{{ form.get('satisfaction_level')?.value }}/10</div>
+        </div>
+
+        <!-- Preferred Learning Mode -->
+        <div class="form-group">
+          <label for="preferred_learning_mode" class="form-label">
+            <span class="label-icon">💻</span> Preferred Learning Mode
+          </label>
+          <select id="preferred_learning_mode" formControlName="preferred_learning_mode" class="form-select">
+            <option *ngFor="let mode of learningModes" [value]="mode.value">
+              {{ mode.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Attendance Commitment -->
+        <div class="form-group">
+          <label for="attendance_commitment" class="form-label">
+            <span class="label-icon">📍</span> Attendance Commitment (1-10)
+          </label>
+          <input 
+            type="range" 
+            id="attendance_commitment" 
+            formControlName="attendance_commitment"
+            min="1" 
+            max="10" 
+            class="form-range"
+          />
+          <div class="range-value">{{ form.get('attendance_commitment')?.value }}/10</div>
+        </div>
+
+        <!-- Homework Completion -->
+        <div class="form-group">
+          <label for="homework_completion_self" class="form-label">
+            <span class="label-icon">✏️</span> Homework Completion Rate (1-10)
+          </label>
+          <input 
+            type="range" 
+            id="homework_completion_self" 
+            formControlName="homework_completion_self"
+            min="1" 
+            max="10" 
+            class="form-range"
+          />
+          <div class="range-value">{{ form.get('homework_completion_self')?.value }}/10</div>
+        </div>
+
+        <!-- Financial Stress Level -->
+        <div class="form-group">
+          <label for="financial_stress_level" class="form-label">
+            <span class="label-icon">💰</span> Financial Stress Level (1-10)
+          </label>
+          <input 
+            type="range" 
+            id="financial_stress_level" 
+            formControlName="financial_stress_level"
+            min="1" 
+            max="10" 
+            class="form-range"
+          />
+          <div class="range-value">{{ form.get('financial_stress_level')?.value }}/10</div>
+        </div>
+
+        <!-- Teacher Interaction -->
+        <div class="form-group">
+          <label for="interaction_with_teacher" class="form-label">
+            <span class="label-icon">👨‍🏫</span> Interaction with Teacher (1-10)
+          </label>
+          <input 
+            type="range" 
+            id="interaction_with_teacher" 
+            formControlName="interaction_with_teacher"
+            min="1" 
+            max="10" 
+            class="form-range"
+          />
+          <div class="range-value">{{ form.get('interaction_with_teacher')?.value }}/10</div>
+        </div>
+
+        <!-- English Level -->
+        <div class="form-group">
+          <label for="english_level_self" class="form-label">
+            <span class="label-icon">🌍</span> English Level Self-Assessment
+          </label>
+          <select id="english_level_self" formControlName="english_level_self" class="form-select">
+            <option *ngFor="let level of englishLevels" [value]="level.value">
+              {{ level.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Goal Clarity -->
+        <div class="form-group">
+          <label for="goal_clarity_level" class="form-label">
+            <span class="label-icon">🎓</span> Goal Clarity Level (1-10)
+          </label>
+          <input 
+            type="range" 
+            id="goal_clarity_level" 
+            formControlName="goal_clarity_level"
+            min="1" 
+            max="10" 
+            class="form-range"
+          />
+          <div class="range-value">{{ form.get('goal_clarity_level')?.value }}/10</div>
+        </div>
+
+        <!-- Class Difficulty -->
+        <div class="form-group">
+          <label for="class_difficulty_level" class="form-label">
+            <span class="label-icon">📈</span> Class Difficulty Level (1-10)
+          </label>
+          <input 
+            type="range" 
+            id="class_difficulty_level" 
+            formControlName="class_difficulty_level"
+            min="1" 
+            max="10" 
+            class="form-range"
+          />
+          <div class="range-value">{{ form.get('class_difficulty_level')?.value }}/10</div>
+        </div>
+
+        <!-- Peer Interaction -->
+        <div class="form-group">
+          <label for="peer_interaction_level" class="form-label">
+            <span class="label-icon">👥</span> Peer Interaction Level (1-10)
+          </label>
+          <input 
+            type="range" 
+            id="peer_interaction_level" 
+            formControlName="peer_interaction_level"
+            min="1" 
+            max="10" 
+            class="form-range"
+          />
+          <div class="range-value">{{ form.get('peer_interaction_level')?.value }}/10</div>
+        </div>
+
+        <!-- Technical Issues -->
+        <div class="form-group">
+          <label for="technical_issues_frequency" class="form-label">
+            <span class="label-icon">🔧</span> Technical Issues Frequency (1-10)
+          </label>
+          <input 
+            type="range" 
+            id="technical_issues_frequency" 
+            formControlName="technical_issues_frequency"
+            min="1" 
+            max="10" 
+            class="form-range"
+          />
+          <div class="range-value">{{ form.get('technical_issues_frequency')?.value }}/10</div>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          [disabled]="loading"
+          class="btn btn-primary"
+        >
+          <span *ngIf="!loading">🚀 Submit & Analyze</span>
+          <span *ngIf="loading" class="loading">⏳ Processing...</span>
+        </button>
+        <button 
+          type="button" 
+          (click)="resetForm()"
+          [disabled]="loading"
+          class="btn btn-secondary"
+        >
+          🔄 Reset Form
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

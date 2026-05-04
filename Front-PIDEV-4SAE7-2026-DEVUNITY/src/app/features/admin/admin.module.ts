@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AdminRoutingModule } from './admin-routing.module';
 import { RouterModule } from '@angular/router';
+import { SharedModule } from '../../shared/shared.module';
 
 import { AdminShellComponent } from './components/admin-shell/admin-shell.component';
 import { AdminSidebarComponent } from './components/admin-sidebar/admin-sidebar.component';
@@ -50,6 +51,7 @@ import { AdminApplicationsComponent } from './components/applications/admin-appl
 import { AdminKanbanCertifComponent } from './components/kanban-certif/admin-kanban-certif.component';
 import { AdminKanbanEventsComponent } from './components/kanban-events/admin-kanban-events.component';
 import { AdminDailyAnalysisComponent } from './components/daily-analysis/admin-daily-analysis.component';
+import { AdminDropoutFormsComponent } from './components/dropout-forms/admin-dropout-forms.component';
 
 @NgModule({
   declarations: [
@@ -91,6 +93,7 @@ import { AdminDailyAnalysisComponent } from './components/daily-analysis/admin-d
     AdminKanbanCertifComponent,
     AdminKanbanEventsComponent,
     AdminDailyAnalysisComponent,
+    AdminDropoutFormsComponent,
   ],
   imports: [
     CommonModule,
@@ -109,6 +112,7 @@ import { AdminDailyAnalysisComponent } from './components/daily-analysis/admin-d
     ComplaintDetailComponent,
     ScheduleListComponent,
     AdminCertificatesComponent,
+    SharedModule,
   ]
 })
 export class AdminModule { }

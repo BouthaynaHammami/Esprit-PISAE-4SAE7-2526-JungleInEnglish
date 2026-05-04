@@ -1,0 +1,144 @@
+<div class="dropout-forms-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1 class="page-title">📊 Student Dropout Analysis</h1>
+    <p class="page-subtitle">Monitor student responses and predicted dropout risks</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📋</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ forms.length }}</div>
+        <div class="stat-label">Total Responses</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ (forms | filter:'dropout':'yes').length }}</div>
+        <div class="stat-label">At-Risk Students</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ (forms | filter:'dropout':'no').length }}</div>
+        <div class="stat-label">On-Track Students</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters & Controls -->
+  <div class="controls-section">
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="filter-status">Filter by Status:</label>
+        <select id="filter-status" [(ngModel)]="filterStatus" (change)="onFilterChange()" class="select-input">
+          <option value="all">All Students</option>
+          <option value="yes">At-Risk Only</option>
+          <option value="no">On-Track Only</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="search-email">Search by Email:</label>
+        <input 
+          type="text" 
+          id="search-email" 
+          [(ngModel)]="searchEmail" 
+          (keyup)="onSearchChange()"
+          placeholder="e.g., student@example.com"
+          class="input-text"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label for="sort-by">Sort by:</label>
+        <select id="sort-by" [(ngModel)]="sortBy" (change)="onSortChange()" class="select-input">
+          <option value="date">Date (Newest)</option>
+          <option value="email">Email (A-Z)</option>
+          <option value="status">Status</option>
+        </select>
+      </div>
+
+      <button (click)="exportToCSV()" class="btn btn-export">
+        📥 Export as CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading forms...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <p>{{ error }}</p>
+    <button (click)="loadForms()" class="btn btn-primary">Retry</button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && filteredForms.length === 0" class="empty-container">
+    <div class="empty-icon">📭</div>
+    <h3>No forms found</h3>
+    <p>Adjust your filters or wait for student submissions.</p>
+  </div>
+
+  <!-- Table View -->
+  <div *ngIf="!loading && !error && filteredForms.length > 0" class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Student Email</th>
+          <th>Status</th>
+          <th>Risk Score</th>
+          <th>Motivation</th>
+          <th>Study Hours</th>
+          <th>Satisfaction</th>
+          <th>Learning Mode</th>
+          <th>English Level</th>
+          <th>Submitted</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let form of filteredForms" [ngClass]="'row-' + form.predictedDropout">
+          <td class="cell-email">
+            <strong>{{ form.userEmail }}</strong>
+          </td>
+          <td class="cell-status">
+            <span [ngClass]="'status-badge ' + getRiskClass(form.predictedDropout)">
+              {{ getRiskLabel(form.predictedDropout) }}
+            </span>
+          </td>
+          <td class="cell-score">
+            <div class="progress-bar">
+              <div 
+                class="progress-fill" 
+                [style.width.%]="form.predictedProbability * 100"
+                [ngClass]="form.predictedProbability > 0.7 ? 'high' : 'low'"
+              ></div>
+            </div>
+            <span>{{ formatProbability(form.predictedProbability) }}</span>
+          </td>
+          <td class="cell-metric">{{ form.motivationLevel }}/10</td>
+          <td class="cell-metric">{{ form.weeklyStudyHours }}h</td>
+          <td class="cell-metric">{{ form.satisfactionLevel }}/10</td>
+          <td class="cell-metric">{{ form.preferredLearningMode }}</td>
+          <td class="cell-metric">{{ form.englishLevelSelf }}</td>
+          <td class="cell-date">{{ formatDate(form.createdAt) }}</td>
+          <td class="cell-actions">
+            <button class="btn-icon" title="View details">👁️</button>
+            <button class="btn-icon" title="Send intervention">📧</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

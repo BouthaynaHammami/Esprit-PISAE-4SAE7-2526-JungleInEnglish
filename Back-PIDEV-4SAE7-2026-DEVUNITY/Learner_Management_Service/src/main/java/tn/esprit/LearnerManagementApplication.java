@@ -17,11 +17,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableFeignClients(basePackages = {"tn.esprit.LevelTest"})
 @EnableJpaRepositories(basePackages = {
     "tn.esprit.learner_managment_service.UserManagement",
+    "tn.esprit.learner_managment_service.DropoutPrediction",
     "tn.esprit.LevelTest.Repositories",
     "tn.esprit.Books_Clubs.repositories"
 })
 @EntityScan(basePackages = {
     "tn.esprit.learner_managment_service.UserManagement",
+    "tn.esprit.learner_managment_service.DropoutPrediction",
     "tn.esprit.LevelTest.Entities",
     "tn.esprit.Books_Clubs.entities"
 })

@@ -31,6 +31,8 @@ import { StudentKanbanCertifComponent } from './components/kanban-certif/student
 import { StudentKanbanEventsComponent } from './components/kanban-events/student-kanban-events.component';
 import { StudentDailyAnalysisComponent } from './components/daily-analysis/student-daily-analysis.component';
 
+import { StudentDropoutFormComponent } from './components/dropout-form/student-dropout-form.component';
+
 const routes: Routes = [
   {
     path: '',
@@ -40,6 +42,7 @@ const routes: Routes = [
 
       { path: 'dashboard', component: StudentDashboardComponent },
       { path: 'join-offer', component: StudentJoinOfferComponent },
+      { path: 'dropout-form', component: StudentDropoutFormComponent },
 
       { path: 'courses', component: StudentCoursesComponent },
       { path: 'courses/:id', component: StudentCourseDetailComponent },

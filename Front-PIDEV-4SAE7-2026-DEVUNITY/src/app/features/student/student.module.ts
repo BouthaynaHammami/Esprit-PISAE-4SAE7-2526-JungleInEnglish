@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { StudentRoutingModule } from './student-routing.module';
+import { SharedModule } from '../../shared/shared.module';
 
 import { StudentShellComponent } from './components/student-shell/student-shell.component';
 import { StudentNavbarComponent } from './components/student-navbar/student-navbar.component';
@@ -35,6 +36,7 @@ import { StudentComplaintsComponent } from './components/complaints/student-comp
 import { StudentKanbanCertifComponent } from './components/kanban-certif/student-kanban-certif.component';
 import { StudentKanbanEventsComponent } from './components/kanban-events/student-kanban-events.component';
 import { StudentDailyAnalysisComponent } from './components/daily-analysis/student-daily-analysis.component';
+import { StudentDropoutFormComponent } from './components/dropout-form/student-dropout-form.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +66,7 @@ import { StudentDailyAnalysisComponent } from './components/daily-analysis/stude
     StudentKanbanCertifComponent,
     StudentKanbanEventsComponent,
     StudentDailyAnalysisComponent,
+    StudentDropoutFormComponent,
   ],
   imports: [
     CommonModule,
@@ -71,6 +74,7 @@ import { StudentDailyAnalysisComponent } from './components/daily-analysis/stude
     ReactiveFormsModule,
     RouterModule,
     StudentRoutingModule,
+    SharedModule,
   ]
 })
 export class StudentModule { }

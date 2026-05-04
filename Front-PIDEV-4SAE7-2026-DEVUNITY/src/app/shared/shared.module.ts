@@ -2,10 +2,12 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChatWindowComponent } from './components/chat-window/chat-window.component';
+import { FilterPipe } from './pipes/filter.pipe';
 
 @NgModule({
   declarations: [
-    ChatWindowComponent
+    ChatWindowComponent,
+    FilterPipe
   ],
   imports: [
     CommonModule,
@@ -14,6 +16,7 @@ import { ChatWindowComponent } from './components/chat-window/chat-window.compon
   ],
   exports: [
     ChatWindowComponent,
+    FilterPipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule
