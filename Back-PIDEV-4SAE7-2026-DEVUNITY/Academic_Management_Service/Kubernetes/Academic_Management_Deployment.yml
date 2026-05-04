@@ -55,6 +55,12 @@ spec:
               value: "8083"
             - name: SERVER_SERVLET_CONTEXT_PATH
               value: "/academics/api"
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: "*"
+            - name: MANAGEMENT_SECURITY_ENABLED
+              value: "false"
+            - name: SPRING_SECURITY_ENABLED
+              value: "false"
           imagePullPolicy: Always
 ---
 apiVersion: v1
