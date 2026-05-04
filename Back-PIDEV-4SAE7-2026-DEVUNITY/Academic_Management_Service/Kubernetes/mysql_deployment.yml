@@ -40,3 +40,16 @@ spec:
         - name: mysql-init              # ← link to configmap
           configMap:
             name: mysql-init-script
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  namespace: devunity
+spec:
+  selector:
+    app: mysql
+  ports:
+    - port: 3306
+      targetPort: 3306
+  type: ClusterIP
