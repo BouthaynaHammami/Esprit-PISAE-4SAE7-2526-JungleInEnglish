@@ -38,7 +38,6 @@ subjects:
     name: prometheus
     namespace: devunity
 ---
-# prometheus-config.yml
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -49,6 +48,7 @@ data:
     global:
       scrape_interval: 15s
     scrape_configs:
+
       - job_name: 'kubernetes-pods'
         kubernetes_sd_configs:
           - role: pod
@@ -69,22 +69,24 @@ data:
             replacement: $1:$2
             target_label: __address__
 
+      # ✅ uses full DNS name
       - job_name: 'academic-management-service'
         metrics_path: '/academics/api/actuator/prometheus'
         static_configs:
           - targets: ['academic-management-svc.devunity.svc.cluster.local:8083']
 
+      # ✅ uses full DNS name
       - job_name: 'eureka-server'
         metrics_path: '/actuator/prometheus'
         static_configs:
           - targets: ['eureka-server.devunity.svc.cluster.local:8761']
 
+      # ✅ api-gateway actuator on port 8082 (separate management port)
       - job_name: 'api-gateway'
         metrics_path: '/actuator/prometheus'
         static_configs:
-          - targets: ['api-gateway.devunity.svc.cluster.local:8081']
+          - targets: ['api-gateway.devunity.svc.cluster.local:8082']
 ---
-# prometheus-deployment.yml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -100,7 +102,7 @@ spec:
       labels:
         app: prometheus
     spec:
-      serviceAccountName: prometheus      # ← add this
+      serviceAccountName: prometheus
       containers:
         - name: prometheus
           image: prom/prometheus:latest
