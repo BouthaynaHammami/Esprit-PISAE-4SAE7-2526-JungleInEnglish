@@ -54,3 +54,18 @@ spec:
             - name: SERVER_SERVLET_CONTEXT_PATH
               value: "/academics/api"          # ✅ fixed: was "/learners/api" (wrong service!)
           imagePullPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: Academic_Management_Serice
+  namespace: devunity
+spec:
+  selector:
+    app: academic-management-service
+  type: NodePort
+  ports:
+    - port: 8083
+      targetPort: 8083
+      nodePort: 30083
