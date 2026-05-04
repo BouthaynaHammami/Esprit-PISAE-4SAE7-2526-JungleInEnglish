@@ -20,7 +20,7 @@ pipeline {
             steps {
                 echo 'Récupération du code source...'
                 git branch: 'main',
-                    credentialsId: 'gittokens',
+                    credentialsId: 'devops',
                     url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
             }
         }
