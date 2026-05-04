@@ -34,13 +34,13 @@ spec:
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: "update"
             - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-              value: "http://eureka-server:8761/eureka"   # ✅ use K8s DNS, not IP
+              value: "http://eureka-server.devunity.svc.cluster.local:8761/eureka"   # ✅ use K8s DNS, not IP
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
               value: "true"
             - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
-              value: "http://keycloak-service:8080/realms/devunity"
+              value: "http://keycloak-service.devunity.svc.cluster.local:8080/realms/devunity"
             - name: KEYCLOAK_AUTH_SERVER_URL
-              value: "http://keycloak-service:8080"
+              value: "http://keycloak-service.devunity.svc.cluster.local:8080"
             - name: KEYCLOAK_REALM
               value: "devunity"
             - name: KEYCLOAK_RESOURCE
