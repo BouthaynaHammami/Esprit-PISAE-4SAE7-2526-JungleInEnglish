@@ -28,7 +28,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: eureka-server      # ← this name is the DNS used by all other services
+  name: eureka-server # ← this name is the DNS used by all other services
+  namespace: devunity 
 spec:
   selector:
     app: eureka-server
