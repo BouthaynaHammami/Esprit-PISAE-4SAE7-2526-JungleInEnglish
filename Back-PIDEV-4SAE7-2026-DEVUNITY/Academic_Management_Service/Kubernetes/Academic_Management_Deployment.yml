@@ -48,15 +48,9 @@ spec:
             - name: KEYCLOAK_RESOURCE
               value: "devunity-app"
             - name: KEYCLOAK_ADMIN_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: keycloak-secret
-                  key: keycloak-admin-username  # ✅ moved to secret
+              value: "admin" 
             - name: KEYCLOAK_ADMIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: keycloak-secret
-                  key: keycloak-admin-password  # ✅ moved to secret
+              value: "admin123" 
             - name: SERVER_PORT
               value: "8083"
             - name: SERVER_SERVLET_CONTEXT_PATH
