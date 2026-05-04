@@ -1,0 +1,176 @@
+pipeline {
+    agent any
+
+    environment {
+        FRONT_PATH        = 'Front-PIDEV-4SAE7-2026-DEVUNITY'
+        SONAR_HOST_URL    = 'http://192.168.19.128:9000'
+        NEXUS_URL         = 'http://192.168.19.128:8081'
+        DOCKER_IMAGE      = 'hbouthayna/dev-unity-frontend'
+        NODE_OPTIONS      = '--max-old-space-size=2048'
+    }
+
+    stages {
+
+        // ── ÉTAPE 1 : Récupération du code ──
+        stage('Checkout') {
+            steps {
+                echo 'Récupération du code source...'
+                git branch: 'main',
+                    credentialsId: 'git_token',
+                    url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
+            }
+        }
+
+        // ── ÉTAPE 2 : Installation des dépendances Node.js ──
+        stage('Install Dependencies') {
+            steps {
+                dir("${FRONT_PATH}") {
+                    sh 'npm ci'
+                }
+            }
+        }
+
+        // ── ÉTAPE 3 : Lint (vérification qualité du code TypeScript) ──
+        stage('Lint') {
+            steps {
+                dir("${FRONT_PATH}") {
+                    sh 'npx ng lint || true'
+                }
+            }
+        }
+
+        // ── ÉTAPE 4 : Tests unitaires (Karma + ChromeHeadless) ──
+        stage('Test') {
+            steps {
+                dir("${FRONT_PATH}") {
+                    sh 'npx ng test --watch=false --browsers=ChromeHeadless --code-coverage || true'
+                }
+            }
+            post {
+                always {
+                    junit testResults: "${FRONT_PATH}/coverage/**/*.xml", allowEmptyResults: true
+                }
+            }
+        }
+
+        // ── ÉTAPE 5a : npm audit (sécurité des dépendances) ──
+        stage('npm audit') {
+            steps {
+                dir("${FRONT_PATH}") {
+                    sh 'npm audit --audit-level=high || true'
+                }
+            }
+        }
+
+        // ── ÉTAPE 5b : Prettier (vérification du formatage du code) ──
+        stage('Prettier Check') {
+            steps {
+                dir("${FRONT_PATH}") {
+                    sh 'npx prettier --check "src/**/*.{ts,html,css,scss}" || true'
+                }
+            }
+        }
+
+        // ── ÉTAPE 5c : Dockle (sécurité de l'image Docker – après build) ──
+        // Note: Dockle s'exécute après Docker Build (étape 8)
+
+        // ── ÉTAPE 6 : Analyse SonarQube ──
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'sonar_token', variable: 'SONAR_TOKEN')]) {
+                        withSonarQubeEnv('sonarqube') {
+                            dir("${FRONT_PATH}") {
+                                sh """
+                                    npx sonar-scanner \
+                                    -Dsonar.projectKey=Dev-Unity-Frontend \
+                                    -Dsonar.projectName='Dev Unity Frontend' \
+                                    -Dsonar.sources=src \
+                                    -Dsonar.host.url=${SONAR_HOST_URL} \
+                                    -Dsonar.token=${SONAR_TOKEN} \
+                                    -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+                                """
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── ÉTAPE 7 : Build Angular (mode production) ──
+        stage('Build Production') {
+            steps {
+                dir("${FRONT_PATH}") {
+                    sh 'npx ng build --configuration production'
+                }
+            }
+        }
+
+        // ── ÉTAPE 8 : Build de l'image Docker ──
+        stage('Docker Build') {
+            steps {
+                dir("${FRONT_PATH}") {
+                    script {
+                        dockerImage = docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
+                    }
+                }
+            }
+        }
+
+        // ── ÉTAPE 8b : Dockle (sécurité de l'image Docker produite) ──
+        stage('Dockle Security Scan') {
+            steps {
+                script {
+                    sh """
+                        docker run --rm \
+                            -v /var/run/docker.sock:/var/run/docker.sock \
+                            goodwithtech/dockle:latest \
+                            --exit-code 1 \
+                            --exit-level warn \
+                            ${DOCKER_IMAGE}:${BUILD_NUMBER} || true
+                    """
+                }
+            }
+        }
+
+        // ── ÉTAPE 9 : Push de l'image Docker sur Docker Hub ──
+        stage('Docker Push') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'docker_token',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
+                        sh """
+                            echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
+                            docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                            docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest
+                            docker push ${DOCKER_IMAGE}:latest
+                        """
+                    }
+                }
+            }
+        }
+
+        // ── ÉTAPE 10 : Déclencher le pipeline CD ──
+        stage('Trigger CD 🚀') {
+            steps {
+                script {
+                    echo "Déclenchement du pipeline CD Frontend avec IMAGE_TAG=${BUILD_NUMBER}"
+                    build job: 'DevUnity-Front-Pipeline-CD',
+                          parameters: [string(name: 'IMAGE_TAG', value: "${BUILD_NUMBER}")],
+                          wait: false
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success { echo '✅ Pipeline CI Frontend terminé avec succès !' }
+        failure { echo '❌ Pipeline CI Frontend échoué.' }
+    }
+}

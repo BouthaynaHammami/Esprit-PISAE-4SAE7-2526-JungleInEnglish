@@ -45,6 +45,7 @@ pipeline {
                             -e SEMGREP_USER_DATA_DIR=/tmp/semgrep \
                         """) {
                             dir("${SOCIAL_SERVICE_PATH}") {
+                                sh 'semgrep ci || true'
                                 sh 'semgrep scan --config auto || true'
                             }
                         }

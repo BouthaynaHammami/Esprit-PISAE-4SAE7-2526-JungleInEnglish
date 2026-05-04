@@ -4,7 +4,7 @@
 # déploiement via --set dans le Jenkinsfile_CD (credentials Jenkins).
 # ---------------------------------------------------------------
 
-replicaCount: 2   # ≥2 pour rolling update sans downtime
+replicaCount: 1   # Réduit à 1 pour debug – à remettre à 2 en production
 
 image:
   repository: hbouthayna/social-interaction-service
@@ -16,12 +16,11 @@ service:
   port: 8085           # Aligné avec server.port dans application.properties
 
 config:
-  hostIp: "192.168.184.128"
-  dbUrl: "jdbc:mysql://192.168.184.128:3306/Social_Interaction?createDatabaseIfNotExist=true"
+  dbUrl: "jdbc:mysql://mysql-service:3306/Social_Interaction?createDatabaseIfNotExist=true"
   # Valeurs vides – INJECTÉES via Jenkins credentials (withCredentials)
   dbUsername: ""
   dbPassword: ""
-  elasticsearchUrl: "http://192.168.184.128:9200"
+  elasticsearchUrl: "http://elasticsearch-service:9200"
   elasticsearchPassword: ""
 
 resources:
