@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: academic-management-service   # ✅ lowercase + hyphens only (K8s naming convention)
+  namespace: devunity
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: academic-management-service
+  template:
+    metadata:
+      labels:
+        app: academic-management-service
+    spec:
+      containers:
+        - name: academic-management-service
+          image: chaibimarwa/academic-management-service:latest
+          ports:
+            - containerPort: 8083
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql-service:3306/Academic_Management?createDatabaseIfNotExist=true"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-root-password
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://eureka-server:8761/eureka"   # ✅ use K8s DNS, not IP
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              value: "true"
+            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+              value: "http://keycloak-service:8080/realms/devunity"
+            - name: KEYCLOAK_AUTH_SERVER_URL
+              value: "http://keycloak-service:8080"
+            - name: KEYCLOAK_REALM
+              value: "devunity"
+            - name: KEYCLOAK_RESOURCE
+              value: "devunity-app"
+            - name: KEYCLOAK_ADMIN_USERNAME    # ⚠️ move to a Secret (not plain text)
+              value: "admin"
+            - name: KEYCLOAK_ADMIN_PASSWORD    # ⚠️ move to a Secret (not plain text)
+              value: "admin123"
+            - name: SERVER_PORT
+              value: "8083"
+            - name: SERVER_SERVLET_CONTEXT_PATH
+              value: "/academics/api"          # ✅ fixed: was "/learners/api" (wrong service!)
+          imagePullPolicy: Always
