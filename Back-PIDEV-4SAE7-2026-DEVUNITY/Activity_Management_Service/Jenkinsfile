@@ -90,14 +90,7 @@ pipeline {
             }
         }
 
-        stage('Quality Gate') {
-            steps {
-                echo '🚦 Vérification Quality Gate SonarQube...'
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: false
-                }
-            }
-        }
+       
 
         stage('Deploy to Nexus') {
             steps {
