@@ -73,31 +73,18 @@ pipeline {
                 }
             }
         }
-stage('Debug Token') {
-    steps {
-        withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN_VAL')]) {
-            sh '''
-                echo "Longueur du token : $(echo -n $SONAR_TOKEN_VAL | wc -c)"
-                curl -u "$SONAR_TOKEN_VAL:" \
-                     http://192.168.72.128:9000/api/authentication/validate
-            '''
-        }
-    }
-}
         stage('SonarQube Analysis') {
             steps {
-                dir("${SERVICE_DIR}") {
-                    echo '🔍 Analyse SonarQube → http://192.168.72.128:9000'
-                    withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN_VAL')]) {
-                        sh '''
-                            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
-                                -Dsonar.projectKey=activity-management-service \
-                                -Dsonar.projectName=ActivityManagementService \
-                                -Dsonar.host.url=http://192.168.72.128:9000 \
-                                -Dsonar.token=$SONAR_TOKEN_VAL \
-                                -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-                                -Dsonar.junit.reportPaths=target/surefire-reports
-                        '''
+                script {
+                    withSonarQubeEnv('sonarqube') {
+                        dir("${SERVICE_DIR}") {
+                            echo '🔍 Analyse SonarQube → http://192.168.72.128:9000'
+                            sh '''
+                                mvn sonar:sonar \
+                                    -Dsonar.projectKey=activity-management-service \
+                                    -Dsonar.projectName=ActivityManagementService
+                            '''
+                        }
                     }
                 }
             }
