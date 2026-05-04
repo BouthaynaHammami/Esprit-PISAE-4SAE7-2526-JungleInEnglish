@@ -32,18 +32,11 @@ spec:
           volumeMounts:
             - name: mysql-storage
               mountPath: /var/lib/mysql
+            - name: mysql-init          # ← mount init script
+              mountPath: /docker-entrypoint-initdb.d
       volumes:
         - name: mysql-storage
           emptyDir: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mysql-service
-  namespace: devunity
-spec:
-  selector:
-    app: mysql
-  ports:
-    - port: 3306
-      targetPort: 3306
+        - name: mysql-init              # ← link to configmap
+          configMap:
+            name: mysql-init-script
