@@ -46,13 +46,21 @@ export class AdminDropoutFormsComponent implements OnInit {
     this.loadForms();
   }
 
+  get atRiskCount(): number {
+    return this.forms.filter(form => form.predictedDropout === 'yes').length;
+  }
+
+  get onTrackCount(): number {
+    return this.forms.filter(form => form.predictedDropout === 'no').length;
+  }
+
   loadForms(): void {
     this.loading = true;
     this.error = null;
 
     this.http.get<DropoutFormData[]>('http://localhost:8081/learners/api/dropout-forms').subscribe({
       next: (data) => {
-        this.forms = data;
+        this.forms = data.map(form => this.normalizeForm(form));
         this.applyFiltersAndSort();
         this.loading = false;
       },
@@ -129,6 +137,32 @@ export class AdminDropoutFormsComponent implements OnInit {
 
   formatProbability(prob: number): string {
     return (prob * 100).toFixed(1) + '%';
+  }
+
+  private normalizeForm(raw: any): DropoutFormData {
+    return {
+      id: raw.id,
+      userId: raw.userId,
+      userEmail: raw.userEmail,
+      motivationLevel: raw.motivationLevel ?? raw.motivation_level,
+      weeklyStudyHours: raw.weeklyStudyHours ?? raw.weekly_study_hours,
+      freeTimeHoursPerWeek: raw.freeTimeHoursPerWeek ?? raw.free_time_hours_per_week,
+      satisfactionLevel: raw.satisfactionLevel ?? raw.satisfaction_level,
+      preferredLearningMode: raw.preferredLearningMode ?? raw.preferred_learning_mode,
+      attendanceCommitment: raw.attendanceCommitment ?? raw.attendance_commitment,
+      homeworkCompletionSelf: raw.homeworkCompletionSelf ?? raw.homework_completion_self,
+      financialStressLevel: raw.financialStressLevel ?? raw.financial_stress_level,
+      interactionWithTeacher: raw.interactionWithTeacher ?? raw.interaction_with_teacher,
+      englishLevelSelf: raw.englishLevelSelf ?? raw.english_level_self,
+      goalClarityLevel: raw.goalClarityLevel ?? raw.goal_clarity_level,
+      classDifficultyLevel: raw.classDifficultyLevel ?? raw.class_difficulty_level,
+      peerInteractionLevel: raw.peerInteractionLevel ?? raw.peer_interaction_level,
+      technicalIssuesFrequency: raw.technicalIssuesFrequency ?? raw.technical_issues_frequency,
+      predictedDropout: raw.predictedDropout,
+      predictedProbability: raw.predictedProbability,
+      modelName: raw.modelName,
+      createdAt: raw.createdAt
+    };
   }
 
   exportToCSV(): void {

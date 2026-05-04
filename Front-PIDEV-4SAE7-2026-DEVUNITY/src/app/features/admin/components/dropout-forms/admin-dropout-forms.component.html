@@ -18,7 +18,7 @@
     <div class="stat-card">
       <div class="stat-icon">⚠️</div>
       <div class="stat-content">
-        <div class="stat-number">{{ (forms | filter:'dropout':'yes').length }}</div>
+        <div class="stat-number">{{ atRiskCount }}</div>
         <div class="stat-label">At-Risk Students</div>
       </div>
     </div>
@@ -26,7 +26,7 @@
     <div class="stat-card">
       <div class="stat-icon">✅</div>
       <div class="stat-content">
-        <div class="stat-number">{{ (forms | filter:'dropout':'no').length }}</div>
+        <div class="stat-number">{{ onTrackCount }}</div>
         <div class="stat-label">On-Track Students</div>
       </div>
     </div>
