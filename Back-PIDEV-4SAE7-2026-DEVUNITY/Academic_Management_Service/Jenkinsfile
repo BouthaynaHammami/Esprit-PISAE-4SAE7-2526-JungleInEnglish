@@ -12,7 +12,6 @@ pipeline {
 
     environment {
         BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
-        FRONTEND_PATH = 'Front-PIDEV-4SAE7-2026-DEVUNITY'
         SONAR_HOST_URL = 'http://192.168.22.130:9000'
         NEXUS_URL = 'http://192.168.22.130:8081'
         MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
@@ -220,7 +219,7 @@ pipeline {
                         dir("${BACKEND_PATH}/Academic_Management_Service") {
                             sh """
                                 mvn deploy -DskipTests \
-                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/maven-snapshots/
+                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/Devunity-snapshots/
                             """
                         }
                     }
@@ -230,7 +229,7 @@ pipeline {
                         dir("${BACKEND_PATH}/Discovery_Service") {
                             sh """
                                 mvn deploy -DskipTests \
-                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/maven-snapshots/
+                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/Devunity-snapshots/
                             """
                         }
                     }
@@ -240,7 +239,7 @@ pipeline {
                         dir("${BACKEND_PATH}/API_Gateway") {
                             sh """
                                 mvn deploy -DskipTests \
-                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/maven-snapshots/
+                                -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/Devunity-snapshots/
                             """
                         }
                     }

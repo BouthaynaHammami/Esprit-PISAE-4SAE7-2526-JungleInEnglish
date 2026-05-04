@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+    tools {
+        jdk 'jdk17'
+    }
+    environment {
+        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
+        DOCKER_REGISTRY = 'chaibimarwa'
+        REGISTRY_CREDENTIAL = 'REGISTRY_CREDENTIAL'
+        K8S_DIR = "Back-PIDEV-4SAE7-2026-DEVUNITY/Academic_Management_Service/Kubernetes"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Kubernetes check') {
+            steps {
+                sh 'kubectl get pods -A'
+                sh 'kubectl get nodes'
+            }
+        }
+        stage('Kubernetes Deploy') {
+                    steps {
+                        sh 'kubectl apply -f ${K8S_DIR}/namespace.yml '
+                        sh 'kubectl apply -f ${K8S_DIR}/mysql-secret.yml '
+                        sh 'kubectl apply -f ${K8S_DIR}/Configmap.yml '
+                        sh 'kubectl apply -f ${K8S_DIR}/mysql_deployment.yml '
+                        sh 'kubectl apply -f ${K8S_DIR}/keyckloak_deployment.yml '
+                        sh 'kubectl apply -f ${K8S_DIR}/eureka_deployment.yml '
+                        sh 'kubectl apply -f ${K8S_DIR}/Api_Gateway_Deployment.yml '
+                        sh 'kubectl apply -f ${K8S_DIR}/Academic_Management_Deployment.yml '
+                    }
+                }
+        stage('Verify Deployment') {
+                    steps {
+                        sh 'kubectl rollout status deployment/academic-management-service -n devunity --timeout=120s'
+                        sh 'kubectl get pods -n devunity'
+                    }
+                }
+
+
+    }
+
+}

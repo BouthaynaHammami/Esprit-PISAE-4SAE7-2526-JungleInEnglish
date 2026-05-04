@@ -1,0 +1,124 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'jdk17'
+        maven 'maven3'
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+        disableConcurrentBuilds()
+        timeout(time: 1, unit: 'HOURS')
+    }
+
+    environment {
+        BACKEND_PATH   = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        SERVICE_DIR    = "${BACKEND_PATH}/Activity_Management_Service"
+        MAVEN_OPTS     = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
+        SONAR_HOST_URL = 'http://192.168.72.128:9000'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                echo '📥 Récupération du code source...'
+                git branch: 'main',
+                    credentialsId: 'devops',
+                    url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
+            }
+        }
+
+        stage('Clean') {
+            steps {
+                dir("${SERVICE_DIR}") {
+                    echo '🧹 Nettoyage...'
+                    sh 'mvn clean'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir("${SERVICE_DIR}") {
+                    echo '🔨 Compilation sans tests...'
+                    sh 'mvn install -DskipTests'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                dir("${SERVICE_DIR}") {
+                    echo '🧪 Exécution des tests...'
+                    sh 'mvn test -fae -e || true'
+                }
+            }
+            post {
+                always {
+                    dir("${SERVICE_DIR}") {
+                        sh '''
+                            echo "========================================"
+                            echo "         RAPPORT DES TESTS"
+                            echo "========================================"
+                            find target/surefire-reports -name "*.txt" \
+                                 -exec echo "\\n--- {} ---" \\; \
+                                 -exec grep -A 20 "FAILED\\|Exception\\|ERROR" {} \\; \
+                                 2>/dev/null || echo "Aucun rapport trouvé"
+                        '''
+                        junit testResults: 'target/surefire-reports/*.xml',
+                              allowEmptyResults: true
+                    }
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    withSonarQubeEnv('sonarqube') {
+                        dir("${SERVICE_DIR}") {
+                            echo '🔍 Analyse SonarQube → http://192.168.72.128:9000'
+                            sh '''
+                                mvn sonar:sonar \
+                                    -Dsonar.projectKey=activity-management-service \
+                                    -Dsonar.projectName=ActivityManagementService
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                echo '🚦 Vérification Quality Gate SonarQube...'
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+    }
+
+    post {
+        success {
+            echo '✅ Pipeline terminé avec succès !'
+        }
+        unstable {
+            echo '⚠️ Tests en échec — vérifie les rapports JUnit.'
+        }
+        failure {
+            echo '❌ Pipeline échoué !'
+        }
+        always {
+            archiveArtifacts artifacts: '**/*.dump, **/*.dumpstream',
+                              allowEmptyArchive: true
+            cleanWs deleteDirs: true, patterns: [
+                [pattern: '**/target/**', type: 'INCLUDE'],
+                [pattern: '**/.m2/**',    type: 'INCLUDE'],
+                [pattern: '**/*.log',     type: 'INCLUDE']
+            ]
+        }
+    }
+}
