@@ -15,6 +15,7 @@ pipeline {
     environment {
         BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
         MAVEN_OPTS = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
+        SONAR_TOKEN = credentials('sonar-token')
     }
 
     stages {
@@ -28,41 +29,25 @@ pipeline {
             }
         }
 
-        stage('Clean') {
+        stage('Build & Test') {
             steps {
                 dir("${BACKEND_PATH}/Activity_Management_Service") {
-                    sh 'mvn clean'
-                }
-            }
-        }
-
-        stage('Build') {
-            steps {
-                dir("${BACKEND_PATH}/Activity_Management_Service") {
-                    sh 'mvn install -DskipTests'
-                }
-            }
-        }
-
-        stage('Test') {
-            steps {
-                dir("${BACKEND_PATH}/Activity_Management_Service") {
-                    // DEBUG COMPLET
-                    sh 'mvn test -e -X || true'
+                    sh 'mvn clean verify -e -X'
                 }
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    dir("${BACKEND_PATH}/Activity_Management_Service") {
-                        sh '''
-                            mvn sonar:sonar \
-                                -Dsonar.projectKey=activity-management-service \
-                                -Dsonar.projectName=ActivityManagementService
-                        '''
-                    }
+                echo '🔍 Analyse SonarQube...'
+                dir("${BACKEND_PATH}/Activity_Management_Service") {
+                    sh '''
+                        mvn sonar:sonar \
+                        -Dsonar.host.url=http://sonarqube:9000 \
+                        -Dsonar.login=$SONAR_TOKEN \
+                        -Dsonar.projectKey=activity-management-service \
+                        -Dsonar.projectName=ActivityManagementService
+                    '''
                 }
             }
         }
@@ -83,21 +68,18 @@ pipeline {
         }
 
         failure {
-            echo '❌ Pipeline échoué ! Vérifie les logs Maven.'
+            echo '❌ Pipeline échoué ! Vérifie les logs.'
         }
 
         always {
             echo '📊 Publication des résultats...'
 
-            // Résultats des tests
             junit testResults: "${BACKEND_PATH}/Activity_Management_Service/target/surefire-reports/*.xml",
                   allowEmptyResults: true
 
-            // Archive dumps pour debug
             archiveArtifacts artifacts: '**/*.dump, **/*.dumpstream',
                               allowEmptyArchive: true
 
-            // Nettoyage workspace
             cleanWs deleteDirs: true, patterns: [
                 [pattern: '**/target/**', type: 'INCLUDE'],
                 [pattern: '**/.m2/**', type: 'INCLUDE'],
