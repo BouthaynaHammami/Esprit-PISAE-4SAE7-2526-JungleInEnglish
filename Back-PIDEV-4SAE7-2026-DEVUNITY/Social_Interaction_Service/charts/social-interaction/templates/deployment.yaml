@@ -22,14 +22,51 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+
           env:
+            # ── Base de données ─ credentials depuis le Secret K8s ──
             - name: SPRING_DATASOURCE_URL
               value: {{ .Values.config.dbUrl | quote }}
             - name: SPRING_DATASOURCE_USERNAME
-              value: {{ .Values.config.dbUsername | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "social-interaction.fullname" . }}-db-secret
+                  key: db-username
             - name: SPRING_DATASOURCE_PASSWORD
-              value: {{ .Values.config.dbPassword | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "social-interaction.fullname" . }}-db-secret
+                  key: db-password
+
+            # ── Elasticsearch ─ password depuis le Secret K8s ──
             - name: SPRING_ELASTICSEARCH_URIS
               value: {{ .Values.config.elasticsearchUrl | quote }}
+            - name: SPRING_ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "social-interaction.fullname" . }}-db-secret
+                  key: elasticsearch-password
+
+            # ── Eureka ─ URL interne Kubernetes (plus localhost) ──
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://eureka-server.{{ .Release.Namespace }}.svc.cluster.local:8761/eureka"
+
+          # ── Health checks pour que K8s sache si le pod est prêt ──
+          livenessProbe:
+            httpGet:
+              path: /socials/api/actuator/health
+              port: 8085
+            initialDelaySeconds: 90    # Spring Boot met ~60-90s à démarrer
+            periodSeconds: 15
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /socials/api/actuator/health
+              port: 8085
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

@@ -1,100 +1,164 @@
 pipeline {
     agent any
-    
+
     tools {
         jdk 'JAVA_HOME'
         maven 'MAVEN_HOME'
     }
 
+    parameters {
+        // IMAGE_TAG est passé par le CI via build job 'Trigger CD'
+        string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Tag de l\'image Docker à déployer')
+    }
+
     environment {
-        // Project Paths
-        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
-        SOCIAL_SERVICE_PATH = "${BACKEND_PATH}/Social_Interaction_Service"
-        
-        // Docker Configuration
-        DOCKER_IMAGE = 'hbouthayna/social-interaction-service'
-        
-        // Helm Configuration
-        HELM_CHART_PATH = "${SOCIAL_SERVICE_PATH}/charts/social-interaction"
-        KUBE_CREDENTIALS_ID = 'kubeconfig'
-        NAMESPACE = 'dev-unity'
-        
-        // Slack Configuration
-        SLACK_CHANNEL = '#dev-unity-cd'
-        
-        // JMeter Configuration
-        JMETER_PATH = '/usr/bin/jmeter' // Adjust to your JMeter installation path
+        // Chemins projet
+        BACKEND_PATH            = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        SOCIAL_SERVICE_PATH     = "${BACKEND_PATH}/Social_Interaction_Service"
+
+        // Docker
+        DOCKER_IMAGE            = 'hbouthayna/social-interaction-service'
+
+        // Helm / Kubernetes
+        HELM_CHART_PATH         = "${SOCIAL_SERVICE_PATH}/charts/social-interaction"
+        KUBE_CREDENTIALS_ID     = 'kubeconfig'
+        NAMESPACE               = 'dev-unity'
+
+        // Slack
+        SLACK_CHANNEL           = '#dev-unity-cd'
+
+        // JMeter  ─ chemin corrigé (plus /usr/bin/jmeter introuvable)
+        JMETER_PATH             = '/opt/apache-jmeter/bin/jmeter'
     }
 
     stages {
-        stage('1. Helm Deploy ☸️') {
+
+        // ── ÉTAPE 1 : Checkout (manquait totalement dans la version originale) ──
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    credentialsId: 'git_token',
+                    url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
+            }
+        }
+
+        // ── ÉTAPE 2 : Déploiement Helm avec image.tag paramétrisé ──
+        stage('Helm Deploy') {
             steps {
                 script {
-                    echo 'Deploying to Kubernetes using Helm...'
+                    echo "Déploiement du tag image: ${params.IMAGE_TAG}"
                     withKubeConfig([credentialsId: "${KUBE_CREDENTIALS_ID}"]) {
-                        sh """
-                            helm upgrade --install social-interaction ${HELM_CHART_PATH} \
-                            --set image.repository=${DOCKER_IMAGE} \
-                            --set image.tag=latest \
-                            --namespace ${NAMESPACE} --create-namespace
-                        """
+                        withCredentials([
+                            usernamePassword(credentialsId: 'db-credentials',
+                                            usernameVariable: 'DB_USER',
+                                            passwordVariable: 'DB_PASS'),
+                            string(credentialsId: 'elasticsearch-password',
+                                   variable: 'ES_PASS')
+                        ]) {
+                            sh """
+                                helm upgrade --install social-interaction ${HELM_CHART_PATH} \\
+                                --set image.repository=${DOCKER_IMAGE} \\
+                                --set image.tag=${params.IMAGE_TAG} \\
+                                --set image.pullPolicy=Always \\
+                                --set config.dbUsername="\${DB_USER}" \\
+                                --set config.dbPassword="\${DB_PASS}" \\
+                                --set config.elasticsearchPassword="\${ES_PASS}" \\
+                                --namespace ${NAMESPACE} --create-namespace
+                            """
+                        }
                     }
                 }
             }
         }
 
-        stage('2. Wait & Verify ✅') {
+        // ── ÉTAPE 3 : Attendre + Rollback automatique si échec ──
+        stage('Wait & Verify') {
             steps {
                 script {
-                    echo 'Waiting for deployment to complete...'
                     withKubeConfig([credentialsId: "${KUBE_CREDENTIALS_ID}"]) {
-                        sh "kubectl rollout status deployment/social-interaction -n ${NAMESPACE} --timeout=600s"
+                        // Récupérer le nom réel du Deployment généré par Helm
+                        def deployName = sh(
+                            script: "kubectl get deployment -n ${NAMESPACE} -l 'app.kubernetes.io/instance=social-interaction' -o jsonpath='{.items[0].metadata.name}'",
+                            returnStdout: true
+                        ).trim()
+
+                        echo "Deployment détecté : ${deployName}"
+
+                        def status = sh(
+                            script: "kubectl rollout status deployment/${deployName} -n ${NAMESPACE} --timeout=600s",
+                            returnStatus: true
+                        )
+
+                        if (status != 0) {
+                            echo "❌ Rollout échoué – déclenchement du rollback Helm"
+                            sh "helm rollback social-interaction 0 --namespace ${NAMESPACE}"
+                            error("Déploiement échoué – rollback Helm effectué automatiquement")
+                        }
                     }
                 }
             }
         }
 
-        stage('3. JMeter Performance Tests ⚡') {
+        // ── ÉTAPE 4 : JMeter avec URL dynamique vers le service K8s ──
+        stage('JMeter Performance Tests') {
             steps {
                 script {
-                    echo 'Running JMeter Performance Tests...'
                     dir("${SOCIAL_SERVICE_PATH}") {
-                        // Ensure performance-test.jmx exists in the directory
-                        sh "${JMETER_PATH} -n -t performance-test.jmx -l results.jtl"
+                        sh """
+                            ${JMETER_PATH} -n -t performance-test.jmx -l results.jtl \\
+                            -Jtarget_host=social-interaction.${NAMESPACE}.svc.cluster.local \\
+                            -Jtarget_port=8085
+                        """
                     }
                 }
             }
             post {
                 always {
-                    // Archive results and display them using the Performance Plugin
                     perfReport sourceDataFiles: "${SOCIAL_SERVICE_PATH}/results.jtl"
                     archiveArtifacts artifacts: "${SOCIAL_SERVICE_PATH}/results.jtl"
                 }
             }
         }
 
-        stage('4. Prometheus/Grafana 📊') {
+        // ── ÉTAPE 5 : Vérification Prometheus (fonctionnelle) ──
+        stage('Prometheus/Grafana') {
             steps {
                 script {
-                    echo '--- Monitoring Information ---'
-                    echo "Service is being monitored by Prometheus."
-                    echo "Check dashboards at: http://grafana.dev-unity.local"
-                    // Optional: Call Grafana API to annotate the deployment
+                    withKubeConfig([credentialsId: "${KUBE_CREDENTIALS_ID}"]) {
+                        // Vérifier que les métriques Actuator sont accessibles depuis le cluster
+                        def podName = sh(
+                            script: "kubectl get pod -n ${NAMESPACE} -l 'app.kubernetes.io/instance=social-interaction' -o jsonpath='{.items[0].metadata.name}'",
+                            returnStdout: true
+                        ).trim()
+
+                        def metricsStatus = sh(
+                            script: "kubectl exec ${podName} -n ${NAMESPACE} -- wget -qO- http://localhost:8085/socials/api/actuator/health 2>/dev/null || echo 'UNREACHABLE'",
+                            returnStdout: true
+                        ).trim()
+
+                        echo "Actuator health: ${metricsStatus}"
+                        if (!metricsStatus.contains('UP')) {
+                            unstable("⚠️ Actuator health non OK – vérifier Prometheus scraping")
+                        }
+
+                        echo "Dashboard Grafana: http://grafana.dev-unity.local"
+                    }
                 }
             }
         }
 
-        stage('5. Slack Notify 🔔') {
+        // ── ÉTAPE 6 : Notification Slack ──
+        stage('Slack Notify') {
             steps {
                 script {
-                    def color = currentBuild.currentResult == 'SUCCESS' ? 'good' : 'danger'
+                    def color   = currentBuild.currentResult == 'SUCCESS' ? 'good' : 'danger'
                     def message = """
-                        *CD Pipeline for Social Interaction Service*
-                        *Result:* ${currentBuild.currentResult}
-                        *Build:* <${env.BUILD_URL}|#${env.BUILD_NUMBER}>
-                        *Environment:* Kubernetes (Namespace: ${NAMESPACE})
+                        *CD Pipeline – Social Interaction Service*
+                        *Résultat :* ${currentBuild.currentResult}
+                        *Build :* <${env.BUILD_URL}|#${env.BUILD_NUMBER}>
+                        *Image :* ${DOCKER_IMAGE}:${params.IMAGE_TAG}
+                        *Namespace :* ${NAMESPACE}
                     """.stripIndent()
-                    
                     slackSend(channel: "${SLACK_CHANNEL}", color: color, message: message)
                 }
             }
@@ -102,11 +166,7 @@ pipeline {
     }
 
     post {
-        failure {
-            echo '❌ Pipeline CD FAILED'
-        }
-        success {
-            echo '✅ Pipeline CD SUCCESS'
-        }
+        failure { echo '❌ Pipeline CD ÉCHOUÉ' }
+        success { echo '✅ Pipeline CD RÉUSSI' }
     }
 }

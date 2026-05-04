@@ -1,20 +1,28 @@
-replicaCount: 1
+# ---------------------------------------------------------------
+# IMPORTANT : dbUsername / dbPassword / elasticsearchPassword
+# ne sont JAMAIS renseignés ici. Ils sont passés au moment du
+# déploiement via --set dans le Jenkinsfile_CD (credentials Jenkins).
+# ---------------------------------------------------------------
+
+replicaCount: 2   # ≥2 pour rolling update sans downtime
 
 image:
   repository: hbouthayna/social-interaction-service
-  pullPolicy: IfNotPresent
-  tag: "latest"
+  pullPolicy: Always   # Garantit que le bon tag est toujours récupéré
+  tag: "latest"        # Remplacé dynamiquement par IMAGE_TAG du pipeline
 
 service:
   type: ClusterIP
-  port: 8085 # Matches server.port in application.properties
+  port: 8085           # Aligné avec server.port dans application.properties
 
 config:
   hostIp: "192.168.184.128"
   dbUrl: "jdbc:mysql://192.168.184.128:3306/Social_Interaction?createDatabaseIfNotExist=true"
-  dbUsername: "root"
+  # Valeurs vides – INJECTÉES via Jenkins credentials (withCredentials)
+  dbUsername: ""
   dbPassword: ""
-  elasticsearchUrl: "http://192.168.184.128:9200" # Changed to http if not using SSL on host, or keep https if configured
+  elasticsearchUrl: "http://192.168.184.128:9200"
+  elasticsearchPassword: ""
 
 resources:
   limits:

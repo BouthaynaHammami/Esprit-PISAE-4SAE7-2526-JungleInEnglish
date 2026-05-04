@@ -5,12 +5,12 @@ pipeline {
         maven 'MAVEN_HOME'
     }
     environment {
-        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        BACKEND_PATH      = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
         SOCIAL_SERVICE_PATH = "${BACKEND_PATH}/Social_Interaction_Service"
-        SONAR_HOST_URL = 'http://192.168.184.128:9000'
-        NEXUS_URL = 'http://192.168.184.128:8081'
-        MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
-        DOCKER_IMAGE = 'hbouthayna/social-interaction-service'
+        SONAR_HOST_URL    = 'http://192.168.19.128:9000'
+        NEXUS_URL         = 'http://192.168.19.128:8081'
+        MAVEN_OPTS        = '-Xmx512m -XX:MaxMetaspaceSize=256m'
+        DOCKER_IMAGE      = 'hbouthayna/social-interaction-service'
     }
     stages {
         stage('Checkout') {
@@ -23,7 +23,6 @@ pipeline {
         }
         stage('Clean & Build') {
             steps {
-                echo 'Nettoyage et Compilation...'
                 dir("${SOCIAL_SERVICE_PATH}") {
                     sh 'mvn clean install -DskipTests'
                 }
@@ -31,7 +30,6 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo 'Exécution des tests unitaires...'
                 dir("${SOCIAL_SERVICE_PATH}") {
                     sh 'mvn test || true'
                 }
@@ -40,7 +38,6 @@ pipeline {
         stage('Semgrep Security Scan') {
             steps {
                 script {
-                    echo 'Analyse de sécurité avec Semgrep via Docker...'
                     withCredentials([string(credentialsId: 'semgrep_token', variable: 'SEMGREP_APP_TOKEN')]) {
                         docker.image('semgrep/semgrep').inside("""
                             -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} \
@@ -58,7 +55,6 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    echo 'Analyse SonarQube...'
                     withCredentials([string(credentialsId: 'sonar_token', variable: 'SONAR_TOKEN')]) {
                         withSonarQubeEnv('sonarqube') {
                             dir("${SOCIAL_SERVICE_PATH}") {
@@ -77,7 +73,6 @@ pipeline {
         }
         stage('Deploy to Nexus') {
             steps {
-                echo 'Déploiement sur Nexus...'
                 dir("${SOCIAL_SERVICE_PATH}") {
                     sh """
                         mvn deploy -DskipTests \
@@ -88,7 +83,6 @@ pipeline {
         }
         stage('Docker Build') {
             steps {
-                echo 'Construction de l image Docker...'
                 dir("${SOCIAL_SERVICE_PATH}") {
                     script {
                         dockerImage = docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
@@ -98,7 +92,6 @@ pipeline {
         }
         stage('Docker Push') {
             steps {
-                echo 'Push de l image sur Docker Hub...'
                 script {
                     withCredentials([usernamePassword(
                         credentialsId: 'docker_token',
@@ -115,17 +108,25 @@ pipeline {
                 }
             }
         }
+
+        // ── NOUVEAU : Déclencher automatiquement le pipeline CD ──
+        stage('Trigger CD 🚀') {
+            steps {
+                script {
+                    echo "Déclenchement du pipeline CD avec IMAGE_TAG=${BUILD_NUMBER}"
+                    build job: 'social-interaction-CD',
+                          parameters: [string(name: 'IMAGE_TAG', value: "${BUILD_NUMBER}")],
+                          wait: false   // ne bloque pas le CI, le CD s'exécute en parallèle
+                }
+            }
+        }
     }
     post {
         always {
             junit testResults: "${SOCIAL_SERVICE_PATH}/target/surefire-reports/*.xml", allowEmptyResults: true
             cleanWs()
         }
-        success {
-            echo '✅ Pipeline terminé avec succès !'
-        }
-        failure {
-            echo '❌ Le pipeline a échoué.'
-        }
+        success { echo '✅ Pipeline CI terminé avec succès !' }
+        failure { echo '❌ Pipeline CI échoué.' }
     }
 }
