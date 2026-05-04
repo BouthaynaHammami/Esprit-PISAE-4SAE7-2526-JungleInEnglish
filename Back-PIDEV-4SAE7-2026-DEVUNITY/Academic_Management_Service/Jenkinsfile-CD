@@ -1,13 +1,13 @@
 pipeline {
     agent any
     tools {
-            jdk 'jdk17'
-        }
+        jdk 'jdk17'
+    }
     environment {
-               BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
-               MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
-               DOCKER_REGISTRY = 'chaibimarwa'
-               REGISTRY_CREDENTIAL = 'REGISTRY_CREDENTIAL'
+        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
+        DOCKER_REGISTRY = 'chaibimarwa'
+        REGISTRY_CREDENTIAL = 'REGISTRY_CREDENTIAL'
     }
 
     stages {
@@ -20,22 +20,11 @@ pipeline {
 
         stage('Kubernetes check') {
             steps {
-                {
-                    sh 'kubectl get pods -A'
-                    sh 'kubectl get nods'
-                }
+                sh 'kubectl get pods -A'
+                sh 'kubectl get nodes'
             }
         }
 
-
-
-
-
-
-
-
-
     }
-
 
 }
