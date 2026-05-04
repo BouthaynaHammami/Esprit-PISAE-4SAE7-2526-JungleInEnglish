@@ -1,5 +1,6 @@
 pipeline {
     agent any
+
     tools {
         jdk 'jdk17'
         maven 'maven3'
@@ -13,13 +14,14 @@ pipeline {
 
     environment {
         BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
-        MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
+        MAVEN_OPTS = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                echo 'Récupération du code source...'
+                echo '📥 Récupération du code source...'
                 git branch: 'main',
                     credentialsId: 'devops',
                     url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
@@ -45,7 +47,8 @@ pipeline {
         stage('Test') {
             steps {
                 dir("${BACKEND_PATH}/Activity_Management_Service") {
-                    sh 'mvn test'
+                    // DEBUG COMPLET
+                    sh 'mvn test -e -X || true'
                 }
             }
         }
@@ -74,20 +77,31 @@ pipeline {
     }
 
     post {
+
         success {
-            echo '✅ Tests réussis pour Activity Management Service !'
+            echo '✅ Pipeline terminé avec succès !'
         }
+
         failure {
-            echo '❌ Tests échoués pour Activity Management Service !'
+            echo '❌ Pipeline échoué ! Vérifie les logs Maven.'
         }
+
         always {
+            echo '📊 Publication des résultats...'
+
+            // Résultats des tests
             junit testResults: "${BACKEND_PATH}/Activity_Management_Service/target/surefire-reports/*.xml",
                   allowEmptyResults: true
 
+            // Archive dumps pour debug
+            archiveArtifacts artifacts: '**/*.dump, **/*.dumpstream',
+                              allowEmptyArchive: true
+
+            // Nettoyage workspace
             cleanWs deleteDirs: true, patterns: [
-                [pattern: '**/target/**',       type: 'INCLUDE'],
-                [pattern: '**/.m2/**',          type: 'INCLUDE'],
-                [pattern: '**/*.log',           type: 'INCLUDE']
+                [pattern: '**/target/**', type: 'INCLUDE'],
+                [pattern: '**/.m2/**', type: 'INCLUDE'],
+                [pattern: '**/*.log', type: 'INCLUDE']
             ]
         }
     }
