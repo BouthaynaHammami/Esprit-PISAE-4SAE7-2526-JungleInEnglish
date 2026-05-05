@@ -9,7 +9,8 @@ pipeline {
     environment {
         JAVA_HOME = "${tool 'JDK17'}"
         PATH = "${JAVA_HOME}/bin:${env.PATH}"
-        NEXUS_URL= "http://192.168.232.133:8081"
+        NEXUS_URL = "http://192.168.232.133:8081"
+        BACKEND_PATH = "Back-PIDEV-4SAE7-2026-DEVUNITY"
     }
 
     stages {
@@ -23,7 +24,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Compilation Maven...'
-                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Community_Engagement_Service') {
+                dir("${BACKEND_PATH}/Community_Engagement_Service") {
                     sh 'mvn clean package -DskipTests'
                 }
             }
@@ -33,7 +34,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 echo 'Analyse SonarQube...'
-                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Community_Engagement_Service') {
+                dir("${BACKEND_PATH}/Community_Engagement_Service") {
                     withSonarQubeEnv('SonarQube') {
                         sh 'mvn sonar:sonar -Dsonar.projectKey=community-engagement-service'
                     }
@@ -43,15 +44,16 @@ pipeline {
         */
 
         stage('Deploy Community') {
-                            steps {
-                                dir("${BACKEND_PATH}/Community_Engagement_Service") {
-                                    sh """
-                                        mvn deploy -DskipTests \
-                                        -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/devunity-repo/
-                                    """
-                                }
-                            }
-                        }
+            steps {
+                echo 'Déploiement vers Nexus...'
+                dir("${BACKEND_PATH}/Community_Engagement_Service") {
+                    sh """
+                        mvn deploy -DskipTests \
+                        -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/devunity-repo/
+                    """
+                }
+            }
+        }
     }
 
     post {
