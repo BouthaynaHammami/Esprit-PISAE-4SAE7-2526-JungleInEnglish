@@ -9,8 +9,12 @@ pipeline {
     environment {
         JAVA_HOME = "${tool 'JDK17'}"
         PATH = "${JAVA_HOME}/bin:${env.PATH}"
+
         NEXUS_URL = "http://192.168.232.133:8081"
+        NEXUS_REPO = "devunity-repo"
+
         BACKEND_PATH = "Back-PIDEV-4SAE7-2026-DEVUNITY"
+        SERVICE_PATH = "Community_Engagement_Service"
 
         DOCKER_REGISTRY = "hibajassi123"
         IMAGE_NAME = "community-service"
@@ -27,7 +31,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Compilation Maven...'
-                dir("${BACKEND_PATH}/Community_Engagement_Service") {
+                dir("${BACKEND_PATH}/${SERVICE_PATH}") {
                     sh 'mvn clean package -DskipTests'
                 }
             }
@@ -36,16 +40,14 @@ pipeline {
         stage('Deploy Community') {
             steps {
                 echo 'Déploiement vers Nexus...'
-                dir("${BACKEND_PATH}/Community_Engagement_Service") {
-
+                dir("${BACKEND_PATH}/${SERVICE_PATH}") {
                     withCredentials([usernamePassword(
                         credentialsId: 'nexus-credentials',
                         usernameVariable: 'NEXUS_USER',
                         passwordVariable: 'NEXUS_PASS'
                     )]) {
-
-                        sh """
-                        cat > settings.xml <<EOF
+                        sh '''
+cat > settings.xml <<EOF
 <settings>
   <servers>
     <server>
@@ -57,11 +59,34 @@ pipeline {
 </settings>
 EOF
 
-                        mvn deploy -DskipTests \
-                        --settings settings.xml \
-                        -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/devunity-repo/
-                        """
+mvn deploy -DskipTests \
+--settings settings.xml \
+-DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/${NEXUS_REPO}/
+                        '''
                     }
+                }
+            }
+        }
+
+        stage('Create Dockerfile') {
+            steps {
+                echo 'Création du Dockerfile...'
+                dir("${BACKEND_PATH}/${SERVICE_PATH}") {
+                    sh '''
+cat > Dockerfile <<EOF
+FROM eclipse-temurin:17-jre-alpine
+
+WORKDIR /app
+
+RUN apk add --no-cache curl
+
+RUN curl -f -L -o app.jar "${NEXUS_URL}/repository/${NEXUS_REPO}/tn/esprit/Community_Engagement_Service/1.0-SNAPSHOT/Community_Engagement_Service-1.0-SNAPSHOT.jar"
+
+EXPOSE 8087
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
+EOF
+                    '''
                 }
             }
         }
@@ -69,10 +94,10 @@ EOF
         stage('Build Docker Image') {
             steps {
                 echo 'Construction de l’image Docker...'
-                dir("${BACKEND_PATH}/Community_Engagement_Service") {
-                    sh """
-                        docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest .
-                    """
+                dir("${BACKEND_PATH}/${SERVICE_PATH}") {
+                    sh '''
+docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest .
+                    '''
                 }
             }
         }
