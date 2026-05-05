@@ -15,6 +15,10 @@ pipeline {
     environment {
         BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
         SERVICE_DIR  = "${BACKEND_PATH}/Activity_Management_Service"
+
+        IMAGE_NAME   = 'activity-management-service'
+        IMAGE_TAG    = 'latest'
+
         MAVEN_OPTS   = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
     }
 
@@ -40,7 +44,7 @@ pipeline {
         stage('Build') {
             steps {
                 dir("${SERVICE_DIR}") {
-                    sh 'mvn install -DskipTests'
+                    sh 'mvn package -DskipTests'
                 }
             }
         }
@@ -79,13 +83,36 @@ pipeline {
         stage('Deploy to Nexus') {
             steps {
                 dir("${SERVICE_DIR}") {
-                    echo '📦 Deploying to Nexus using existing settings.xml'
+                    echo '📦 Deploying to Nexus'
 
                     sh '''
                     mvn deploy -DskipTests \
                         -s /var/jenkins_home/.m2/settings.xml
                     '''
                 }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                dir("${SERVICE_DIR}") {
+                    echo '🐳 Building Docker image'
+
+                    sh """
+                    docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                    """
+                }
+            }
+        }
+
+        stage('Docker Run (Test)') {
+            steps {
+                sh """
+                docker stop ${IMAGE_NAME} || true
+                docker rm ${IMAGE_NAME} || true
+
+                docker run -d -p 8084:8084 --name ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}
+                """
             }
         }
     }
