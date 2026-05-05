@@ -71,7 +71,6 @@ data:
 
      
 
-      # ✅ api-gateway actuator on port 8082 (separate management port)
       - job_name: 'api-gateway'
         metrics_path: '/actuator/prometheus'
         static_configs:
