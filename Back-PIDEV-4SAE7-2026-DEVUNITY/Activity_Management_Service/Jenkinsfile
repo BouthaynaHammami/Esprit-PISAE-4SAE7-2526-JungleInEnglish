@@ -16,10 +16,11 @@ pipeline {
         BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
         SERVICE_DIR  = "${BACKEND_PATH}/Activity_Management_Service"
 
-        IMAGE_NAME   = 'activity-management-service'
-        IMAGE_TAG    = 'latest'
+        SONAR_HOST_URL = 'http://192.168.19.128:9000'
+        NEXUS_URL      = 'http://192.168.19.128:8081'
 
-        MAVEN_OPTS   = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
+        IMAGE_NAME = 'shayma2003/activity-management-service'
+        MAVEN_OPTS = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
     }
 
     stages {
@@ -28,23 +29,15 @@ pipeline {
             steps {
                 echo '📥 Checkout source code'
                 git branch: 'main',
-                    credentialsId: 'devops',
+                    credentialsId: 'git_token',
                     url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
             }
         }
 
-        stage('Clean') {
+        stage('Clean & Build') {
             steps {
                 dir("${SERVICE_DIR}") {
-                    sh 'mvn clean'
-                }
-            }
-        }
-
-        stage('Build') {
-            steps {
-                dir("${SERVICE_DIR}") {
-                    sh 'mvn package -DskipTests'
+                    sh 'mvn clean install -DskipTests'
                 }
             }
         }
@@ -67,14 +60,19 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    dir("${SERVICE_DIR}") {
-                        sh '''
-                        mvn sonar:sonar \
-                        -Dsonar.projectKey=activity-management-service \
-                        -Dsonar.projectName=ActivityManagementService \
-                        -DskipTests
-                        '''
+                script {
+                    withCredentials([string(credentialsId: 'sonar_token', variable: 'SONAR_TOKEN')]) {
+                        withSonarQubeEnv('sonarqube') {
+                            dir("${SERVICE_DIR}") {
+                                sh """
+                                mvn sonar:sonar \
+                                -Dsonar.projectKey=activity-management-service \
+                                -Dsonar.projectName=ActivityManagementService \
+                                -Dsonar.host.url=${SONAR_HOST_URL} \
+                                -Dsonar.token=${SONAR_TOKEN}
+                                """
+                            }
+                        }
                     }
                 }
             }
@@ -83,12 +81,11 @@ pipeline {
         stage('Deploy to Nexus') {
             steps {
                 dir("${SERVICE_DIR}") {
-                    echo '📦 Deploying to Nexus'
-
-                    sh '''
+                    sh """
                     mvn deploy -DskipTests \
-                        -s /var/jenkins_home/.m2/settings.xml
-                    '''
+                    -DaltDeploymentRepository=nexus::${NEXUS_URL}/repository/maven-snapshots/ \
+                    -s /var/jenkins_home/.m2/settings.xml
+                    """
                 }
             }
         }
@@ -96,23 +93,32 @@ pipeline {
         stage('Docker Build') {
             steps {
                 dir("${SERVICE_DIR}") {
-                    echo '🐳 Building Docker image'
-
-                    sh """
-                    docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
-                    """
+                    script {
+                        dockerImage = docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
+                    }
                 }
             }
         }
 
-        stage('Docker Run (Test)') {
+        stage('Docker Push') {
             steps {
-                sh """
-                docker stop ${IMAGE_NAME} || true
-                docker rm ${IMAGE_NAME} || true
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'docker_token',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
 
-                docker run -d -p 8084:8084 --name ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}
-                """
+                        sh """
+                        echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
+
+                        docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${IMAGE_NAME}:latest
+
+                        docker push ${IMAGE_NAME}:${BUILD_NUMBER}
+                        docker push ${IMAGE_NAME}:latest
+                        """
+                    }
+                }
             }
         }
     }
