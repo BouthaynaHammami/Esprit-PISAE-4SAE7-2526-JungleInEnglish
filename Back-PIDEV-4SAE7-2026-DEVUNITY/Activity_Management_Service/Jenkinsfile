@@ -13,17 +13,16 @@ pipeline {
     }
 
     environment {
-        BACKEND_PATH   = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
-        SERVICE_DIR    = "${BACKEND_PATH}/Activity_Management_Service"
-        MAVEN_OPTS     = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
-        SONAR_HOST_URL = 'http://192.168.72.128:9000'
+        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        SERVICE_DIR  = "${BACKEND_PATH}/Activity_Management_Service"
+        MAVEN_OPTS   = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
     }
 
     stages {
 
         stage('Checkout') {
             steps {
-                echo '📥 Récupération du code source...'
+                echo '📥 Checkout source code'
                 git branch: 'main',
                     credentialsId: 'devops',
                     url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
@@ -33,7 +32,6 @@ pipeline {
         stage('Clean') {
             steps {
                 dir("${SERVICE_DIR}") {
-                    echo '🧹 Nettoyage...'
                     sh 'mvn clean'
                 }
             }
@@ -42,7 +40,6 @@ pipeline {
         stage('Build') {
             steps {
                 dir("${SERVICE_DIR}") {
-                    echo '🔨 Compilation sans tests...'
                     sh 'mvn install -DskipTests'
                 }
             }
@@ -51,40 +48,29 @@ pipeline {
         stage('Test') {
             steps {
                 dir("${SERVICE_DIR}") {
-                    echo '🧪 Exécution des tests...'
-                    sh 'mvn test -fae -e || true'
+                    sh 'mvn test || true'
                 }
             }
             post {
                 always {
                     dir("${SERVICE_DIR}") {
-                        sh '''
-                            echo "========================================"
-                            echo "         RAPPORT DES TESTS"
-                            echo "========================================"
-                            find target/surefire-reports -name "*.txt" \
-                                 -exec echo "\\n--- {} ---" \\; \
-                                 -exec grep -A 20 "FAILED\\|Exception\\|ERROR" {} \\; \
-                                 2>/dev/null || echo "Aucun rapport trouvé"
-                        '''
-                        junit testResults: 'target/surefire-reports/*.xml',
-                              allowEmptyResults: true
+                        junit allowEmptyResults: true,
+                              testResults: 'target/surefire-reports/*.xml'
                     }
                 }
             }
         }
+
         stage('SonarQube Analysis') {
             steps {
-                script {
-                    withSonarQubeEnv('sonarqube') {
-                        dir("${SERVICE_DIR}") {
-                            echo '🔍 Analyse SonarQube → http://192.168.72.128:9000'
-                            sh '''
-                                mvn sonar:sonar \
-                                    -Dsonar.projectKey=activity-management-service \
-                                    -Dsonar.projectName=ActivityManagementService
-                            '''
-                        }
+                withSonarQubeEnv('sonarqube') {
+                    dir("${SERVICE_DIR}") {
+                        sh '''
+                        mvn sonar:sonar \
+                        -Dsonar.projectKey=activity-management-service \
+                        -Dsonar.projectName=ActivityManagementService \
+                        -DskipTests
+                        '''
                     }
                 }
             }
@@ -93,55 +79,26 @@ pipeline {
         stage('Deploy to Nexus') {
             steps {
                 dir("${SERVICE_DIR}") {
-                    echo '📦 Déploiement vers Nexus → http://192.168.72.128:8081'
-                    withCredentials([usernamePassword(credentialsId: 'nexus-credentials', 
-                                                      usernameVariable: 'NEXUS_USER', 
-                                                      passwordVariable: 'NEXUS_PASS')]) {
-                        sh '''
-                            cat > settings.xml <<EOF
-<settings>
-    <servers>
-        <server>
-            <id>nexus-snapshots</id>
-            <username>${NEXUS_USER}</username>
-            <password>${NEXUS_PASS}</password>
-        </server>
-        <server>
-            <id>nexus-releases</id>
-            <username>${NEXUS_USER}</username>
-            <password>${NEXUS_PASS}</password>
-        </server>
-    </servers>
-</settings>
-EOF
-                            mvn deploy -DskipTests -s settings.xml
-                            rm settings.xml
-                        '''
-                    }
+                    echo '📦 Deploying to Nexus using existing settings.xml'
+
+                    sh '''
+                    mvn deploy -DskipTests \
+                        -s /var/jenkins_home/.m2/settings.xml
+                    '''
                 }
             }
         }
-
     }
 
     post {
         success {
-            echo '✅ Pipeline terminé avec succès !'
-        }
-        unstable {
-            echo '⚠️ Tests en échec — vérifie les rapports JUnit.'
+            echo '✅ Pipeline SUCCESS'
         }
         failure {
-            echo '❌ Pipeline échoué !'
+            echo '❌ Pipeline FAILED'
         }
         always {
-            archiveArtifacts artifacts: '**/*.dump, **/*.dumpstream',
-                              allowEmptyArchive: true
-            cleanWs deleteDirs: true, patterns: [
-                [pattern: '**/target/**', type: 'INCLUDE'],
-                [pattern: '**/.m2/**',    type: 'INCLUDE'],
-                [pattern: '**/*.log',     type: 'INCLUDE']
-            ]
+            cleanWs()
         }
     }
 }
