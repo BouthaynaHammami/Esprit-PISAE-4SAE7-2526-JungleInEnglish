@@ -494,3 +494,73 @@
   .rc-viewer-body { margin: 0; border-radius: 0; }
 }
 #rc-schedule-overlay { z-index: 1060; }
+
+/* ── AI Analysis Button & Results ─────────────── */
+.rc-btn--ai {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-weight: 700;
+  position: relative;
+  overflow: hidden;
+}
+
+.rc-btn--ai:hover {
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.35);
+}
+
+.rc-btn--ai:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.rc-ai-result {
+  margin-top: 8px;
+  padding: 10px;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(102, 126, 234, 0.15);
+}
+
+.rc-ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.rc-ai-badge--accepted {
+  background: rgba(16, 185, 129, 0.15);
+  color: #065f46;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.rc-ai-badge--rejected {
+  background: rgba(239, 68, 68, 0.15);
+  color: #991b1b;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.rc-ai-badge--pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: #92400e;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.rc-ai-score {
+  font-size: 11px;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 4px;
+}
+
+.rc-ai-summary {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.5;
+  margin-top: 4px;
+}

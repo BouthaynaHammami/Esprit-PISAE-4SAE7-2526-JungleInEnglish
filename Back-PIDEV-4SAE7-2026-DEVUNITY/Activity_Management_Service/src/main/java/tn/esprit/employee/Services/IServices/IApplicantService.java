@@ -1,6 +1,7 @@
 package tn.esprit.employee.Services.IServices;
 
 
+import tn.esprit.employee.Dto.CvAnalysisResult;
 import tn.esprit.employee.Dto.UserDTO;
 import tn.esprit.employee.Entities.Applicant;
 
@@ -27,5 +28,8 @@ public interface IApplicantService {
     List<UserDTO> getAllUsers();
     UserDTO getUserOfApplicant(Long applicantId);
     void populateNames(Applicant applicant);
+
+    // ─── AI CV Analysis ─────────────────────────────
+    CvAnalysisResult analyzeCvWithML(Long applicantId, Long recruitmentId);
 
 }

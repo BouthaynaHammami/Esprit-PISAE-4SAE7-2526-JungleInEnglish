@@ -92,4 +92,18 @@ export class RecruitmentService {
   deleteApplicant(id: number): Observable<void> {
     return this.http.delete<void>(`${this.applicantsUrl}/${id}`);
   }
+
+  // ─── AI Analysis ──────────────────────────────────────
+  analyzeCV(applicantId: number, recruitmentId?: number): Observable<any> {
+    const options = recruitmentId 
+      ? { params: { recruitmentId: recruitmentId.toString() } }
+      : {};
+    return this.http.post<any>(`${this.applicantsUrl}/${applicantId}/analyze`, null, options);
+  }
+
+  analyzeCVWithUrl(applicantId: number, recruitmentId: number, cvUrl: string): Observable<any> {
+    const body = { cvUrl };
+    const options = { params: { recruitmentId: recruitmentId.toString() } };
+    return this.http.post<any>(`${this.applicantsUrl}/${applicantId}/analyze`, body, options);
+  }
 }

@@ -1,16 +1,20 @@
 package tn.esprit.employee.Controllers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.employee.Dto.CvAnalysisResult;
 import tn.esprit.employee.Dto.UserDTO;
 import tn.esprit.employee.Entities.Applicant;
-import tn.esprit.employee.Services.IServices.IApplicantService; // ✅ Interface, pas Impl
+import tn.esprit.employee.Services.IServices.IApplicantService;
+import tn.esprit.employee.Services.IServices.ICvAnalysisService;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/applicants")
 @RequiredArgsConstructor
+@Slf4j
 @CrossOrigin(
         origins = "http://localhost:4200",
         allowedHeaders = "*",
@@ -18,7 +22,8 @@ import java.util.List;
 )
 public class ApplicantController {
 
-    private final IApplicantService applicantService; // ✅ Interface
+    private final IApplicantService applicantService;
+    private final ICvAnalysisService cvAnalysisService;
 
     @GetMapping
     public ResponseEntity<List<Applicant>> getAll() {
@@ -77,5 +82,33 @@ public class ApplicantController {
     @GetMapping("/interview/{interviewId}")
     public ResponseEntity<List<Applicant>> getByInterview(@PathVariable Long interviewId) {
         return ResponseEntity.ok(applicantService.getByInterviewId(interviewId));
+    }
+
+    // ─── AI CV Analysis ────────────────────────────────────────
+
+    @PostMapping("/{applicantId}/analyze")
+    public ResponseEntity<?> analyzeCV(
+            @PathVariable Long applicantId,
+            @RequestParam(required = false) Long recruitmentId
+    ) {
+        try {
+            log.info("Analyzing CV for applicant ID: {}, recruitment ID: {}", applicantId, recruitmentId);
+            
+            CvAnalysisResult result = applicantService.analyzeCvWithML(applicantId, recruitmentId);
+            
+            log.info("CV analysis completed successfully for applicant {}: {}", applicantId, result.getDecision());
+            return ResponseEntity.ok(result);
+            
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid request for CV analysis: {}", e.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error analyzing CV for applicant {}", applicantId, e);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to analyze CV: " + e.getMessage());
+        }
     }
 }

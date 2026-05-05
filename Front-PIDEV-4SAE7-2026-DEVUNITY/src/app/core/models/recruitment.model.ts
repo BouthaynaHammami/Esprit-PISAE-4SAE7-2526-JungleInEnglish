@@ -45,3 +45,14 @@ export interface UserDTO {
   email: string;
   role: string;
 }
+
+export interface CVAnalysisResult {
+  applicantId: number;
+  decision: 'ACCEPTED' | 'REJECTED' | 'PENDING';
+  score?: number;
+  summary?: string;
+  strengths?: string[];
+  weaknesses?: string[];
+  recommendation?: string;
+  analyzedAt?: string | Date;
+}

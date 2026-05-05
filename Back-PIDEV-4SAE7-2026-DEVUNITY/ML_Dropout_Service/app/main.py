@@ -8,6 +8,8 @@ from fastapi import APIRouter, FastAPI, HTTPException
 from app.eureka_client import init_eureka
 from app.model_loader import ModelArtifacts, load_artifacts, prepare_features
 from app.schemas import DropoutPredictionRequest, DropoutPredictionResponse
+from app.cv_analysis import analyze_cv_text
+from pydantic import BaseModel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("ml_service")
@@ -20,6 +22,21 @@ app = FastAPI(title="ML Service", version="1.0.0")
 router = APIRouter(prefix="/ml/api")
 
 artifacts: ModelArtifacts | None = None
+
+
+# CV Analysis schemas
+class CVAnalysisRequest(BaseModel):
+    cvText: str
+    skills: str
+    experienceYears: int
+
+
+class CVAnalysisResponse(BaseModel):
+    cluster: str
+    decision: str
+    raison: str
+    score: int
+    model: str
 
 
 @app.on_event("startup")
@@ -63,6 +80,21 @@ def predict(request: DropoutPredictionRequest) -> DropoutPredictionResponse:
         probability=probability,
         model=artifacts.model_name,
     )
+
+
+@router.post("/analyze-cv", response_model=CVAnalysisResponse)
+def analyze_cv(request: CVAnalysisRequest) -> CVAnalysisResponse:
+    """Analyze CV text and return hiring decision."""
+    try:
+        result = analyze_cv_text(
+            cv_text=request.cvText,
+            skills=request.skills,
+            experience_years=request.experienceYears
+        )
+        return CVAnalysisResponse(**result)
+    except Exception as exc:
+        logger.error(f"CV analysis error: {exc}")
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 app.include_router(router)

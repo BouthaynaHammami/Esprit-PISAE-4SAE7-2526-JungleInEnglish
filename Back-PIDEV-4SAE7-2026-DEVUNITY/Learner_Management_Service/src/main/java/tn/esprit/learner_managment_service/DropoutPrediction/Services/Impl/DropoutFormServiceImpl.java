@@ -56,8 +56,9 @@ public class DropoutFormServiceImpl implements DropoutFormService {
             throw new IllegalStateException("User is not authenticated");
         }
 
+        String finalEmail = email;
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+            .orElseThrow(() -> new UserNotFoundException("User not found with email: " + finalEmail));
     }
 
     @Override

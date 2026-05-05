@@ -21,6 +21,8 @@ export class AdminRecruitmentComponent implements AfterViewInit {
   public isScheduling = false;
   public targetAppId: number | null = null;
   public targetRecId: number | null = null;
+  public analyzingApplicantId: number | null = null;
+  public analysisResults: Map<number, any> = new Map();
 
   constructor(
     private recruitmentService: RecruitmentService,
@@ -249,6 +251,82 @@ export class AdminRecruitmentComponent implements AfterViewInit {
     });
   }
 
+  analyzeApplicantCV(recId: number, appId: number): void {
+    this.analyzingApplicantId = appId;
+    
+    // Get the applicant to access CV URL
+    this.recruitmentService.getApplicantById(appId).subscribe({
+      next: (applicant) => {
+        if (!applicant || !applicant.cv) {
+          this.analyzingApplicantId = null;
+          alert('No CV found for this applicant.');
+          return;
+        }
+
+        // Convert Google Docs URL to PDF download URL if needed
+        const cvUrl = this.convertToPdfUrl(applicant.cv);
+        
+        // Send analysis request with converted URL
+        this.recruitmentService.analyzeCVWithUrl(appId, recId, cvUrl).subscribe({
+          next: (result) => {
+            this.analyzingApplicantId = null;
+            this.analysisResults.set(appId, result);
+            this.renderDetail(recId);
+            
+            // Show notification with result
+            const decision = result.decision || 'PENDING';
+            const message = result.summary || `Analysis completed with decision: ${decision}`;
+            alert(`🤖 AI Analysis Result\n\nDecision: ${decision}\n\n${message}`);
+          },
+          error: (err) => {
+            this.analyzingApplicantId = null;
+            console.error('Error analyzing CV:', err);
+            alert('Failed to analyze CV. Please try again.');
+          }
+        });
+      },
+      error: (err) => {
+        this.analyzingApplicantId = null;
+        console.error('Error fetching applicant:', err);
+        alert('Failed to fetch applicant data.');
+      }
+    });
+  }
+
+  /**
+   * Convert Google Docs/Drive URLs to direct PDF download URLs
+   */
+  private convertToPdfUrl(url: string): string {
+    if (!url) return url;
+
+    // 1. Google Docs → PDF export
+    if (url.includes('docs.google.com/document/')) {
+      const docId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      if (docId) {
+        return `https://docs.google.com/document/d/${docId}/export?format=pdf`;
+      }
+    }
+
+    // 2. Google Drive file → Direct download
+    if (url.includes('drive.google.com/file/')) {
+      const fileId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      if (fileId) {
+        return `https://drive.google.com/uc?export=download&id=${fileId}`;
+      }
+    }
+
+    // 3. Google Drive open link → Direct download
+    if (url.includes('drive.google.com/open?id=')) {
+      const fileId = url.match(/id=([a-zA-Z0-9-_]+)/)?.[1];
+      if (fileId) {
+        return `https://drive.google.com/uc?export=download&id=${fileId}`;
+      }
+    }
+
+    // 4. Already a direct PDF or other format → return as is
+    return url;
+  }
+
   // ── Private helpers ────────────────────────────────────────────
 
   private el<T extends HTMLElement = HTMLElement>(id: string): T {
@@ -387,8 +465,16 @@ export class AdminRecruitmentComponent implements AfterViewInit {
       }
 
       tbody.innerHTML = applicants.map((app, idx) => {
+        const isAnalyzing = this.analyzingApplicantId === app.id;
+        const analysisResult = this.analysisResults.get(app.id!);
+        
         const actions = app.status === 'PENDING'
           ? `<div class="rc-td-actions">
+               <button class="rc-btn rc-btn--ai rc-btn--sm" 
+                 onclick="window._rcComp.analyzeApplicantCV(${rec.id},${app.id})"
+                 ${isAnalyzing ? 'disabled' : ''}>
+                 ${isAnalyzing ? '⏳ Analyzing...' : '🤖 Analyze with AI'}
+               </button>
                <button class="rc-btn rc-btn--primary rc-btn--sm"
                  onclick="window._rcComp.updateApplicantStatus(${rec.id},${app.id},'ACCEPTED')">Accept</button>
                <button class="rc-btn rc-btn--accent rc-btn--sm"
@@ -398,6 +484,16 @@ export class AdminRecruitmentComponent implements AfterViewInit {
 
         const interviewInfo = app.interview && app.interview.title 
           ? `<div style="font-size:11px; color:#006D77; margin-top:4px">📅 ${this.escHtml(app.interview.title)}</div>`
+          : '';
+
+        const aiAnalysisInfo = analysisResult 
+          ? `<div class="rc-ai-result">
+               <div class="rc-ai-badge rc-ai-badge--${analysisResult.decision?.toLowerCase() || 'pending'}">
+                 🤖 AI: ${analysisResult.decision || 'PENDING'}
+               </div>
+               ${analysisResult.score ? `<div class="rc-ai-score">Score: ${analysisResult.score}/100</div>` : ''}
+               ${analysisResult.summary ? `<div class="rc-ai-summary">${this.escHtml(analysisResult.summary)}</div>` : ''}
+             </div>`
           : '';
 
         return `
@@ -419,6 +515,7 @@ export class AdminRecruitmentComponent implements AfterViewInit {
             <td>
               ${this.statusBadge(app.status || 'PENDING')}
               ${interviewInfo}
+              ${aiAnalysisInfo}
             </td>
             <td>${actions}</td>
           </tr>`;
