@@ -824,6 +824,75 @@
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
 
+/* ─── CEFR Level Badges ────────────────────────────────── */
+.level-badge-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.level-code-sm {
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+.level-label-sm {
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.level-c2 { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; }
+.level-c1 { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46; }
+.level-b2 { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1e40af; }
+.level-b1 { background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #3730a3; }
+.level-a2 { background: linear-gradient(135deg, #fce7f3, #fbcfe8); color: #9d174d; }
+.level-a1 { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #991b1b; }
+
+/* ─── Score Display ────────────────────────────────────── */
+.score-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.score-bar-bg {
+  flex: 1;
+  height: 6px;
+  background: rgba(0, 109, 119, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  min-width: 60px;
+}
+
+.score-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.8s ease-out;
+}
+
+.score-bar-fill.score-excellent { background: linear-gradient(90deg, #10b981, #34d399); }
+.score-bar-fill.score-good { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.score-bar-fill.score-fair { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.score-bar-fill.score-low { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+.score-number {
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.score-number.score-excellent { color: #059669; }
+.score-number.score-good { color: #2563eb; }
+.score-number.score-fair { color: #d97706; }
+.score-number.score-low { color: #dc2626; }
+
 .text-muted {
   color: #8a9ab0;
 }
@@ -845,6 +914,50 @@
   gap: 12px;
   flex-wrap: wrap;
   margin-top: 12px;
+}
+
+/* ─── Recommendations Panel ────────────────────────────── */
+.recommendations-panel {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px dashed rgba(0, 109, 119, 0.12);
+  animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.recommendations-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.recommendations-panel-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #1a2332;
+}
+
+.btn-recommend {
+  background: rgba(0, 109, 119, 0.08);
+  color: #006d77;
+  border: 1px solid rgba(0, 109, 119, 0.1);
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.btn-recommend:hover {
+  background: #006d77;
+  color: white;
+  transform: translateY(-1px);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 1100px) {

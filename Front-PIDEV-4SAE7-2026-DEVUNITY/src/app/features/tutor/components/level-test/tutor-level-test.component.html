@@ -28,9 +28,9 @@
           <span class="id-tag">REF: #{{ t.id }}</span>
           <span class="badge-status badge-warning">PENDING</span>
         </div>
-        
+
         <h3 class="subject-title">{{ t.subject?.title }}</h3>
-        
+
         <div class="paragraph-preview mt-3">
           <p>{{ t.paragraph }}</p>
         </div>
@@ -69,12 +69,13 @@
           <div class="row">
             <div class="col-6 mb-3">
               <label>🎯 Score (0-100)</label>
-              <input type="number" [(ngModel)]="scoreDraft" min="0" max="100" class="form-control premium-input text-center" />
+              <input type="number" [(ngModel)]="scoreDraft" min="0" max="100"
+                class="form-control premium-input text-center" />
             </div>
             <div class="col-12 mb-3">
               <label>💬 Tutor Feedback</label>
               <textarea [(ngModel)]="feedbackText" rows="4" class="form-control premium-input"
-                        placeholder="Provide constructive feedback for the student..."></textarea>
+                placeholder="Provide constructive feedback for the student..."></textarea>
             </div>
           </div>
         </div>

@@ -11,13 +11,13 @@ import { TestTentative } from '../../../../core/models/test-tentative.model';
 export class TutorLevelTestComponent implements OnInit {
   pendingTests: TestTentative[] = [];
   loadingTests = true;
-  
+
   gradingTest: TestTentative | null = null;
   feedbackText = '';
   scoreDraft = 0;
   gradingError = '';
 
-  constructor(private levelTestService: LevelTestService) {}
+  constructor(private levelTestService: LevelTestService) { }
 
   ngOnInit(): void {
     this.loadPendingTests();

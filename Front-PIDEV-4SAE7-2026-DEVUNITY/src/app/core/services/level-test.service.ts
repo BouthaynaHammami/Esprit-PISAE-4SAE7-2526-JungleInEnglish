@@ -5,14 +5,15 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Subject } from '../models/subject.model';
 import { TestTentative } from '../models/test-tentative.model';
+import { CourseRecommendation } from '../models/course-recommendation.model';
 
 @Injectable({ providedIn: 'root' })
 export class LevelTestService {
 
-  private readonly subjectsUrl    = `${environment.apiUrl}/learners/api/api/subjects`;
-  private readonly tentativesUrl  = `${environment.apiUrl}/learners/api/api/test-tentatives`;
+  private readonly subjectsUrl = `${environment.apiUrl}/learners/api/api/subjects`;
+  private readonly tentativesUrl = `${environment.apiUrl}/learners/api/api/test-tentatives`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // ─── Subjects ─────────────────────────────────────────
   getAllSubjects(): Observable<Subject[]> {
@@ -69,4 +70,44 @@ export class LevelTestService {
   saveOralTestSession(session: any): Observable<any> {
     return this.http.post<any>(`${this.tentativesUrl}/oral-session`, session);
   }
+
+  // ─── ML Evaluation (AI-Powered CEFR Scoring) ────────────
+  evaluateParagraph(tentativeId: number): Observable<LevelTestResult> {
+    return this.http.post<LevelTestResult>(
+      `${this.tentativesUrl}/${tentativeId}/evaluate-paragraph`, {}
+    );
+  }
+
+  evaluateOral(tentativeId: number, durationSeconds: number = 60): Observable<LevelTestResult> {
+    return this.http.post<LevelTestResult>(
+      `${this.tentativesUrl}/${tentativeId}/evaluate-oral?durationSeconds=${durationSeconds}`, {}
+    );
+  }
+
+  // ─── Course Recommendations ─────────────────────────────
+  getCourseRecommendations(testId: number): Observable<CourseRecommendation> {
+    return this.http.post<CourseRecommendation>(
+      `${this.tentativesUrl}/${testId}/get-recommendations`, {}
+    );
+  }
+
+  getCourseRecommendationsByLevel(level: string, score: number): Observable<CourseRecommendation> {
+    return this.http.get<CourseRecommendation>(
+      `${this.tentativesUrl}/recommend-courses?level=${level}&score=${score}`
+    );
+  }
+}
+
+export interface LevelTestResult {
+  level: string;
+  score: number;
+  feedback: string;
+  details: {
+    word_count: number;
+    sentence_count?: number;
+    avg_word_length?: number;
+    complexity_score: number;
+    words_per_minute?: number;
+    unique_word_ratio?: number;
+  };
 }

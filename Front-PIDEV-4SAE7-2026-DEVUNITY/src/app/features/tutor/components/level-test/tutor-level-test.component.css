@@ -12,7 +12,10 @@
   letter-spacing: -0.02em;
 }
 
-.subtitle { color: #64748b; margin-bottom: 2rem; }
+.subtitle {
+  color: #64748b;
+  margin-bottom: 2rem;
+}
 
 /* Grid & Cards */
 .grid {
@@ -24,15 +27,15 @@
 .card {
   background: white;
   border-radius: 20px;
-  border: 1px solid rgba(0,0,0,0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   padding: 1.5rem;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.02);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .assessment-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
 }
 
 .card-header-top {
@@ -42,7 +45,11 @@
   margin-bottom: 1rem;
 }
 
-.id-tag { font-size: 0.75rem; font-weight: 700; color: #94a3b8; }
+.id-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+}
 
 .subject-title {
   font-size: 1.25rem;
@@ -70,7 +77,10 @@
 /* Modals */
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(15, 23, 42, 0.6);
   backdrop-filter: blur(8px);
   z-index: 9999;
@@ -84,7 +94,7 @@
   width: 100%;
   max-width: 650px;
   padding: 2.5rem;
-  box-shadow: 0 40px 100px rgba(0,0,0,0.2);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.2);
 }
 
 .full-paragraph-view {
@@ -107,14 +117,35 @@
   transition: all 0.2s;
 }
 
-.btn-primary { background: #006D77; color: white; }
-.btn-primary:hover { transform: scale(1.02); filter: brightness(1.1); }
+.btn-primary {
+  background: #006D77;
+  color: white;
+}
 
-.btn-secondary { background: #f1f5f9; color: #64748b; }
-.btn-soft { background: #FFDDD2; color: #5a2a1c; }
+.btn-primary:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+.btn-secondary {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.btn-soft {
+  background: #FFDDD2;
+  color: #5a2a1c;
+}
 
 /* States */
-.badge-warning { background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; }
+.badge-warning {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
 
 .premium-input {
   width: 100%;
@@ -131,7 +162,8 @@
 }
 
 .spinner {
-  width: 40px; height: 40px;
+  width: 40px;
+  height: 40px;
   border: 4px solid #f1f5f9;
   border-top: 4px solid #006D77;
   border-radius: 50%;
@@ -147,4 +179,8 @@
   padding: 4px 10px;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

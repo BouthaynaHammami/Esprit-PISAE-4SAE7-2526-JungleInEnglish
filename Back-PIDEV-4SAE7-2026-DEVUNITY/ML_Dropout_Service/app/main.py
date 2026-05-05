@@ -9,6 +9,8 @@ from app.eureka_client import init_eureka
 from app.model_loader import ModelArtifacts, load_artifacts, prepare_features
 from app.schemas import DropoutPredictionRequest, DropoutPredictionResponse
 from app.cv_analysis import analyze_cv_text
+from app.level_test_evaluator import evaluate_paragraph_test, evaluate_oral_test
+from app.course_recommender import recommend_courses
 from pydantic import BaseModel
 
 logging.basicConfig(level=logging.INFO)
@@ -37,6 +39,40 @@ class CVAnalysisResponse(BaseModel):
     raison: str
     score: int
     model: str
+
+
+# Level Test schemas
+class ParagraphTestRequest(BaseModel):
+    paragraphText: str
+    subjectTitle: str
+
+
+class OralTestRequest(BaseModel):
+    transcript: str
+    durationSeconds: int = 60
+
+
+class LevelTestResponse(BaseModel):
+    level: str
+    score: int
+    feedback: str
+    details: dict
+
+
+# Course Recommendation schemas
+class CourseRecommendationRequest(BaseModel):
+    level: str
+    score: int
+
+
+class CourseRecommendationResponse(BaseModel):
+    current_level: str
+    level_name: str
+    score: int
+    recommended_courses: list
+    skills_to_improve: list
+    next_level_suggestion: dict | None
+    learning_path: dict
 
 
 @app.on_event("startup")
@@ -94,6 +130,48 @@ def analyze_cv(request: CVAnalysisRequest) -> CVAnalysisResponse:
         return CVAnalysisResponse(**result)
     except Exception as exc:
         logger.error(f"CV analysis error: {exc}")
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@router.post("/evaluate-paragraph", response_model=LevelTestResponse)
+def evaluate_paragraph(request: ParagraphTestRequest) -> LevelTestResponse:
+    """Evaluate paragraph writing test and return CEFR level."""
+    try:
+        result = evaluate_paragraph_test(
+            paragraph_text=request.paragraphText,
+            subject_title=request.subjectTitle
+        )
+        return LevelTestResponse(**result)
+    except Exception as exc:
+        logger.error(f"Paragraph evaluation error: {exc}")
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@router.post("/evaluate-oral", response_model=LevelTestResponse)
+def evaluate_oral(request: OralTestRequest) -> LevelTestResponse:
+    """Evaluate oral test transcript and return CEFR level."""
+    try:
+        result = evaluate_oral_test(
+            transcript=request.transcript,
+            duration_seconds=request.durationSeconds
+        )
+        return LevelTestResponse(**result)
+    except Exception as exc:
+        logger.error(f"Oral evaluation error: {exc}")
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@router.post("/recommend-courses", response_model=CourseRecommendationResponse)
+def get_course_recommendations(request: CourseRecommendationRequest) -> CourseRecommendationResponse:
+    """Get personalized course recommendations based on student level and score."""
+    try:
+        result = recommend_courses(
+            level=request.level,
+            score=request.score
+        )
+        return CourseRecommendationResponse(**result)
+    except Exception as exc:
+        logger.error(f"Course recommendation error: {exc}")
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 

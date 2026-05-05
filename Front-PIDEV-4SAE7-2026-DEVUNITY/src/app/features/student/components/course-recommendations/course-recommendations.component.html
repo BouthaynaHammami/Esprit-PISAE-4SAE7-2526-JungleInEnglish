@@ -1,0 +1,191 @@
+<div class="recommendations-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading personalized recommendations...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Recommendations Content -->
+  <div *ngIf="recommendations && !isLoading" class="recommendations-content">
+    
+    <!-- Header Section -->
+    <div class="recommendations-header">
+      <div class="header-left">
+        <div class="level-badge" [style.background-color]="getLevelColor(recommendations.currentLevel)">
+          <div class="level-code">{{ recommendations.currentLevel }}</div>
+          <div class="level-name">{{ recommendations.levelName }}</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="score-ring-wrapper">
+          <svg class="score-ring" viewBox="0 0 120 120">
+            <circle class="ring-bg" cx="60" cy="60" r="50" />
+            <circle class="ring-fill" cx="60" cy="60" r="50"
+                    [style.stroke]="getLevelColor(recommendations.currentLevel)"
+                    [style.strokeDasharray]="(recommendations.score / 100 * 314) + ' 314'" />
+          </svg>
+          <div class="score-inner">
+            <span class="score-number">{{ recommendations.score }}</span>
+            <span class="score-label">Score</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Learning Path Overview -->
+    <div class="learning-path-card">
+      <div class="section-header">
+        <span class="section-icon">📚</span>
+        <h3>Your Learning Path</h3>
+      </div>
+      <div class="path-content">
+        <div class="focus-area">
+          <div class="path-label">Current Focus</div>
+          <p>{{ recommendations.learningPath.currentFocus }}</p>
+        </div>
+        <div class="estimated-time">
+          <div class="path-label">⏱️ Estimated Time</div>
+          <p class="time-value">{{ recommendations.learningPath.estimatedTime }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommended Courses -->
+    <div class="courses-section">
+      <div class="section-header">
+        <span class="section-icon">🎓</span>
+        <h3>Recommended Courses for You</h3>
+      </div>
+      <div class="courses-grid">
+        <div 
+          *ngFor="let course of recommendations.recommendedCourses" 
+          class="course-card"
+          (click)="selectCourse(course)">
+          
+          <div class="course-header">
+            <h4>{{ course.title }}</h4>
+            <span 
+              class="difficulty-badge" 
+              [style.background-color]="getDifficultyColor(course.difficulty)">
+              {{ course.difficulty }}
+            </span>
+          </div>
+
+          <p class="course-description">{{ course.description }}</p>
+
+          <div class="course-meta">
+            <span class="meta-item">
+              🕐 {{ course.duration }}
+            </span>
+            <span class="meta-item">
+              📋 {{ course.topics.length }} topics
+            </span>
+          </div>
+
+          <div class="course-topics">
+            <span *ngFor="let topic of course.topics.slice(0, 3)" class="topic-tag">
+              {{ topic }}
+            </span>
+            <span *ngIf="course.topics.length > 3" class="more-topics">
+              +{{ course.topics.length - 3 }} more
+            </span>
+          </div>
+
+          <button class="btn-enroll" (click)="enrollInCourse(course); $event.stopPropagation()">
+            Enroll Now
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills to Improve -->
+    <div class="skills-section" *ngIf="recommendations.skillsToImprove.length > 0">
+      <div class="section-header">
+        <span class="section-icon">🎯</span>
+        <h3>Skills to Improve</h3>
+      </div>
+      <div class="skills-grid">
+        <div *ngFor="let skill of recommendations.skillsToImprove" class="skill-item">
+          <span class="skill-icon">✓</span>
+          <span class="skill-text">{{ skill }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Study Tips -->
+    <div class="tips-section" *ngIf="recommendations.learningPath.studyTips.length > 0">
+      <div class="section-header">
+        <span class="section-icon">💡</span>
+        <h3>Study Tips for Success</h3>
+      </div>
+      <ul class="tips-list">
+        <li *ngFor="let tip of recommendations.learningPath.studyTips">
+          {{ tip }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Next Level Suggestion -->
+    <div *ngIf="recommendations.nextLevelSuggestion" class="next-level-section">
+      <div class="next-level-card">
+        <div class="celebration-icon">🎉</div>
+        <h3>Ready for the Next Challenge?</h3>
+        <p class="next-level-message">{{ recommendations.nextLevelSuggestion.message }}</p>
+        
+        <div class="next-level-badge" [style.background-color]="getLevelColor(recommendations.nextLevelSuggestion.level)">
+          {{ recommendations.nextLevelSuggestion.level }} — {{ recommendations.nextLevelSuggestion.levelName }}
+        </div>
+
+        <div class="preview-courses" *ngIf="recommendations.nextLevelSuggestion.previewCourses.length > 0">
+          <h4>Preview Courses:</h4>
+          <div class="preview-grid">
+            <div *ngFor="let course of recommendations.nextLevelSuggestion.previewCourses" class="preview-card">
+              <h5>{{ course.title }}</h5>
+              <p>{{ course.description }}</p>
+              <span class="preview-duration">{{ course.duration }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Course Details Modal -->
+  <div *ngIf="selectedCourse" class="modal-overlay" (click)="closeCourseDetails()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button class="close-btn" (click)="closeCourseDetails()">×</button>
+      
+      <h2>{{ selectedCourse.title }}</h2>
+      
+      <div class="modal-meta">
+        <span class="modal-difficulty" [style.background-color]="getDifficultyColor(selectedCourse.difficulty)">
+          {{ selectedCourse.difficulty }}
+        </span>
+        <span class="modal-duration">🕐 {{ selectedCourse.duration }}</span>
+      </div>
+
+      <p class="modal-description">{{ selectedCourse.description }}</p>
+
+      <div class="modal-topics">
+        <h3>What You'll Learn:</h3>
+        <ul>
+          <li *ngFor="let topic of selectedCourse.topics">{{ topic }}</li>
+        </ul>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-modal-primary" (click)="enrollInCourse(selectedCourse)">
+          Enroll in This Course
+        </button>
+        <button class="btn-modal-secondary" (click)="closeCourseDetails()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

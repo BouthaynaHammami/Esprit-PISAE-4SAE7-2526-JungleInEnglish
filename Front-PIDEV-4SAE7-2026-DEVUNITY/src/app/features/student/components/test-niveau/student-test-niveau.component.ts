@@ -48,6 +48,11 @@ export class StudentTestNiveauComponent implements OnInit, OnDestroy {
   oralResponses: string[] = [];
   showOralTestTransition = false;
   
+  // Course Recommendation State
+  recommendationTestId: number | undefined = undefined;
+  recommendationLevel: string | null | undefined = undefined;
+  recommendationScore: number | undefined = undefined;
+  
   // ✅ Live transcript like reference project
   activeTranscript: { role: string, text: string } = { role: '', text: '' };
   isUserSpeaking: boolean = false;
@@ -180,6 +185,59 @@ export class StudentTestNiveauComponent implements OnInit, OnDestroy {
       case 'REJECTED':  return 'badge-danger';
       default:          return 'badge-warning';
     }
+  }
+
+  // ─── CEFR Level Display Helpers ─────────────────────────
+  extractLevel(feedback?: string, score?: number): string | null {
+    // First try to extract from feedback tag
+    if (feedback) {
+      const match = feedback.match(/\[AI\s*-\s*(A1|A2|B1|B2|C1|C2)\]/i);
+      if (match) return match[1].toUpperCase();
+    }
+    // Derive from score using CEFR mapping
+    if (score != null) {
+      if (score >= 85) return 'C2';
+      if (score >= 75) return 'C1';
+      if (score >= 65) return 'B2';
+      if (score >= 55) return 'B1';
+      if (score >= 40) return 'A2';
+      return 'A1';
+    }
+    return null;
+  }
+
+  getLevelClass(level: string | null): string {
+    if (!level) return '';
+    const map: Record<string, string> = {
+      'C2': 'level-c2', 'C1': 'level-c1',
+      'B2': 'level-b2', 'B1': 'level-b1',
+      'A2': 'level-a2', 'A1': 'level-a1'
+    };
+    return map[level] ?? '';
+  }
+
+  getLevelLabel(level: string | null): string {
+    if (!level) return '';
+    const labels: Record<string, string> = {
+      'C2': 'Mastery', 'C1': 'Advanced',
+      'B2': 'Upper Intermediate', 'B1': 'Intermediate',
+      'A2': 'Elementary', 'A1': 'Beginner'
+    };
+    return labels[level] ?? level;
+  }
+
+  getScoreClass(score?: number): string {
+    if (score == null) return '';
+    if (score >= 85) return 'score-excellent';
+    if (score >= 65) return 'score-good';
+    if (score >= 40) return 'score-fair';
+    return 'score-low';
+  }
+
+  cleanFeedback(feedback?: string): string {
+    if (!feedback) return 'Awaiting evaluation...';
+    // Strip the [AI - XX] prefix for cleaner display
+    return feedback.replace(/\[AI\s*-\s*(?:A1|A2|B1|B2|C1|C2)\]\s*/i, '');
   }
 
   // Bad Word Detector
@@ -457,6 +515,27 @@ export class StudentTestNiveauComponent implements OnInit, OnDestroy {
     } else {
       return 'This is a visual demonstration. No actual audio is produced. Questions advance automatically.';
     }
+  }
+
+  // ─── Course Recommendations ─────────────────────────────
+  showRecommendations(t: TestTentative): void {
+    if (t.id) {
+      this.recommendationTestId = t.id;
+      this.recommendationLevel = this.extractLevel(t.tutorFeedback, t.score);
+      this.recommendationScore = t.score;
+      
+      // Scroll to recommendations panel
+      setTimeout(() => {
+        const el = document.querySelector('.recommendations-panel');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }
+
+  closeRecommendations(): void {
+    this.recommendationTestId = undefined;
+    this.recommendationLevel = undefined;
+    this.recommendationScore = undefined;
   }
 }
 

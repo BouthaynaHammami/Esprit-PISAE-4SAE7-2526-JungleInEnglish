@@ -237,28 +237,63 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Subject Title</th>
+                  <th>Ref</th>
+                  <th>Subject</th>
+                  <th>Level</th>
                   <th>Score</th>
                   <th>Status</th>
                   <th>Feedback</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let t of myTentatives">
-                  <td class="text-muted">{{ t.id ? 'Ref: #' + t.id : 'N/A' }}</td>
+                  <td class="text-muted">#{{ t.id ?? '—' }}</td>
                   <td><strong>{{ t.subject?.title ?? '—' }}</strong></td>
                   <td>
-                    <span class="score-pill" *ngIf="t.score !== null">
-                      {{ t.score }}/100
+                    <span *ngIf="extractLevel(t.tutorFeedback, t.score) as level"
+                          class="level-badge-sm"
+                          [ngClass]="getLevelClass(level)">
+                      <span class="level-code-sm">{{ level }}</span>
+                      <span class="level-label-sm">{{ getLevelLabel(level) }}</span>
                     </span>
-                    <span class="text-muted" *ngIf="t.score === null">—</span>
+                    <span *ngIf="!extractLevel(t.tutorFeedback, t.score)" class="text-muted">—</span>
+                  </td>
+                  <td>
+                    <div *ngIf="t.score != null" class="score-display">
+                      <div class="score-bar-bg">
+                        <div class="score-bar-fill" [ngClass]="getScoreClass(t.score)"
+                             [style.width.%]="t.score"></div>
+                      </div>
+                      <span class="score-number" [ngClass]="getScoreClass(t.score)">{{ t.score }}/100</span>
+                    </div>
+                    <span *ngIf="t.score == null" class="text-muted">—</span>
                   </td>
                   <td><span [class]="'badge-status ' + getStatusClass(t.status)">{{ t.status }}</span></td>
-                  <td class="feedback-cell">{{ t.tutorFeedback ?? 'Awaiting evaluation...' }}</td>
+                  <td class="feedback-cell">{{ cleanFeedback(t.tutorFeedback) }}</td>
+                  <td>
+                    <button *ngIf="t.status === 'CORRECTED' && t.id"
+                            class="btn btn-sm btn-recommend"
+                            (click)="showRecommendations(t)">
+                      📚 View Courses
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <!-- Course Recommendations Panel -->
+          <div *ngIf="recommendationTestId" class="recommendations-panel">
+            <div class="recommendations-panel-header">
+              <h3>📚 Recommended Courses</h3>
+              <button class="btn btn-soft btn-sm" (click)="closeRecommendations()">✕ Close</button>
+            </div>
+            <app-course-recommendations
+              [testId]="recommendationTestId"
+              [level]="recommendationLevel!"
+              [score]="recommendationScore!">
+            </app-course-recommendations>
           </div>
         </div>
       </div>
