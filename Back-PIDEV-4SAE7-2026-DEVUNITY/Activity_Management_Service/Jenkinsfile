@@ -97,11 +97,12 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'nexus-credentials', 
                                                       usernameVariable: 'NEXUS_USER', 
                                                       passwordVariable: 'NEXUS_PASS')]) {
-                        sh '''
+                        sh """
                             mvn deploy -DskipTests \
-                                -Dmaven.wagon.http.ssl.insecure=true \
-                                -Dmaven.wagon.http.ssl.allowall=true
-                        '''
+                                -DaltDeploymentRepository=nexus-snapshots::default::http://192.168.72.128:8081/repository/maven-snapshots/ \
+                                -Dusername=\${NEXUS_USER} \
+                                -Dpassword=\${NEXUS_PASS}
+                        """
                     }
                 }
             }
