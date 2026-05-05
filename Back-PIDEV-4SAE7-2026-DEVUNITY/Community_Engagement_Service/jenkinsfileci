@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'JDK17'
+        maven 'Maven'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Récupération du code...'
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Compilation Maven...'
+                dir('Community_Engagement_Service') {
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build réussi !'
+        }
+
+        failure {
+            echo 'Build échoué !'
+        }
+
+        always {
+            cleanWs()
+        }
+    }
+}
