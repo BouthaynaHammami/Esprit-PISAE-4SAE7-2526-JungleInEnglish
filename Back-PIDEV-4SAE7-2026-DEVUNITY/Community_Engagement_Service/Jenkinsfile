@@ -47,10 +47,31 @@ pipeline {
             steps {
                 echo 'Déploiement vers Nexus...'
                 dir("${BACKEND_PATH}/Community_Engagement_Service") {
-                    sh """
+
+                    withCredentials([usernamePassword(
+                        credentialsId: 'nexus-credentials',
+                        usernameVariable: 'NEXUS_USER',
+                        passwordVariable: 'NEXUS_PASS'
+                    )]) {
+
+                        sh """
+                        cat > settings.xml <<EOF
+<settings>
+  <servers>
+    <server>
+      <id>nexus</id>
+      <username>${NEXUS_USER}</username>
+      <password>${NEXUS_PASS}</password>
+    </server>
+  </servers>
+</settings>
+EOF
+
                         mvn deploy -DskipTests \
+                        --settings settings.xml \
                         -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/devunity-repo/
-                    """
+                        """
+                    }
                 }
             }
         }
