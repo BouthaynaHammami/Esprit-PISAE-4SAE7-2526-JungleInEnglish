@@ -47,8 +47,11 @@ data:
   prometheus.yml: |
     global:
       scrape_interval: 15s
+      evaluation_interval: 15s
+
     scrape_configs:
 
+      # ✅ Auto-discover pods with prometheus annotations
       - job_name: 'kubernetes-pods'
         kubernetes_sd_configs:
           - role: pod
@@ -68,13 +71,32 @@ data:
             regex: ([^:]+)(?::\d+)?;(\d+)
             replacement: $1:$2
             target_label: __address__
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            action: replace
+            target_label: app
 
-     
-
-      - job_name: 'api-gateway'
+      # ✅ Eureka - scrape directly
+      - job_name: 'eureka-server'
         metrics_path: '/actuator/prometheus'
         static_configs:
-          - targets: ['api-gateway.devunity.svc.cluster.local:8081']
+          - targets: ['eureka-server.devunity.svc.cluster.local:8761']
+
+      # ✅ Academic management - has security issue (401), skip for now
+      # - job_name: 'academic-management-service'
+      #   metrics_path: '/academics/api/actuator/prometheus'
+      #   static_configs:
+      #     - targets: ['academic-management-svc.devunity.svc.cluster.local:8083']
+
+      # ✅ API Gateway - skip until rebuild fixes actuator
+      # - job_name: 'api-gateway'
+      #   metrics_path: '/actuator/prometheus'
+      #   static_configs:
+      #     - targets: ['api-gateway.devunity.svc.cluster.local:8081']
+
+      # ✅ Prometheus scrapes itself
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
 ---
 apiVersion: apps/v1
 kind: Deployment
