@@ -15,9 +15,6 @@ pipeline {
 
         BACKEND_PATH = "Back-PIDEV-4SAE7-2026-DEVUNITY"
         SERVICE_PATH = "Community_Engagement_Service"
-
-        DOCKER_REGISTRY = "hibajassi123"
-        IMAGE_NAME = "community-service"
     }
 
     stages {
@@ -65,76 +62,6 @@ mvn deploy -DskipTests \\
   -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/${NEXUS_REPO}/
                         '''
                     }
-                }
-            }
-        }
-
-        stage('Create Dockerfile') {
-            steps {
-                echo 'Création du Dockerfile...'
-                dir("${BACKEND_PATH}/${SERVICE_PATH}") {
-                    sh '''
-cat > Dockerfile <<'EOF'
-FROM eclipse-temurin:17-jre-alpine
-
-WORKDIR /app
-
-RUN apk add --no-cache curl
-
-ARG NEXUS_USER
-ARG NEXUS_PASS
-ARG NEXUS_URL
-ARG NEXUS_REPO
-
-RUN curl -f -L \
-    -u "${NEXUS_USER}:${NEXUS_PASS}" \
-    -o app.jar \
-    "${NEXUS_URL}/repository/${NEXUS_REPO}/tn/esprit/Community_Engagement_Service/1.0-SNAPSHOT/Community_Engagement_Service-1.0-SNAPSHOT.jar"
-
-EXPOSE 8087
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
-EOF
-                    '''
-                }
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                echo 'Construction de l image Docker...'
-                dir("${BACKEND_PATH}/${SERVICE_PATH}") {
-                    withCredentials([usernamePassword(
-                        credentialsId: 'nexus-credentials',
-                        usernameVariable: 'NEXUS_USER',
-                        passwordVariable: 'NEXUS_PASS'
-                    )]) {
-                        sh '''
-docker build \
-  --build-arg NEXUS_USER="${NEXUS_USER}" \
-  --build-arg NEXUS_PASS="${NEXUS_PASS}" \
-  --build-arg NEXUS_URL="${NEXUS_URL}" \
-  --build-arg NEXUS_REPO="${NEXUS_REPO}" \
-  -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest .
-                        '''
-                    }
-                }
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                echo 'Push de l image vers Docker Hub...'
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-credentials',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    sh '''
-echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
-docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest
-docker logout
-                    '''
                 }
             }
         }
