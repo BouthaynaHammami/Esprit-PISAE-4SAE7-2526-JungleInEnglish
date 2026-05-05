@@ -47,7 +47,7 @@ pipeline {
                 dir("Back-PIDEV-4SAE7-2026-DEVUNITY/Community_Engagement_Service") {
                     sh """
                         mvn deploy -DskipTests \
-                        -DaltDeploymentRepository=nexus::default::http://192.168.232.133:8081/repository/Devunity-snapshots/
+                        -DaltDeploymentRepository=nexus::default::http://192.168.232.133:8081/repository/Devunity-repo/
                     """
                 }
             }
