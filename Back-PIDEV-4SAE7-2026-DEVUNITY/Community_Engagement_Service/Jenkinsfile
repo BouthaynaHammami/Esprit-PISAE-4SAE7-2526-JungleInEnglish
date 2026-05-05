@@ -6,6 +6,11 @@ pipeline {
         maven 'Maven'
     }
 
+    environment {
+        JAVA_HOME = "${tool 'JDK17'}"
+        PATH = "${JAVA_HOME}/bin:${env.PATH}"
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -17,7 +22,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Compilation Maven...'
-                dir('Community_Engagement_Service') {
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Community_Engagement_Service') {
                     sh 'mvn clean package -DskipTests'
                 }
             }
@@ -28,11 +33,9 @@ pipeline {
         success {
             echo 'Build réussi !'
         }
-
         failure {
             echo 'Build échoué !'
         }
-
         always {
             cleanWs()
         }
