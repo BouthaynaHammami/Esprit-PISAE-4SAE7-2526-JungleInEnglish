@@ -13,8 +13,11 @@ spec:
     metadata:
       labels:
         {{- include "social-interaction.selectorLabels" . | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/socials/api/actuator/prometheus"
+        prometheus.io/port: "8085"
     spec:
-      # ✅ Attend que MySQL soit prêt avant de démarrer Spring Boot
       initContainers:
         - name: wait-for-mysql
           image: docker.io/library/mysql:8.0.32
@@ -38,7 +41,6 @@ spec:
               protocol: TCP
 
           env:
-            # ── Base de données ──
             - name: SPRING_DATASOURCE_URL
               value: {{ .Values.config.dbUrl | quote }}
             - name: SPRING_DATASOURCE_USERNAME
@@ -51,12 +53,8 @@ spec:
                 secretKeyRef:
                   name: {{ include "social-interaction.fullname" . }}-db-secret
                   key: db-password
-
-            # ✅ Dialect MySQL explicite (évite l'erreur Hibernate sans connexion)
             - name: SPRING_JPA_DATABASE_PLATFORM
               value: "org.hibernate.dialect.MySQLDialect"
-
-            # ── Elasticsearch ──
             - name: SPRING_ELASTICSEARCH_URIS
               value: {{ .Values.config.elasticsearchUrl | quote }}
             - name: SPRING_ELASTICSEARCH_USERNAME
@@ -68,18 +66,19 @@ spec:
                   key: elasticsearch-password
             - name: SPRING_ELASTICSEARCH_SSL_VERIFICATION_MODE
               value: "none"
-
-            # ✅ Exclure RabbitMQ + Elasticsearch auto-config
             - name: SPRING_AUTOCONFIGURE_EXCLUDE
               value: "org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration,org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration,org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration"
-
-            # ✅ RabbitMQ pointé sur localhost (désactivé effectivement)
             - name: SPRING_RABBITMQ_HOST
               value: "localhost"
-
-            # ── Eureka ──
             - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
               value: "http://eureka-server.{{ .Release.Namespace }}.svc.cluster.local:8761/eureka"
+            # ✅ Expose toutes les métriques Actuator
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: "health,prometheus,metrics,info"
+            - name: MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED
+              value: "true"
+            - name: MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED
+              value: "true"
 
           livenessProbe:
             httpGet:

@@ -1,15 +1,20 @@
-apiVersion: v1
-kind: Service
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
 metadata:
   name: {{ include "social-interaction.fullname" . }}
+  namespace: dev-unity
   labels:
     {{- include "social-interaction.labels" . | nindent 4 }}
+    release: monitoring
 spec:
-  type: {{ .Values.service.type }}
-  ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
+  namespaceSelector:
+    matchNames:
+      - dev-unity
   selector:
-    {{- include "social-interaction.selectorLabels" . | nindent 4 }}
+    matchLabels:
+      {{- include "social-interaction.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: http
+      path: /socials/api/actuator/prometheus
+      interval: 15s
+      scrapeTimeout: 10s

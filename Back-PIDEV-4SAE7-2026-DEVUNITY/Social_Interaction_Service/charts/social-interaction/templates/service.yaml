@@ -4,6 +4,10 @@ metadata:
   name: {{ include "social-interaction.fullname" . }}
   labels:
     {{- include "social-interaction.labels" . | nindent 4 }}
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/socials/api/actuator/prometheus"
+    prometheus.io/port: "8085"
 spec:
   type: {{ .Values.service.type }}
   ports:

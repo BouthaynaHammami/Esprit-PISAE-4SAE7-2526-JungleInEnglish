@@ -4,34 +4,35 @@
 # déploiement via --set dans le Jenkinsfile_CD (credentials Jenkins).
 # ---------------------------------------------------------------
 
-replicaCount: 1   # Réduit à 1 pour debug – à remettre à 2 en production
+replicaCount: 1
 
 image:
   repository: hbouthayna/social-interaction-service
   pullPolicy: IfNotPresent
-  tag: "latest"        # Remplacé dynamiquement par IMAGE_TAG du pipeline
+  tag: "latest"
 
 service:
   type: ClusterIP
-  port: 8085           # Aligné avec server.port dans application.properties
+  port: 8085
 
 config:
   dbUrl: "jdbc:mysql://mysql-service:3306/Social_Interaction?createDatabaseIfNotExist=true"
-  # Valeurs vides – INJECTÉES via Jenkins credentials (withCredentials)
   dbUsername: ""
   dbPassword: ""
-  # ES sans SSL (xpack.security désactivé dans elasticsearch.yaml)
   elasticsearchUrl: "http://elasticsearch-service:9200"
   elasticsearchUsername: "elastic"
   elasticsearchPassword: ""
 
+monitoring:
+  enabled: true
+
 resources:
   limits:
     cpu: 700m
-    memory: 1Gi     # Augmenté de 900Mi à 1Gi pour plus de stabilité
+    memory: 1Gi
   requests:
     cpu: 300m
-    memory: 768Mi   # Augmenté de 512Mi à 768Mi
+    memory: 768Mi
 
 nodeSelector: {}
 tolerations: []
