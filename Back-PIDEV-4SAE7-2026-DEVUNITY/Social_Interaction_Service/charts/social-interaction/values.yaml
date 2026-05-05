@@ -8,7 +8,7 @@ replicaCount: 1   # Réduit à 1 pour debug – à remettre à 2 en production
 
 image:
   repository: hbouthayna/social-interaction-service
-  pullPolicy: Always   # Garantit que le bon tag est toujours récupéré
+  pullPolicy: IfNotPresent
   tag: "latest"        # Remplacé dynamiquement par IMAGE_TAG du pipeline
 
 service:

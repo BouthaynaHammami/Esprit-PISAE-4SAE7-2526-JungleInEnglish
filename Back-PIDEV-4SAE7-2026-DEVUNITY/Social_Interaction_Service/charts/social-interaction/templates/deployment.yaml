@@ -14,6 +14,20 @@ spec:
       labels:
         {{- include "social-interaction.selectorLabels" . | nindent 8 }}
     spec:
+      # ✅ Attend que MySQL soit prêt avant de démarrer Spring Boot
+      initContainers:
+        - name: wait-for-mysql
+          image: docker.io/library/mysql:8.0.32
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              until mysqladmin ping -h mysql-service --silent; do
+                echo "Waiting for MySQL...";
+                sleep 3;
+              done
+
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -24,7 +38,7 @@ spec:
               protocol: TCP
 
           env:
-            # ── Base de données ─ credentials depuis le Secret K8s ──
+            # ── Base de données ──
             - name: SPRING_DATASOURCE_URL
               value: {{ .Values.config.dbUrl | quote }}
             - name: SPRING_DATASOURCE_USERNAME
@@ -38,7 +52,11 @@ spec:
                   name: {{ include "social-interaction.fullname" . }}-db-secret
                   key: db-password
 
-            # ── Elasticsearch ─ HTTP sans SSL (xpack.security désactivé) ──
+            # ✅ Dialect MySQL explicite (évite l'erreur Hibernate sans connexion)
+            - name: SPRING_JPA_DATABASE_PLATFORM
+              value: "org.hibernate.dialect.MySQLDialect"
+
+            # ── Elasticsearch ──
             - name: SPRING_ELASTICSEARCH_URIS
               value: {{ .Values.config.elasticsearchUrl | quote }}
             - name: SPRING_ELASTICSEARCH_USERNAME
@@ -48,22 +66,26 @@ spec:
                 secretKeyRef:
                   name: {{ include "social-interaction.fullname" . }}-db-secret
                   key: elasticsearch-password
-            # Désactiver SSL côté client Spring (ES tourne sans xpack)
             - name: SPRING_ELASTICSEARCH_SSL_VERIFICATION_MODE
               value: "none"
-            - name: SPRING_AUTOCONFIGURE_EXCLUDE
-              value: "org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration"
 
-            # ── Eureka ─ URL interne Kubernetes (plus localhost) ──
+            # ✅ Exclure RabbitMQ + Elasticsearch auto-config
+            - name: SPRING_AUTOCONFIGURE_EXCLUDE
+              value: "org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration,org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration,org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration"
+
+            # ✅ RabbitMQ pointé sur localhost (désactivé effectivement)
+            - name: SPRING_RABBITMQ_HOST
+              value: "localhost"
+
+            # ── Eureka ──
             - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
               value: "http://eureka-server.{{ .Release.Namespace }}.svc.cluster.local:8761/eureka"
 
-          # ── Health checks pour que K8s sache si le pod est prêt ──
           livenessProbe:
             httpGet:
               path: /socials/api/actuator/health
               port: 8085
-            initialDelaySeconds: 180   # Augmenté de 120 à 180
+            initialDelaySeconds: 180
             periodSeconds: 15
             failureThreshold: 5
 
@@ -71,7 +93,7 @@ spec:
             httpGet:
               path: /socials/api/actuator/health
               port: 8085
-            initialDelaySeconds: 120    # Augmenté de 90 à 120
+            initialDelaySeconds: 120
             periodSeconds: 10
             failureThreshold: 6
 
