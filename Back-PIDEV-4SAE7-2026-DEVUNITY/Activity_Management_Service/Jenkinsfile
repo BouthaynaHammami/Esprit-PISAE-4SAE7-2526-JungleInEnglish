@@ -16,11 +16,10 @@ pipeline {
         BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
         SERVICE_DIR  = "${BACKEND_PATH}/Activity_Management_Service"
 
-        SONAR_HOST_URL = 'http://192.168.19.128:9000'
-        NEXUS_URL      = 'http://192.168.19.128:8081'
+        IMAGE_NAME   = 'shayma2003/activity-management-service'
+        IMAGE_TAG    = "${BUILD_NUMBER}"
 
-        IMAGE_NAME = 'shayma2003/activity-management-service'
-        MAVEN_OPTS = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
+        MAVEN_OPTS   = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
     }
 
     stages {
@@ -29,15 +28,23 @@ pipeline {
             steps {
                 echo '📥 Checkout source code'
                 git branch: 'main',
-                    credentialsId: 'git_token',
+                    credentialsId: 'devops',
                     url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
             }
         }
 
-        stage('Clean & Build') {
+        stage('Clean') {
             steps {
                 dir("${SERVICE_DIR}") {
-                    sh 'mvn clean install -DskipTests'
+                    sh 'mvn clean'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir("${SERVICE_DIR}") {
+                    sh 'mvn package -DskipTests'
                 }
             }
         }
@@ -60,19 +67,14 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                script {
-                    withCredentials([string(credentialsId: 'sonar_token', variable: 'SONAR_TOKEN')]) {
-                        withSonarQubeEnv('sonarqube') {
-                            dir("${SERVICE_DIR}") {
-                                sh """
-                                mvn sonar:sonar \
-                                -Dsonar.projectKey=activity-management-service \
-                                -Dsonar.projectName=ActivityManagementService \
-                                -Dsonar.host.url=${SONAR_HOST_URL} \
-                                -Dsonar.token=${SONAR_TOKEN}
-                                """
-                            }
-                        }
+                withSonarQubeEnv('sonarqube') {
+                    dir("${SERVICE_DIR}") {
+                        sh '''
+                        mvn sonar:sonar \
+                        -Dsonar.projectKey=activity-management-service \
+                        -Dsonar.projectName=ActivityManagementService \
+                        -DskipTests
+                        '''
                     }
                 }
             }
@@ -81,11 +83,12 @@ pipeline {
         stage('Deploy to Nexus') {
             steps {
                 dir("${SERVICE_DIR}") {
-                    sh """
+                    echo '📦 Deploying to Nexus'
+
+                    sh '''
                     mvn deploy -DskipTests \
-                    -DaltDeploymentRepository=nexus::${NEXUS_URL}/repository/maven-snapshots/ \
-                    -s /var/jenkins_home/.m2/settings.xml
-                    """
+                        -s /var/jenkins_home/.m2/settings.xml
+                    '''
                 }
             }
         }
@@ -94,7 +97,10 @@ pipeline {
             steps {
                 dir("${SERVICE_DIR}") {
                     script {
-                        dockerImage = docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
+                        sh """
+                        docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                        docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
+                        """
                     }
                 }
             }
@@ -112,9 +118,7 @@ pipeline {
                         sh """
                         echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
 
-                        docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${IMAGE_NAME}:latest
-
-                        docker push ${IMAGE_NAME}:${BUILD_NUMBER}
+                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
                         docker push ${IMAGE_NAME}:latest
                         """
                     }
