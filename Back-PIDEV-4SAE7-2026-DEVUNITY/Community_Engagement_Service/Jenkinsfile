@@ -9,6 +9,7 @@ pipeline {
     environment {
         JAVA_HOME = "${tool 'JDK17'}"
         PATH = "${JAVA_HOME}/bin:${env.PATH}"
+        NEXUS_URL= "http://192.168.232.133:8081"
     }
 
     stages {
@@ -41,17 +42,16 @@ pipeline {
         }
         */
 
-        stage('Deploy to Nexus') {
-            steps {
-                echo 'Déploiement vers Nexus...'
-                dir("Back-PIDEV-4SAE7-2026-DEVUNITY/Community_Engagement_Service") {
-                    sh """
-                        mvn deploy -DskipTests \
-                        -DaltDeploymentRepository=nexus::default::http://192.168.232.133:8081/repository/devunity-repo/
-                    """
-                }
-            }
-        }
+        stage('Deploy Community') {
+                            steps {
+                                dir("${BACKEND_PATH}/Community_Engagement_Service") {
+                                    sh """
+                                        mvn deploy -DskipTests \
+                                        -DaltDeploymentRepository=nexus::default::${NEXUS_URL}/repository/devunity-repo/
+                                    """
+                                }
+                            }
+                        }
     }
 
     post {
