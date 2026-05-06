@@ -4,11 +4,30 @@ pipeline {
     environment {
         DOCKERHUB_REPO = "saifby/language-courses-service"
         IMAGE_TAG      = "v${BUILD_NUMBER}"
-        JAVA_HOME      = "/usr/lib/jvm/java-17-openjdk-amd64"
-        MAVEN_HOME     = "/usr/share/maven"
     }
 
     stages {
+
+        stage('Debug Environment') {
+            steps {
+                sh '''
+                    echo "=== Java Info ==="
+                    which java
+                    java -version 2>&1 || echo "Java NOT FOUND"
+                    
+                    echo "=== Maven Info ==="
+                    which mvn
+                    mvn -version 2>&1 || echo "Maven NOT FOUND"
+                    
+                    echo "=== PATH ==="
+                    echo $PATH
+                    
+                    echo "=== Check /usr/bin ==="
+                    ls -la /usr/bin/mvn 2>&1 || echo "mvn not in /usr/bin"
+                    ls -la /usr/bin/java 2>&1 || echo "java not in /usr/bin"
+                '''
+            }
+        }
 
         stage('Checkout') {
             steps {
@@ -19,10 +38,7 @@ pipeline {
         stage('Build') {
             steps {
                 dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
-                    sh '''
-                        export PATH=$MAVEN_HOME/bin:$JAVA_HOME/bin:$PATH
-                        mvn clean package -DskipTests
-                    '''
+                    sh 'mvn clean package -DskipTests'
                 }
             }
         }
@@ -30,10 +46,7 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
-                    sh '''
-                        export PATH=$MAVEN_HOME/bin:$JAVA_HOME/bin:$PATH
-                        mvn test
-                    '''
+                    sh 'mvn test'
                 }
             }
             post {
