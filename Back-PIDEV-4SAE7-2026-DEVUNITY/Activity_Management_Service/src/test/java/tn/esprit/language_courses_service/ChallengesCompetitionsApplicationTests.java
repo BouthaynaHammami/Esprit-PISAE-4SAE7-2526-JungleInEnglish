@@ -2,9 +2,14 @@ package tn.esprit.language_courses_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 
 @SpringBootTest
 class ChallengesCompetitionsApplicationTests {
+
+    @MockBean
+    private JwtDecoder jwtDecoder;
 
     @Test
     void contextLoads() {
