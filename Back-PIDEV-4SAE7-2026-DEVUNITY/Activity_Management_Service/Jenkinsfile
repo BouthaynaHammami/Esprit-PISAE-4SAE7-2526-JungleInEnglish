@@ -27,14 +27,14 @@ pipeline {
         stage('Init') {
             steps {
                 echo '🧹 Cleaning workspace'
-                deleteDir()   // 🔥 fixes "not in a git directory"
+                deleteDir() // Ensures fresh workspace, fixes "not in a git directory"
             }
         }
 
         stage('Checkout') {
             steps {
                 echo '📥 Checking out source code'
-                checkout scm
+                checkout scm // Make sure "Lightweight checkout" is **unchecked** in job config
             }
         }
 
@@ -107,12 +107,14 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh '''
-                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                    docker push '"${IMAGE_NAME}:${IMAGE_TAG}"'
-                    docker push '"${IMAGE_NAME}:latest"'
-                    docker logout
-                    '''
+                    dir("${SERVICE_DIR}") {
+                        sh """
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                        docker push ${IMAGE_NAME}:latest
+                        docker logout
+                        """
+                    }
                 }
             }
         }
