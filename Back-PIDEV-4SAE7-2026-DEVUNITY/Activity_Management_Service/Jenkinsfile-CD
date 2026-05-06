@@ -1,0 +1,72 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'jdk17'
+    }
+
+    environment {
+        BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
+        IMAGE_NAME = 'shayma2003/activity-management-service'
+        IMAGE_TAG = "${BUILD_NUMBER}"
+        K8S_NAMESPACE = 'devunity'
+        K8S_DIR = "Back-PIDEV-4SAE7-2026-DEVUNITY/Activity_Management_Service/Kubernetes"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo '📥 Checking out source code'
+                checkout scm
+            }
+        }
+
+        stage('Kubernetes Check') {
+            steps {
+                echo '🔍 Checking Kubernetes cluster status'
+                sh 'kubectl get pods -A'
+                sh 'kubectl get nodes'
+            }
+        }
+
+        stage('Kubernetes Deploy') {
+            steps {
+                echo '🚀 Deploying to Kubernetes'
+                sh "kubectl apply -f ${K8S_DIR}/namespace.yml"
+                sh "kubectl apply -f ${K8S_DIR}/mysql-secret.yml"
+                sh "kubectl apply -f ${K8S_DIR}/Configmap.yml"
+                sh "kubectl apply -f ${K8S_DIR}/activity_management_deployment.yml"
+                sh "kubectl apply -f ${K8S_DIR}/activity_service.yml"
+            }
+        }
+
+        stage('Update Image') {
+            steps {
+                echo "🔄 Updating deployment image to ${IMAGE_NAME}:${IMAGE_TAG}"
+                sh """
+                kubectl set image deployment/activity-management-service \
+                activity-management-service=${IMAGE_NAME}:${IMAGE_TAG} \
+                -n ${K8S_NAMESPACE}
+                """
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                echo '✅ Verifying deployment status'
+                sh "kubectl rollout status deployment/activity-management-service -n ${K8S_NAMESPACE} --timeout=120s"
+                sh "kubectl get pods -n ${K8S_NAMESPACE}"
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Activity Service Deployment succeeded!'
+        }
+        failure {
+            echo '❌ Activity Service Deployment failed!'
+        }
+    }
+}

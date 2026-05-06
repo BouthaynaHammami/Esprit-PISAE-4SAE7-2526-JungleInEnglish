@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: activity-config
+  namespace: devunity
+data:
+  database.url: "jdbc:mysql://mysql-service:3306/Activity_Management?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
+  eureka.url: "http://eureka-service:8761/eureka"
+  jwt.secret: "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"
+  keycloak.issuer.uri: "http://keycloak-service:9090/realms/devunity"
+  cloudinary.cloud.name: "ddtfi7kal"
+  cloudinary.api.key: "971417699379591"
+  cloudinary.api.secret: "SzcF1Ll17RR2oMvueIXikFAN2IM"
+  ml.service.url: "http://ml-service:8080"
+  ml.service.endpoint: "/ml/api/analyze-cv"

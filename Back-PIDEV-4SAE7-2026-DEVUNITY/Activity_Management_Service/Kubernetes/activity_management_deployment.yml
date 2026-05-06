@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: activity-management-service
+  namespace: devunity
+  labels:
+    app: activity-management-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: activity-management-service
+  template:
+    metadata:
+      labels:
+        app: activity-management-service
+    spec:
+      containers:
+        - name: activity-management-service
+          image: shayma2003/activity-management-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8083
+              name: http
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: activity-config
+                  key: database.url
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              valueFrom:
+                configMapKeyRef:
+                  name: activity-config
+                  key: eureka.url
+            - name: APPLICATION_SECURITY_JWT_SECRET_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: activity-config
+                  key: jwt.secret
+            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: activity-config
+                  key: keycloak.issuer.uri
+            - name: CLOUDINARY_CLOUD_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: activity-config
+                  key: cloudinary.cloud.name
+            - name: CLOUDINARY_API_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: activity-config
+                  key: cloudinary.api.key
+            - name: CLOUDINARY_API_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  name: activity-config
+                  key: cloudinary.api.secret
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /activities/api/actuator/health
+              port: 8083
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /activities/api/actuator/health
+              port: 8083
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      restartPolicy: Always
