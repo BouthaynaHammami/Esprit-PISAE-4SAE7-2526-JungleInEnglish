@@ -17,13 +17,17 @@ pipeline {
         stage('Build with Maven Container') {
             steps {
                 sh '''
-                    cd Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service
+                    # Copier le code dans /tmp pour éviter les problèmes de mount
+                    cp -r Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service /tmp/lcs-build-${BUILD_NUMBER}
+                    
                     docker run --rm \
-                        -v $(pwd):/workspace \
+                        -v /tmp/lcs-build-${BUILD_NUMBER}:/workspace \
                         -w /workspace \
-                        --user 1000:1000 \
                         maven:3.9.15-eclipse-temurin-17 \
                         mvn clean package -DskipTests
+                    
+                    # Copier les artifacts back
+                    cp -r /tmp/lcs-build-${BUILD_NUMBER}/target Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service/
                 '''
             }
         }
@@ -31,11 +35,9 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 sh '''
-                    cd Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service
                     docker run --rm \
-                        -v $(pwd):/workspace \
+                        -v /tmp/lcs-build-${BUILD_NUMBER}:/workspace \
                         -w /workspace \
-                        --user 1000:1000 \
                         maven:3.9.15-eclipse-temurin-17 \
                         mvn test
                 '''
@@ -83,6 +85,9 @@ pipeline {
         }
         failure {
             echo "❌ Build échoué. Vérifiez les logs."
+        }
+        always {
+            sh 'rm -rf /tmp/lcs-build-${BUILD_NUMBER}'
         }
     }
 }
