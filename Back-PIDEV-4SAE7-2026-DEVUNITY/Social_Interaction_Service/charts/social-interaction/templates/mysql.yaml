@@ -1,7 +1,20 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-social-pvc
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql-social
+  namespace: {{ .Release.Namespace }}
   labels:
     app: mysql-social
 spec:
@@ -37,11 +50,19 @@ spec:
                 secretKeyRef:
                   name: {{ include "social-interaction.fullname" . }}-db-secret
                   key: db-password
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: mysql-social-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: mysql-service
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     app: mysql-social
