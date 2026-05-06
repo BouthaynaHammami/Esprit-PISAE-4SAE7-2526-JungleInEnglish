@@ -46,9 +46,10 @@ public class LevelTestEvaluationServiceImpl implements ILevelTestEvaluationServi
                     LevelTestResult.class
             );
 
-            log.info("Paragraph evaluation result: level={}, score={}", 
-                response.getBody().getLevel(), response.getBody().getScore());
-            return response.getBody();
+            LevelTestResult result = requireResponseBody(response, "Paragraph evaluation returned empty body");
+            log.info("Paragraph evaluation result: level={}, score={}",
+                result.getLevel(), result.getScore());
+            return result;
 
         } catch (Exception e) {
             log.error("Error evaluating paragraph test", e);
@@ -79,9 +80,10 @@ public class LevelTestEvaluationServiceImpl implements ILevelTestEvaluationServi
                     LevelTestResult.class
             );
 
-            log.info("Oral evaluation result: level={}, score={}", 
-                response.getBody().getLevel(), response.getBody().getScore());
-            return response.getBody();
+            LevelTestResult result = requireResponseBody(response, "Oral evaluation returned empty body");
+            log.info("Oral evaluation result: level={}, score={}",
+                result.getLevel(), result.getScore());
+            return result;
 
         } catch (Exception e) {
             log.error("Error evaluating oral test", e);
@@ -112,13 +114,22 @@ public class LevelTestEvaluationServiceImpl implements ILevelTestEvaluationServi
                     CourseRecommendation.class
             );
 
-            log.info("Course recommendations retrieved: {} courses for level {}", 
-                response.getBody().getRecommendedCourses().size(), level);
-            return response.getBody();
+            CourseRecommendation result = requireResponseBody(response, "Course recommendations returned empty body");
+            int courseCount = result.getRecommendedCourses() == null ? 0 : result.getRecommendedCourses().size();
+            log.info("Course recommendations retrieved: {} courses for level {}",
+                courseCount, level);
+            return result;
 
         } catch (Exception e) {
             log.error("Error getting course recommendations", e);
             throw new RuntimeException("Failed to get course recommendations: " + e.getMessage(), e);
         }
+    }
+
+    private <T> T requireResponseBody(ResponseEntity<T> response, String errorMessage) {
+        if (response == null || response.getBody() == null) {
+            throw new IllegalStateException(errorMessage);
+        }
+        return response.getBody();
     }
 }
