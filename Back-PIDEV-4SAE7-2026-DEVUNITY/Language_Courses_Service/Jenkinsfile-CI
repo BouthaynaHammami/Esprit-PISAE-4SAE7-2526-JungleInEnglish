@@ -8,37 +8,22 @@ pipeline {
 
     stages {
 
-        stage('Debug Environment') {
-            steps {
-                sh '''
-                    echo "=== Java Info ==="
-                    which java
-                    java -version 2>&1 || echo "Java NOT FOUND"
-                    
-                    echo "=== Maven Info ==="
-                    which mvn
-                    mvn -version 2>&1 || echo "Maven NOT FOUND"
-                    
-                    echo "=== PATH ==="
-                    echo $PATH
-                    
-                    echo "=== Check /usr/bin ==="
-                    ls -la /usr/bin/mvn 2>&1 || echo "mvn not in /usr/bin"
-                    ls -la /usr/bin/java 2>&1 || echo "java not in /usr/bin"
-                '''
-            }
-        }
-
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Build') {
+        stage('Build with Maven Container') {
             steps {
                 dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
-                    sh 'mvn clean package -DskipTests'
+                    sh '''
+                        docker run --rm \
+                            -v $(pwd):/workspace \
+                            -w /workspace \
+                            maven:3.9.15-eclipse-temurin-17 \
+                            mvn clean package -DskipTests
+                    '''
                 }
             }
         }
@@ -46,7 +31,13 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
-                    sh 'mvn test'
+                    sh '''
+                        docker run --rm \
+                            -v $(pwd):/workspace \
+                            -w /workspace \
+                            maven:3.9.15-eclipse-temurin-17 \
+                            mvn test
+                    '''
                 }
             }
             post {
@@ -59,8 +50,10 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
-                    sh 'docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} .'
-                    sh 'docker tag ${DOCKERHUB_REPO}:${IMAGE_TAG} ${DOCKERHUB_REPO}:latest'
+                    sh '''
+                        docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} .
+                        docker tag ${DOCKERHUB_REPO}:${IMAGE_TAG} ${DOCKERHUB_REPO}:latest
+                    '''
                 }
             }
         }
