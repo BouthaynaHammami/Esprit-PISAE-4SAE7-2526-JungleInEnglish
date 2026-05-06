@@ -12,13 +12,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,18 +28,25 @@ import tn.esprit.learner_managment_service.DropoutPrediction.Dto.DropoutFormRequ
 import tn.esprit.learner_managment_service.DropoutPrediction.Dto.DropoutFormResponse;
 import tn.esprit.learner_managment_service.DropoutPrediction.Services.DropoutFormService;
 
-@WebMvcTest(DropoutFormController.class)
-@AutoConfigureMockMvc(addFilters = false)
+@ExtendWith(MockitoExtension.class)
 class DropoutFormControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @MockBean
+    @Mock
     private DropoutFormService dropoutFormService;
+
+    @InjectMocks
+    private DropoutFormController dropoutFormController;
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders
+            .standaloneSetup(dropoutFormController)
+            .build();
+    }
 
     @Test
     void createForm_returnsCreated() throws Exception {

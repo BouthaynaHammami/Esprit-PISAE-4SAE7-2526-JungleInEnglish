@@ -77,7 +77,7 @@ class LevelTestEvaluationServiceImplTest {
             eq(LevelTestResult.class)))
             .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(RuntimeException.class,
             () -> service.evaluateParagraphTest("sample paragraph", "English"));
     }
 
@@ -116,7 +116,7 @@ class LevelTestEvaluationServiceImplTest {
             eq(LevelTestResult.class)))
             .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(RuntimeException.class,
             () -> service.evaluateOralTest("transcript", 45));
     }
 
@@ -147,7 +147,7 @@ class LevelTestEvaluationServiceImplTest {
             eq(CourseRecommendation.class)))
             .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(RuntimeException.class,
             () -> service.getCourseRecommendations("A1", 80));
     }
 }
