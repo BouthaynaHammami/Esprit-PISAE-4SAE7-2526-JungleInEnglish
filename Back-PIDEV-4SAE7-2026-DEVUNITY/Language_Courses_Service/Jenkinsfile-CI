@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKERHUB_REPO = "saifby/language-courses-service"
         IMAGE_TAG      = "v${BUILD_NUMBER}"
+        BUILD_DIR      = "${WORKSPACE}/build-${BUILD_NUMBER}"
     }
 
     stages {
@@ -14,31 +15,16 @@ pipeline {
             }
         }
 
-        stage('Debug - Show Structure') {
+        stage('Prepare Build') {
             steps {
                 sh '''
-                    echo "========== Root Directory =========="
-                    ls -la
-                    
-                    echo "========== Back Directory =========="
-                    ls -la Back-PIDEV-4SAE7-2026-DEVUNITY/
-                    
-                    echo "========== Language_Courses_Service =========="
-                    ls -la Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service/
-                    
-                    echo "========== Find pom.xml =========="
-                    find Back-PIDEV-4SAE7-2026-DEVUNITY -name "pom.xml" -type f
-                    
-                    echo "========== Prepare Build =========="
-                    rm -rf /tmp/lcs-build-${BUILD_NUMBER}
-                    mkdir -p /tmp/lcs-build-${BUILD_NUMBER}
-                    cp -r Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service/* /tmp/lcs-build-${BUILD_NUMBER}/
-                    
-                    echo "========== /tmp/lcs-build Contents =========="
-                    ls -la /tmp/lcs-build-${BUILD_NUMBER}/
-                    
-                    echo "========== Check pom.xml in /tmp =========="
-                    ls -la /tmp/lcs-build-${BUILD_NUMBER}/pom.xml 2>/dev/null || echo "pom.xml NOT FOUND"
+                    rm -rf ${BUILD_DIR}
+                    mkdir -p ${BUILD_DIR}
+                    cp -r Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service/Dockerfile \
+                         Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service/pom.xml \
+                         Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service/src \
+                         Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service/k8s \
+                         ${BUILD_DIR}/
                 '''
             }
         }
@@ -47,13 +33,10 @@ pipeline {
             steps {
                 sh '''
                     docker run --rm \
-                        -v /tmp/lcs-build-${BUILD_NUMBER}:/workspace \
-                        -w /workspace \
+                        -v ${WORKSPACE}:/jenkins-workspace \
+                        -w /jenkins-workspace/build-${BUILD_NUMBER} \
                         maven:3.9.15-eclipse-temurin-17 \
                         mvn clean package -DskipTests
-                    
-                    # Copier les artifacts back
-                    cp -r /tmp/lcs-build-${BUILD_NUMBER}/target Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service/ 2>/dev/null || true
                 '''
             }
         }
@@ -62,27 +45,26 @@ pipeline {
             steps {
                 sh '''
                     docker run --rm \
-                        -v /tmp/lcs-build-${BUILD_NUMBER}:/workspace \
-                        -w /workspace \
+                        -v ${WORKSPACE}:/jenkins-workspace \
+                        -w /jenkins-workspace/build-${BUILD_NUMBER} \
                         maven:3.9.15-eclipse-temurin-17 \
                         mvn test
                 '''
             }
             post {
                 always {
-                    junit allowEmptyResults: true, testResults: 'Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service/target/surefire-reports/*.xml'
+                    junit allowEmptyResults: true, testResults: 'build-${BUILD_NUMBER}/target/surefire-reports/*.xml'
                 }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
-                    sh '''
-                        docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} .
-                        docker tag ${DOCKERHUB_REPO}:${IMAGE_TAG} ${DOCKERHUB_REPO}:latest
-                    '''
-                }
+                sh '''
+                    cd ${BUILD_DIR}
+                    docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} .
+                    docker tag ${DOCKERHUB_REPO}:${IMAGE_TAG} ${DOCKERHUB_REPO}:latest
+                '''
             }
         }
 
@@ -113,7 +95,7 @@ pipeline {
             echo "❌ Build échoué. Vérifiez les logs."
         }
         always {
-            sh 'rm -rf /tmp/lcs-build-${BUILD_NUMBER}'
+            sh 'rm -rf ${BUILD_DIR}'
         }
     }
 }
