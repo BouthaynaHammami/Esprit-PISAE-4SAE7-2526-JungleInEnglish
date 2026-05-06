@@ -1,12 +1,11 @@
 pipeline {
     agent any
 
-    tools {
-        jdk 'jdk17'
-        maven 'maven3'
-    }
     options {
-        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+        buildDiscarder(logRotator(
+            numToKeepStr: '5',
+            artifactNumToKeepStr: '5'
+        ))
         disableConcurrentBuilds()
         timeout(time: 1, unit: 'HOURS')
     }
@@ -15,10 +14,10 @@ pipeline {
         BACKEND_PATH = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
         SERVICE_DIR  = "${BACKEND_PATH}/Activity_Management_Service"
 
-        IMAGE_NAME   = 'shayma2003/activity-management-service'
-        IMAGE_TAG    = "${BUILD_NUMBER}"
+        IMAGE_NAME = 'shayma2003/activity-management-service'
+        IMAGE_TAG  = "${BUILD_NUMBER}"
 
-        MAVEN_OPTS   = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
+        MAVEN_OPTS = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
     }
 
     stages {
@@ -26,14 +25,24 @@ pipeline {
         stage('Init') {
             steps {
                 echo '🧹 Cleaning workspace'
-                deleteDir() // Ensures fresh workspace, fixes "not in a git directory"
+                deleteDir()
             }
         }
 
         stage('Checkout') {
             steps {
                 echo '📥 Checking out source code'
-                checkout scm // Make sure "Lightweight checkout" is **unchecked** in job config
+                checkout scm
+            }
+        }
+
+        stage('Verify Tools') {
+            steps {
+                sh '''
+                java -version
+                mvn -version
+                docker version
+                '''
             }
         }
 
@@ -51,11 +60,12 @@ pipeline {
                     sh 'mvn test'
                 }
             }
+
             post {
                 always {
                     dir("${SERVICE_DIR}") {
                         junit allowEmptyResults: true,
-                              testResults: 'target/surefire-reports/*.xml'
+                               testResults: 'target/surefire-reports/*.xml'
                     }
                 }
             }
@@ -63,14 +73,28 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    dir("${SERVICE_DIR}") {
-                        sh '''
-                        mvn sonar:sonar \
-                        -Dsonar.projectKey=activity-management-service \
-                        -Dsonar.projectName=ActivityManagementService \
-                        -DskipTests
-                        '''
+                script {
+                    try {
+
+                        withSonarQubeEnv('sonarqube') {
+
+                            dir("${SERVICE_DIR}") {
+
+                                sh '''
+                                mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
+                                -Dsonar.projectKey=activity-management-service \
+                                -Dsonar.projectName=ActivityManagementService \
+                                -DskipTests
+                                '''
+                            }
+                        }
+
+                    } catch (Exception e) {
+
+                        echo "⚠️ SonarQube analysis failed"
+                        echo e.toString()
+
+                        currentBuild.result = 'UNSTABLE'
                     }
                 }
             }
@@ -78,19 +102,37 @@ pipeline {
 
         stage('Deploy to Nexus') {
             steps {
-                dir("${SERVICE_DIR}") {
-                    echo '📦 Deploying to Nexus'
-                    sh '''
-                    mvn deploy -DskipTests \
-                    -s /var/jenkins_home/.m2/settings.xml
-                    '''
+
+                script {
+
+                    try {
+
+                        dir("${SERVICE_DIR}") {
+
+                            echo '📦 Deploying artifact to Nexus'
+
+                            sh '''
+                            mvn deploy -DskipTests \
+                            -s /var/jenkins_home/.m2/settings.xml
+                            '''
+                        }
+
+                    } catch (Exception e) {
+
+                        echo "⚠️ Nexus deployment failed"
+                        echo e.toString()
+
+                        currentBuild.result = 'UNSTABLE'
+                    }
                 }
             }
         }
 
         stage('Docker Build') {
             steps {
+
                 dir("${SERVICE_DIR}") {
+
                     sh """
                     docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
                     docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
@@ -101,16 +143,23 @@ pipeline {
 
         stage('Docker Push') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'docker_token',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
+
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'docker_token',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+
                     dir("${SERVICE_DIR}") {
+
                         sh """
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        echo "\$DOCKER_PASS" | docker login -u "\$DOCKER_USER" --password-stdin
+
                         docker push ${IMAGE_NAME}:${IMAGE_TAG}
                         docker push ${IMAGE_NAME}:latest
+
                         docker logout
                         """
                     }
@@ -120,12 +169,19 @@ pipeline {
     }
 
     post {
+
         success {
-            echo '✅ Pipeline SUCCESS'
+            echo '✅ PIPELINE SUCCESS'
         }
+
+        unstable {
+            echo '⚠️ PIPELINE UNSTABLE'
+        }
+
         failure {
-            echo '❌ Pipeline FAILED'
+            echo '❌ PIPELINE FAILED'
         }
+
         always {
             cleanWs()
         }
