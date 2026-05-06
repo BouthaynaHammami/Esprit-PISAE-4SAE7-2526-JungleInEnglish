@@ -26,14 +26,12 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo '📥 Checkout source code'
-                git branch: 'main',
-                    credentialsId: 'devops',
-                    url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
+                echo '📥 Checking out source code'
+                checkout scm
             }
         }
 
-        stage('Clean & Build') {
+        stage('Build') {
             steps {
                 dir("${SERVICE_DIR}") {
                     sh 'mvn clean package -DskipTests'
@@ -44,7 +42,7 @@ pipeline {
         stage('Test') {
             steps {
                 dir("${SERVICE_DIR}") {
-                    sh 'mvn test || true'
+                    sh 'mvn test'
                 }
             }
             post {
@@ -76,10 +74,9 @@ pipeline {
             steps {
                 dir("${SERVICE_DIR}") {
                     echo '📦 Deploying to Nexus'
-
                     sh '''
                     mvn deploy -DskipTests \
-                        -s /var/jenkins_home/.m2/settings.xml
+                    -s /var/jenkins_home/.m2/settings.xml
                     '''
                 }
             }
@@ -103,10 +100,8 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-
                     sh """
                     echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
-
                     docker push ${IMAGE_NAME}:${IMAGE_TAG}
                     docker push ${IMAGE_NAME}:latest
                     """

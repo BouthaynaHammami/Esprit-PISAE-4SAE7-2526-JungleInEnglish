@@ -12,5 +12,5 @@ public interface EmployeeUserClient {
     List<UserDTO> getAllUsers();
 
     @GetMapping("/users/{id}")
-    UserDTO getUserById(@PathVariable Long id);
+    UserDTO getUserById(@PathVariable("id") Long id);
 }
