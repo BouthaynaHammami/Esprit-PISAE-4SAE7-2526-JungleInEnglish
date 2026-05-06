@@ -92,6 +92,9 @@ pipeline {
             steps {
                 script {
                     try {
+                        // Check Docker access first
+                        sh 'docker info > /dev/null 2>&1 || (echo "Docker access denied" && exit 1)'
+                        
                         dir("${SERVICE_DIR}") {
                             sh """
                             docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
@@ -100,10 +103,26 @@ pipeline {
                         }
                     } catch (Exception e) {
                         echo "❌ Docker build failed: ${e.message}"
-                        echo "💡 Possible solutions:"
-                        echo "   1. Add Jenkins user to docker group: sudo usermod -aG docker jenkins"
-                        echo "   2. Restart Jenkins: sudo systemctl restart jenkins"
-                        echo "   3. Or set SKIP_DOCKER=true to skip Docker stages"
+                        echo ""
+                        echo "═══════════════════════════════════════════════════════════"
+                        echo "💡 DOCKER PERMISSION FIX REQUIRED"
+                        echo "═══════════════════════════════════════════════════════════"
+                        echo ""
+                        echo "Run these commands on your Jenkins server:"
+                        echo ""
+                        echo "  # Add Jenkins user to docker group"
+                        echo "  sudo usermod -aG docker jenkins"
+                        echo ""
+                        echo "  # Restart Jenkins service"
+                        echo "  sudo systemctl restart jenkins"
+                        echo ""
+                        echo "  # OR if Jenkins is running in Docker:"
+                        echo "  docker restart jenkins"
+                        echo ""
+                        echo "  # Verify the fix:"
+                        echo "  sudo -u jenkins docker ps"
+                        echo ""
+                        echo "═══════════════════════════════════════════════════════════"
                         error("Docker build failed - check permissions")
                     }
                 }
