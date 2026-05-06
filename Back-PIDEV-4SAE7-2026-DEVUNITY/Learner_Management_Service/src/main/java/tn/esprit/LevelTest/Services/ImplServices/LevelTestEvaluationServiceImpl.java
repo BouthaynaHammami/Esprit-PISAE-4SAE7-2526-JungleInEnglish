@@ -34,19 +34,16 @@ public class LevelTestEvaluationServiceImpl implements ILevelTestEvaluationServi
 
             String url = mlServiceUrl + "/ml/api/evaluate-paragraph";
             log.info("Calling ML service: {}", url);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
 
-            ResponseEntity<LevelTestResult> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    entity,
-                    LevelTestResult.class
+            LevelTestResult result = callMlService(
+                url,
+                request,
+                LevelTestResult.class,
+                "Paragraph evaluation returned empty body"
             );
-
-            LevelTestResult result = requireResponseBody(response, "Paragraph evaluation returned empty body");
+            if (result == null) {
+                throw new IllegalStateException("Paragraph evaluation returned null result");
+            }
             log.info("Paragraph evaluation result: level={}, score={}",
                 result.getLevel(), result.getScore());
             return result;
@@ -68,19 +65,16 @@ public class LevelTestEvaluationServiceImpl implements ILevelTestEvaluationServi
 
             String url = mlServiceUrl + "/ml/api/evaluate-oral";
             log.info("Calling ML service: {}", url);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
 
-            ResponseEntity<LevelTestResult> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    entity,
-                    LevelTestResult.class
+            LevelTestResult result = callMlService(
+                url,
+                request,
+                LevelTestResult.class,
+                "Oral evaluation returned empty body"
             );
-
-            LevelTestResult result = requireResponseBody(response, "Oral evaluation returned empty body");
+            if (result == null) {
+                throw new IllegalStateException("Oral evaluation returned null result");
+            }
             log.info("Oral evaluation result: level={}, score={}",
                 result.getLevel(), result.getScore());
             return result;
@@ -102,19 +96,16 @@ public class LevelTestEvaluationServiceImpl implements ILevelTestEvaluationServi
 
             String url = mlServiceUrl + "/ml/api/recommend-courses";
             log.info("Calling ML service: {}", url);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
 
-            ResponseEntity<CourseRecommendation> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    entity,
-                    CourseRecommendation.class
+            CourseRecommendation result = callMlService(
+                url,
+                request,
+                CourseRecommendation.class,
+                "Course recommendations returned empty body"
             );
-
-            CourseRecommendation result = requireResponseBody(response, "Course recommendations returned empty body");
+            if (result == null) {
+                throw new IllegalStateException("Course recommendations returned null result");
+            }
             int courseCount = result.getRecommendedCourses() == null ? 0 : result.getRecommendedCourses().size();
             log.info("Course recommendations retrieved: {} courses for level {}",
                 courseCount, level);
@@ -131,5 +122,29 @@ public class LevelTestEvaluationServiceImpl implements ILevelTestEvaluationServi
             throw new IllegalStateException(errorMessage);
         }
         return response.getBody();
+    }
+
+    private <T> T callMlService(
+        String url,
+        Map<String, Object> requestBody,
+        Class<T> responseType,
+        String errorMessage
+    ) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<T> response = restTemplate.exchange(
+            url,
+            HttpMethod.POST,
+            entity,
+            responseType
+        );
+
+        T result = requireResponseBody(response, errorMessage);
+        if (result == null) {
+            throw new IllegalStateException(errorMessage);
+        }
+        return result;
     }
 }
