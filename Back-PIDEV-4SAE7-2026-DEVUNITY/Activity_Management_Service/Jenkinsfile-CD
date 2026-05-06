@@ -12,9 +12,13 @@ pipeline {
         IMAGE_TAG = "${BUILD_NUMBER}"
         K8S_NAMESPACE = 'devunity'
         K8S_DIR = "Back-PIDEV-4SAE7-2026-DEVUNITY/Activity_Management_Service/Kubernetes"
+        
+        // 🔥 IMPORTANT FIX
+        KUBECONFIG = '/var/jenkins_home/.kube/config'
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 echo '📥 Checking out source code'
@@ -25,19 +29,24 @@ pipeline {
         stage('Kubernetes Check') {
             steps {
                 echo '🔍 Checking Kubernetes cluster status'
-                sh 'kubectl get pods -A'
-                sh 'kubectl get nodes'
+                sh '''
+                kubectl config current-context
+                kubectl get nodes
+                kubectl get pods -A
+                '''
             }
         }
 
         stage('Kubernetes Deploy') {
             steps {
                 echo '🚀 Deploying to Kubernetes'
-                sh "kubectl apply -f ${K8S_DIR}/namespace.yml"
-                sh "kubectl apply -f ${K8S_DIR}/mysql-secret.yml"
-                sh "kubectl apply -f ${K8S_DIR}/Configmap.yml"
-                sh "kubectl apply -f ${K8S_DIR}/activity_management_deployment.yml"
-                sh "kubectl apply -f ${K8S_DIR}/activity_service.yml"
+                sh """
+                kubectl apply -f ${K8S_DIR}/namespace.yml
+                kubectl apply -f ${K8S_DIR}/mysql-secret.yml
+                kubectl apply -f ${K8S_DIR}/Configmap.yml
+                kubectl apply -f ${K8S_DIR}/activity_management_deployment.yml
+                kubectl apply -f ${K8S_DIR}/activity_service.yml
+                """
             }
         }
 
@@ -55,8 +64,10 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 echo '✅ Verifying deployment status'
-                sh "kubectl rollout status deployment/activity-management-service -n ${K8S_NAMESPACE} --timeout=120s"
-                sh "kubectl get pods -n ${K8S_NAMESPACE}"
+                sh """
+                kubectl rollout status deployment/activity-management-service -n ${K8S_NAMESPACE} --timeout=120s
+                kubectl get pods -n ${K8S_NAMESPACE}
+                """
             }
         }
     }
