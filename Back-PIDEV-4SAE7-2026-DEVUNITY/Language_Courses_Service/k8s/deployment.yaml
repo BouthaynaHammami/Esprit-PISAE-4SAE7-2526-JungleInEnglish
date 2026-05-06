@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: language-courses-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: language-courses-service
+  template:
+    metadata:
+      labels:
+        app: language-courses-service
+    spec:
+      containers:
+        - name: language-courses-service
+          image: saifby/language-courses-service:latest
+          ports:
+            - containerPort: 8086
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql-service:3306/Language_Courses?createDatabaseIfNotExist=true"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-root-password
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://192.168.32.1:8761/eureka"
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              value: "true"
+            - name: SERVER_PORT
+              value: "8086"
+            - name: SERVER_SERVLET_CONTEXT_PATH
+              value: "/language-courses/api"
+          imagePullPolicy: Always

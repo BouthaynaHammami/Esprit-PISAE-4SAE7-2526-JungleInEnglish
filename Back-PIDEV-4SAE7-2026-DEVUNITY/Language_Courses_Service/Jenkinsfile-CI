@@ -1,0 +1,139 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB_REPO = "saifby/language-courses-service"
+        IMAGE_TAG      = "v${BUILD_NUMBER}"
+        SONAR_PROJECT  = "Language_Courses_Service"
+    }
+
+    tools {
+        maven 'Maven3'
+        jdk   'JDK17'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+        stage('OWASP Dependency Check') {
+            steps {
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
+                    withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_KEY')]) {
+                        dependencyCheck additionalArguments: """
+                            --scan ./
+                            --format XML
+                            --format HTML
+                            --out ./dependency-check-report
+                            --nvdApiKey ${NVD_KEY}
+                            --prettyPrint
+                        """, odcInstallation: 'OWASP-DC'
+                    }
+                }
+            }
+            post {
+                always {
+                    dependencyCheckPublisher pattern: '**/dependency-check-report/dependency-check-report.xml'
+                }
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
+                    sh 'mvn test -Dskip.tests=false'
+                }
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
+                    jacoco(
+                        execPattern: '**/target/jacoco.exec',
+                        classPattern: '**/target/classes',
+                        sourcePattern: '**/src/main/java',
+                        exclusionPattern: '**/src/test*'
+                    )
+                }
+            }
+        }
+        stage('Deploy to Nexus') {
+            steps {
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
+                    sh 'mvn deploy -DskipTests'
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
+                    withSonarQubeEnv('SonarQube') {
+                        sh '''
+                            mvn sonar:sonar \
+                              -Dsonar.projectKey=${SONAR_PROJECT} \
+                              -Dsonar.projectName=${SONAR_PROJECT} \
+                              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+                              -Dsonar.exclusions=**/Config/SecurityConfig.java
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
+                    sh 'docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} .'
+                    sh 'docker tag ${DOCKERHUB_REPO}:${IMAGE_TAG} ${DOCKERHUB_REPO}:latest'
+                }
+            }
+        }
+
+        stage('Push to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'USER',
+                    passwordVariable: 'PASS'
+                )]) {
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+                    sh 'docker push ${DOCKERHUB_REPO}:${IMAGE_TAG}'
+                    sh 'docker push ${DOCKERHUB_REPO}:latest'
+                }
+            }
+        }
+
+    }
+
+    post {
+        success {
+            mail to: 'islemraissi789@gmail.com',
+                 subject: "✅ CI PASSED - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Build passed.\nSonarQube scan passed.\nDocker image pushed to DockerHub.\n\nCheck: ${env.BUILD_URL}"
+        }
+        failure {
+            mail to: 'islemraissi789@gmail.com',
+                 subject: "❌ CI FAILED - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Build failed. Check logs:\n${env.BUILD_URL}"
+        }
+    }
+}
