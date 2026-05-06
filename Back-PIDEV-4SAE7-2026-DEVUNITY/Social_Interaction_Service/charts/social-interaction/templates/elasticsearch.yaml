@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: elasticsearch-social
+  namespace: {{ .Release.Namespace }}
   labels:
     app: elasticsearch-social
 spec:
@@ -23,7 +24,12 @@ spec:
             - name: discovery.type
               value: "single-node"
             - name: xpack.security.enabled
-              value: "false"
+              value: "true"
+            - name: ELASTIC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "social-interaction.fullname" . }}-db-secret
+                  key: elasticsearch-password
             - name: ES_JAVA_OPTS
               value: "-Xms512m -Xmx512m"
           resources:
@@ -37,6 +43,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: elasticsearch-service
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     app: elasticsearch-social
