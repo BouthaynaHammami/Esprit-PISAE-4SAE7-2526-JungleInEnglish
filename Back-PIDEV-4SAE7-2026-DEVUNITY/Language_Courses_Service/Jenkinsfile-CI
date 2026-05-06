@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKERHUB_REPO = "saifby/language-courses-service"
         IMAGE_TAG      = "v${BUILD_NUMBER}"
-        BUILD_DIR      = "/tmp/lcs-build-${BUILD_NUMBER}"
     }
 
     stages {
@@ -15,13 +14,31 @@ pipeline {
             }
         }
 
-        stage('Prepare Build') {
+        stage('Debug - Show Structure') {
             steps {
                 sh '''
-                    rm -rf ${BUILD_DIR}
-                    mkdir -p ${BUILD_DIR}
-                    # Copy the entire Back directory to preserve the structure
-                    cp -r Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service ${BUILD_DIR}/
+                    echo "========== Root Directory =========="
+                    ls -la
+                    
+                    echo "========== Back Directory =========="
+                    ls -la Back-PIDEV-4SAE7-2026-DEVUNITY/
+                    
+                    echo "========== Language_Courses_Service =========="
+                    ls -la Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service/
+                    
+                    echo "========== Find pom.xml =========="
+                    find Back-PIDEV-4SAE7-2026-DEVUNITY -name "pom.xml" -type f
+                    
+                    echo "========== Prepare Build =========="
+                    rm -rf /tmp/lcs-build-${BUILD_NUMBER}
+                    mkdir -p /tmp/lcs-build-${BUILD_NUMBER}
+                    cp -r Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service/* /tmp/lcs-build-${BUILD_NUMBER}/
+                    
+                    echo "========== /tmp/lcs-build Contents =========="
+                    ls -la /tmp/lcs-build-${BUILD_NUMBER}/
+                    
+                    echo "========== Check pom.xml in /tmp =========="
+                    ls -la /tmp/lcs-build-${BUILD_NUMBER}/pom.xml 2>/dev/null || echo "pom.xml NOT FOUND"
                 '''
             }
         }
@@ -30,10 +47,13 @@ pipeline {
             steps {
                 sh '''
                     docker run --rm \
-                        -v ${BUILD_DIR}/Language_Courses_Service:/workspace \
+                        -v /tmp/lcs-build-${BUILD_NUMBER}:/workspace \
                         -w /workspace \
                         maven:3.9.15-eclipse-temurin-17 \
                         mvn clean package -DskipTests
+                    
+                    # Copier les artifacts back
+                    cp -r /tmp/lcs-build-${BUILD_NUMBER}/target Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service/ 2>/dev/null || true
                 '''
             }
         }
@@ -42,7 +62,7 @@ pipeline {
             steps {
                 sh '''
                     docker run --rm \
-                        -v ${BUILD_DIR}/Language_Courses_Service:/workspace \
+                        -v /tmp/lcs-build-${BUILD_NUMBER}:/workspace \
                         -w /workspace \
                         maven:3.9.15-eclipse-temurin-17 \
                         mvn test
@@ -50,14 +70,14 @@ pipeline {
             }
             post {
                 always {
-                    junit allowEmptyResults: true, testResults: '${BUILD_DIR}/Language_Courses_Service/target/surefire-reports/*.xml'
+                    junit allowEmptyResults: true, testResults: 'Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service/target/surefire-reports/*.xml'
                 }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                dir('${BUILD_DIR}/Language_Courses_Service') {
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
                     sh '''
                         docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} .
                         docker tag ${DOCKERHUB_REPO}:${IMAGE_TAG} ${DOCKERHUB_REPO}:latest
@@ -93,7 +113,7 @@ pipeline {
             echo "❌ Build échoué. Vérifiez les logs."
         }
         always {
-            sh 'rm -rf ${BUILD_DIR}'
+            sh 'rm -rf /tmp/lcs-build-${BUILD_NUMBER}'
         }
     }
 }
