@@ -82,21 +82,21 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'sonar_token', variable: 'SONAR_TOKEN')]) {
-                        withSonarQubeEnv('sonarqube') {
-                            dir("${FRONT_PATH}") {
-                                sh """
-                                    npx sonar-scanner \
-                                    -Dsonar.projectKey=Dev-Unity-Frontend \
-                                    -Dsonar.projectName='Dev Unity Frontend' \
-                                    -Dsonar.sources=src \
-                                    -Dsonar.host.url=${SONAR_HOST_URL} \
-                                    -Dsonar.token=${SONAR_TOKEN} \
-                                    -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-                                """
-                            }
-                        }
-                    }
+                  withCredentials([string(credentialsId: 'sonar_token', variable: 'SONAR_TOKEN')]) {
+                      withSonarQubeEnv('sonarqube') {
+                          dir("${FRONT_PATH}") {
+                              sh '''
+                                  npx sonar-scanner \
+                                  -Dsonar.projectKey=Dev-Unity-Frontend \
+                                  -Dsonar.projectName="Dev Unity Frontend" \
+                                  -Dsonar.sources=src \
+                                  -Dsonar.host.url=http://192.168.19.128:9000 \
+                                  -Dsonar.token=$SONAR_TOKEN \
+                                  -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+                              '''
+                          }
+                      }
+                  }
                 }
             }
         }
