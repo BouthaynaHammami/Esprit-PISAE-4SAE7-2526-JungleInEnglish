@@ -41,9 +41,6 @@ public class LevelTestEvaluationServiceImpl implements ILevelTestEvaluationServi
                 LevelTestResult.class,
                 "Paragraph evaluation returned empty body"
             );
-            if (result == null) {
-                throw new IllegalStateException("Paragraph evaluation returned null result");
-            }
             log.info("Paragraph evaluation result: level={}, score={}",
                 result.getLevel(), result.getScore());
             return result;
@@ -72,9 +69,6 @@ public class LevelTestEvaluationServiceImpl implements ILevelTestEvaluationServi
                 LevelTestResult.class,
                 "Oral evaluation returned empty body"
             );
-            if (result == null) {
-                throw new IllegalStateException("Oral evaluation returned null result");
-            }
             log.info("Oral evaluation result: level={}, score={}",
                 result.getLevel(), result.getScore());
             return result;
@@ -103,9 +97,6 @@ public class LevelTestEvaluationServiceImpl implements ILevelTestEvaluationServi
                 CourseRecommendation.class,
                 "Course recommendations returned empty body"
             );
-            if (result == null) {
-                throw new IllegalStateException("Course recommendations returned null result");
-            }
             int courseCount = result.getRecommendedCourses() == null ? 0 : result.getRecommendedCourses().size();
             log.info("Course recommendations retrieved: {} courses for level {}",
                 courseCount, level);
