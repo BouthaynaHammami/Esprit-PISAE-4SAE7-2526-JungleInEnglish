@@ -1,8 +1,6 @@
 pipeline {
     agent any
-    tools {
-        jdk 'jdk17'
-    }
+
     environment {
 
         K8S_DIR = "Back-PIDEV-4SAE7-2026-DEVUNITY/Community_Engagement_Service/K8s"
