@@ -4,11 +4,9 @@ pipeline {
     environment {
         DOCKERHUB_REPO = "saifby/language-courses-service"
         IMAGE_TAG      = "v${BUILD_NUMBER}"
-    }
-
-    tools {
-        maven 'Maven3'
-        jdk   'JDK17'
+        JAVA_HOME      = "/usr/lib/jvm/java-17-openjdk-amd64"
+        MAVEN_HOME     = "/usr/share/maven"
+        PATH           = "${MAVEN_HOME}/bin:${JAVA_HOME}/bin:${PATH}"
     }
 
     stages {
