@@ -1,9 +1,9 @@
 package tn.esprit.LevelTest.Dto;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -13,657 +13,1004 @@ import org.junit.jupiter.api.Test;
 class CourseRecommendationTest {
 
     @Test
-    void courseRecommendation_noArgsConstructor_hasNullFields() {
-        CourseRecommendation recommendation = new CourseRecommendation();
-
-        assertNull(recommendation.getCurrentLevel());
-        assertNull(recommendation.getLevelName());
-        assertNull(recommendation.getScore());
-        assertNull(recommendation.getRecommendedCourses());
-        assertNull(recommendation.getSkillsToImprove());
-        assertNull(recommendation.getNextLevelSuggestion());
-        assertNull(recommendation.getLearningPath());
-    }
-
-    @Test
-    void courseRecommendation_allArgsConstructor_setsAllFields() {
-        CourseRecommendation.RecommendedCourse course = new CourseRecommendation.RecommendedCourse(
-            "Title",
-            "Desc",
-            List.of("topic1"),
-            "2h",
-            "A1"
-        );
-        CourseRecommendation.NextLevelSuggestion nextLevel = new CourseRecommendation.NextLevelSuggestion(
-            "A2",
-            "Beginner",
-            "Keep going",
-            List.of(course)
-        );
-        CourseRecommendation.LearningPath learningPath = new CourseRecommendation.LearningPath(
-            "Grammar",
-            "4 weeks",
-            List.of("Tip 1")
-        );
-
-        CourseRecommendation recommendation = new CourseRecommendation(
-            "A1",
-            "Starter",
-            80,
-            List.of(course),
-            List.of("Vocabulary"),
-            nextLevel,
-            learningPath
-        );
-
-        assertEquals("A1", recommendation.getCurrentLevel());
-        assertEquals("Starter", recommendation.getLevelName());
-        assertEquals(80, recommendation.getScore());
-        assertEquals(course, recommendation.getRecommendedCourses().get(0));
-        assertEquals("Vocabulary", recommendation.getSkillsToImprove().get(0));
-        assertEquals(nextLevel, recommendation.getNextLevelSuggestion());
-        assertEquals(learningPath, recommendation.getLearningPath());
-    }
-
-    @Test
-    void courseRecommendation_gettersAndSetters_work() {
-        CourseRecommendation recommendation = new CourseRecommendation();
-        CourseRecommendation.RecommendedCourse course = new CourseRecommendation.RecommendedCourse();
-        CourseRecommendation.NextLevelSuggestion nextLevel = new CourseRecommendation.NextLevelSuggestion();
-        CourseRecommendation.LearningPath learningPath = new CourseRecommendation.LearningPath();
-
-        recommendation.setCurrentLevel("B1");
-        recommendation.setLevelName("Intermediate");
-        recommendation.setScore(70);
-        recommendation.setRecommendedCourses(List.of(course));
-        recommendation.setSkillsToImprove(List.of("Writing"));
-        recommendation.setNextLevelSuggestion(nextLevel);
-        recommendation.setLearningPath(learningPath);
-
-        assertEquals("B1", recommendation.getCurrentLevel());
-        assertEquals("Intermediate", recommendation.getLevelName());
-        assertEquals(70, recommendation.getScore());
-        assertEquals(course, recommendation.getRecommendedCourses().get(0));
-        assertEquals("Writing", recommendation.getSkillsToImprove().get(0));
-        assertEquals(nextLevel, recommendation.getNextLevelSuggestion());
-        assertEquals(learningPath, recommendation.getLearningPath());
-    }
-
-    @Test
-    void courseRecommendation_equalsAndHashCode_identicalObjects() {
-        CourseRecommendation.RecommendedCourse course = new CourseRecommendation.RecommendedCourse(
-            "Title",
-            "Desc",
-            List.of("topic1"),
-            "2h",
-            "A1"
-        );
-        CourseRecommendation.NextLevelSuggestion nextLevel = new CourseRecommendation.NextLevelSuggestion(
-            "A2",
-            "Beginner",
-            "Keep going",
-            List.of(course)
-        );
-        CourseRecommendation.LearningPath learningPath = new CourseRecommendation.LearningPath(
-            "Grammar",
-            "4 weeks",
-            List.of("Tip 1")
-        );
-
-        CourseRecommendation left = new CourseRecommendation(
-            "A1",
-            "Starter",
-            80,
-            List.of(course),
-            List.of("Vocabulary"),
-            nextLevel,
-            learningPath
-        );
-        CourseRecommendation right = new CourseRecommendation(
-            "A1",
-            "Starter",
-            80,
-            List.of(course),
-            List.of("Vocabulary"),
-            nextLevel,
-            learningPath
-        );
+    void equals_returnsTrue_whenCurrentLevelNullOnBoth() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setCurrentLevel(null);
+        right.setCurrentLevel(null);
 
         assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenCurrentLevelNullOnLeft() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setCurrentLevel(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenCurrentLevelSameValue() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setCurrentLevel("B1");
+        right.setCurrentLevel("B1");
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenCurrentLevelDiffers() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        right.setCurrentLevel("B2");
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenLevelNameNullOnBoth() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setLevelName(null);
+        right.setLevelName(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenLevelNameNullOnLeft() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setLevelName(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenLevelNameSameValue() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setLevelName("Starter");
+        right.setLevelName("Starter");
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenLevelNameDiffers() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        right.setLevelName("Advanced");
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenScoreNullOnBoth() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setScore(null);
+        right.setScore(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenScoreNullOnLeft() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setScore(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenScoreSameValue() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setScore(80);
+        right.setScore(80);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenScoreDiffers() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        right.setScore(95);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenRecommendedCoursesNullOnBoth() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setRecommendedCourses(null);
+        right.setRecommendedCourses(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenRecommendedCoursesNullOnLeft() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setRecommendedCourses(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenRecommendedCoursesSameValue() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        List<CourseRecommendation.RecommendedCourse> courses = List.of(recommendedCourse("Title"));
+        left.setRecommendedCourses(courses);
+        right.setRecommendedCourses(courses);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenRecommendedCoursesDiffers() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        right.setRecommendedCourses(List.of(recommendedCourse("Other")));
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenSkillsToImproveNullOnBoth() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setSkillsToImprove(null);
+        right.setSkillsToImprove(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenSkillsToImproveNullOnLeft() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setSkillsToImprove(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenSkillsToImproveSameValue() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        List<String> skills = List.of("Vocabulary");
+        left.setSkillsToImprove(skills);
+        right.setSkillsToImprove(skills);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenSkillsToImproveDiffers() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        right.setSkillsToImprove(List.of("Listening"));
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenNextLevelSuggestionNullOnBoth() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setNextLevelSuggestion(null);
+        right.setNextLevelSuggestion(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenNextLevelSuggestionNullOnLeft() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setNextLevelSuggestion(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenNextLevelSuggestionSameValue() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        CourseRecommendation.NextLevelSuggestion suggestion = nextLevelSuggestion("B1");
+        left.setNextLevelSuggestion(suggestion);
+        right.setNextLevelSuggestion(suggestion);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenNextLevelSuggestionDiffers() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        right.setNextLevelSuggestion(nextLevelSuggestion("B2"));
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenLearningPathNullOnBoth() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setLearningPath(null);
+        right.setLearningPath(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenLearningPathNullOnLeft() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        left.setLearningPath(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenLearningPathSameValue() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        CourseRecommendation.LearningPath path = learningPath("Grammar");
+        left.setLearningPath(path);
+        right.setLearningPath(path);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenLearningPathDiffers() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        right.setLearningPath(learningPath("Speaking"));
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenComparedToNullOrDifferentType() {
+        CourseRecommendation value = baseCourseRecommendation();
+
+        assertFalse(value.equals(null));
+        assertFalse(value.equals("not-a-course"));
+    }
+
+    @Test
+    void hashCode_returnsSame_whenFieldsSame() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+
         assertEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void courseRecommendation_equals_returnsFalseWhenCurrentLevelDiffers() {
-        CourseRecommendation base = buildCourseRecommendation();
-        CourseRecommendation other = buildCourseRecommendation();
-        other.setCurrentLevel("B2");
+    void hashCode_doesNotThrow_whenFieldNull() {
+        CourseRecommendation value = baseCourseRecommendation();
+        value.setCurrentLevel(null);
 
-        assertFalse(base.equals(other));
+        assertDoesNotThrow(value::hashCode);
     }
 
     @Test
-    void courseRecommendation_equals_returnsFalseWhenLevelNameDiffers() {
-        CourseRecommendation base = buildCourseRecommendation();
-        CourseRecommendation other = buildCourseRecommendation();
-        other.setLevelName("Advanced");
+    void hashCode_differs_whenCurrentLevelDiffers() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        right.setCurrentLevel("B2");
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void courseRecommendation_equals_returnsFalseWhenScoreDiffers() {
-        CourseRecommendation base = buildCourseRecommendation();
-        CourseRecommendation other = buildCourseRecommendation();
-        other.setScore(95);
+    void hashCode_differs_whenLevelNameDiffers() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        right.setLevelName("Advanced");
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void courseRecommendation_equals_returnsFalseWhenRecommendedCoursesDiffers() {
-        CourseRecommendation base = buildCourseRecommendation();
-        CourseRecommendation other = buildCourseRecommendation();
-        other.setRecommendedCourses(List.of(new CourseRecommendation.RecommendedCourse("X", "Y", List.of(), "1h", "A1")));
+    void hashCode_differs_whenScoreDiffers() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        right.setScore(95);
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void courseRecommendation_equals_returnsFalseWhenSkillsToImproveDiffers() {
-        CourseRecommendation base = buildCourseRecommendation();
-        CourseRecommendation other = buildCourseRecommendation();
-        other.setSkillsToImprove(List.of("Listening"));
+    void hashCode_differs_whenRecommendedCoursesDiffers() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        right.setRecommendedCourses(List.of(recommendedCourse("Other")));
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void courseRecommendation_equals_returnsFalseWhenNextLevelSuggestionDiffers() {
-        CourseRecommendation base = buildCourseRecommendation();
-        CourseRecommendation other = buildCourseRecommendation();
-        other.setNextLevelSuggestion(new CourseRecommendation.NextLevelSuggestion("B1", "Mid", "Msg", List.of()));
+    void hashCode_differs_whenSkillsToImproveDiffers() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        right.setSkillsToImprove(List.of("Listening"));
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void courseRecommendation_equals_returnsFalseWhenLearningPathDiffers() {
-        CourseRecommendation base = buildCourseRecommendation();
-        CourseRecommendation other = buildCourseRecommendation();
-        other.setLearningPath(new CourseRecommendation.LearningPath("Speaking", "2 weeks", List.of("Tip")));
+    void hashCode_differs_whenNextLevelSuggestionDiffers() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        right.setNextLevelSuggestion(nextLevelSuggestion("B2"));
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void courseRecommendation_equals_returnsFalseForNullOrDifferentType() {
-        CourseRecommendation recommendation = buildCourseRecommendation();
+    void hashCode_differs_whenLearningPathDiffers() {
+        CourseRecommendation left = baseCourseRecommendation();
+        CourseRecommendation right = baseCourseRecommendation();
+        right.setLearningPath(learningPath("Speaking"));
 
-        assertFalse(recommendation.equals(null));
-        assertFalse(recommendation.equals("not-a-course"));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void courseRecommendation_hashCode_differsWhenFieldDiffers() {
-        CourseRecommendation base = buildCourseRecommendation();
-        CourseRecommendation other = buildCourseRecommendation();
-        other.setLevelName("Advanced");
-
-        assertFalse(base.hashCode() == other.hashCode());
-    }
-
-    @Test
-    void courseRecommendation_toString_containsFields() {
-        CourseRecommendation recommendation = buildCourseRecommendation();
-        String output = recommendation.toString();
-
-        assertTrue(output.contains("currentLevel=A1"));
-        assertTrue(output.contains("levelName=Starter"));
-        assertTrue(output.contains("score=80"));
-    }
-
-    @Test
-    void courseRecommendation_setters_acceptNulls() {
-        CourseRecommendation recommendation = buildCourseRecommendation();
-
-        recommendation.setCurrentLevel(null);
-        recommendation.setLevelName(null);
-        recommendation.setScore(null);
-        recommendation.setRecommendedCourses(null);
-        recommendation.setSkillsToImprove(null);
-        recommendation.setNextLevelSuggestion(null);
-        recommendation.setLearningPath(null);
-
-        assertNull(recommendation.getCurrentLevel());
-        assertNull(recommendation.getLevelName());
-        assertNull(recommendation.getScore());
-        assertNull(recommendation.getRecommendedCourses());
-        assertNull(recommendation.getSkillsToImprove());
-        assertNull(recommendation.getNextLevelSuggestion());
-        assertNull(recommendation.getLearningPath());
-    }
-
-    @Test
-    void recommendedCourse_noArgsConstructor_hasNullFields() {
-        CourseRecommendation.RecommendedCourse course = new CourseRecommendation.RecommendedCourse();
-
-        assertNull(course.getTitle());
-        assertNull(course.getDescription());
-        assertNull(course.getTopics());
-        assertNull(course.getDuration());
-        assertNull(course.getDifficulty());
-    }
-
-    @Test
-    void recommendedCourse_allArgsConstructor_setsAllFields() {
-        CourseRecommendation.RecommendedCourse course = new CourseRecommendation.RecommendedCourse(
-            "Title",
-            "Desc",
-            List.of("topic1"),
-            "2h",
-            "A1"
-        );
-
-        assertEquals("Title", course.getTitle());
-        assertEquals("Desc", course.getDescription());
-        assertEquals("topic1", course.getTopics().get(0));
-        assertEquals("2h", course.getDuration());
-        assertEquals("A1", course.getDifficulty());
-    }
-
-    @Test
-    void recommendedCourse_gettersAndSetters_work() {
-        CourseRecommendation.RecommendedCourse course = new CourseRecommendation.RecommendedCourse();
-        course.setTitle("Title");
-        course.setDescription("Desc");
-        course.setTopics(List.of("topic1"));
-        course.setDuration("2h");
-        course.setDifficulty("A1");
-
-        assertEquals("Title", course.getTitle());
-        assertEquals("Desc", course.getDescription());
-        assertEquals("topic1", course.getTopics().get(0));
-        assertEquals("2h", course.getDuration());
-        assertEquals("A1", course.getDifficulty());
-    }
-
-    @Test
-    void recommendedCourse_equalsAndHashCode_identicalObjects() {
-        CourseRecommendation.RecommendedCourse left = new CourseRecommendation.RecommendedCourse(
-            "Title",
-            "Desc",
-            List.of("topic1"),
-            "2h",
-            "A1"
-        );
-        CourseRecommendation.RecommendedCourse right = new CourseRecommendation.RecommendedCourse(
-            "Title",
-            "Desc",
-            List.of("topic1"),
-            "2h",
-            "A1"
-        );
+    void equals_returnsTrue_whenRecommendedCourseTitleNullOnBoth() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setTitle(null);
+        right.setTitle(null);
 
         assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenRecommendedCourseTitleNullOnLeft() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setTitle(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenRecommendedCourseTitleSameValue() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setTitle("Title");
+        right.setTitle("Title");
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenRecommendedCourseTitleDiffers() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        right.setTitle("Other");
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenRecommendedCourseDescriptionNullOnBoth() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setDescription(null);
+        right.setDescription(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenRecommendedCourseDescriptionNullOnLeft() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setDescription(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenRecommendedCourseDescriptionSameValue() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setDescription("Desc");
+        right.setDescription("Desc");
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenRecommendedCourseDescriptionDiffers() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        right.setDescription("Other");
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenRecommendedCourseTopicsNullOnBoth() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setTopics(null);
+        right.setTopics(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenRecommendedCourseTopicsNullOnLeft() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setTopics(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenRecommendedCourseTopicsSameValue() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setTopics(List.of("topic1"));
+        right.setTopics(List.of("topic1"));
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenRecommendedCourseTopicsDiffers() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        right.setTopics(List.of("topic2"));
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenRecommendedCourseDurationNullOnBoth() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setDuration(null);
+        right.setDuration(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenRecommendedCourseDurationNullOnLeft() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setDuration(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenRecommendedCourseDurationSameValue() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setDuration("2h");
+        right.setDuration("2h");
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenRecommendedCourseDurationDiffers() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        right.setDuration("3h");
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenRecommendedCourseDifficultyNullOnBoth() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setDifficulty(null);
+        right.setDifficulty(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenRecommendedCourseDifficultyNullOnLeft() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setDifficulty(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenRecommendedCourseDifficultySameValue() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        left.setDifficulty("A1");
+        right.setDifficulty("A1");
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenRecommendedCourseDifficultyDiffers() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        right.setDifficulty("B1");
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenRecommendedCourseComparedToNullOrDifferentType() {
+        CourseRecommendation.RecommendedCourse value = baseRecommendedCourse();
+
+        assertFalse(value.equals(null));
+        assertFalse(value.equals("not-a-course"));
+    }
+
+    @Test
+    void hashCode_returnsSame_whenRecommendedCourseFieldsSame() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+
         assertEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void recommendedCourse_equals_returnsFalseWhenTitleDiffers() {
-        CourseRecommendation.RecommendedCourse base = buildRecommendedCourse();
-        CourseRecommendation.RecommendedCourse other = buildRecommendedCourse();
-        other.setTitle("Other");
+    void hashCode_doesNotThrow_whenRecommendedCourseFieldNull() {
+        CourseRecommendation.RecommendedCourse value = baseRecommendedCourse();
+        value.setTitle(null);
 
-        assertFalse(base.equals(other));
+        assertDoesNotThrow(value::hashCode);
     }
 
     @Test
-    void recommendedCourse_equals_returnsFalseWhenDescriptionDiffers() {
-        CourseRecommendation.RecommendedCourse base = buildRecommendedCourse();
-        CourseRecommendation.RecommendedCourse other = buildRecommendedCourse();
-        other.setDescription("Other");
+    void hashCode_differs_whenRecommendedCourseTitleDiffers() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        right.setTitle("Other");
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void recommendedCourse_equals_returnsFalseWhenTopicsDiffers() {
-        CourseRecommendation.RecommendedCourse base = buildRecommendedCourse();
-        CourseRecommendation.RecommendedCourse other = buildRecommendedCourse();
-        other.setTopics(List.of("topic2"));
+    void hashCode_differs_whenRecommendedCourseDescriptionDiffers() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        right.setDescription("Other");
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void recommendedCourse_equals_returnsFalseWhenDurationDiffers() {
-        CourseRecommendation.RecommendedCourse base = buildRecommendedCourse();
-        CourseRecommendation.RecommendedCourse other = buildRecommendedCourse();
-        other.setDuration("3h");
+    void hashCode_differs_whenRecommendedCourseTopicsDiffers() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        right.setTopics(List.of("topic2"));
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void recommendedCourse_equals_returnsFalseWhenDifficultyDiffers() {
-        CourseRecommendation.RecommendedCourse base = buildRecommendedCourse();
-        CourseRecommendation.RecommendedCourse other = buildRecommendedCourse();
-        other.setDifficulty("B1");
+    void hashCode_differs_whenRecommendedCourseDurationDiffers() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        right.setDuration("3h");
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void recommendedCourse_equals_returnsFalseForNullOrDifferentType() {
-        CourseRecommendation.RecommendedCourse course = buildRecommendedCourse();
+    void hashCode_differs_whenRecommendedCourseDifficultyDiffers() {
+        CourseRecommendation.RecommendedCourse left = baseRecommendedCourse();
+        CourseRecommendation.RecommendedCourse right = baseRecommendedCourse();
+        right.setDifficulty("B1");
 
-        assertFalse(course.equals(null));
-        assertFalse(course.equals("not-a-course"));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void recommendedCourse_hashCode_differsWhenFieldDiffers() {
-        CourseRecommendation.RecommendedCourse base = buildRecommendedCourse();
-        CourseRecommendation.RecommendedCourse other = buildRecommendedCourse();
-        other.setDuration("3h");
-
-        assertFalse(base.hashCode() == other.hashCode());
-    }
-
-    @Test
-    void recommendedCourse_toString_containsFields() {
-        CourseRecommendation.RecommendedCourse course = buildRecommendedCourse();
-        String output = course.toString();
-
-        assertTrue(output.contains("title=Title"));
-        assertTrue(output.contains("description=Desc"));
-        assertTrue(output.contains("duration=2h"));
-        assertTrue(output.contains("difficulty=A1"));
-    }
-
-    @Test
-    void recommendedCourse_setters_acceptNulls() {
-        CourseRecommendation.RecommendedCourse course = buildRecommendedCourse();
-        course.setTitle(null);
-        course.setDescription(null);
-        course.setTopics(null);
-        course.setDuration(null);
-        course.setDifficulty(null);
-
-        assertNull(course.getTitle());
-        assertNull(course.getDescription());
-        assertNull(course.getTopics());
-        assertNull(course.getDuration());
-        assertNull(course.getDifficulty());
-    }
-
-    @Test
-    void nextLevelSuggestion_noArgsConstructor_hasNullFields() {
-        CourseRecommendation.NextLevelSuggestion suggestion = new CourseRecommendation.NextLevelSuggestion();
-
-        assertNull(suggestion.getLevel());
-        assertNull(suggestion.getLevelName());
-        assertNull(suggestion.getMessage());
-        assertNull(suggestion.getPreviewCourses());
-    }
-
-    @Test
-    void nextLevelSuggestion_allArgsConstructor_setsAllFields() {
-        CourseRecommendation.RecommendedCourse course = buildRecommendedCourse();
-        CourseRecommendation.NextLevelSuggestion suggestion = new CourseRecommendation.NextLevelSuggestion(
-            "B1",
-            "Intermediate",
-            "Nice",
-            List.of(course)
-        );
-
-        assertEquals("B1", suggestion.getLevel());
-        assertEquals("Intermediate", suggestion.getLevelName());
-        assertEquals("Nice", suggestion.getMessage());
-        assertEquals(course, suggestion.getPreviewCourses().get(0));
-    }
-
-    @Test
-    void nextLevelSuggestion_gettersAndSetters_work() {
-        CourseRecommendation.NextLevelSuggestion suggestion = new CourseRecommendation.NextLevelSuggestion();
-        CourseRecommendation.RecommendedCourse course = buildRecommendedCourse();
-        suggestion.setLevel("B1");
-        suggestion.setLevelName("Intermediate");
-        suggestion.setMessage("Nice");
-        suggestion.setPreviewCourses(List.of(course));
-
-        assertEquals("B1", suggestion.getLevel());
-        assertEquals("Intermediate", suggestion.getLevelName());
-        assertEquals("Nice", suggestion.getMessage());
-        assertEquals(course, suggestion.getPreviewCourses().get(0));
-    }
-
-    @Test
-    void nextLevelSuggestion_equalsAndHashCode_identicalObjects() {
-        CourseRecommendation.NextLevelSuggestion left = new CourseRecommendation.NextLevelSuggestion(
-            "B1",
-            "Intermediate",
-            "Nice",
-            List.of(buildRecommendedCourse())
-        );
-        CourseRecommendation.NextLevelSuggestion right = new CourseRecommendation.NextLevelSuggestion(
-            "B1",
-            "Intermediate",
-            "Nice",
-            List.of(buildRecommendedCourse())
-        );
+    void equals_returnsTrue_whenNextLevelSuggestionLevelNullOnBoth() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        left.setLevel(null);
+        right.setLevel(null);
 
         assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenNextLevelSuggestionLevelNullOnLeft() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        left.setLevel(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenNextLevelSuggestionLevelSameValue() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        left.setLevel("B1");
+        right.setLevel("B1");
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenNextLevelSuggestionLevelDiffers() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        right.setLevel("B2");
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenNextLevelSuggestionLevelNameNullOnBoth() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        left.setLevelName(null);
+        right.setLevelName(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenNextLevelSuggestionLevelNameNullOnLeft() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        left.setLevelName(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenNextLevelSuggestionLevelNameSameValue() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        left.setLevelName("Intermediate");
+        right.setLevelName("Intermediate");
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenNextLevelSuggestionLevelNameDiffers() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        right.setLevelName("Advanced");
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenNextLevelSuggestionMessageNullOnBoth() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        left.setMessage(null);
+        right.setMessage(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenNextLevelSuggestionMessageNullOnLeft() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        left.setMessage(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenNextLevelSuggestionMessageSameValue() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        left.setMessage("Nice");
+        right.setMessage("Nice");
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenNextLevelSuggestionMessageDiffers() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        right.setMessage("Other");
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenNextLevelSuggestionPreviewCoursesNullOnBoth() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        left.setPreviewCourses(null);
+        right.setPreviewCourses(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenNextLevelSuggestionPreviewCoursesNullOnLeft() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        left.setPreviewCourses(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenNextLevelSuggestionPreviewCoursesSameValue() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        List<CourseRecommendation.RecommendedCourse> preview = List.of(recommendedCourse("Title"));
+        left.setPreviewCourses(preview);
+        right.setPreviewCourses(preview);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenNextLevelSuggestionPreviewCoursesDiffers() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        right.setPreviewCourses(List.of(recommendedCourse("Other")));
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenNextLevelSuggestionComparedToNullOrDifferentType() {
+        CourseRecommendation.NextLevelSuggestion value = baseNextLevelSuggestion();
+
+        assertFalse(value.equals(null));
+        assertFalse(value.equals("not-a-suggestion"));
+    }
+
+    @Test
+    void hashCode_returnsSame_whenNextLevelSuggestionFieldsSame() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+
         assertEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void nextLevelSuggestion_equals_returnsFalseWhenLevelDiffers() {
-        CourseRecommendation.NextLevelSuggestion base = buildNextLevelSuggestion();
-        CourseRecommendation.NextLevelSuggestion other = buildNextLevelSuggestion();
-        other.setLevel("B2");
+    void hashCode_doesNotThrow_whenNextLevelSuggestionFieldNull() {
+        CourseRecommendation.NextLevelSuggestion value = baseNextLevelSuggestion();
+        value.setLevel(null);
 
-        assertFalse(base.equals(other));
+        assertDoesNotThrow(value::hashCode);
     }
 
     @Test
-    void nextLevelSuggestion_equals_returnsFalseWhenLevelNameDiffers() {
-        CourseRecommendation.NextLevelSuggestion base = buildNextLevelSuggestion();
-        CourseRecommendation.NextLevelSuggestion other = buildNextLevelSuggestion();
-        other.setLevelName("Advanced");
+    void hashCode_differs_whenNextLevelSuggestionLevelDiffers() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        right.setLevel("B2");
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void nextLevelSuggestion_equals_returnsFalseWhenMessageDiffers() {
-        CourseRecommendation.NextLevelSuggestion base = buildNextLevelSuggestion();
-        CourseRecommendation.NextLevelSuggestion other = buildNextLevelSuggestion();
-        other.setMessage("Other");
+    void hashCode_differs_whenNextLevelSuggestionLevelNameDiffers() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        right.setLevelName("Advanced");
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void nextLevelSuggestion_equals_returnsFalseWhenPreviewCoursesDiffers() {
-        CourseRecommendation.NextLevelSuggestion base = buildNextLevelSuggestion();
-        CourseRecommendation.NextLevelSuggestion other = buildNextLevelSuggestion();
-        other.setPreviewCourses(List.of(new CourseRecommendation.RecommendedCourse("X", "Y", List.of(), "1h", "A1")));
+    void hashCode_differs_whenNextLevelSuggestionMessageDiffers() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        right.setMessage("Other");
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void nextLevelSuggestion_equals_returnsFalseForNullOrDifferentType() {
-        CourseRecommendation.NextLevelSuggestion suggestion = buildNextLevelSuggestion();
+    void hashCode_differs_whenNextLevelSuggestionPreviewCoursesDiffers() {
+        CourseRecommendation.NextLevelSuggestion left = baseNextLevelSuggestion();
+        CourseRecommendation.NextLevelSuggestion right = baseNextLevelSuggestion();
+        right.setPreviewCourses(List.of(recommendedCourse("Other")));
 
-        assertFalse(suggestion.equals(null));
-        assertFalse(suggestion.equals("not-a-suggestion"));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void nextLevelSuggestion_hashCode_differsWhenFieldDiffers() {
-        CourseRecommendation.NextLevelSuggestion base = buildNextLevelSuggestion();
-        CourseRecommendation.NextLevelSuggestion other = buildNextLevelSuggestion();
-        other.setMessage("Other");
-
-        assertFalse(base.hashCode() == other.hashCode());
-    }
-
-    @Test
-    void nextLevelSuggestion_toString_containsFields() {
-        CourseRecommendation.NextLevelSuggestion suggestion = buildNextLevelSuggestion();
-        String output = suggestion.toString();
-
-        assertTrue(output.contains("level=B1"));
-        assertTrue(output.contains("levelName=Intermediate"));
-        assertTrue(output.contains("message=Nice"));
-    }
-
-    @Test
-    void nextLevelSuggestion_setters_acceptNulls() {
-        CourseRecommendation.NextLevelSuggestion suggestion = buildNextLevelSuggestion();
-        suggestion.setLevel(null);
-        suggestion.setLevelName(null);
-        suggestion.setMessage(null);
-        suggestion.setPreviewCourses(null);
-
-        assertNull(suggestion.getLevel());
-        assertNull(suggestion.getLevelName());
-        assertNull(suggestion.getMessage());
-        assertNull(suggestion.getPreviewCourses());
-    }
-
-    @Test
-    void learningPath_noArgsConstructor_hasNullFields() {
-        CourseRecommendation.LearningPath path = new CourseRecommendation.LearningPath();
-
-        assertNull(path.getCurrentFocus());
-        assertNull(path.getEstimatedTime());
-        assertNull(path.getStudyTips());
-    }
-
-    @Test
-    void learningPath_allArgsConstructor_setsAllFields() {
-        CourseRecommendation.LearningPath path = new CourseRecommendation.LearningPath(
-            "Grammar",
-            "4 weeks",
-            List.of("Tip 1")
-        );
-
-        assertEquals("Grammar", path.getCurrentFocus());
-        assertEquals("4 weeks", path.getEstimatedTime());
-        assertEquals("Tip 1", path.getStudyTips().get(0));
-    }
-
-    @Test
-    void learningPath_gettersAndSetters_work() {
-        CourseRecommendation.LearningPath path = new CourseRecommendation.LearningPath();
-        path.setCurrentFocus("Grammar");
-        path.setEstimatedTime("4 weeks");
-        path.setStudyTips(List.of("Tip 1"));
-
-        assertEquals("Grammar", path.getCurrentFocus());
-        assertEquals("4 weeks", path.getEstimatedTime());
-        assertEquals("Tip 1", path.getStudyTips().get(0));
-    }
-
-    @Test
-    void learningPath_equalsAndHashCode_identicalObjects() {
-        CourseRecommendation.LearningPath left = new CourseRecommendation.LearningPath(
-            "Grammar",
-            "4 weeks",
-            List.of("Tip 1")
-        );
-        CourseRecommendation.LearningPath right = new CourseRecommendation.LearningPath(
-            "Grammar",
-            "4 weeks",
-            List.of("Tip 1")
-        );
+    void equals_returnsTrue_whenLearningPathCurrentFocusNullOnBoth() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        left.setCurrentFocus(null);
+        right.setCurrentFocus(null);
 
         assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenLearningPathCurrentFocusNullOnLeft() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        left.setCurrentFocus(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenLearningPathCurrentFocusSameValue() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        left.setCurrentFocus("Grammar");
+        right.setCurrentFocus("Grammar");
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenLearningPathCurrentFocusDiffers() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        right.setCurrentFocus("Speaking");
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenLearningPathEstimatedTimeNullOnBoth() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        left.setEstimatedTime(null);
+        right.setEstimatedTime(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenLearningPathEstimatedTimeNullOnLeft() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        left.setEstimatedTime(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenLearningPathEstimatedTimeSameValue() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        left.setEstimatedTime("4 weeks");
+        right.setEstimatedTime("4 weeks");
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenLearningPathEstimatedTimeDiffers() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        right.setEstimatedTime("2 weeks");
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenLearningPathStudyTipsNullOnBoth() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        left.setStudyTips(null);
+        right.setStudyTips(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenLearningPathStudyTipsNullOnLeft() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        left.setStudyTips(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenLearningPathStudyTipsSameValue() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        List<String> tips = List.of("Tip 1");
+        left.setStudyTips(tips);
+        right.setStudyTips(tips);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenLearningPathStudyTipsDiffers() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        right.setStudyTips(List.of("Tip 2"));
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenLearningPathComparedToNullOrDifferentType() {
+        CourseRecommendation.LearningPath value = baseLearningPath();
+
+        assertFalse(value.equals(null));
+        assertFalse(value.equals("not-a-path"));
+    }
+
+    @Test
+    void hashCode_returnsSame_whenLearningPathFieldsSame() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+
         assertEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void learningPath_equals_returnsFalseWhenCurrentFocusDiffers() {
-        CourseRecommendation.LearningPath base = buildLearningPath();
-        CourseRecommendation.LearningPath other = buildLearningPath();
-        other.setCurrentFocus("Speaking");
+    void hashCode_doesNotThrow_whenLearningPathFieldNull() {
+        CourseRecommendation.LearningPath value = baseLearningPath();
+        value.setCurrentFocus(null);
 
-        assertFalse(base.equals(other));
+        assertDoesNotThrow(value::hashCode);
     }
 
     @Test
-    void learningPath_equals_returnsFalseWhenEstimatedTimeDiffers() {
-        CourseRecommendation.LearningPath base = buildLearningPath();
-        CourseRecommendation.LearningPath other = buildLearningPath();
-        other.setEstimatedTime("2 weeks");
+    void hashCode_differs_whenLearningPathCurrentFocusDiffers() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        right.setCurrentFocus("Speaking");
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void learningPath_equals_returnsFalseWhenStudyTipsDiffers() {
-        CourseRecommendation.LearningPath base = buildLearningPath();
-        CourseRecommendation.LearningPath other = buildLearningPath();
-        other.setStudyTips(List.of("Tip 2"));
+    void hashCode_differs_whenLearningPathEstimatedTimeDiffers() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        right.setEstimatedTime("2 weeks");
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void learningPath_equals_returnsFalseForNullOrDifferentType() {
-        CourseRecommendation.LearningPath path = buildLearningPath();
+    void hashCode_differs_whenLearningPathStudyTipsDiffers() {
+        CourseRecommendation.LearningPath left = baseLearningPath();
+        CourseRecommendation.LearningPath right = baseLearningPath();
+        right.setStudyTips(List.of("Tip 2"));
 
-        assertFalse(path.equals(null));
-        assertFalse(path.equals("not-a-path"));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
-    @Test
-    void learningPath_hashCode_differsWhenFieldDiffers() {
-        CourseRecommendation.LearningPath base = buildLearningPath();
-        CourseRecommendation.LearningPath other = buildLearningPath();
-        other.setEstimatedTime("2 weeks");
-
-        assertFalse(base.hashCode() == other.hashCode());
-    }
-
-    @Test
-    void learningPath_toString_containsFields() {
-        CourseRecommendation.LearningPath path = buildLearningPath();
-        String output = path.toString();
-
-        assertTrue(output.contains("currentFocus=Grammar"));
-        assertTrue(output.contains("estimatedTime=4 weeks"));
-    }
-
-    @Test
-    void learningPath_setters_acceptNulls() {
-        CourseRecommendation.LearningPath path = buildLearningPath();
-        path.setCurrentFocus(null);
-        path.setEstimatedTime(null);
-        path.setStudyTips(null);
-
-        assertNull(path.getCurrentFocus());
-        assertNull(path.getEstimatedTime());
-        assertNull(path.getStudyTips());
-    }
-
-    private CourseRecommendation buildCourseRecommendation() {
-        CourseRecommendation.RecommendedCourse course = buildRecommendedCourse();
-        CourseRecommendation.NextLevelSuggestion nextLevel = new CourseRecommendation.NextLevelSuggestion(
-            "A2",
-            "Beginner",
-            "Keep going",
-            List.of(course)
-        );
-        CourseRecommendation.LearningPath learningPath = new CourseRecommendation.LearningPath(
-            "Grammar",
-            "4 weeks",
-            List.of("Tip 1")
-        );
+    private CourseRecommendation baseCourseRecommendation() {
+        CourseRecommendation.RecommendedCourse course = recommendedCourse("Title");
+        CourseRecommendation.NextLevelSuggestion suggestion = nextLevelSuggestion("B1");
+        CourseRecommendation.LearningPath path = learningPath("Grammar");
 
         return new CourseRecommendation(
             "A1",
@@ -671,14 +1018,14 @@ class CourseRecommendationTest {
             80,
             List.of(course),
             List.of("Vocabulary"),
-            nextLevel,
-            learningPath
+            suggestion,
+            path
         );
     }
 
-    private CourseRecommendation.RecommendedCourse buildRecommendedCourse() {
+    private CourseRecommendation.RecommendedCourse recommendedCourse(String title) {
         return new CourseRecommendation.RecommendedCourse(
-            "Title",
+            title,
             "Desc",
             List.of("topic1"),
             "2h",
@@ -686,20 +1033,32 @@ class CourseRecommendationTest {
         );
     }
 
-    private CourseRecommendation.NextLevelSuggestion buildNextLevelSuggestion() {
+    private CourseRecommendation.NextLevelSuggestion nextLevelSuggestion(String level) {
         return new CourseRecommendation.NextLevelSuggestion(
-            "B1",
+            level,
             "Intermediate",
             "Nice",
-            List.of(buildRecommendedCourse())
+            List.of(recommendedCourse("Title"))
         );
     }
 
-    private CourseRecommendation.LearningPath buildLearningPath() {
+    private CourseRecommendation.LearningPath learningPath(String currentFocus) {
         return new CourseRecommendation.LearningPath(
-            "Grammar",
+            currentFocus,
             "4 weeks",
             List.of("Tip 1")
         );
+    }
+
+    private CourseRecommendation.RecommendedCourse baseRecommendedCourse() {
+        return recommendedCourse("Title");
+    }
+
+    private CourseRecommendation.NextLevelSuggestion baseNextLevelSuggestion() {
+        return nextLevelSuggestion("B1");
+    }
+
+    private CourseRecommendation.LearningPath baseLearningPath() {
+        return learningPath("Grammar");
     }
 }

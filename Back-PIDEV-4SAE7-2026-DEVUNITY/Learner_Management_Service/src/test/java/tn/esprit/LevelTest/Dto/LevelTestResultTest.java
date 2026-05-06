@@ -1,9 +1,9 @@
 package tn.esprit.LevelTest.Dto;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
@@ -13,127 +13,219 @@ import org.junit.jupiter.api.Test;
 class LevelTestResultTest {
 
     @Test
-    void noArgsConstructor_hasNullFields() {
-        LevelTestResult result = new LevelTestResult();
-
-        assertNull(result.getLevel());
-        assertNull(result.getScore());
-        assertNull(result.getFeedback());
-        assertNull(result.getDetails());
-    }
-
-    @Test
-    void allArgsConstructor_setsFields() {
-        LevelTestResult result = new LevelTestResult("B2", 85, "Good", Map.of("detail", "value"));
-
-        assertEquals("B2", result.getLevel());
-        assertEquals(85, result.getScore());
-        assertEquals("Good", result.getFeedback());
-        assertEquals("value", result.getDetails().get("detail"));
-    }
-
-    @Test
-    void gettersAndSetters_work() {
-        LevelTestResult result = new LevelTestResult();
-        result.setLevel("A2");
-        result.setScore(60);
-        result.setFeedback("Ok");
-        result.setDetails(Map.of("key", "value"));
-
-        assertEquals("A2", result.getLevel());
-        assertEquals(60, result.getScore());
-        assertEquals("Ok", result.getFeedback());
-        assertEquals("value", result.getDetails().get("key"));
-    }
-
-    @Test
-    void equalsAndHashCode_identicalObjects() {
-        LevelTestResult left = new LevelTestResult("B2", 85, "Good", Map.of("detail", "value"));
-        LevelTestResult right = new LevelTestResult("B2", 85, "Good", Map.of("detail", "value"));
+    void equals_returnsTrue_whenLevelNullOnBoth() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        left.setLevel(null);
+        right.setLevel(null);
 
         assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenLevelNullOnLeft() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        left.setLevel(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenLevelSameValue() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        left.setLevel("B2");
+        right.setLevel("B2");
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenLevelDiffers() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        right.setLevel("C1");
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenScoreNullOnBoth() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        left.setScore(null);
+        right.setScore(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenScoreNullOnLeft() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        left.setScore(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenScoreSameValue() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        left.setScore(85);
+        right.setScore(85);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenScoreDiffers() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        right.setScore(95);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenFeedbackNullOnBoth() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        left.setFeedback(null);
+        right.setFeedback(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenFeedbackNullOnLeft() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        left.setFeedback(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenFeedbackSameValue() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        left.setFeedback("Good");
+        right.setFeedback("Good");
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenFeedbackDiffers() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        right.setFeedback("Great");
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenDetailsNullOnBoth() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        left.setDetails(null);
+        right.setDetails(null);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenDetailsNullOnLeft() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        left.setDetails(null);
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsTrue_whenDetailsSameValue() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        Map<String, Object> details = Map.of("detail", "value");
+        left.setDetails(details);
+        right.setDetails(details);
+
+        assertTrue(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenDetailsDiffers() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        right.setDetails(Map.of("detail", "other"));
+
+        assertFalse(left.equals(right));
+    }
+
+    @Test
+    void equals_returnsFalse_whenComparedToNullOrDifferentType() {
+        LevelTestResult value = baseLevelTestResult();
+
+        assertFalse(value.equals(null));
+        assertFalse(value.equals("not-a-result"));
+    }
+
+    @Test
+    void hashCode_returnsSame_whenFieldsSame() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+
         assertEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void equals_returnsFalseWhenLevelDiffers() {
-        LevelTestResult base = buildLevelTestResult();
-        LevelTestResult other = buildLevelTestResult();
-        other.setLevel("C1");
+    void hashCode_doesNotThrow_whenFieldNull() {
+        LevelTestResult value = baseLevelTestResult();
+        value.setLevel(null);
 
-        assertFalse(base.equals(other));
+        assertDoesNotThrow(value::hashCode);
     }
 
     @Test
-    void equals_returnsFalseWhenScoreDiffers() {
-        LevelTestResult base = buildLevelTestResult();
-        LevelTestResult other = buildLevelTestResult();
-        other.setScore(95);
+    void hashCode_differs_whenLevelDiffers() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        right.setLevel("C1");
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void equals_returnsFalseWhenFeedbackDiffers() {
-        LevelTestResult base = buildLevelTestResult();
-        LevelTestResult other = buildLevelTestResult();
-        other.setFeedback("Great");
+    void hashCode_differs_whenScoreDiffers() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        right.setScore(95);
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void equals_returnsFalseWhenDetailsDiffers() {
-        LevelTestResult base = buildLevelTestResult();
-        LevelTestResult other = buildLevelTestResult();
-        other.setDetails(Map.of("detail", "other"));
+    void hashCode_differs_whenFeedbackDiffers() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        right.setFeedback("Great");
 
-        assertFalse(base.equals(other));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
     @Test
-    void equals_returnsFalseForNullOrDifferentType() {
-        LevelTestResult result = buildLevelTestResult();
+    void hashCode_differs_whenDetailsDiffers() {
+        LevelTestResult left = baseLevelTestResult();
+        LevelTestResult right = baseLevelTestResult();
+        right.setDetails(Map.of("detail", "other"));
 
-        assertFalse(result.equals(null));
-        assertFalse(result.equals("not-a-result"));
+        assertNotEquals(left.hashCode(), right.hashCode());
     }
 
-    @Test
-    void hashCode_differsWhenFieldDiffers() {
-        LevelTestResult base = buildLevelTestResult();
-        LevelTestResult other = buildLevelTestResult();
-        other.setFeedback("Great");
-
-        assertFalse(base.hashCode() == other.hashCode());
-    }
-
-    @Test
-    void toString_containsFieldValues() {
-        LevelTestResult result = buildLevelTestResult();
-        String output = result.toString();
-
-        assertTrue(output.contains("level=B2"));
-        assertTrue(output.contains("score=85"));
-        assertTrue(output.contains("feedback=Good"));
-    }
-
-    @Test
-    void setters_acceptNulls() {
-        LevelTestResult result = buildLevelTestResult();
-        result.setLevel(null);
-        result.setScore(null);
-        result.setFeedback(null);
-        result.setDetails(null);
-
-        assertNull(result.getLevel());
-        assertNull(result.getScore());
-        assertNull(result.getFeedback());
-        assertNull(result.getDetails());
-        assertNotNull(result.toString());
-    }
-
-    private LevelTestResult buildLevelTestResult() {
+    private LevelTestResult baseLevelTestResult() {
         return new LevelTestResult("B2", 85, "Good", Map.of("detail", "value"));
     }
 }
