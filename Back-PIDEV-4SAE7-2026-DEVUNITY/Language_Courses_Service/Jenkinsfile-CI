@@ -16,37 +16,33 @@ pipeline {
 
         stage('Build with Maven Container') {
             steps {
-                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
-                    sh '''
-                        docker run --rm \
-                            -v /tmp:/tmp \
-                            -v $(pwd):/workspace \
-                            -w /workspace \
-                            -e MAVEN_CONFIG=/tmp/.m2 \
-                            maven:3.9.15-eclipse-temurin-17 \
-                            mvn clean package -DskipTests
-                    '''
-                }
+                sh '''
+                    cd Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service
+                    docker run --rm \
+                        -v $(pwd):/workspace \
+                        -w /workspace \
+                        --user 1000:1000 \
+                        maven:3.9.15-eclipse-temurin-17 \
+                        mvn clean package -DskipTests
+                '''
             }
         }
 
         stage('Unit Tests') {
             steps {
-                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
-                    sh '''
-                        docker run --rm \
-                            -v /tmp:/tmp \
-                            -v $(pwd):/workspace \
-                            -w /workspace \
-                            -e MAVEN_CONFIG=/tmp/.m2 \
-                            maven:3.9.15-eclipse-temurin-17 \
-                            mvn test
-                    '''
-                }
+                sh '''
+                    cd Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service
+                    docker run --rm \
+                        -v $(pwd):/workspace \
+                        -w /workspace \
+                        --user 1000:1000 \
+                        maven:3.9.15-eclipse-temurin-17 \
+                        mvn test
+                '''
             }
             post {
                 always {
-                    junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
+                    junit allowEmptyResults: true, testResults: 'Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service/target/surefire-reports/*.xml'
                 }
             }
         }
