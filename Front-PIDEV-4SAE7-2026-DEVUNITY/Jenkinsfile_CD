@@ -1,0 +1,125 @@
+pipeline {
+    agent any
+
+    environment {
+
+        DOCKERHUB_REPO = "chelba/dev-unity-frontend"
+
+        IMAGE_TAG = "latest"
+
+        NAMESPACE = "devunity"
+
+        K8S_DIR = "Front-PIDEV-4SAE7-2026-DEVUNITY/k8s"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Pull Docker Image') {
+            steps {
+
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'USER',
+                    passwordVariable: 'PASS'
+                )]) {
+
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+
+                    sh 'docker pull ${DOCKERHUB_REPO}:${IMAGE_TAG}'
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+
+                sh '''
+                    kubectl apply -f ${K8S_DIR}/frontend-deployment.yaml
+
+                    kubectl apply -f ${K8S_DIR}/frontend-service.yaml
+                '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+
+                sh '''
+                    echo "Waiting for frontend pods..."
+
+                    sleep 30
+
+                    kubectl get pods -n ${NAMESPACE}
+
+                    kubectl get svc -n ${NAMESPACE}
+                '''
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+
+                sh '''
+                    kubectl rollout status deployment/devunity-frontend \
+                      -n ${NAMESPACE} \
+                      --timeout=120s
+                '''
+            }
+        }
+
+        stage('Deploy Local Docker Backup') {
+            steps {
+
+                sh '''
+                    docker stop devunity-frontend || true
+
+                    docker rm devunity-frontend || true
+
+                    docker run -d \
+                      --name devunity-frontend \
+                      -p 4200:80 \
+                      --restart unless-stopped \
+                      ${DOCKERHUB_REPO}:${IMAGE_TAG}
+                '''
+            }
+        }
+    }
+
+    post {
+
+        success {
+
+            mail to: 'islemraissi789@gmail.com',
+                 subject: "✅ FRONTEND CD PASSED - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: """
+Frontend deployed successfully.
+
+Kubernetes URL:
+http://192.168.32.133:30080
+
+Docker URL:
+http://192.168.32.133:4200
+
+${env.BUILD_URL}
+"""
+        }
+
+        failure {
+
+            mail to: 'islemraissi789@gmail.com',
+                 subject: "❌ FRONTEND CD FAILED - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: """
+Frontend deployment failed.
+
+Check logs:
+${env.BUILD_URL}
+"""
+        }
+    }
+}
