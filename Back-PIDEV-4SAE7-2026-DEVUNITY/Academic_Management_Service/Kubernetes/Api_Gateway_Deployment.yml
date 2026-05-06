@@ -25,15 +25,16 @@ spec:
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
               value: "true"
             - name: MANAGEMENT_SERVER_PORT
-              value: "8082"                    # ✅ actuator on separate port
+              value: "8082"
             - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
               value: "*"
             - name: MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED
               value: "true"
             - name: MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED
               value: "true"
-            - name: MANAGEMENT_ENDPOINTS_WEB_BASE_PATH
-              value: "/actuator"
+            - name: MANAGEMENT_METRICS_TAGS_APPLICATION
+              value: "api-gateway"
+
           imagePullPolicy: Always
 ---
 apiVersion: v1

@@ -248,39 +248,39 @@ pipeline {
         }
 
         stage('Build Docker Images') {
-            parallel {
-                stage('Build Image Academic') {
-                    steps {
-                        script {
-                            dockerImageAcademic = docker.build(
-                                "${DOCKER_REGISTRY}/academic-management-service:${BUILD_NUMBER}",
-                                "-f ${BACKEND_PATH}/Academic_Management_Service/Dockerfile ."
-                            )
+                    parallel {
+                        stage('Build Image Academic') {
+                            steps {
+                                script {
+                                    dockerImageAcademic = docker.build(
+                                        "${DOCKER_REGISTRY}/academic-management-service:${BUILD_NUMBER}",
+                                        "--no-cache -f ${BACKEND_PATH}/Academic_Management_Service/Dockerfile ."
+                                    )
+                                }
+                            }
+                        }
+                        stage('Build Image Discovery') {
+                            steps {
+                                script {
+                                    dockerImageDiscovery = docker.build(
+                                        "${DOCKER_REGISTRY}/discovery-service:${BUILD_NUMBER}",
+                                        "--no-cache -f ${BACKEND_PATH}/Discovery_Service/Dockerfile ."
+                                    )
+                                }
+                            }
+                        }
+                        stage('Build Image API Gateway') {
+                            steps {
+                                script {
+                                    dockerImageGateway = docker.build(
+                                        "${DOCKER_REGISTRY}/api-gateway:${BUILD_NUMBER}",
+                                        "--no-cache -f ${BACKEND_PATH}/API_Gateway/Dockerfile ."
+                                    )
+                                }
+                            }
                         }
                     }
                 }
-                stage('Build Image Discovery') {
-                    steps {
-                        script {
-                            dockerImageDiscovery = docker.build(
-                                "${DOCKER_REGISTRY}/discovery-service:${BUILD_NUMBER}",
-                                "-f ${BACKEND_PATH}/Discovery_Service/Dockerfile ."
-                            )
-                        }
-                    }
-                }
-                stage('Build Image API Gateway') {
-                    steps {
-                        script {
-                            dockerImageGateway = docker.build(
-                                "${DOCKER_REGISTRY}/api-gateway:${BUILD_NUMBER}",
-                                "-f ${BACKEND_PATH}/API_Gateway/Dockerfile ."
-                            )
-                        }
-                    }
-                }
-            }
-        }
 
         stage('Push Docker Images') {
             parallel {

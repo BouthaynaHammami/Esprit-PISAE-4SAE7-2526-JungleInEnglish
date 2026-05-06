@@ -13,6 +13,10 @@ spec:
       labels:
         app: academic-management-service
     spec:
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox
+          command: ['sh', '-c', 'until nc -z mysql-service.devunity.svc.cluster.local 3306; do echo waiting for mysql; sleep 3; done']
       containers:
         - name: academic-management-service
           image: chaibimarwa/academic-management-service:latest
@@ -48,19 +52,22 @@ spec:
             - name: KEYCLOAK_RESOURCE
               value: "devunity-app"
             - name: KEYCLOAK_ADMIN_USERNAME
-              value: "admin" 
+              value: "admin"
             - name: KEYCLOAK_ADMIN_PASSWORD
-              value: "admin123" 
+              value: "admin123"
             - name: SERVER_PORT
               value: "8083"
-            - name: SERVER_SERVLET_CONTEXT_PATH
-              value: "/academics/api"
             - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
               value: "*"
-            - name: MANAGEMENT_SECURITY_ENABLED
-              value: "false"
-            - name: SPRING_SECURITY_ENABLED
-              value: "false"
+            - name: MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED
+              value: "true"
+            - name: MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED
+              value: "true"
+            - name: MANAGEMENT_METRICS_TAGS_APPLICATION
+              value: "academic-management-service"
+            - name: SERVER_SERVLET_CONTEXT_PATH
+              value: "/academics/api"
+
           imagePullPolicy: Always
 ---
 apiVersion: v1
