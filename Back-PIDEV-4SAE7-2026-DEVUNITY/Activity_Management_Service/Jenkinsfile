@@ -90,29 +90,47 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                dir("${SERVICE_DIR}") {
-                    sh """
-                    docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
-                    docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
-                    """
+                script {
+                    try {
+                        dir("${SERVICE_DIR}") {
+                            sh """
+                            docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                            docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
+                            """
+                        }
+                    } catch (Exception e) {
+                        echo "❌ Docker build failed: ${e.message}"
+                        echo "💡 Possible solutions:"
+                        echo "   1. Add Jenkins user to docker group: sudo usermod -aG docker jenkins"
+                        echo "   2. Restart Jenkins: sudo systemctl restart jenkins"
+                        echo "   3. Or set SKIP_DOCKER=true to skip Docker stages"
+                        error("Docker build failed - check permissions")
+                    }
                 }
             }
         }
 
         stage('Docker Push') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'docker_token',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    dir("${SERVICE_DIR}") {
-                        sh """
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
-                        docker push ${IMAGE_NAME}:latest
-                        docker logout
-                        """
+                script {
+                    try {
+                        withCredentials([usernamePassword(
+                            credentialsId: 'docker_token',
+                            usernameVariable: 'DOCKER_USER',
+                            passwordVariable: 'DOCKER_PASS'
+                        )]) {
+                            dir("${SERVICE_DIR}") {
+                                sh """
+                                echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                                docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                                docker push ${IMAGE_NAME}:latest
+                                docker logout
+                                """
+                            }
+                        }
+                    } catch (Exception e) {
+                        echo "❌ Docker push failed: ${e.message}"
+                        error("Docker push failed")
                     }
                 }
             }
