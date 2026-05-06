@@ -2,30 +2,27 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NODE_HOME'   // Configuré dans Manage Jenkins → Tools → NodeJS
+        nodejs 'NODE_HOME'
     }
 
     environment {
-        FRONT_PATH        = 'Front-PIDEV-4SAE7-2026-DEVUNITY'
-        SONAR_HOST_URL    = 'http://192.168.19.128:9000'
-        NEXUS_URL         = 'http://192.168.19.128:8081'
-        DOCKER_IMAGE      = 'hbouthayna/dev-unity-frontend'
-        NODE_OPTIONS      = '--max-old-space-size=2048'
+        FRONT_PATH   = 'Front-PIDEV-4SAE7-2026-DEVUNITY'
+        SONAR_HOST   = 'http://192.168.32.133:9000'
+        NEXUS_URL    = 'http://192.168.32.133:9999'
+        NEXUS_REPO   = 'frontend-releases'
+        DOCKER_IMAGE = 'chelba/dev-unity-frontend'
+        NODE_OPTIONS = '--max-old-space-size=2048'
+        CHROME_BIN   = '/usr/bin/chromium-browser'
     }
 
     stages {
 
-        // ── ÉTAPE 1 : Récupération du code ──
         stage('Checkout') {
             steps {
-                echo 'Récupération du code source...'
-                git branch: 'main',
-                    credentialsId: 'git_token',
-                    url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
+                checkout scm
             }
         }
 
-        // ── ÉTAPE 2 : Installation des dépendances Node.js ──
         stage('Install Dependencies') {
             steps {
                 dir("${FRONT_PATH}") {
@@ -34,7 +31,6 @@ pipeline {
             }
         }
 
-        // ── ÉTAPE 3 : Lint (vérification qualité du code TypeScript) ──
         stage('Lint') {
             steps {
                 dir("${FRONT_PATH}") {
@@ -43,65 +39,62 @@ pipeline {
             }
         }
 
-        // ── ÉTAPE 4 : Tests unitaires (Karma + ChromeHeadless) ──
-        stage('Test') {
+        stage('Unit Tests') {
             steps {
                 dir("${FRONT_PATH}") {
-                    sh 'npx ng test --watch=false --browsers=ChromeHeadless --code-coverage || true'
+                    sh '''
+                        npx ng test \
+                          --watch=false \
+                          --browsers=ChromeHeadless \
+                          --code-coverage \
+                        || true
+                    '''
                 }
             }
             post {
                 always {
-                    junit testResults: "${FRONT_PATH}/coverage/**/*.xml", allowEmptyResults: true
+                    junit testResults: "${FRONT_PATH}/coverage/**/*.xml",
+                          allowEmptyResults: true
                 }
             }
         }
 
-        // ── ÉTAPE 5a : npm audit (sécurité des dépendances) ──
-        stage('npm audit') {
+        stage('Deploy to Nexus') {
             steps {
                 dir("${FRONT_PATH}") {
-                    sh 'npm audit --audit-level=high || true'
+                    withCredentials([usernamePassword(
+                        credentialsId: 'nexus-credentials',
+                        usernameVariable: 'NEXUS_USER',
+                        passwordVariable: 'NEXUS_PASS'
+                    )]) {
+                        sh '''
+                            zip -r frontend-build-${BUILD_NUMBER}.zip dist/
+                            curl -u ${NEXUS_USER}:${NEXUS_PASS} \
+                                 --upload-file frontend-build-${BUILD_NUMBER}.zip \
+                                 ${NEXUS_URL}/repository/${NEXUS_REPO}/frontend-build-${BUILD_NUMBER}.zip
+                        '''
+                    }
                 }
             }
         }
 
-        // ── ÉTAPE 5b : Prettier (vérification du formatage du code) ──
-        stage('Prettier Check') {
-            steps {
-                dir("${FRONT_PATH}") {
-                    sh 'npx prettier --check "src/**/*.{ts,html,css,scss}" || true'
-                }
-            }
-        }
-
-        // ── ÉTAPE 5c : Dockle (sécurité de l'image Docker – après build) ──
-        // Note: Dockle s'exécute après Docker Build (étape 8)
-
-        // ── ÉTAPE 6 : Analyse SonarQube ──
         stage('SonarQube Analysis') {
             steps {
-                script {
-                  withCredentials([string(credentialsId: 'sonar_token', variable: 'SONAR_TOKEN')]) {
-                      withSonarQubeEnv('sonarqube') {
-                          dir("${FRONT_PATH}") {
-                              sh '''
-                                  npx sonar-scanner \
-                                  -Dsonar.projectKey=Dev-Unity-Frontend \
-                                  -Dsonar.projectName="Dev Unity Frontend" \
-                                  -Dsonar.sources=src \
-                                  -Dsonar.host.url=http://192.168.19.128:9000 \
-                                  -Dsonar.token=$SONAR_TOKEN \
-                                  -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-                              '''
-                          }
-                      }
-                  }
+                dir("${FRONT_PATH}") {
+                    withSonarQubeEnv('SonarQube') {
+                        sh '''
+                            npx sonar-scanner \
+                              -Dsonar.projectKey=Dev-Unity-Frontend \
+                              -Dsonar.projectName="Dev Unity Frontend" \
+                              -Dsonar.sources=src \
+                              -Dsonar.host.url=${SONAR_HOST} \
+                              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+                        '''
+                    }
                 }
             }
         }
 
-        // ── ÉTAPE 7 : Build Angular (mode production) ──
         stage('Build Production') {
             steps {
                 dir("${FRONT_PATH}") {
@@ -110,71 +103,48 @@ pipeline {
             }
         }
 
-        // ── ÉTAPE 8 : Build de l'image Docker ──
-        stage('Docker Build') {
+        stage('Build Docker Image') {
             steps {
                 dir("${FRONT_PATH}") {
-                    script {
-                        dockerImage = docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
-                    }
+                    sh 'docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .'
+                    sh 'docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest'
                 }
             }
         }
 
-        // ── ÉTAPE 8b : Dockle (sécurité de l'image Docker produite) ──
-        stage('Dockle Security Scan') {
+        stage('Push to DockerHub') {
             steps {
-                script {
-                    sh """
-                        docker run --rm \
-                            -v /var/run/docker.sock:/var/run/docker.sock \
-                            goodwithtech/dockle:latest \
-                            --exit-code 1 \
-                            --exit-level warn \
-                            ${DOCKER_IMAGE}:${BUILD_NUMBER} || true
-                    """
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'USER',
+                    passwordVariable: 'PASS'
+                )]) {
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+                    sh 'docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}'
+                    sh 'docker push ${DOCKER_IMAGE}:latest'
                 }
             }
         }
 
-        // ── ÉTAPE 9 : Push de l'image Docker sur Docker Hub ──
-        stage('Docker Push') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(
-                        credentialsId: 'docker_token',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASS'
-                    )]) {
-                        sh """
-                            echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
-                            docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
-                            docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest
-                            docker push ${DOCKER_IMAGE}:latest
-                        """
-                    }
-                }
-            }
-        }
-
-        // ── ÉTAPE 10 : Déclencher le pipeline CD ──
-        stage('Trigger CD 🚀') {
-            steps {
-                script {
-                    echo "Déclenchement du pipeline CD Frontend avec IMAGE_TAG=${BUILD_NUMBER}"
-                    build job: 'DevUnity-Front-Pipeline-CD',
-                          parameters: [string(name: 'IMAGE_TAG', value: "${BUILD_NUMBER}")],
-                          wait: false
-                }
-            }
-        }
+        // stage('Trigger CD') {
+        //     steps {
+        //         build job: 'DevUnity-Front-Pipeline-CD',
+        //               parameters: [string(name: 'IMAGE_TAG', value: "${BUILD_NUMBER}")],
+        //               wait: false
+        //     }
+        // }
     }
 
     post {
-        always {
-            cleanWs()
+        success {
+            mail to: 'islemraissi789@gmail.com',
+                 subject: "✅ Frontend CI PASSED - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Frontend build passed.\nDocker image pushed to DockerHub.\n\nCheck: ${env.BUILD_URL}"
         }
-        success { echo '✅ Pipeline CI Frontend terminé avec succès !' }
-        failure { echo '❌ Pipeline CI Frontend échoué.' }
+        failure {
+            mail to: 'islemraissi789@gmail.com',
+                 subject: "❌ Frontend CI FAILED - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Frontend build failed. Check logs:\n${env.BUILD_URL}"
+        }
     }
 }

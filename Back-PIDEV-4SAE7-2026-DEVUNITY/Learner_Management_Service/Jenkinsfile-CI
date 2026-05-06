@@ -27,28 +27,27 @@ pipeline {
                 }
             }
         }
-
-        // stage('OWASP Dependency Check') {
-        //     steps {
-        //         dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Learner_Management_Service') {
-        //             withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_KEY')]) {
-        //                 dependencyCheck additionalArguments: """
-        //                     --scan ./
-        //                     --format XML
-        //                     --format HTML
-        //                     --out ./dependency-check-report
-        //                     --nvdApiKey ${NVD_KEY}
-        //                     --prettyPrint
-        //                 """, odcInstallation: 'OWASP-DC'
-        //             }
-        //         }
-        //     }
-        //     post {
-        //         always {
-        //             dependencyCheckPublisher pattern: '**/dependency-check-report/dependency-check-report.xml'
-        //         }
-        //     }
-        // }
+        stage('OWASP Dependency Check') {
+            steps {
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Learner_Management_Service') {
+                    withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_KEY')]) {
+                        dependencyCheck additionalArguments: """
+                            --scan ./
+                            --format XML
+                            --format HTML
+                            --out ./dependency-check-report
+                            --nvdApiKey ${NVD_KEY}
+                            --prettyPrint
+                        """, odcInstallation: 'OWASP-DC'
+                    }
+                }
+            }
+            post {
+                always {
+                    dependencyCheckPublisher pattern: '**/dependency-check-report/dependency-check-report.xml'
+                }
+            }
+        }
 
         stage('Unit Tests') {
             steps {
@@ -68,14 +67,13 @@ pipeline {
                 }
             }
         }
-
-        // stage('Deploy to Nexus') {
-        //     steps {
-        //         dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Learner_Management_Service') {
-        //             sh 'mvn deploy -DskipTests'
-        //         }
-        //     }
-        // }
+        stage('Deploy to Nexus') {
+            steps {
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Learner_Management_Service') {
+                    sh 'mvn deploy -DskipTests'
+                }
+            }
+        }
 
         stage('SonarQube Analysis') {
             steps {
@@ -101,28 +99,28 @@ pipeline {
             }
         }
 
-        // stage('Build Docker Image') {
-        //     steps {
-        //         dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Learner_Management_Service') {
-        //             sh 'docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} .'
-        //             sh 'docker tag ${DOCKERHUB_REPO}:${IMAGE_TAG} ${DOCKERHUB_REPO}:latest'
-        //         }
-        //     }
-        // }
+        stage('Build Docker Image') {
+            steps {
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Learner_Management_Service') {
+                    sh 'docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} .'
+                    sh 'docker tag ${DOCKERHUB_REPO}:${IMAGE_TAG} ${DOCKERHUB_REPO}:latest'
+                }
+            }
+        }
 
-        // stage('Push to DockerHub') {
-        //     steps {
-        //         withCredentials([usernamePassword(
-        //             credentialsId: 'dockerhub-credentials',
-        //             usernameVariable: 'USER',
-        //             passwordVariable: 'PASS'
-        //         )]) {
-        //             sh 'echo $PASS | docker login -u $USER --password-stdin'
-        //             sh 'docker push ${DOCKERHUB_REPO}:${IMAGE_TAG}'
-        //             sh 'docker push ${DOCKERHUB_REPO}:latest'
-        //         }
-        //     }
-        // }
+        stage('Push to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'USER',
+                    passwordVariable: 'PASS'
+                )]) {
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+                    sh 'docker push ${DOCKERHUB_REPO}:${IMAGE_TAG}'
+                    sh 'docker push ${DOCKERHUB_REPO}:latest'
+                }
+            }
+        }
 
     }
 
