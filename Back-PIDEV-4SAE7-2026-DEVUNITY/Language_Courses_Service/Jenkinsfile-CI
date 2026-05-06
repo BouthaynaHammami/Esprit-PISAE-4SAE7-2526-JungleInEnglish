@@ -1,14 +1,14 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'maven:3.9.15-eclipse-temurin-17'
+            args '-v /var/run/docker.sock:/var/run/docker.sock -u root'
+        }
+    }
 
     environment {
         DOCKERHUB_REPO = "saifby/language-courses-service"
         IMAGE_TAG      = "v${BUILD_NUMBER}"
-    }
-
-    tools {
-        maven 'Maven3'
-        jdk   'JDK17'
     }
 
     stages {
@@ -41,6 +41,7 @@ pipeline {
         }
 
         stage('Build Docker Image') {
+            agent any
             steps {
                 dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Language_Courses_Service') {
                     sh 'docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} .'
@@ -50,6 +51,7 @@ pipeline {
         }
 
         stage('Push to DockerHub') {
+            agent any
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub-credentials',
@@ -59,6 +61,7 @@ pipeline {
                     sh 'echo $PASS | docker login -u $USER --password-stdin'
                     sh 'docker push ${DOCKERHUB_REPO}:${IMAGE_TAG}'
                     sh 'docker push ${DOCKERHUB_REPO}:latest'
+                    sh 'docker logout'
                 }
             }
         }
@@ -71,6 +74,9 @@ pipeline {
         }
         failure {
             echo "❌ Build échoué. Vérifiez les logs."
+        }
+        always {
+            cleanWs()
         }
     }
 }
