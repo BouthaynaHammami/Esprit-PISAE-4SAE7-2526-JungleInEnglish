@@ -3,7 +3,7 @@ pipeline {
 
     environment {
 
-        K8S_DIR = "Back-PIDEV-4SAE7-2026-DEVUNITY/Community_Engagement_Service/k8s"
+        K8S_DIR = "Back-PIDEV-4SAE7-2026-DEVUNITY/Community_Engagement_Service/k8s
     }
 
     stages {
@@ -34,7 +34,7 @@ pipeline {
         stage('Verify Deployment') {
                     steps {
 
-                        sh 'kubectl rollout status deployment/Community -n devunity --timeout=120s'
+                        sh 'kubectl rollout status deployment/Community -n devunity --timeout=300s'
                         sh 'kubectl get pods -n devunity'
                     }
                 }

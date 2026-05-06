@@ -40,6 +40,17 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Analyse SonarQube...'
+                dir('Back-PIDEV-4SAE7-2026-DEVUNITY/Community_Engagement_Service') {
+                    withSonarQubeEnv('SonarQube') {
+                        sh 'mvn sonar:sonar -Dsonar.projectKey=community-engagement-service'
+                    }
+                }
+            }
+
+
         stage('Deploy to Nexus') {
             steps {
                 echo 'Déploiement vers Nexus...'
