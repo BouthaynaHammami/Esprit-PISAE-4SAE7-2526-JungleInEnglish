@@ -35,24 +35,24 @@ pipeline {
                 }
             }
         }
-        stage('Semgrep Security Scan') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: 'semgrep_token', variable: 'SEMGREP_APP_TOKEN')]) {
-                        docker.image('semgrep/semgrep').inside("""
-                            -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} \
-                            -e HOME=/tmp \
-                            -e SEMGREP_USER_DATA_DIR=/tmp/semgrep \
-                        """) {
-                            dir("${SOCIAL_SERVICE_PATH}") {
-                                sh 'semgrep ci || true'
-                                sh 'semgrep scan --config auto || true'
-                            }
-                        }
-                    }
-                }
-            }
-        }
+	stage('Semgrep Security Scan') {
+	    steps {
+	        script {
+	            withCredentials([string(credentialsId: 'semgrep_token', variable: 'SEMGREP_APP_TOKEN')]) {
+	                sh """
+	                    docker run --rm \
+	                        --network host \
+	                        -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} \
+	                        -e HOME=/tmp \
+	                        -e SEMGREP_USER_DATA_DIR=/tmp/semgrep \
+	                        -v "${WORKSPACE}:/src" \
+	                        -w /src \
+	                        semgrep/semgrep semgrep ci || true
+	                """
+	            }
+	        }
+	    }
+	}
 	stage('SonarQube Analysis') {
             steps {
                 script {
