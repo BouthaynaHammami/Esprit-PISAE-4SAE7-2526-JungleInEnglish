@@ -122,6 +122,16 @@ pipeline {
             }
         }
 
+        stage('Trigger CD') {
+            steps {
+            build job: 'learner-management-service-CD',
+                parameters: [
+                    string(name: 'IMAGE_TAG', value: "v${BUILD_NUMBER}")
+                ],
+                wait: false
+            }
+        }
+
     }
 
     post {
