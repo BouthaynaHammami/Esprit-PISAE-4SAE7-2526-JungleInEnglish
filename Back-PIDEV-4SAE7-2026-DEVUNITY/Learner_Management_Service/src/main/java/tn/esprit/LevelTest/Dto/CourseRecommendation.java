@@ -16,6 +16,7 @@ public class CourseRecommendation {
     private List<RecommendedCourse> recommendedCourses;
     private List<String> skillsToImprove;
     private NextLevelSuggestion nextLevelSuggestion;
+    
     private LearningPath learningPath;
     
     @Data
