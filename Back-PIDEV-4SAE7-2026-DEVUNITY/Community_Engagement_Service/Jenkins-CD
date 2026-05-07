@@ -2,43 +2,40 @@ pipeline {
     agent any
 
     environment {
-
-        K8S_DIR = "Back-PIDEV-4SAE7-2026-DEVUNITY/Community_Engagement_Service/k8s
+        K8S_DIR = 'Back-PIDEV-4SAE7-2026-DEVUNITY/Community_Engagement_Service/k8s'
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Kubernetes check') {
+        stage('Kubernetes Check') {
             steps {
                 sh 'kubectl get pods -A'
                 sh 'kubectl get nodes'
             }
         }
+
         stage('Kubernetes Deploy') {
-                    steps {
-                        sh 'kubectl apply -f ${K8S_DIR}/namespace.yml '
-                        sh 'kubectl apply -f ${K8S_DIR}/mysql-secret.yml '
-                        sh 'kubectl apply -f ${K8S_DIR}/Configmap.yml '
-                        sh 'kubectl apply -f ${K8S_DIR}/mysql_deployment.yml '
-                        sh 'kubectl apply -f ${K8S_DIR}/keyckloak_deployment.yml '
-                        sh 'kubectl apply -f ${K8S_DIR}/Community.yml '
+            steps {
+                sh "kubectl apply -f ${K8S_DIR}/namespace.yml"
+                sh "kubectl apply -f ${K8S_DIR}/mysql-secret.yml"
+                sh "kubectl apply -f ${K8S_DIR}/Configmap.yml"
+                sh "kubectl apply -f ${K8S_DIR}/mysql_deployment.yml"
+                sh "kubectl apply -f ${K8S_DIR}/keyckloak_deployment.yml"
+                sh "kubectl apply -f ${K8S_DIR}/Community.yml"
+            }
+        }
 
-                    }
-                }
         stage('Verify Deployment') {
-                    steps {
-
-                        sh 'kubectl rollout status deployment/Community -n devunity --timeout=300s'
-                        sh 'kubectl get pods -n devunity'
-                    }
-                }
-
+            steps {
+                sh 'kubectl rollout status deployment/Community -n devunity --timeout=300s'
+                sh 'kubectl get pods -n devunity'
+            }
+        }
     }
 
     post {
@@ -49,5 +46,4 @@ pipeline {
             echo 'Deployment failed!'
         }
     }
-
 }
