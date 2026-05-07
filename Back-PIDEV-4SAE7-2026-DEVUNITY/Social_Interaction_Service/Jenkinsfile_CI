@@ -7,8 +7,8 @@ pipeline {
     environment {
         BACKEND_PATH      = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
         SOCIAL_SERVICE_PATH = "${BACKEND_PATH}/Social_Interaction_Service"
-        SONAR_HOST_URL    = 'http://192.168.19.128:9000'
-        NEXUS_URL         = 'http://192.168.19.128:8081'
+        SONAR_HOST_URL    = 'http://192.168.19.130:9000'
+        NEXUS_URL         = 'http://192.168.19.130:8081'
         MAVEN_OPTS        = '-Xmx512m -XX:MaxMetaspaceSize=256m'
         DOCKER_IMAGE      = 'hbouthayna/social-interaction-service'
     }
