@@ -12,10 +12,10 @@ pipeline {
         NEXUS_REPO   = 'frontend-releases'
         DOCKER_IMAGE = 'chelba/dev-unity-frontend'
 
-        NODE_OPTIONS = '--max-old-space-size=2048'
+        IMAGE_TAG = "v${BUILD_NUMBER}"
 
-        // IMPORTANT
-        CHROME_BIN = '/usr/bin/google-chrome'
+        NODE_OPTIONS = '--max-old-space-size=2048'
+        CHROME_BIN   = '/usr/bin/google-chrome'
     }
 
     stages {
@@ -57,16 +57,8 @@ pipeline {
                     '''
                 }
             }
-
-            post {
-                always {
-                    junit testResults: "${FRONT_PATH}/coverage/**/*.xml",
-                          allowEmptyResults: true
-                }
-            }
         }
 
-        // BUILD BEFORE NEXUS
         stage('Build Production') {
             steps {
                 dir("${FRONT_PATH}") {
@@ -75,34 +67,10 @@ pipeline {
             }
         }
 
-        stage('Deploy to Nexus') {
-            steps {
-                dir("${FRONT_PATH}") {
-
-                    withCredentials([usernamePassword(
-                        credentialsId: 'nexus-credentials',
-                        usernameVariable: 'NEXUS_USER',
-                        passwordVariable: 'NEXUS_PASS'
-                    )]) {
-
-                        sh '''
-                            zip -r frontend-build-${BUILD_NUMBER}.zip dist/
-
-                            curl -u ${NEXUS_USER}:${NEXUS_PASS} \
-                              --upload-file frontend-build-${BUILD_NUMBER}.zip \
-                              ${NEXUS_URL}/repository/${NEXUS_REPO}/frontend-build-${BUILD_NUMBER}.zip
-                        '''
-                    }
-                }
-            }
-        }
-
         stage('SonarQube Analysis') {
             steps {
                 dir("${FRONT_PATH}") {
-
                     withSonarQubeEnv('SonarQube') {
-
                         sh '''
                             npx sonar-scanner \
                               -Dsonar.projectKey=Dev-Unity-Frontend \
@@ -119,17 +87,14 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir("${FRONT_PATH}") {
-
-                    sh 'docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .'
-
-                    sh 'docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest'
+                    sh 'docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} .'
+                    sh 'docker tag ${DOCKER_IMAGE}:${IMAGE_TAG} ${DOCKER_IMAGE}:latest'
                 }
             }
         }
 
         stage('Push to DockerHub') {
             steps {
-
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub-credentials',
                     usernameVariable: 'USER',
@@ -138,26 +103,34 @@ pipeline {
 
                     sh 'echo $PASS | docker login -u $USER --password-stdin'
 
-                    sh 'docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}'
-
+                    sh 'docker push ${DOCKER_IMAGE}:${IMAGE_TAG}'
                     sh 'docker push ${DOCKER_IMAGE}:latest'
                 }
+            }
+        }
+
+        stage('Trigger CD') {
+            steps {
+                build job: 'DevUnity-Frontend-CD',
+                    parameters: [
+                        string(name: 'IMAGE_TAG', value: "${IMAGE_TAG}")
+                    ],
+                    wait: false
             }
         }
     }
 
     post {
-
         success {
             mail to: 'islemraissi789@gmail.com',
-                 subject: "✅ Frontend CI PASSED - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "Frontend build passed successfully.\nDocker image pushed.\n\n${env.BUILD_URL}"
+                 subject: "✅ FRONTEND CI PASSED - ${env.BUILD_NUMBER}",
+                 body: "Frontend CI passed.\nImage: ${DOCKER_IMAGE}:${IMAGE_TAG}"
         }
 
         failure {
             mail to: 'islemraissi789@gmail.com',
-                 subject: "❌ Frontend CI FAILED - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "Frontend build failed.\nCheck logs:\n${env.BUILD_URL}"
+                 subject: "❌ FRONTEND CI FAILED - ${env.BUILD_NUMBER}",
+                 body: "Check logs: ${env.BUILD_URL}"
         }
     }
 }
