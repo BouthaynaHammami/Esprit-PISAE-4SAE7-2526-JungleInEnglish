@@ -1,212 +1,261 @@
-<div class="admin-wrapper">
+<div class="min-h-screen p-8 bg-[#EDF6F9]/50 animate-fade-in">
   <!-- HEADER SECTION -->
-  <header class="dashboard-header">
-    <div class="header-content">
-      <h1 class="page-title">Challenges Management</h1>
-      <p class="page-subtitle">Design, organize and monitor educational challenges.</p>
-    </div>
-    
-    <div class="header-actions">
-      <nav class="sub-nav">
-        <a class="nav-link active" routerLink="/admin/challenges">Challenges</a>
-        <a class="nav-link" routerLink="/admin/student-stats">Stats</a>
-        <a class="nav-link" routerLink="/admin/badges">Badges</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- ACTION BAR -->
-  <div class="action-bar" *ngIf="!showInlineForm">
-    <div class="action-group">
-      <button class="btn btn--primary" (click)="startCreate()">
-        <i class="fas fa-plus"></i> New Challenge
-      </button>
-      <button class="btn btn--secondary" (click)="loadAll()" [disabled]="loading">
-        <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i> Refresh
-      </button>
-    </div>
-
-    <div class="action-group">
-      <div class="search-container">
-        <div class="search-input-wrapper">
-          <i class="fas fa-search search-icon"></i>
-          <input type="text" [(ngModel)]="searchQuery" placeholder="Search challenges..." class="search-input" />
-        </div>
+  <div class="mb-10 flex justify-between items-center">
+    <div class="flex items-center gap-5">
+      <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-[#006D77]">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
       </div>
-      <select class="filter-select" [(ngModel)]="typeFilter">
-        <option value="">All Types</option>
-        <option *ngFor="let t of types" [value]="t">{{ typeLabel(t) }}</option>
-      </select>
+      <div>
+        <h1 class="text-3xl font-bold text-[#006D77] tracking-tight">Challenges Management</h1>
+        <p class="text-[#83C5BE] font-medium">Design, organize and monitor educational challenges.</p>
+      </div>
     </div>
+  </div>
+
+  <!-- Sub-Navigation Tabs -->
+  <div class="flex flex-wrap gap-2 mb-10 p-1.5 bg-white/50 backdrop-blur-md rounded-[24px] w-fit border border-white/50 shadow-sm">
+    <a routerLink="/admin/challenges" routerLinkActive="bg-white text-[#006D77] shadow-sm" [routerLinkActiveOptions]="{exact: true}" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80 transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+      Challenges
+    </a>
+    <a routerLink="/admin/student-stats" routerLinkActive="bg-white text-[#006D77] shadow-sm" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80 transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+      Stats
+    </a>
+    <a routerLink="/admin/badges" routerLinkActive="bg-white text-[#006D77] shadow-sm" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80 transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/></svg>
+      Badges
+    </a>
   </div>
 
   <!-- STATUS MESSAGES -->
-  <div class="status-msg success" *ngIf="successMessage">
-    <i class="fas fa-check-circle"></i> {{ successMessage }}
+  <div *ngIf="successMessage" class="mb-6 px-6 py-4 bg-green-50 text-green-700 rounded-2xl border border-green-100 flex items-center gap-3 animate-fade-in shadow-sm font-bold text-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    {{ successMessage }}
   </div>
-  <div class="status-msg error" *ngIf="error">
-    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+  <div *ngIf="error" class="mb-6 px-6 py-4 bg-[#FFDDD2] text-[#E29578] rounded-2xl border border-[#E29578]/20 flex items-center gap-3 animate-fade-in shadow-sm font-bold text-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    {{ error }}
+  </div>
+
+  <!-- ========================= -->
+  <!-- ACTION BAR -->
+  <!-- ========================= -->
+  <div class="bg-white rounded-[20px] p-6 mb-8 shadow-sm border border-gray-100 flex flex-wrap gap-4 items-center justify-between" *ngIf="!showInlineForm">
+    <div class="flex gap-3">
+      <button (click)="startCreate()" class="group px-6 py-3 bg-[#006D77] text-white rounded-2xl hover:bg-[#83C5BE] transition-all duration-300 shadow-md flex items-center gap-3 font-semibold text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-500"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Challenge
+      </button>
+      <button (click)="loadAll()" [disabled]="loading" class="px-6 py-3 bg-[#EDF6F9] text-[#006D77] rounded-2xl hover:bg-[#83C5BE] hover:text-white transition-all duration-300 flex items-center gap-3 font-semibold text-sm shadow-sm disabled:opacity-50">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.animate-spin]="loading"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        Refresh
+      </button>
+    </div>
+
+    <div class="flex items-center gap-4 flex-1 justify-end">
+      <div class="relative w-64">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#83C5BE]">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </span>
+        <input type="text" [(ngModel)]="searchQuery" placeholder="Search challenges..." class="w-full pl-11 pr-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl text-sm outline-none transition-all font-medium">
+      </div>
+      <div class="relative w-48">
+        <select [(ngModel)]="typeFilter" class="w-full pl-4 pr-10 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl text-sm outline-none transition-all font-medium appearance-none text-[#006D77]">
+          <option value="">All Types</option>
+          <option *ngFor="let t of types" [value]="t">{{ typeLabel(t) }}</option>
+        </select>
+        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[#006D77] pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </span>
+      </div>
+    </div>
   </div>
 
   <!-- ========================= -->
   <!-- INLINE FORM (Create/Edit) -->
   <!-- ========================= -->
-  <div class="inline-editor" *ngIf="showInlineForm">
-    <div class="editor-header">
-      <h2 class="editor-title">{{ isEdit ? 'Edit Challenge' : 'Create New Challenge' }}</h2>
-      <p class="editor-subtitle">{{ selectedType ? 'Fill in the details for ' + typeLabel(selectedType) : 'Choose a challenge type to begin' }}</p>
+  <div *ngIf="showInlineForm" class="bg-white rounded-[32px] shadow-2xl border border-gray-100 overflow-hidden animate-scale-up mb-8">
+    <div class="p-8 bg-[#EDF6F9] flex justify-between items-center border-b border-gray-100">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-2xl bg-[#006D77] shadow-lg flex items-center justify-center text-white">
+          <svg *ngIf="!isEdit" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          <svg *ngIf="isEdit" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold text-[#006D77]">{{ isEdit ? 'Edit Challenge' : 'Create New Challenge' }}</h2>
+          <p class="text-[#83C5BE] font-medium text-sm">{{ selectedType ? 'Fill in the details for ' + typeLabel(selectedType) : 'Choose a challenge type to begin' }}</p>
+        </div>
+      </div>
+      <button (click)="cancelForm()" class="p-3 hover:bg-white rounded-2xl transition-all text-[#006D77]">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
     </div>
 
     <!-- Step 1: Type Picker -->
-    <div *ngIf="!isEdit && !selectedType" class="type-picker-grid">
-      <div *ngFor="let t of types" class="type-card" (click)="pickType(t)">
-        <div class="t-icon">
-          <i class="fas" [ngClass]="{
-            'fa-question-circle': t === 'MYSTERY_WORD',
-            'fa-font': t === 'SENTENCE_BUILDER',
-            'fa-smile': t === 'EMOJI_WORD',
-            'fa-fist-raised': t === 'WORD_BATTLE_ROYALE',
-            'fa-pen-nib': t === 'STORY_CHAIN',
-            'fa-language': t === 'SPEED_TRANSLATION_RACE'
-          }"></i>
+    <div *ngIf="!isEdit && !selectedType" class="p-8">
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+        <div *ngFor="let t of types" (click)="pickType(t)" class="bg-gray-50/50 border border-gray-100 rounded-[24px] p-6 text-center cursor-pointer hover:bg-[#EDF6F9] hover:border-[#83C5BE] hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
+          <div class="w-16 h-16 mx-auto bg-white rounded-full shadow-sm flex items-center justify-center mb-4 text-[#006D77] group-hover:scale-110 group-hover:bg-[#006D77] group-hover:text-white transition-all duration-300">
+            <!-- Icons for each type -->
+            <svg *ngIf="t === 'MYSTERY_WORD'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+            <svg *ngIf="t === 'SENTENCE_BUILDER'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+            <svg *ngIf="t === 'EMOJI_WORD'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            <svg *ngIf="t === 'WORD_BATTLE_ROYALE'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            <svg *ngIf="t === 'STORY_CHAIN'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <svg *ngIf="t === 'SPEED_TRANSLATION_RACE'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+          </div>
+          <div class="font-bold text-[#006D77] group-hover:text-[#006D77]">{{ typeLabel(t) }}</div>
         </div>
-        <div class="t-name">{{ typeLabel(t) }}</div>
       </div>
     </div>
 
     <!-- Step 2: Form -->
     <form [formGroup]="form" (ngSubmit)="save()" *ngIf="selectedType">
-      <div class="form-grid">
+      <div class="p-8 space-y-6">
+        
         <!-- Common Fields -->
-        <div class="form-group full-width">
-          <label class="form-label">Challenge Title *</label>
-          <input formControlName="title" class="form-input" placeholder="Enter a catchy title..." />
-        </div>
-        <div class="form-group full-width">
-          <label class="form-label">Description</label>
-          <textarea formControlName="description" class="form-input" rows="3" placeholder="Explain the rules..."></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Difficulty Level</label>
-          <select formControlName="level" class="form-input">
-            <option [ngValue]="null">Select Level</option>
-            <option *ngFor="let l of levels" [value]="l">{{ l }}</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Time Limit (Seconds)</label>
-          <input type="number" formControlName="timeLimitSeconds" class="form-input" placeholder="e.g. 60" />
-        </div>
-
-        <!-- TYPE SPECIFIC FIELDS -->
-        <ng-container [ngSwitch]="selectedType">
-          <!-- MYSTERY_WORD -->
-          <ng-container *ngSwitchCase="'MYSTERY_WORD'">
-            <div class="form-group">
-              <label class="form-label">Target Word *</label>
-              <input formControlName="correctAnswer" class="form-input" placeholder="The hidden word" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Max Attempts</label>
-              <input type="number" formControlName="maxAttempts" class="form-input" />
-            </div>
-            <div class="form-group full-width">
-              <label class="form-label">Hints (comma separated)</label>
-              <input formControlName="hints" class="form-input" placeholder="Hint 1, Hint 2..." />
-            </div>
-          </ng-container>
-
-          <!-- SENTENCE_BUILDER -->
-          <ng-container *ngSwitchCase="'SENTENCE_BUILDER'">
-            <div class="form-group full-width">
-              <label class="form-label">Correct Sentence *</label>
-              <input formControlName="correctAnswer" class="form-input" placeholder="The full sentence" />
-            </div>
-            <div class="form-group full-width">
-              <label class="form-label">Scrambled Version (Optional)</label>
-              <input formControlName="scrambledSentence" class="form-input" placeholder="Leave empty for auto-scramble" />
-            </div>
-          </ng-container>
-
-          <!-- EMOJI_WORD -->
-          <ng-container *ngSwitchCase="'EMOJI_WORD'">
-            <div class="form-group">
-              <label class="form-label">Emoji Prompt *</label>
-              <input formControlName="emojiPrompt" class="form-input" placeholder="🍎 🍏 ..." />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Correct Word *</label>
-              <input formControlName="correctAnswer" class="form-input" />
-            </div>
-          </ng-container>
-
-          <!-- MULTIPLAYER COMMON FIELDS -->
-          <div class="form-group" *ngIf="selectedType === 'WORD_BATTLE_ROYALE' || selectedType === 'STORY_CHAIN' || selectedType === 'SPEED_TRANSLATION_RACE'">
-            <label class="form-label">Max Participants</label>
-            <input type="number" formControlName="maxParticipants" class="form-input" />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2 md:col-span-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Challenge Title *</label>
+            <input formControlName="title" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Enter a catchy title..." />
           </div>
+          <div class="space-y-2 md:col-span-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Description</label>
+            <textarea formControlName="description" rows="3" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium resize-none" placeholder="Explain the rules..."></textarea>
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Difficulty Level</label>
+            <select formControlName="level" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
+              <option [ngValue]="null">Select Level</option>
+              <option *ngFor="let l of levels" [value]="l">{{ l }}</option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Time Limit (Seconds)</label>
+            <input type="number" formControlName="timeLimitSeconds" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="e.g. 60" />
+          </div>
+        </div>
 
-          <!-- WORD_BATTLE_ROYALE -->
-          <ng-container *ngSwitchCase="'WORD_BATTLE_ROYALE'">
-            <div class="form-group">
-              <label class="form-label">Theme</label>
-              <input formControlName="wordTheme" class="form-input" placeholder="e.g. Animals, Tech" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Allowed Letters (Optional)</label>
-              <input formControlName="allowedLetters" class="form-input" />
-            </div>
-          </ng-container>
+        <div class="border-t border-gray-100 my-6"></div>
+        <h3 class="text-sm font-bold text-[#83C5BE] uppercase tracking-widest mb-4 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          Type Specific Configuration
+        </h3>
 
-          <!-- STORY_CHAIN -->
-          <ng-container *ngSwitchCase="'STORY_CHAIN'">
-            <div class="form-group full-width">
-              <label class="form-label">Initial Sentence</label>
-              <input formControlName="initialSentence" class="form-input" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Max Sentences</label>
-              <input type="number" formControlName="maxSentences" class="form-input" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Words Per Sentence (Min-Max)</label>
-              <div style="display:flex; gap:10px;">
-                <input type="number" formControlName="minWordsPerSentence" class="form-input" style="flex:1" />
-                <input type="number" formControlName="maxWordsPerSentence" class="form-input" style="flex:1" />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ng-container [ngSwitch]="selectedType">
+            
+            <!-- MYSTERY_WORD -->
+            <ng-container *ngSwitchCase="'MYSTERY_WORD'">
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Target Word *</label>
+                <input formControlName="correctAnswer" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="The hidden word" />
               </div>
-            </div>
-          </ng-container>
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Max Attempts</label>
+                <input type="number" formControlName="maxAttempts" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
+              </div>
+              <div class="space-y-2 md:col-span-2">
+                <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Hints (comma separated)</label>
+                <input formControlName="hints" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Hint 1, Hint 2..." />
+              </div>
+            </ng-container>
 
-          <!-- SPEED_TRANSLATION_RACE -->
-          <ng-container *ngSwitchCase="'SPEED_TRANSLATION_RACE'">
-             <div class="form-group">
-              <label class="form-label">Languages (From → To)</label>
-              <div style="display:flex; gap:10px;">
-                <input formControlName="sourceLanguage" class="form-input" style="flex:1" placeholder="English" />
-                <input formControlName="targetLanguage" class="form-input" style="flex:1" placeholder="French" />
+            <!-- SENTENCE_BUILDER -->
+            <ng-container *ngSwitchCase="'SENTENCE_BUILDER'">
+              <div class="space-y-2 md:col-span-2">
+                <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Correct Sentence *</label>
+                <input formControlName="correctAnswer" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="The full sentence" />
               </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Points & Bonus</label>
-              <div style="display:flex; gap:10px; align-items:center;">
-                <input type="number" formControlName="pointsPerCorrectAnswer" class="form-input" style="flex:1" />
-                <label style="display:flex; align-items:center; gap:5px; font-size:12px;">
-                  <input type="checkbox" formControlName="speedBonusEnabled"> Speed Bonus
-                </label>
+              <div class="space-y-2 md:col-span-2">
+                <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Scrambled Version (Optional)</label>
+                <input formControlName="scrambledSentence" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Leave empty for auto-scramble" />
               </div>
+            </ng-container>
+
+            <!-- EMOJI_WORD -->
+            <ng-container *ngSwitchCase="'EMOJI_WORD'">
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Emoji Prompt *</label>
+                <input formControlName="emojiPrompt" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="🍎 🍏 ..." />
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Correct Word *</label>
+                <input formControlName="correctAnswer" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
+              </div>
+            </ng-container>
+
+            <!-- MULTIPLAYER COMMON FIELDS -->
+            <div class="space-y-2" *ngIf="selectedType === 'WORD_BATTLE_ROYALE' || selectedType === 'STORY_CHAIN' || selectedType === 'SPEED_TRANSLATION_RACE'">
+              <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Max Participants</label>
+              <input type="number" formControlName="maxParticipants" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
             </div>
-            <div class="form-group full-width">
-            <label class="form-label">Sentences List (JSON format: [{{ '{' }}"source":"...", "target":"..."{{ '}' }}])</label>
-              <textarea formControlName="sentencesList" class="form-input" rows="4"></textarea>
-            </div>
+
+            <!-- WORD_BATTLE_ROYALE -->
+            <ng-container *ngSwitchCase="'WORD_BATTLE_ROYALE'">
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Theme</label>
+                <input formControlName="wordTheme" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="e.g. Animals, Tech" />
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Allowed Letters (Optional)</label>
+                <input formControlName="allowedLetters" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
+              </div>
+            </ng-container>
+
+            <!-- STORY_CHAIN -->
+            <ng-container *ngSwitchCase="'STORY_CHAIN'">
+              <div class="space-y-2 md:col-span-2">
+                <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Initial Sentence</label>
+                <input formControlName="initialSentence" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Max Sentences</label>
+                <input type="number" formControlName="maxSentences" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Words Per Sentence (Min-Max)</label>
+                <div class="flex gap-2">
+                  <input type="number" formControlName="minWordsPerSentence" class="flex-1 px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Min" />
+                  <input type="number" formControlName="maxWordsPerSentence" class="flex-1 px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Max" />
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- SPEED_TRANSLATION_RACE -->
+            <ng-container *ngSwitchCase="'SPEED_TRANSLATION_RACE'">
+               <div class="space-y-2">
+                <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Languages (From → To)</label>
+                <div class="flex gap-2">
+                  <input formControlName="sourceLanguage" class="flex-1 px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="English" />
+                  <input formControlName="targetLanguage" class="flex-1 px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="French" />
+                </div>
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Points & Bonus</label>
+                <div class="flex gap-2 items-center">
+                  <input type="number" formControlName="pointsPerCorrectAnswer" class="flex-1 px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Points" />
+                  <label class="flex items-center gap-2 text-sm font-bold text-[#006D77] px-4">
+                    <input type="checkbox" formControlName="speedBonusEnabled" class="w-4 h-4 rounded text-[#006D77] focus:ring-[#006D77]"> Speed Bonus
+                  </label>
+                </div>
+              </div>
+              <div class="space-y-2 md:col-span-2">
+              <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Sentences List (JSON format: [{{ '{' }}"source":"...", "target":"..."{{ '}' }}])</label>
+                <textarea formControlName="sentencesList" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium resize-none font-mono text-xs" rows="4"></textarea>
+              </div>
+            </ng-container>
+
           </ng-container>
-        </ng-container>
+        </div>
       </div>
 
-      <div class="form-footer">
-        <button class="btn btn--secondary" type="button" (click)="cancelForm()">Cancel</button>
-        <button class="btn btn--primary" type="submit" [disabled]="saving">
-          <i class="fas fa-save"></i> {{ isEdit ? 'Update Challenge' : 'Create Challenge' }}
+      <div class="p-8 bg-gray-50/50 flex gap-4 rounded-b-[32px] border-t border-gray-100">
+        <button type="button" (click)="cancelForm()" class="flex-1 py-4 bg-white border-2 border-[#EDF6F9] text-[#006D77] rounded-2xl font-bold hover:bg-[#EDF6F9] transition-all">Cancel</button>
+        <button type="submit" [disabled]="saving || form.invalid" class="flex-1 py-4 bg-[#006D77] disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-2xl font-bold shadow-lg hover:bg-[#83C5BE] transition-all flex items-center justify-center gap-3">
+          <svg *ngIf="saving" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          {{ isEdit ? 'Update Challenge' : 'Create Challenge' }}
         </button>
       </div>
     </form>
@@ -217,74 +266,88 @@
   <!-- ========================= -->
   <div *ngIf="!loading && !showInlineForm">
     <div *ngFor="let t of types">
-      <ng-container *ngIf="!typeFilter || typeFilter === t">
-        <div class="type-section-header" *ngIf="(filterByType(challenges, t)).length > 0">
-          <div class="section-icon">
-             <i class="fas" [ngClass]="{
-              'fa-question-circle': t === 'MYSTERY_WORD',
-              'fa-font': t === 'SENTENCE_BUILDER',
-              'fa-smile': t === 'EMOJI_WORD',
-              'fa-fist-raised': t === 'WORD_BATTLE_ROYALE',
-              'fa-pen-nib': t === 'STORY_CHAIN',
-              'fa-language': t === 'SPEED_TRANSLATION_RACE'
-            }"></i>
+      <ng-container *ngIf="(!typeFilter || typeFilter === t) && filterByType(challenges, t).length > 0">
+        
+        <!-- Section Header -->
+        <div class="flex items-center gap-4 mb-6 mt-10">
+          <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-[#006D77] border border-gray-50">
+            <svg *ngIf="t === 'MYSTERY_WORD'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+            <svg *ngIf="t === 'SENTENCE_BUILDER'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+            <svg *ngIf="t === 'EMOJI_WORD'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            <svg *ngIf="t === 'WORD_BATTLE_ROYALE'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            <svg *ngIf="t === 'STORY_CHAIN'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <svg *ngIf="t === 'SPEED_TRANSLATION_RACE'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
           </div>
-          <h3 class="section-title">{{ typeLabel(t) }}s</h3>
-          <span class="section-count">{{ (filterByType(challenges, t)).length }}</span>
+          <h3 class="text-xl font-bold text-[#006D77]">{{ typeLabel(t) }}s</h3>
+          <span class="px-3 py-1 bg-[#EDF6F9] text-[#006D77] rounded-full text-xs font-bold">{{ filterByType(challenges, t).length }}</span>
         </div>
 
-        <div class="table-container" *ngIf="(filterByType(challenges, t)).length > 0">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Title & Level</th>
-                <th>Description</th>
-                <th>Settings</th>
-                <th class="text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let c of filterByType(filtered, t)" class="table-row">
-                <td>
-                  <div class="cell-main">{{ c.title }}</div>
-                  <span class="badge-pill level">{{ c.level || 'Any' }}</span>
-                </td>
-                <td>
-                  <div class="cell-sub">{{ (c.description | slice:0:60) + ((c.description?.length ?? 0) > 60 ? '...' : '') }}</div>
-                </td>
-                <td>
-                  <div class="cell-sub">
-                    <i class="fas fa-clock"></i> {{ c.timeLimitSeconds }}s | 
-                    <i class="fas fa-users"></i> {{ c.maxParticipants || '--' }}
-                  </div>
-                </td>
-                <td class="text-right">
-                  <div class="row-actions">
-                    <button class="action-btn edit-btn" (click)="onEdit(c)">
-                      <i class="fas fa-edit"></i> <span>Edit</span>
-                    </button>
-                    <button class="action-btn delete-btn" (click)="onDelete(c)">
-                      <i class="fas fa-trash"></i> <span>Delete</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden mb-8 animate-fade-in">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="bg-gray-50/50 border-b border-gray-100">
+                  <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest w-1/4">Title & Level</th>
+                  <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Description</th>
+                  <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Settings</th>
+                  <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-50">
+                <tr *ngFor="let c of filterByType(filtered, t)" class="hover:bg-[#EDF6F9]/30 transition-all duration-200 group">
+                  <td class="px-8 py-5">
+                    <div class="font-bold text-[#006D77] text-sm">{{ c.title }}</div>
+                    <span class="mt-1 inline-block px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest bg-purple-50 text-purple-600 border border-purple-100">
+                      {{ c.level || 'Any' }}
+                    </span>
+                  </td>
+                  <td class="px-8 py-5">
+                    <div class="text-xs text-gray-500 font-medium max-w-xs break-words">
+                      {{ (c.description | slice:0:60) + ((c.description?.length ?? 0) > 60 ? '...' : '') }}
+                    </div>
+                  </td>
+                  <td class="px-8 py-5 text-center">
+                    <div class="inline-flex items-center gap-3">
+                      <div class="flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-gray-50 px-2 py-1 rounded-lg border border-gray-100" title="Time Limit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        {{ c.timeLimitSeconds }}s
+                      </div>
+                      <div class="flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-gray-50 px-2 py-1 rounded-lg border border-gray-100" title="Max Participants">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        {{ c.maxParticipants || '--' }}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-8 py-5 text-right">
+                    <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                      <button (click)="onEdit(c)" class="p-2.5 hover:bg-[#EDF6F9] text-[#006D77] rounded-xl transition-all" title="Edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                      </button>
+                      <button (click)="onDelete(c)" class="p-2.5 hover:bg-[#FFDDD2] text-[#E29578] rounded-xl transition-all" title="Delete">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </ng-container>
     </div>
 
     <!-- EMPTY STATE -->
-    <div class="empty-state" *ngIf="filtered.length === 0">
-      <div class="empty-state__visual"><i class="fas fa-folder-open"></i></div>
-      <h3 class="empty-state__title">No challenges found</h3>
-      <p class="empty-state__text">Start by creating your first challenge for the students.</p>
+    <div *ngIf="filtered.length === 0" class="py-24 text-center">
+      <div class="flex justify-center mb-8 text-[#83C5BE] opacity-40">
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+      </div>
+      <h3 class="text-2xl font-bold text-[#006D77]">No challenges found</h3>
+      <p class="text-[#83C5BE] mt-2 max-w-sm mx-auto font-medium">Create your first educational challenge to engage students.</p>
     </div>
   </div>
 
   <!-- LOADER -->
-  <div *ngIf="loading" style="padding: 100px; text-align: center;">
-    <i class="fas fa-spinner fa-spin fa-3x" style="color: #83C5BE;"></i>
+  <div *ngIf="loading" class="space-y-4">
+    <div *ngFor="let i of [1,2,3]" class="h-20 bg-white rounded-[20px] animate-pulse border border-gray-50 shadow-sm"></div>
   </div>
 </div>

@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
     public static final String COURSE_QUEUE = "course.queue";
+    public static final String CERTIFICATION_QUEUE = "certification.queue";
 
     @Bean
     public MessageConverter jsonMessageConverter() {

@@ -1,43 +1,40 @@
-<div class="max-w-7xl mx-auto px-6 py-8">
+<div class="min-h-screen p-8 bg-[#EDF6F9]/50 animate-fade-in">
 
-    <!-- Header -->
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-[#006D77]">Planning Management</h1>
-        <p class="text-gray-500 mt-1">Manage rooms, classes, room complaints, and course schedules</p>
+  <!-- Header -->
+  <div class="mb-10 flex items-center gap-5">
+    <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-[#006D77]">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     </div>
-
-    <!-- Tab nav -->
-    <div class="flex gap-1 mb-8 border-b border-gray-200">
-        <button (click)="activeTab = 'rooms'"
-            [class]="activeTab === 'rooms'
-        ? 'px-5 py-2.5 text-sm font-semibold text-[#006D77] bg-[#006D77]/5 border-b-2 border-[#006D77] rounded-t-lg transition-colors'
-        : 'px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors'">
-            🚪 Rooms
-        </button>
-        <button (click)="activeTab = 'classes'"
-            [class]="activeTab === 'classes'
-        ? 'px-5 py-2.5 text-sm font-semibold text-[#006D77] bg-[#006D77]/5 border-b-2 border-[#006D77] rounded-t-lg transition-colors'
-        : 'px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors'">
-            🏫 Classes
-        </button>
-        <button (click)="activeTab = 'complaints'"
-            [class]="activeTab === 'complaints'
-        ? 'px-5 py-2.5 text-sm font-semibold text-[#006D77] bg-[#006D77]/5 border-b-2 border-[#006D77] rounded-t-lg transition-colors'
-        : 'px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors'">
-            ✉️ Complaints
-        </button>
-        <button (click)="activeTab = 'schedules'"
-            [class]="activeTab === 'schedules'
-        ? 'px-5 py-2.5 text-sm font-semibold text-[#006D77] bg-[#006D77]/5 border-b-2 border-[#006D77] rounded-t-lg transition-colors'
-        : 'px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors'">
-            📅 Schedules
-        </button>
+    <div>
+      <h1 class="text-3xl font-bold text-[#006D77] tracking-tight">Planning Management</h1>
+      <p class="text-[#83C5BE] font-medium">Manage rooms, classes, room complaints, and course schedules</p>
     </div>
+  </div>
 
-    <!-- Tab panels -->
-    <app-room-list *ngIf="activeTab === 'rooms'"></app-room-list>
-    <app-class-list *ngIf="activeTab === 'classes'"></app-class-list>
-    <app-complaint-list *ngIf="activeTab === 'complaints'"></app-complaint-list>
-    <app-schedule-list *ngIf="activeTab === 'schedules'"></app-schedule-list>
+  <!-- Tab nav -->
+  <div class="flex flex-wrap gap-2 mb-10 p-1.5 bg-white/50 backdrop-blur-md rounded-[24px] w-fit border border-white/50 shadow-sm">
+    <button (click)="activeTab = 'rooms'" [ngClass]="{'bg-white text-[#006D77] shadow-sm': activeTab === 'rooms', 'text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80': activeTab !== 'rooms'}" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V6a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v14"/><path d="M2 20h20"/><path d="M14 12v.01"/></svg>
+      Rooms
+    </button>
+    <button (click)="activeTab = 'classes'" [ngClass]="{'bg-white text-[#006D77] shadow-sm': activeTab === 'classes', 'text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80': activeTab !== 'classes'}" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      Classes
+    </button>
+    <button (click)="activeTab = 'complaints'" [ngClass]="{'bg-white text-[#006D77] shadow-sm': activeTab === 'complaints', 'text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80': activeTab !== 'complaints'}" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      Complaints
+    </button>
+    <button (click)="activeTab = 'schedules'" [ngClass]="{'bg-white text-[#006D77] shadow-sm': activeTab === 'schedules', 'text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80': activeTab !== 'schedules'}" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+      Schedules
+    </button>
+  </div>
+
+  <!-- Tab panels -->
+  <app-room-list *ngIf="activeTab === 'rooms'" class="animate-fade-in block"></app-room-list>
+  <app-class-list *ngIf="activeTab === 'classes'" class="animate-fade-in block"></app-class-list>
+  <app-complaint-list *ngIf="activeTab === 'complaints'" class="animate-fade-in block"></app-complaint-list>
+  <app-schedule-list *ngIf="activeTab === 'schedules'" class="animate-fade-in block"></app-schedule-list>
 
 </div>

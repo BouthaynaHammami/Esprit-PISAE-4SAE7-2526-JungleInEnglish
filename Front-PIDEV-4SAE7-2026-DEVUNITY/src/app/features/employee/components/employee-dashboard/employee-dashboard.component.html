@@ -1,43 +1,76 @@
-<div class="p-8">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-[#006D77]">Employee Dashboard 💼</h1>
-        <p class="text-gray-500 mt-1">Explore job opportunities and track your applications.</p>
+<div class="dashboard-content">
+  <!-- HEADER WITH USERNAME -->
+  <div class="dashboard-header">
+    <div>
+      <h1 class="main-title">Welcome, <span>{{ userName }}</span></h1>
+      <p class="subtitle">Employee Dashboard - Job applications and opportunities</p>
+    </div>
+  </div>
+
+  <!-- STATS GRID -->
+  <div class="stats-grid">
+    <div *ngFor="let stat of stats" class="stat-card">
+      <div class="stat-icon-wrapper" [style.background-color]="stat.color + '15'" [style.color]="stat.color">
+        <!-- Dynamic Icons -->
+        <svg *ngIf="stat.icon === 'users'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <svg *ngIf="stat.icon === 'zap'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <svg *ngIf="stat.icon === 'award'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+        <svg *ngIf="stat.icon === 'pause'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stat.value }}</span>
+        <span class="stat-label">{{ stat.label }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATIONS TABLE SECTION -->
+  <div class="table-container shadow-premium">
+    <div class="table-header">
+      <div class="table-title-group">
+        <h2>My Job Applications</h2>
+        <p>Track your recruitment applications and status.</p>
+      </div>
+      <div class="table-actions">
+        <span class="total-pill">{{ applications.length }} Applications</span>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-[#FFDDD2] rounded-xl flex items-center justify-center text-2xl">💼</div>
-                <div>
-                    <p class="text-sm text-gray-500">Open Recruitments</p>
-                    <p class="text-2xl font-bold text-[#006D77]">—</p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-[#FFDDD2] rounded-xl flex items-center justify-center text-2xl">📋</div>
-                <div>
-                    <p class="text-sm text-gray-500">My Applications</p>
-                    <p class="text-2xl font-bold text-[#006D77]">—</p>
-                </div>
-            </div>
-        </div>
+    <div class="scrollable-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Position</th>
+            <th>Company</th>
+            <th>Application Date</th>
+            <th>Experience</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let app of applications" class="table-row">
+            <td class="profile-cell">
+              <div class="avatar">{{ app.avatar }}</div>
+              <div class="name-box">
+                <span class="name">{{ app.position }}</span>
+                <span class="sub">{{ app.department }}</span>
+              </div>
+            </td>
+            <td>{{ app.company }}</td>
+            <td class="date-cell">
+              {{ app.appliedDate | date:'mediumDate' }}
+            </td>
+            <td class="level-cell">
+              <span class="level-badge">{{ app.experience }}</span>
+            </td>
+            <td class="status-cell">
+              <span class="status-badge" [ngClass]="getStatusClass(app.status)">
+                {{ app.status | titlecase }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h2 class="text-lg font-semibold text-gray-800 mb-4">Quick Access</h2>
-        <div class="grid grid-cols-2 gap-4">
-            <a routerLink="../recruitments"
-                class="flex flex-col items-center gap-2 p-4 bg-[#F0FAF9] rounded-xl hover:bg-[#83C5BE]/20 transition-colors cursor-pointer">
-                <span class="text-3xl">💼</span>
-                <span class="text-sm font-medium text-[#006D77]">Open Recruitments</span>
-            </a>
-            <a routerLink="../applications"
-                class="flex flex-col items-center gap-2 p-4 bg-[#F0FAF9] rounded-xl hover:bg-[#83C5BE]/20 transition-colors cursor-pointer">
-                <span class="text-3xl">📋</span>
-                <span class="text-sm font-medium text-[#006D77]">My Applications</span>
-            </a>
-        </div>
-    </div>
+  </div>
 </div>

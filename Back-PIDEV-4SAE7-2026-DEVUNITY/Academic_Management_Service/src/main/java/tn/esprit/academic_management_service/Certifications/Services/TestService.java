@@ -17,10 +17,13 @@ import tn.esprit.academic_management_service.Certifications.Repositories.Certifi
 import tn.esprit.academic_management_service.Certifications.Repositories.QuestionRepository;
 import tn.esprit.academic_management_service.Certifications.Repositories.SessionQuestionRepository;
 import tn.esprit.academic_management_service.Certifications.Repositories.TestSessionRepository;
+import tn.esprit.academic_management_service.Certifications.Producer.CertificationProducer;
+import tn.esprit.academic_management_service.Certifications.DTO.CertificateDTO;
 
 import java.io.ByteArrayOutputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -32,6 +35,7 @@ public class TestService {
     private final TestSessionRepository sessionRepository;
     private final CertificateRepository certificateRepository;
     private final SessionQuestionRepository sessionQuestionRepository;
+    private final CertificationProducer certificationProducer;
 
     private static final int MAX_ATTEMPTS = 3;
     private static final int PASS_SCORE = 70;
@@ -211,6 +215,17 @@ public class TestService {
             certificate.setQrCode(generateQR(certificate.getCertificateNumber()));
 
             certificateRepository.save(certificate);
+
+            // Trigger Elasticsearch indexing via RabbitMQ
+            certificationProducer.sendCertificateEvent(CertificateDTO.builder()
+                    .id(certificate.getId())
+                    .studentId(certificate.getStudentId())
+                    .sessionId(certificate.getSessionId())
+                    .certificateNumber(certificate.getCertificateNumber())
+                    .level(certificate.getLevel())
+                    .score(certificate.getScore())
+                    .issuedAt(Date.from(certificate.getIssuedAt().atZone(ZoneId.systemDefault()).toInstant()))
+                    .build());
 
             result.setCertificateNumber(certificate.getCertificateNumber());
             result.setQrCode(certificate.getQrCode());

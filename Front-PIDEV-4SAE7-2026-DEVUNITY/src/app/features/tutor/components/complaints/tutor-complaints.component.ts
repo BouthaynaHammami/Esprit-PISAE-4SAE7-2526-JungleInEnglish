@@ -5,7 +5,8 @@ import { RoomScheduleComplaintService } from '../../../../core/services/room-com
 
 @Component({
     selector: 'app-tutor-complaints',
-    templateUrl: './tutor-complaints.component.html'
+    templateUrl: './tutor-complaints.component.html',
+    styleUrls: ['./tutor-complaints.component.css']
 })
 export class TutorComplaintsComponent implements OnInit {
     pageTitle: string = 'Planning Complaints';

@@ -1,96 +1,103 @@
-<div class="space-y-6">
+<div class="animate-fade-in space-y-8">
 
-  <!-- Header row -->
-  <div class="flex items-center justify-between">
-    <div>
-      <h2 class="text-xl font-bold text-gray-800">Course Schedules</h2>
-      <p class="text-sm text-gray-500 mt-0.5">All planned course sessions</p>
+  <!-- ACTION BAR -->
+  <div class="bg-white rounded-[20px] p-6 shadow-sm border border-gray-100 flex flex-wrap gap-4 items-center justify-between">
+    <div class="flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-[#006D77] border border-gray-50">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+      </div>
+      <div>
+        <h2 class="text-xl font-bold text-[#006D77]">Course Schedules</h2>
+        <p class="text-[#83C5BE] font-medium text-xs">All planned course sessions</p>
+      </div>
     </div>
-    <button (click)="showForm = !showForm"
-      class="inline-flex items-center gap-2 px-4 py-2 bg-[#006D77] text-white text-sm font-semibold rounded-xl shadow hover:bg-[#005962] active:scale-95 transition-all">
-      <span *ngIf="!showForm">＋ New Schedule</span>
-      <span *ngIf="showForm">✕ Close Form</span>
-    </button>
+    
+    <div class="flex gap-3">
+      <button (click)="showForm = !showForm" class="group px-6 py-3 bg-[#006D77] text-white rounded-2xl hover:bg-[#83C5BE] transition-all duration-300 shadow-md flex items-center gap-3 font-semibold text-sm">
+        <svg *ngIf="!showForm" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-500"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <svg *ngIf="showForm" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        {{ showForm ? 'Close Form' : 'New Schedule' }}
+      </button>
+    </div>
   </div>
 
-  <!-- Success / Error alerts -->
-  <div *ngIf="successMessage"
-    class="flex items-center gap-3 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm font-medium">
-    <span>✅</span><span>{{ successMessage }}</span>
+  <!-- ALERTS -->
+  <div *ngIf="successMessage" class="px-6 py-4 bg-green-50 text-green-700 rounded-2xl border border-green-100 flex items-center gap-3 animate-fade-in shadow-sm font-bold text-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    {{ successMessage }}
   </div>
-  <div *ngIf="error"
-    class="flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-medium">
-    <span>❌</span><span>{{ error }}</span>
+  <div *ngIf="error" class="px-6 py-4 bg-[#FFDDD2] text-[#E29578] rounded-2xl border border-[#E29578]/20 flex items-center gap-3 animate-fade-in shadow-sm font-bold text-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    {{ error }}
   </div>
 
-  <!-- Create form -->
-  <div *ngIf="showForm" class="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
+  <!-- CREATE FORM -->
+  <div *ngIf="showForm" class="animate-scale-up">
     <app-schedule-form (saved)="onSaved()" (cancelled)="onCancelled()"></app-schedule-form>
   </div>
 
-  <!-- Weekly PDF exporter -->
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
-    <div>
-      <h3 class="text-base font-bold text-gray-800">Weekly Schedule PDF</h3>
-      <p class="text-sm text-gray-500 mt-0.5">Load one week for a tutor or student, select sessions, then export one combined PDF.</p>
+  <!-- WEEKLY PDF EXPORTER -->
+  <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-8">
+    <div class="mb-6 flex items-center gap-3">
+      <div class="w-10 h-10 bg-[#EDF6F9] text-[#006D77] rounded-xl flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold text-[#006D77]">Weekly Schedule PDF</h3>
+        <p class="text-xs text-[#83C5BE] font-medium mt-1">Load one week for a tutor or student, select sessions, then export one combined PDF.</p>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div>
-        <label class="text-xs font-semibold text-gray-600">Target Type</label>
-        <select [(ngModel)]="reportTarget"
-          class="mt-1 w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none">
+        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Target Type</label>
+        <select [(ngModel)]="reportTarget" class="w-full px-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
           <option value="tutor">Tutor</option>
           <option value="student">Student</option>
         </select>
       </div>
-
       <div>
-        <label class="text-xs font-semibold text-gray-600">Target Email</label>
-        <input type="email" [(ngModel)]="reportTargetEmail"
-          class="mt-1 w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none"
-          [placeholder]="reportTarget === 'tutor' ? 'tutor@devunity.tn' : 'student@devunity.tn'" />
+        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Target Email</label>
+        <input type="email" [(ngModel)]="reportTargetEmail" [placeholder]="reportTarget === 'tutor' ? 'tutor@devunity.tn' : 'student@devunity.tn'" class="w-full px-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
       </div>
-
       <div>
-        <label class="text-xs font-semibold text-gray-600">Week Start (Monday)</label>
-        <input type="date" [(ngModel)]="reportWeekStart"
-          class="mt-1 w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none" />
+        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Week Start (Monday)</label>
+        <input type="date" [(ngModel)]="reportWeekStart" class="w-full px-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
       </div>
-
       <div class="flex items-end">
-        <button (click)="loadWeekSchedules()" [disabled]="isWeekLoading"
-          class="w-full px-4 py-2 bg-[#006D77] text-white text-sm font-semibold rounded-lg hover:bg-[#005962] disabled:opacity-60 transition-colors">
-          {{ isWeekLoading ? 'Loading…' : 'Load Week Sessions' }}
+        <button (click)="loadWeekSchedules()" [disabled]="isWeekLoading" class="w-full h-[52px] bg-[#006D77] text-white font-bold rounded-2xl hover:bg-[#83C5BE] transition-all disabled:opacity-50 shadow-md">
+          {{ isWeekLoading ? 'Loading...' : 'Load Sessions' }}
         </button>
       </div>
     </div>
 
-    <div *ngIf="weeklySchedules.length > 0" class="space-y-3">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <p class="text-sm text-gray-600">
-          {{ weeklySchedules.length }} schedule(s) loaded. Selected: {{ selectedScheduleIds.size }}
+    <div *ngIf="weeklySchedules.length > 0" class="mt-6 p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+        <p class="text-sm font-bold text-[#006D77]">
+          {{ weeklySchedules.length }} schedule(s) loaded. <span class="text-[#83C5BE]">Selected: {{ selectedScheduleIds.size }}</span>
         </p>
-        <button (click)="downloadSelectedWeekPdf()" [disabled]="isPdfLoading"
-          class="px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 disabled:opacity-60 transition-colors">
-          {{ isPdfLoading ? 'Generating PDF…' : 'Download Selected PDF' }}
+        <button (click)="downloadSelectedWeekPdf()" [disabled]="isPdfLoading" class="px-6 py-2 bg-green-500 text-white text-sm font-bold rounded-xl hover:bg-green-600 disabled:opacity-50 transition-colors shadow-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          {{ isPdfLoading ? 'Generating...' : 'Download PDF' }}
         </button>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <label *ngFor="let ws of weeklySchedules" class="flex items-start gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50/70">
-          <input
-            *ngIf="ws.scheduleId"
-            type="checkbox"
-            class="mt-1 accent-[#006D77]"
-            [checked]="selectedScheduleIds.has(ws.scheduleId)"
-            (change)="toggleScheduleSelection(ws.scheduleId, $any($event.target).checked)"
-          />
-          <div class="text-sm min-w-0">
-            <p class="font-semibold text-gray-800 truncate">{{ ws.title }}</p>
-            <p class="text-xs text-gray-500 mt-0.5">🕐 {{ formatDate(ws.startTime) }} → {{ formatDate(ws.endTime) }}</p>
-            <p class="text-xs text-gray-500 mt-0.5">
-              👤 Tutor {{ ws.userId }} · 🏫 Class {{ ws.classEntity?.name || '-' }} · 🚪 Room {{ ws.room?.name || '-' }}
+        <label *ngFor="let ws of weeklySchedules" class="flex items-start gap-4 p-4 rounded-2xl border border-white bg-white shadow-sm cursor-pointer hover:border-[#83C5BE]/50 transition-all group">
+          <div class="relative flex items-center justify-center w-5 h-5 mt-0.5">
+            <input *ngIf="ws.scheduleId" type="checkbox" class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-md checked:bg-[#006D77] checked:border-[#006D77] transition-all cursor-pointer" [checked]="selectedScheduleIds.has(ws.scheduleId)" (change)="toggleScheduleSelection(ws.scheduleId, $any($event.target).checked)" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="absolute w-3.5 h-3.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-bold text-[#006D77] truncate">{{ ws.title }}</p>
+            <p class="text-xs font-medium text-gray-500 mt-1 flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              {{ formatDate(ws.startTime) }} → {{ formatDate(ws.endTime) }}
+            </p>
+            <p class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-wider mt-2 flex gap-2 flex-wrap">
+              <span class="bg-[#EDF6F9] px-2 py-1 rounded-md">👤 {{ ws.userId }}</span>
+              <span class="bg-[#EDF6F9] px-2 py-1 rounded-md">🏫 {{ ws.classEntity?.name || '-' }}</span>
+              <span class="bg-[#EDF6F9] px-2 py-1 rounded-md">🚪 {{ ws.room?.name || '-' }}</span>
             </p>
           </div>
         </label>
@@ -98,117 +105,114 @@
     </div>
   </div>
 
-  <!-- Filter bar -->
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 space-y-3">
-    <p class="text-sm font-semibold text-gray-600">Advanced Filters</p>
-
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
-      <div>
-        <label class="text-xs font-semibold text-gray-500">Week Start</label>
-        <input type="date" [(ngModel)]="filterWeekStart"
-          class="mt-1 w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none" />
+  <!-- FILTER BAR -->
+  <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-8">
+    <div class="mb-6 flex items-center gap-3">
+      <div class="w-10 h-10 bg-[#EDF6F9] text-[#006D77] rounded-xl flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
       </div>
+      <h3 class="text-lg font-bold text-[#006D77]">Advanced Filters</h3>
+    </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
       <div>
-        <label class="text-xs font-semibold text-gray-500">Professor Email</label>
-        <input type="email" [(ngModel)]="filterProfessorEmail" placeholder="tutor@devunity.tn"
-          class="mt-1 w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none" />
+        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Week Start</label>
+        <input type="date" [(ngModel)]="filterWeekStart" class="w-full px-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium text-sm" />
       </div>
-
       <div>
-        <label class="text-xs font-semibold text-gray-500">Room Name</label>
-        <input type="text" [(ngModel)]="filterRoomName" placeholder="e.g. C001"
-          class="mt-1 w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none" />
+        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Prof Email</label>
+        <input type="email" [(ngModel)]="filterProfessorEmail" placeholder="tutor@devunity.tn" class="w-full px-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium text-sm" />
       </div>
-
       <div>
-        <label class="text-xs font-semibold text-gray-500">Class Name</label>
-        <input type="text" [(ngModel)]="filterClassName" placeholder="e.g. C001"
-          class="mt-1 w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none" />
+        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Room Name</label>
+        <input type="text" [(ngModel)]="filterRoomName" placeholder="e.g. C001" class="w-full px-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium text-sm" />
       </div>
-
       <div>
-        <label class="text-xs font-semibold text-gray-500">Search</label>
-        <input type="text" [(ngModel)]="filterSearch" placeholder="title, level, type..."
-          class="mt-1 w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none" />
+        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Class Name</label>
+        <input type="text" [(ngModel)]="filterClassName" placeholder="e.g. C001" class="w-full px-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium text-sm" />
+      </div>
+      <div>
+        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Search</label>
+        <input type="text" [(ngModel)]="filterSearch" placeholder="title, level..." class="w-full px-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium text-sm" />
       </div>
     </div>
 
-    <div class="flex gap-2">
-      <button (click)="applyFilter()"
-        class="px-4 py-2 bg-[#006D77] text-white text-sm font-semibold rounded-lg hover:bg-[#005962] transition-colors">
+    <div class="flex gap-3">
+      <button (click)="applyFilter()" class="px-6 py-3 bg-[#006D77] text-white font-bold rounded-xl hover:bg-[#83C5BE] transition-all shadow-sm">
         Apply Filters
       </button>
-      <button (click)="clearFilter()"
-        class="px-4 py-2 bg-gray-100 text-gray-600 text-sm font-semibold rounded-lg hover:bg-gray-200 transition-colors">
+      <button (click)="clearFilter()" class="px-6 py-3 bg-[#EDF6F9] text-[#006D77] font-bold rounded-xl hover:bg-gray-200 transition-all">
         Clear
       </button>
     </div>
   </div>
 
-  <!-- Loading -->
+  <!-- LOADER -->
   <div *ngIf="isLoading" class="flex justify-center py-16">
-    <div class="w-10 h-10 border-4 border-[#006D77]/30 border-t-[#006D77] rounded-full animate-spin"></div>
+    <div class="w-12 h-12 border-4 border-[#006D77]/20 border-t-[#006D77] rounded-full animate-spin"></div>
   </div>
 
-  <!-- Empty state -->
-  <div *ngIf="!isLoading && filteredSchedules.length === 0"
-    class="flex flex-col items-center py-20 text-gray-400 gap-3">
-    <span class="text-5xl">📅</span>
-    <p class="text-base font-medium">No schedules found</p>
-    <p class="text-sm">Create your first course schedule using the button above.</p>
+  <!-- EMPTY STATE -->
+  <div *ngIf="!isLoading && filteredSchedules.length === 0" class="py-24 text-center bg-white rounded-[24px] shadow-sm border border-gray-100">
+    <div class="flex justify-center mb-8 text-[#83C5BE] opacity-40">
+      <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+    </div>
+    <h3 class="text-2xl font-bold text-[#006D77]">No schedules found</h3>
+    <p class="text-[#83C5BE] mt-2 font-medium">Create your first course schedule to get started.</p>
   </div>
 
-  <!-- Schedules grid -->
-  <div *ngIf="!isLoading && filteredSchedules.length > 0"
-    class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-    <div *ngFor="let s of filteredSchedules"
-      class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col gap-3">
-
+  <!-- SCHEDULES GRID -->
+  <div *ngIf="!isLoading && filteredSchedules.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div *ngFor="let s of filteredSchedules" class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col group hover:-translate-y-1 transition-all duration-300">
+      
       <!-- Top row: title + badge -->
-      <div class="flex items-start justify-between gap-2">
-        <h3 class="font-bold text-gray-800 text-base leading-snug">{{ s.title }}</h3>
-        <span class="shrink-0 px-2.5 py-0.5 rounded-full text-xs font-semibold"
+      <div class="flex items-start justify-between gap-4 mb-4">
+        <h3 class="font-bold text-[#006D77] text-lg leading-tight">{{ s.title }}</h3>
+        <span class="shrink-0 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border"
           [ngClass]="{
-            'bg-blue-100 text-blue-700': s.type === 'COURSE',
-            'bg-amber-100 text-amber-700': s.type === 'EXAM',
-            'bg-purple-100 text-purple-700': s.type === 'MEETING',
-            'bg-gray-100 text-gray-600': s.type === 'OTHER'
+            'bg-blue-50 text-blue-600 border-blue-100': s.type === 'COURSE',
+            'bg-amber-50 text-amber-600 border-amber-100': s.type === 'EXAM',
+            'bg-purple-50 text-purple-600 border-purple-100': s.type === 'MEETING',
+            'bg-gray-50 text-gray-600 border-gray-100': s.type === 'OTHER'
           }">{{ s.type }}</span>
       </div>
 
       <!-- Time row -->
-      <div class="text-sm text-gray-600 space-y-1">
-        <div class="flex items-center gap-2">
-          <span class="text-[#006D77]">🕐</span>
-          <span>{{ formatDate(s.startTime) }}</span>
+      <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 mb-6">
+        <div class="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-[#006D77]">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
-        <div class="flex items-center gap-2 text-gray-400 text-xs pl-6">
-          → {{ formatDate(s.endTime) }} <span class="ml-1 font-medium text-gray-500">(3 hrs)</span>
+        <div class="text-sm font-bold text-gray-700">
+          <div>{{ formatDate(s.startTime) }}</div>
+          <div class="text-[#83C5BE] text-xs">→ {{ formatDate(s.endTime) }}</div>
         </div>
       </div>
 
       <!-- Meta chips -->
-      <div class="flex flex-wrap gap-2 text-xs">
-        <span class="bg-[#006D77]/10 text-[#006D77] font-medium px-2.5 py-1 rounded-lg">
-          👤 Tutor ID: {{ s.userId }}
+      <div class="flex flex-wrap gap-2 text-xs font-bold mt-auto pb-4 border-b border-gray-50 mb-4">
+        <span class="bg-[#EDF6F9] text-[#006D77] px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-[#83C5BE]/20">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          ID: {{ s.userId }}
         </span>
-        <span class="bg-indigo-50 text-indigo-700 font-medium px-2.5 py-1 rounded-lg">
-          📘 Course: {{ getCourseTitle(s.courseId) }}
+        <span class="bg-[#FFDDD2]/50 text-[#E29578] px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-[#E29578]/20">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+          {{ getCourseTitle(s.courseId) | slice:0:15 }}{{ getCourseTitle(s.courseId).length > 15 ? '...' : '' }}
         </span>
-        <span *ngIf="s.room" class="bg-orange-50 text-orange-700 font-medium px-2.5 py-1 rounded-lg">
-          🚪 Room {{ s.room.name || '-' }}
+        <span *ngIf="s.room" class="bg-orange-50 text-orange-600 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-orange-100">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V6a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v14"/><path d="M2 20h20"/><path d="M14 12v.01"/></svg>
+          {{ s.room.name || '-' }}
         </span>
-        <span *ngIf="s.classEntity" class="bg-green-50 text-green-700 font-medium px-2.5 py-1 rounded-lg">
-          🏫 Class {{ s.classEntity.name || '-' }} ({{ s.classEntity.level }})
+        <span *ngIf="s.classEntity" class="bg-purple-50 text-purple-600 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-purple-100">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          {{ s.classEntity.name || '-' }} ({{ s.classEntity.level }})
         </span>
       </div>
 
       <!-- Delete button -->
-      <div class="pt-1 flex justify-end">
-        <button (click)="delete(s)"
-          class="text-xs text-red-500 hover:text-red-700 font-medium hover:underline transition-colors">
-          🗑 Delete
+      <div class="flex justify-end">
+        <button (click)="delete(s)" class="text-xs text-red-500 hover:text-white hover:bg-red-500 px-3 py-1.5 rounded-lg font-bold transition-colors flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+          Delete
         </button>
       </div>
     </div>

@@ -1,297 +1,429 @@
-<div class="ca-container">
+<div class="min-h-screen p-8 bg-[#EDF6F9]/50 animate-fade-in">
 
   <!-- ALERTS -->
-  <div class="ca-alert ca-success" *ngIf="successMessage">{{ successMessage }}</div>
-  <div class="ca-alert ca-error"   *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="mb-6 px-6 py-4 bg-green-50 text-green-700 rounded-2xl border border-green-100 flex items-center gap-3 animate-fade-in shadow-sm font-bold text-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="mb-6 px-6 py-4 bg-[#FFDDD2] text-[#E29578] rounded-2xl border border-[#E29578]/20 flex items-center gap-3 animate-fade-in shadow-sm font-bold text-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    {{ errorMessage }}
+  </div>
 
   <!-- HEADER -->
-  <div class="ca-header">
-    <div>
-      <h2>🎓 Certification Management</h2>
-      <p>Manage English test questions and view student results</p>
+  <div class="mb-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+    <div class="flex items-center gap-5">
+      <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-[#006D77]">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold text-[#006D77] tracking-tight">Certification Management</h1>
+        <p class="text-[#83C5BE] font-medium">Manage English test questions and view student results</p>
+      </div>
     </div>
-    <div class="ca-stats">
-      <div class="ca-stat">
-        <span class="ca-stat-n">{{ questions.length }}</span>
-        <span class="ca-stat-l">Questions</span>
+    
+    <div class="flex gap-4">
+      <div class="bg-white px-5 py-3 rounded-[20px] shadow-sm border border-gray-50 flex flex-col items-center min-w-[100px]">
+        <span class="text-xl font-black text-[#006D77]">{{ questions.length }}</span>
+        <span class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Questions</span>
       </div>
-      <div class="ca-stat">
-        <span class="ca-stat-n">{{ sessions.length }}</span>
-        <span class="ca-stat-l">Tests</span>
+      <div class="bg-white px-5 py-3 rounded-[20px] shadow-sm border border-gray-50 flex flex-col items-center min-w-[100px]">
+        <span class="text-xl font-black text-[#006D77]">{{ sessions.length }}</span>
+        <span class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Tests</span>
       </div>
-      <div class="ca-stat">
-        <span class="ca-stat-n">{{ getPassRate() }}%</span>
-        <span class="ca-stat-l">Pass Rate</span>
+      <div class="bg-white px-5 py-3 rounded-[20px] shadow-sm border border-gray-50 flex flex-col items-center min-w-[100px]">
+        <span class="text-xl font-black text-green-600">{{ getPassRate() }}%</span>
+        <span class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Pass Rate</span>
       </div>
-      <div class="ca-stat">
-        <span class="ca-stat-n">{{ certificates.length }}</span>
-        <span class="ca-stat-l">Certificates</span>
+      <div class="bg-[#006D77] px-5 py-3 rounded-[20px] shadow-md flex flex-col items-center min-w-[100px]">
+        <span class="text-xl font-black text-white">{{ certificates.length }}</span>
+        <span class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Certificates</span>
       </div>
     </div>
   </div>
 
   <!-- TABS -->
-  <div class="ca-tabs">
-    <button [class.active]="activeTab==='questions'" (click)="activeTab='questions'">
-      📋 Questions <span class="ca-badge">{{ questions.length }}</span>
+  <div class="flex flex-wrap gap-2 mb-10 p-1.5 bg-white/50 backdrop-blur-md rounded-[24px] w-fit border border-white/50 shadow-sm">
+    <button (click)="activeTab='questions'" [ngClass]="{'bg-white text-[#006D77] shadow-sm': activeTab==='questions', 'text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80': activeTab!=='questions'}" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+      Questions
+      <span class="ml-1 px-2 py-0.5 bg-[#EDF6F9] text-[#006D77] rounded-full text-xs">{{ questions.length }}</span>
     </button>
-    <button [class.active]="activeTab==='add'" (click)="activeTab='add'; resetForm()">
-      {{ editingQuestion ? '✏️ Edit' : '➕ Add Question' }}
+    <button (click)="activeTab='add'; resetForm()" [ngClass]="{'bg-white text-[#006D77] shadow-sm': activeTab==='add', 'text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80': activeTab!=='add'}" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold transition-all duration-300">
+      <svg *ngIf="!editingQuestion" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+      <svg *ngIf="editingQuestion" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+      {{ editingQuestion ? 'Edit Question' : 'Add Question' }}
     </button>
-    <button [class.active]="activeTab==='results'" (click)="activeTab='results'">
-      📊 Results <span class="ca-badge">{{ sessions.length }}</span>
+    <button (click)="activeTab='results'" [ngClass]="{'bg-white text-[#006D77] shadow-sm': activeTab==='results', 'text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80': activeTab!=='results'}" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="14" x="3" y="7" rx="2" ry="2"/><path d="M3 11h18"/><path d="M12 7V3"/></svg>
+      Results
+      <span class="ml-1 px-2 py-0.5 bg-[#EDF6F9] text-[#006D77] rounded-full text-xs">{{ sessions.length }}</span>
     </button>
-    <button [class.active]="activeTab==='certificates'" (click)="activeTab='certificates'">
-      🏆 Certificates <span class="ca-badge">{{ certificates.length }}</span>
+    <button (click)="activeTab='certificates'" [ngClass]="{'bg-white text-[#006D77] shadow-sm': activeTab==='certificates', 'text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80': activeTab!=='certificates'}" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/></svg>
+      Certificates
+      <span class="ml-1 px-2 py-0.5 bg-[#006D77] text-white rounded-full text-xs">{{ certificates.length }}</span>
     </button>
   </div>
 
   <!-- ══ QUESTIONS TAB ══ -->
-  <div *ngIf="activeTab==='questions'" class="ca-card">
-
-    <div class="ca-levels">
-      <span *ngFor="let l of levels" class="ca-lvl ca-lvl-{{l.key}}">
-        {{ l.key }} <strong>{{ l.count }}</strong>
-      </span>
-    </div>
-
-    <div class="ca-filters">
-      <input type="text" [(ngModel)]="searchQ" placeholder="🔍 Search questions..."/>
-      <select [(ngModel)]="filterLevel">
-        <option value="">All Levels</option>
-        <option *ngFor="let l of levels" [value]="l.key">{{ l.key }}</option>
-      </select>
-      <select [(ngModel)]="filterCategory">
-        <option value="">All Categories</option>
-        <option value="Grammar">Grammar</option>
-        <option value="Vocabulary">Vocabulary</option>
-        <option value="Idioms">Idioms</option>
-        <option value="Register">Register</option>
-      </select>
-      <span class="ca-count">{{ filteredQuestions().length }} questions</span>
-    </div>
-
-    <div class="ca-table-wrap">
-      <table class="ca-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Question</th>
-            <th>A</th><th>B</th><th>C</th><th>D</th>
-            <th>✓</th>
-            <th>Level</th>
-            <th>Category</th>
-            <th>Pts</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let q of filteredQuestions(); let i = index">
-            <td>{{ i+1 }}</td>
-            <td class="ca-q-text">{{ q.questionText }}</td>
-            <td>{{ q.optiona }}</td>
-            <td>{{ q.optionb }}</td>
-            <td>{{ q.optionc }}</td>
-            <td>{{ q.optiond }}</td>
-            <td><span class="ca-answer">{{ q.correctAnswer }}</span></td>
-            <td><span class="ca-lvl ca-lvl-{{q.level}}">{{ q.level }}</span></td>
-            <td><span class="ca-cat">{{ q.category }}</span></td>
-            <td><span class="ca-pts">{{ q.points }}</span></td>
-            <td>
-              <div class="ca-actions">
-                <ng-container *ngIf="confirmDeleteId !== q.id">
-                  <button class="ca-btn-edit" (click)="editQuestion(q)">✏️</button>
-                  <button class="ca-btn-del"  (click)="confirmDeleteQuestion(q.id)">🗑</button>
-                </ng-container>
-                <div class="ca-confirm" *ngIf="confirmDeleteId === q.id">
-                  <span>Delete?</span>
-                  <button class="ca-yes" (click)="deleteQuestion(q.id)">Yes</button>
-                  <button class="ca-no"  (click)="cancelDelete()">No</button>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="ca-empty" *ngIf="filteredQuestions().length === 0">
-        <span>📭</span><p>No questions found</p>
+  <div *ngIf="activeTab==='questions'" class="animate-fade-in">
+    
+    <!-- Filter Bar -->
+    <div class="bg-white rounded-[20px] p-6 mb-8 shadow-sm border border-gray-100 flex flex-wrap gap-4 items-center justify-between">
+      <div class="flex gap-2 flex-wrap">
+        <span *ngFor="let l of levels" class="px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-500 shadow-sm">
+          {{ l.key }} <span class="ml-1 text-[#006D77] bg-white px-2 rounded-md shadow-sm">{{ l.count }}</span>
+        </span>
       </div>
+
+      <div class="flex items-center gap-4 flex-1 justify-end">
+        <div class="relative w-64">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#83C5BE]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </span>
+          <input type="text" [(ngModel)]="searchQ" placeholder="Search questions..." class="w-full pl-11 pr-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl text-sm outline-none transition-all font-medium">
+        </div>
+        <div class="relative w-40">
+          <select [(ngModel)]="filterLevel" class="w-full pl-4 pr-10 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl text-sm outline-none transition-all font-medium appearance-none text-[#006D77]">
+            <option value="">All Levels</option>
+            <option *ngFor="let l of levels" [value]="l.key">{{ l.key }}</option>
+          </select>
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[#006D77] pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </span>
+        </div>
+        <div class="relative w-48">
+          <select [(ngModel)]="filterCategory" class="w-full pl-4 pr-10 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl text-sm outline-none transition-all font-medium appearance-none text-[#006D77]">
+            <option value="">All Categories</option>
+            <option value="Grammar">Grammar</option>
+            <option value="Vocabulary">Vocabulary</option>
+            <option value="Idioms">Idioms</option>
+            <option value="Register">Register</option>
+          </select>
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[#006D77] pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden mb-8" *ngIf="filteredQuestions().length > 0">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="bg-gray-50/50 border-b border-gray-100">
+              <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest w-12 text-center">#</th>
+              <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest min-w-[200px]">Question</th>
+              <th class="px-4 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">A</th>
+              <th class="px-4 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">B</th>
+              <th class="px-4 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">C</th>
+              <th class="px-4 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">D</th>
+              <th class="px-4 py-5 text-xs font-bold text-green-600 uppercase tracking-widest text-center">✓</th>
+              <th class="px-4 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Level</th>
+              <th class="px-4 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Category</th>
+              <th class="px-4 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Pts</th>
+              <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-50">
+            <tr *ngFor="let q of filteredQuestions(); let i = index" class="hover:bg-[#EDF6F9]/30 transition-all duration-200 group">
+              <td class="px-6 py-4 text-center font-bold text-gray-400 text-sm">{{ i+1 }}</td>
+              <td class="px-6 py-4">
+                <div class="text-sm font-bold text-[#006D77]">{{ q.questionText }}</div>
+              </td>
+              <td class="px-4 py-4 text-xs font-medium text-gray-600 truncate max-w-[100px]" [title]="q.optiona">{{ q.optiona }}</td>
+              <td class="px-4 py-4 text-xs font-medium text-gray-600 truncate max-w-[100px]" [title]="q.optionb">{{ q.optionb }}</td>
+              <td class="px-4 py-4 text-xs font-medium text-gray-600 truncate max-w-[100px]" [title]="q.optionc">{{ q.optionc }}</td>
+              <td class="px-4 py-4 text-xs font-medium text-gray-600 truncate max-w-[100px]" [title]="q.optiond">{{ q.optiond }}</td>
+              <td class="px-4 py-4 text-center">
+                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-50 text-green-600 font-bold text-xs border border-green-100">{{ q.correctAnswer }}</span>
+              </td>
+              <td class="px-4 py-4 text-center">
+                <span class="inline-block px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-purple-50 text-purple-600 border border-purple-100">{{ q.level }}</span>
+              </td>
+              <td class="px-4 py-4">
+                <span class="inline-block px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-blue-50 text-blue-600 border border-blue-100">{{ q.category }}</span>
+              </td>
+              <td class="px-4 py-4 text-center">
+                <span class="font-bold text-[#E29578]">{{ q.points }}</span>
+              </td>
+              <td class="px-6 py-4 text-right relative">
+                <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0" *ngIf="confirmDeleteId !== q.id">
+                  <button (click)="editQuestion(q)" class="p-2 hover:bg-[#EDF6F9] text-[#006D77] rounded-xl transition-all" title="Edit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                  </button>
+                  <button (click)="confirmDeleteQuestion(q.id)" class="p-2 hover:bg-[#FFDDD2] text-[#E29578] rounded-xl transition-all" title="Delete">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                  </button>
+                </div>
+                
+                <!-- Delete Confirmation -->
+                <div *ngIf="confirmDeleteId === q.id" class="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-white p-2 rounded-xl shadow-lg border border-red-100 z-10 animate-fade-in">
+                  <span class="text-xs font-bold text-gray-500 mr-2">Delete?</span>
+                  <button (click)="deleteQuestion(q.id)" class="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs font-bold transition-colors">Yes</button>
+                  <button (click)="cancelDelete()" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-xs font-bold transition-colors">No</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="py-16 text-center" *ngIf="filteredQuestions().length === 0">
+      <div class="flex justify-center mb-6 text-[#83C5BE] opacity-40">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <h3 class="text-xl font-bold text-[#006D77]">No questions found</h3>
+      <p class="text-[#83C5BE] mt-2 font-medium">Try adjusting your filters or search query.</p>
     </div>
   </div>
 
   <!-- ══ ADD/EDIT TAB ══ -->
-  <div *ngIf="activeTab==='add'" class="ca-card">
-    <h3>{{ editingQuestion ? '✏️ Edit Question' : '➕ New Question' }}</h3>
-
-    <div class="ca-form-grid">
-      <div class="ca-field ca-full">
-        <label>QUESTION TEXT *</label>
-        <textarea [(ngModel)]="form.questionText" rows="3" placeholder="Enter question..."></textarea>
+  <div *ngIf="activeTab==='add'" class="bg-white rounded-[32px] shadow-2xl border border-gray-100 overflow-hidden animate-scale-up mb-8 max-w-4xl mx-auto">
+    <div class="p-8 bg-[#EDF6F9] flex items-center gap-4 border-b border-gray-100">
+      <div class="w-14 h-14 rounded-2xl bg-[#006D77] shadow-lg flex items-center justify-center text-white">
+        <svg *ngIf="!editingQuestion" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        <svg *ngIf="editingQuestion" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
       </div>
-      <div class="ca-field">
-        <label>OPTION A *</label>
-        <input [(ngModel)]="form.optiona" placeholder="Option A"/>
-      </div>
-      <div class="ca-field">
-        <label>OPTION B *</label>
-        <input [(ngModel)]="form.optionb" placeholder="Option B"/>
-      </div>
-      <div class="ca-field">
-        <label>OPTION C *</label>
-        <input [(ngModel)]="form.optionc" placeholder="Option C"/>
-      </div>
-      <div class="ca-field">
-        <label>OPTION D *</label>
-        <input [(ngModel)]="form.optiond" placeholder="Option D"/>
-      </div>
-      <div class="ca-field">
-        <label>CORRECT ANSWER *</label>
-        <select [(ngModel)]="form.correctAnswer">
-          <option value="">-- Select --</option>
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
-          <option value="D">D</option>
-        </select>
-      </div>
-      <div class="ca-field">
-        <label>LEVEL *</label>
-        <select [(ngModel)]="form.level">
-          <option value="">-- Select --</option>
-          <option value="A1">A1 - Beginner</option>
-          <option value="A2">A2 - Elementary</option>
-          <option value="B1">B1 - Intermediate</option>
-          <option value="B2">B2 - Upper-Intermediate</option>
-          <option value="C1">C1 - Advanced</option>
-          <option value="C2">C2 - Mastery</option>
-        </select>
-      </div>
-      <div class="ca-field">
-        <label>CATEGORY *</label>
-        <select [(ngModel)]="form.category">
-          <option value="">-- Select --</option>
-          <option value="Grammar">Grammar</option>
-          <option value="Vocabulary">Vocabulary</option>
-          <option value="Idioms">Idioms</option>
-          <option value="Register">Register</option>
-        </select>
-      </div>
-      <div class="ca-field">
-        <label>POINTS *</label>
-        <input type="number" [(ngModel)]="form.points" min="1"/>
+      <div>
+        <h2 class="text-2xl font-bold text-[#006D77]">{{ editingQuestion ? 'Edit Question' : 'Create New Question' }}</h2>
+        <p class="text-[#83C5BE] font-medium text-sm">Fill in the question details and options below.</p>
       </div>
     </div>
 
-    <div class="ca-form-actions">
-      <button class="ca-btn-ghost" (click)="resetForm(); activeTab='questions'">Cancel</button>
-      <button class="ca-btn-teal" (click)="onSubmitQuestion()">
-        {{ editingQuestion ? '💾 Update' : '✅ Add Question' }}
+    <div class="p-8 space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-2 md:col-span-2">
+          <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Question Text *</label>
+          <textarea [(ngModel)]="form.questionText" rows="3" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium resize-none" placeholder="Enter question..."></textarea>
+        </div>
+        
+        <div class="space-y-2">
+          <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Option A *</label>
+          <input [(ngModel)]="form.optiona" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Option A"/>
+        </div>
+        <div class="space-y-2">
+          <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Option B *</label>
+          <input [(ngModel)]="form.optionb" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Option B"/>
+        </div>
+        <div class="space-y-2">
+          <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Option C *</label>
+          <input [(ngModel)]="form.optionc" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Option C"/>
+        </div>
+        <div class="space-y-2">
+          <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Option D *</label>
+          <input [(ngModel)]="form.optiond" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Option D"/>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Correct Answer *</label>
+          <select [(ngModel)]="form.correctAnswer" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
+            <option value="">-- Select --</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+        </div>
+        
+        <div class="space-y-2">
+          <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Level *</label>
+          <select [(ngModel)]="form.level" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
+            <option value="">-- Select --</option>
+            <option value="A1">A1 - Beginner</option>
+            <option value="A2">A2 - Elementary</option>
+            <option value="B1">B1 - Intermediate</option>
+            <option value="B2">B2 - Upper-Intermediate</option>
+            <option value="C1">C1 - Advanced</option>
+            <option value="C2">C2 - Mastery</option>
+          </select>
+        </div>
+        
+        <div class="space-y-2">
+          <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Category *</label>
+          <select [(ngModel)]="form.category" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
+            <option value="">-- Select --</option>
+            <option value="Grammar">Grammar</option>
+            <option value="Vocabulary">Vocabulary</option>
+            <option value="Idioms">Idioms</option>
+            <option value="Register">Register</option>
+          </select>
+        </div>
+        
+        <div class="space-y-2">
+          <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Points *</label>
+          <input type="number" [(ngModel)]="form.points" min="1" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-8 bg-gray-50/50 flex gap-4 rounded-b-[32px] border-t border-gray-100">
+      <button (click)="resetForm(); activeTab='questions'" class="flex-1 py-4 bg-white border-2 border-[#EDF6F9] text-[#006D77] rounded-2xl font-bold hover:bg-[#EDF6F9] transition-all">Cancel</button>
+      <button (click)="onSubmitQuestion()" class="flex-1 py-4 bg-[#006D77] text-white rounded-2xl font-bold shadow-lg hover:bg-[#83C5BE] transition-all flex items-center justify-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        {{ editingQuestion ? 'Update Question' : 'Add Question' }}
       </button>
     </div>
   </div>
 
   <!-- ══ RESULTS TAB ══ -->
-  <div *ngIf="activeTab==='results'" class="ca-card">
-
-    <div class="ca-summary">
-      <div class="ca-summary-card ca-green">
-        <span class="ca-summary-n">{{ passedCount }}</span>
-        <span class="ca-summary-l">✅ Passed</span>
+  <div *ngIf="activeTab==='results'" class="animate-fade-in">
+    
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+        <div class="w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <span class="text-3xl font-black text-gray-800">{{ passedCount }}</span>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Passed</span>
       </div>
-      <div class="ca-summary-card ca-red">
-        <span class="ca-summary-n">{{ sessions.length - passedCount }}</span>
-        <span class="ca-summary-l">❌ Failed</span>
+      <div class="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+        <div class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <span class="text-3xl font-black text-gray-800">{{ sessions.length - passedCount }}</span>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Failed</span>
       </div>
-      <div class="ca-summary-card ca-blue">
-        <span class="ca-summary-n">{{ getPassRate() }}%</span>
-        <span class="ca-summary-l">📈 Pass Rate</span>
+      <div class="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+        <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        </div>
+        <span class="text-3xl font-black text-gray-800">{{ getPassRate() }}%</span>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Pass Rate</span>
       </div>
-      <div class="ca-summary-card ca-orange">
-        <span class="ca-summary-n">{{ getAvgScore() }}%</span>
-        <span class="ca-summary-l">⭐ Avg Score</span>
+      <div class="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+        <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <span class="text-3xl font-black text-gray-800">{{ getAvgScore() }}%</span>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Avg Score</span>
       </div>
     </div>
 
-    <div class="ca-table-wrap">
-      <table class="ca-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Student</th>
-            <th>Score</th>
-            <th>Status</th>
-            <th>Fraud Reason</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let s of sessions; let i = index">
-            <td>{{ i+1 }}</td>
-
-            <!-- ✅ firstName + lastName -->
-            <td>{{ s.firstName }} {{ s.lastName }}</td>
-
-            <!-- ✅ Score avec barre -->
-            <td>
-              <div class="ca-score-bar">
-                <div class="ca-score-fill"
-                     [style.width]="(s.score || 0) + '%'"
-                     [class.ca-pass]="s.passed"
-                     [class.ca-fail]="!s.passed">
+    <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden mb-8" *ngIf="sessions.length > 0">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="bg-gray-50/50 border-b border-gray-100">
+              <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest w-12 text-center">#</th>
+              <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Student</th>
+              <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest w-1/4">Score</th>
+              <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Status</th>
+              <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Fraud Check</th>
+              <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-right">Date</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-50">
+            <tr *ngFor="let s of sessions; let i = index" class="hover:bg-[#EDF6F9]/30 transition-all duration-200">
+              <td class="px-6 py-5 text-center font-bold text-gray-400 text-sm">{{ i+1 }}</td>
+              <td class="px-6 py-5">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-[#83C5BE]/20 text-[#006D77] flex items-center justify-center font-bold text-xs uppercase">
+                    {{ s.firstName?.charAt(0) || '' }}{{ s.lastName?.charAt(0) || '' }}
+                  </div>
+                  <div class="font-bold text-[#006D77] text-sm">{{ s.firstName }} {{ s.lastName }}</div>
                 </div>
-                <span>{{ s.score ?? '—' }}%</span>
-              </div>
-            </td>
-
-            <td>
-              <span class="ca-status"
-                    [class.ca-passed]="s.passed"
-                    [class.ca-failed]="!s.passed">
-                {{ s.passed ? '✅ Passed' : '❌ Failed' }}
-              </span>
-            </td>
-
-        <td>
-  <span *ngIf="s.suspiciousReason; else noFraud"
-        style="color:#dc2626; font-size:11px; font-weight:600;">
-    ⚠️ {{ s.suspiciousReason }}
-  </span>
-
-  <ng-template #noFraud>
-    <span style="color:#9ca3af; font-size:12px;">—</span>
-  </ng-template>
-</td>
-
-            <td>{{ s.takenAt | date:'dd/MM/yyyy HH:mm' }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="ca-empty" *ngIf="sessions.length === 0">
-        <span>📊</span><p>No test results yet</p>
+              </td>
+              <td class="px-6 py-5">
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-1000"
+                         [style.width]="(s.score || 0) + '%'"
+                         [ngClass]="s.passed ? 'bg-green-500' : 'bg-[#E29578]'">
+                    </div>
+                  </div>
+                  <span class="font-bold text-sm w-10 text-right" [ngClass]="s.passed ? 'text-green-600' : 'text-[#E29578]'">{{ s.score ?? '—' }}%</span>
+                </div>
+              </td>
+              <td class="px-6 py-5 text-center">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border"
+                      [ngClass]="s.passed ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-500 border-red-100'">
+                  <svg *ngIf="s.passed" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg *ngIf="!s.passed" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  {{ s.passed ? 'Passed' : 'Failed' }}
+                </span>
+              </td>
+              <td class="px-6 py-5">
+                <div *ngIf="s.suspiciousReason" class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 rounded-lg text-xs font-bold border border-red-100">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                  {{ s.suspiciousReason }}
+                </div>
+                <span *ngIf="!s.suspiciousReason" class="text-xs text-gray-400 font-medium">—</span>
+              </td>
+              <td class="px-6 py-5 text-right text-sm text-gray-500 font-medium">
+                {{ s.takenAt | date:'dd/MM/yyyy HH:mm' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+    </div>
+    <div class="py-16 text-center" *ngIf="sessions.length === 0">
+      <div class="flex justify-center mb-6 text-[#83C5BE] opacity-40">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <h3 class="text-xl font-bold text-[#006D77]">No test results yet</h3>
+      <p class="text-[#83C5BE] mt-2 font-medium">Students haven't completed any tests.</p>
     </div>
   </div>
 
   <!-- ══ CERTIFICATES TAB ══ -->
-  <div *ngIf="activeTab==='certificates'" class="ca-card">
-    <div class="ca-cert-grid">
-      <div *ngFor="let c of certificates" class="ca-cert-card">
-        <div class="ca-cert-top" [class]="'ca-cert-'+c.level?.toLowerCase()">
-          <span class="ca-cert-emoji">🏆</span>
-          <span class="ca-cert-level">{{ c.level }}</span>
+  <div *ngIf="activeTab==='certificates'" class="animate-fade-in">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" *ngIf="certificates.length > 0">
+      <div *ngFor="let c of certificates" class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 overflow-hidden relative group hover:-translate-y-1 transition-all duration-300">
+        <!-- Colored Header -->
+        <div class="h-24 p-6 flex justify-between items-start"
+             [ngClass]="{
+               'bg-gradient-to-br from-yellow-400 to-yellow-600': c.level?.toLowerCase() === 'c1' || c.level?.toLowerCase() === 'c2',
+               'bg-gradient-to-br from-gray-300 to-gray-500': c.level?.toLowerCase() === 'b1' || c.level?.toLowerCase() === 'b2',
+               'bg-gradient-to-br from-orange-300 to-orange-500': c.level?.toLowerCase() === 'a1' || c.level?.toLowerCase() === 'a2',
+               'bg-[#006D77]': !c.level
+             }">
+          <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-2xl shadow-sm border border-white/30">🏆</div>
+          <div class="px-3 py-1 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-white font-black text-sm tracking-widest shadow-sm">
+            LEVEL {{ c.level }}
+          </div>
         </div>
-        <div class="ca-cert-body">
-          <p class="ca-cert-number">{{ c.certificateNumber }}</p>
-          <!-- ✅ firstName + lastName -->
-          <p class="ca-cert-student">{{ c.firstName }} {{ c.lastName }}</p>
-          <p class="ca-cert-score">Score: <strong>{{ c.score }}%</strong></p>
-          <p class="ca-cert-date">{{ c.issuedAt | date:'dd/MM/yyyy' }}</p>
-          <img *ngIf="c.qrCode" [src]="c.qrCode" alt="QR" class="ca-cert-qr"/>
+        
+        <!-- Body -->
+        <div class="p-6 relative">
+          <!-- decorative circle -->
+          <div class="absolute -top-10 left-6 w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          </div>
+          
+          <div class="mt-10">
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Certificate #{{ c.certificateNumber }}</p>
+            <h3 class="text-xl font-bold text-[#006D77] mb-4">{{ c.firstName }} {{ c.lastName }}</h3>
+            
+            <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
+              <div>
+                <p class="text-[10px] font-black uppercase tracking-widest text-[#83C5BE] mb-1">Final Score</p>
+                <p class="text-2xl font-black text-[#006D77]">{{ c.score }}%</p>
+              </div>
+              <div class="text-right">
+                <p class="text-[10px] font-black uppercase tracking-widest text-[#83C5BE] mb-1">Issued On</p>
+                <p class="text-sm font-bold text-gray-600">{{ c.issuedAt | date:'mediumDate' }}</p>
+              </div>
+            </div>
+            
+            <div class="flex justify-center" *ngIf="c.qrCode">
+              <img [src]="c.qrCode" alt="QR Code" class="w-20 h-20 rounded-lg shadow-sm border border-gray-100 p-1"/>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="ca-empty" *ngIf="certificates.length === 0">
-      <span>🏆</span><p>No certificates issued yet</p>
+    
+    <div class="py-24 text-center" *ngIf="certificates.length === 0">
+      <div class="flex justify-center mb-6 text-[#83C5BE] opacity-40">
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/></svg>
+      </div>
+      <h3 class="text-2xl font-bold text-[#006D77]">No certificates issued</h3>
+      <p class="text-[#83C5BE] mt-2 font-medium">Certificates will appear here once students pass the test.</p>
     </div>
   </div>
 

@@ -8,11 +8,19 @@ import { Lesson } from '../../../../core/models/lesson.model';
     styleUrls: ['./admin-lessons.component.scss']
 })
 export class AdminLessonsComponent implements OnInit {
+    pageTitle: string = 'Lessons Management';
+    pageIcon: string = '📖';
     lessons: Lesson[] = [];
     isLoading = true;
     error: string | null = null;
     successMessage: string | null = null;
 
+    // Filters & Search
+    searchTerm: string = '';
+    sortBy: string = 'order';
+
+    selectedLesson: Lesson | null = null;
+    isViewModalOpen: boolean = false;
     showForm = false;
     isEditing = false;
     editingId: number | null = null;
@@ -23,6 +31,31 @@ export class AdminLessonsComponent implements OnInit {
     constructor(private lessonService: LessonService) { }
 
     ngOnInit(): void { this.load(); }
+
+    get filteredLessons(): Lesson[] {
+        let filtered = [...this.lessons];
+
+        if (this.searchTerm) {
+            const term = this.searchTerm.toLowerCase();
+            filtered = filtered.filter(l => 
+                l.title.toLowerCase().includes(term) || 
+                l.content?.toLowerCase().includes(term)
+            );
+        }
+
+        filtered.sort((a, b) => {
+            if (this.sortBy === 'order') return (a.order || 0) - (b.order || 0);
+            if (this.sortBy === 'title') return a.title.localeCompare(b.title);
+            return 0;
+        });
+
+        return filtered;
+    }
+
+    viewLesson(lesson: Lesson): void {
+        this.selectedLesson = lesson;
+        this.isViewModalOpen = true;
+    }
 
     load(): void {
         this.isLoading = true;

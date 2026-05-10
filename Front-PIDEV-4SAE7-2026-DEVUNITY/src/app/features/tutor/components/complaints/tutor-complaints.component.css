@@ -1,0 +1,361 @@
+/* =======================================================
+   TUTOR COMPLAINTS MANAGEMENT - PREMIUM DESIGN SYSTEM
+   Standardized Teal Theme: #006D77, #83C5BE, #EDF6F9, #FFDDD2, #E29578
+   ======================================================= */
+
+.complaints-container {
+    padding: 40px;
+    background: #EDF6F9;
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* --- HEADER --- */
+.complaints-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 40px;
+}
+
+.main-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: #006D77;
+    margin: 0;
+}
+
+.main-title span { color: #E29578; }
+
+.subtitle {
+    font-size: 15px;
+    color: #83C5BE;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+.refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: #ffffff;
+    border: 1.5px solid rgba(0, 109, 119, 0.1);
+    border-radius: 14px;
+    color: #006D77;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 109, 119, 0.05);
+}
+
+.refresh-btn:hover:not(:disabled) {
+    background: #EDF6F9;
+    border-color: #006D77;
+    transform: translateY(-2px);
+}
+
+.refresh-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* --- TABLE WRAPPER --- */
+.table-wrapper {
+    background: #ffffff;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 109, 119, 0.06);
+    border: 1px solid rgba(0, 109, 119, 0.04);
+}
+
+.complaints-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* --- TABLE HEADER --- */
+.complaints-table thead {
+    background: linear-gradient(135deg, #006D77 0%, #00525F 100%);
+    border-bottom: 2px solid rgba(0, 109, 119, 0.1);
+}
+
+.complaints-table thead tr th {
+    padding: 20px 24px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 800;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* --- TABLE BODY --- */
+.complaints-table tbody tr {
+    border-bottom: 1px solid #EDF6F9;
+    transition: all 0.2s;
+}
+
+.complaints-table tbody tr:hover {
+    background: #EDF6F9;
+}
+
+.complaints-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.complaints-table tbody td {
+    padding: 20px 24px;
+    font-size: 14px;
+    color: #475569;
+}
+
+/* --- COMPLAINT CONTENT --- */
+.complaint-ref {
+    font-size: 11px;
+    font-weight: 800;
+    color: #83C5BE;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.complaint-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #006D77;
+}
+
+.complaint-description {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 4px;
+    line-height: 1.5;
+}
+
+/* --- STATUS BADGES --- */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-pending {
+    background: rgba(226, 149, 120, 0.15);
+    color: #E29578;
+}
+
+.status-resolved {
+    background: rgba(131, 197, 190, 0.15);
+    color: #006D77;
+}
+
+.status-under-review {
+    background: rgba(226, 149, 120, 0.25);
+    color: #D97548;
+}
+
+/* --- ACTION BUTTONS --- */
+.delete-btn {
+    padding: 8px 16px;
+    background: #FFDDD2;
+    border: none;
+    border-radius: 10px;
+    color: #E29578;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.delete-btn:hover {
+    background: #FFB8A0;
+    color: #D97548;
+    transform: translateY(-2px);
+}
+
+.delete-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* --- DATE COLUMN --- */
+.date-cell {
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* --- EMPTY STATE --- */
+.empty-state {
+    background: white;
+    border-radius: 28px;
+    padding: 80px 40px;
+    text-align: center;
+    border: 1px solid rgba(0, 109, 119, 0.05);
+    box-shadow: 0 10px 40px rgba(0, 109, 119, 0.06);
+}
+
+.empty-state-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+}
+
+.empty-state-text {
+    font-size: 22px;
+    font-weight: 800;
+    color: #006D77;
+    margin-bottom: 16px;
+}
+
+.empty-state-desc {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 32px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.refresh-action-btn {
+    padding: 12px 28px;
+    background: #006D77;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.refresh-action-btn:hover {
+    background: #E29578;
+    transform: translateY(-2px);
+}
+
+/* --- LOADING STATE --- */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 0;
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #EDF6F9;
+    border-bottom-color: #006D77;
+    border-radius: 50%;
+    margin-bottom: 16px;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    color: #83C5BE;
+    font-weight: 500;
+}
+
+/* --- ERROR & SUCCESS MESSAGES --- */
+.error-banner {
+    background: #FFDDD2;
+    border-left: 4px solid #E29578;
+    padding: 16px 20px;
+    border-radius: 12px;
+    color: #E29578;
+    font-weight: 700;
+    margin-bottom: 24px;
+    font-size: 13px;
+}
+
+.success-banner {
+    background: rgba(131, 197, 190, 0.15);
+    border-left: 4px solid #83C5BE;
+    padding: 16px 20px;
+    border-radius: 12px;
+    color: #006D77;
+    font-weight: 700;
+    margin-bottom: 24px;
+    font-size: 13px;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    .complaints-container {
+        padding: 20px;
+    }
+
+    .complaints-header {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .main-title {
+        font-size: 28px;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .complaints-table thead tr th,
+    .complaints-table tbody td {
+        padding: 16px 12px;
+        font-size: 13px;
+    }
+
+    .complaint-title {
+        font-size: 14px;
+    }
+
+    .complaint-description {
+        font-size: 12px;
+    }
+
+    .delete-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .complaints-container {
+        padding: 12px;
+    }
+
+    .main-title {
+        font-size: 24px;
+    }
+
+    .complaints-table thead tr th,
+    .complaints-table tbody td {
+        padding: 12px 8px;
+        font-size: 12px;
+    }
+
+    .complaint-title {
+        font-size: 13px;
+    }
+
+    .empty-state {
+        padding: 60px 20px;
+    }
+
+    .empty-state-icon {
+        font-size: 48px;
+    }
+
+    .empty-state-text {
+        font-size: 18px;
+    }
+}

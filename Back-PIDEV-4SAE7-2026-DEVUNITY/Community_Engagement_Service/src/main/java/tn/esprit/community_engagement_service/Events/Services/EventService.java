@@ -4,7 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.community_engagement_service.Events.Entities.Events;
 import tn.esprit.community_engagement_service.Events.Repositories.EventRepo;
+import tn.esprit.community_engagement_service.Events.Producer.EventProducer;
+import tn.esprit.community_engagement_service.Events.DTO.EventDTO;
 
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -12,6 +16,9 @@ public class EventService {
 
     @Autowired
     private EventRepo eventRepo;
+
+    @Autowired
+    private EventProducer eventProducer;
 
     public List<Events> getAllEvents() {
         return eventRepo.findAll();
@@ -22,7 +29,9 @@ public class EventService {
     }
 
     public Events addEvent(Events e) {
-        return eventRepo.save(e);
+        Events saved = eventRepo.save(e);
+        sendToElastic(saved);
+        return saved;
     }
 
     public void deleteEvent(Long id) {
@@ -33,8 +42,22 @@ public class EventService {
         Events existing = eventRepo.findById(id).orElse(null);
         if (existing == null) return null;
 
-        // keep same id then save
         e.setEventId(id);
-        return eventRepo.save(e);
+        Events updated = eventRepo.save(e);
+        sendToElastic(updated);
+        return updated;
+    }
+
+    private void sendToElastic(Events event) {
+        eventProducer.sendEvent(EventDTO.builder()
+                .eventId(event.getEventId())
+                .title(event.getTitle())
+                .description(event.getDescription())
+                .startDate(Date.from(event.getStartDate().atZone(ZoneId.systemDefault()).toInstant()))
+                .endDate(Date.from(event.getEndDate().atZone(ZoneId.systemDefault()).toInstant()))
+                .location(event.getLocation())
+                .capacity(event.getCapacity())
+                .status(event.getStatus() != null ? event.getStatus().name() : null)
+                .build());
     }
 }

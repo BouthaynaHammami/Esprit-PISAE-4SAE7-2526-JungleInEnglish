@@ -20,6 +20,8 @@ export class AuthService {
   private readonly ROLE_KEY = 'user_role';
   private readonly EMAIL_KEY = 'user_email';
   private readonly USER_ID_KEY = 'user_id';
+  private readonly FIRST_NAME_KEY = 'user_first_name';
+  private readonly LAST_NAME_KEY = 'user_last_name';
 
   private readonly apiUrl = environment.apiUrl;
   constructor(
@@ -59,6 +61,8 @@ export class AuthService {
     localStorage.removeItem(this.ROLE_KEY);
     localStorage.removeItem(this.EMAIL_KEY);
     localStorage.removeItem(this.USER_ID_KEY);
+    localStorage.removeItem(this.FIRST_NAME_KEY);
+    localStorage.removeItem(this.LAST_NAME_KEY);
 
     this.router.navigate(['/']);
 
@@ -107,6 +111,28 @@ export class AuthService {
     if (!decoded) return null;
 
     return decoded.userId ?? decoded.id ?? null;
+
+  }
+
+  getUserName(): string | null {
+
+    // Try to get from localStorage first
+    const storedFirstName = localStorage.getItem(this.FIRST_NAME_KEY)?.trim() ?? '';
+    const storedLastName = localStorage.getItem(this.LAST_NAME_KEY)?.trim() ?? '';
+    const storedFullName = `${storedFirstName} ${storedLastName}`.trim();
+
+    if (storedFullName) return storedFullName;
+
+    // Fallback to JWT token
+    const decoded = this.decodeToken();
+
+    if (!decoded) return null;
+
+    const firstName = decoded.firstName?.trim() ?? '';
+    const lastName = decoded.lastName?.trim() ?? '';
+    const fullName = `${firstName} ${lastName}`.trim();
+
+    return fullName || null;
 
   }
 
@@ -212,6 +238,24 @@ export class AuthService {
       localStorage.setItem(
         this.EMAIL_KEY,
         response.email
+      );
+
+    }
+
+    if (response.firstName) {
+
+      localStorage.setItem(
+        this.FIRST_NAME_KEY,
+        response.firstName
+      );
+
+    }
+
+    if (response.lastName) {
+
+      localStorage.setItem(
+        this.LAST_NAME_KEY,
+        response.lastName
       );
 
     }

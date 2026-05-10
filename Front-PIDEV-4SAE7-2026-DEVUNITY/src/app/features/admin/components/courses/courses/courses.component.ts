@@ -9,11 +9,21 @@ import { Router } from '@angular/router';
     styleUrls: ['./courses.component.scss']
 })
 export class AdminCoursesComponent implements OnInit {
+    pageTitle: string = 'Courses Management';
+    pageIcon: string = '📚';
     courses: Course[] = [];
     isLoading = true;
     error: string | null = null;
     successMessage: string | null = null;
 
+    // Filters & Search
+    searchTerm: string = '';
+    levelFilter: string = 'ALL';
+    typeFilter: string = 'ALL';
+    sortBy: string = 'title';
+
+    selectedCourse: Course | null = null;
+    isViewModalOpen: boolean = false;
     showForm = false;
     isEditing = false;
     editingId: number | null = null;
@@ -38,6 +48,62 @@ export class AdminCoursesComponent implements OnInit {
     constructor(private courseService: CourseService, private router: Router) { }
 
     ngOnInit(): void { this.loadCourses(); }
+
+    get filteredCourses(): Course[] {
+        let filtered = [...this.courses];
+
+        // Search filter
+        if (this.searchTerm) {
+            const term = this.searchTerm.toLowerCase();
+            filtered = filtered.filter(c => 
+                c.title.toLowerCase().includes(term) || 
+                c.description?.toLowerCase().includes(term)
+            );
+        }
+
+        // Level filter
+        if (this.levelFilter !== 'ALL') {
+            filtered = filtered.filter(c => c.level === this.levelFilter);
+        }
+
+        // Type filter
+        if (this.typeFilter !== 'ALL') {
+            filtered = filtered.filter(c => c.type === this.typeFilter);
+        }
+
+        // Sort
+        filtered.sort((a, b) => {
+            if (this.sortBy === 'title') {
+                return a.title.localeCompare(b.title);
+            }
+            if (this.sortBy === 'price') {
+                return (a.price || 0) - (b.price || 0);
+            }
+            if (this.sortBy === 'lessons') {
+                return (a.lessonsNumber || 0) - (b.lessonsNumber || 0);
+            }
+            return 0;
+        });
+
+        return filtered;
+    }
+
+    getLevelBadgeClass(level: string): string {
+        switch (level) {
+            case 'A1':
+            case 'A2': return 'bg-green-50 text-green-600 border border-green-100';
+            case 'B1':
+            case 'B2': return 'bg-blue-50 text-blue-600 border border-blue-100';
+            case 'C1':
+            case 'C2': return 'bg-[#FFDDD2] text-[#E29578] shadow-sm';
+            default: return 'bg-gray-100 text-gray-500';
+        }
+    }
+
+    viewCourse(course: Course): void {
+        this.selectedCourse = course;
+        this.isViewModalOpen = true;
+    }
 
     loadCourses(): void {
         this.isLoading = true;

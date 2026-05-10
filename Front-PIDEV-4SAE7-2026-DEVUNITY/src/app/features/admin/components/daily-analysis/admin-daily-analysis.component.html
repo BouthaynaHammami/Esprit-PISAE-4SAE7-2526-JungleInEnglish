@@ -1,182 +1,243 @@
-<div class="analysis-container">
-  <!-- Header -->
-  <div class="analysis-header">
-    <div>
-      <h2>Daily Analysis Dashboard</h2>
-      <p class="subtitle">Overview of today's Kanban tasks across all modules</p>
+<div class="min-h-screen p-8 bg-[#EDF6F9]/50 space-y-8">
+
+  <!-- HEADER -->
+  <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-8 flex flex-wrap gap-6 items-center justify-between relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-[#83C5BE]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+    <div class="relative z-10 flex items-center gap-5">
+      <div class="w-14 h-14 bg-[#EDF6F9] rounded-2xl border border-[#83C5BE]/20 flex items-center justify-center text-[#006D77] shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold text-[#006D77] tracking-tight">Daily Analysis Dashboard</h1>
+        <p class="text-[#83C5BE] font-medium text-sm mt-1">Overview of today's Kanban tasks across all modules</p>
+      </div>
     </div>
-    <button class="btn btn-primary" (click)="loadAnalysis()">Refresh</button>
+    <button (click)="loadAnalysis()" class="relative z-10 group px-6 py-3 bg-[#006D77] text-white rounded-2xl hover:bg-[#83C5BE] transition-all duration-300 shadow-md flex items-center gap-2 font-semibold text-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-180 transition-transform duration-500"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+      Refresh
+    </button>
   </div>
 
-  <!-- Loading -->
-  <div *ngIf="loading" class="loading-state">
-    <div class="spinner"></div>
-    <p>Loading analysis...</p>
+  <!-- LOADER -->
+  <div *ngIf="loading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 animate-pulse">
+    <div *ngFor="let i of [1,2,3,4,5,6]" class="bg-white rounded-[20px] h-28 border border-gray-100"></div>
   </div>
 
   <div *ngIf="!loading">
-    <!-- Summary Cards -->
-    <div class="summary-grid">
-      <div class="summary-card">
-        <div class="card-icon blue">T</div>
-        <div class="card-info">
-          <span class="card-value">{{ totalTasks }}</span>
-          <span class="card-label">Total Tasks</span>
+
+    <!-- SUMMARY KPI CARDS -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+
+      <div class="bg-white rounded-[20px] border border-gray-100 shadow-sm p-5 flex flex-col items-center text-center group hover:-translate-y-1 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-[#EDF6F9] flex items-center justify-center text-[#006D77] mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         </div>
+        <span class="text-3xl font-black text-[#006D77]">{{ totalTasks }}</span>
+        <span class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Total Tasks</span>
       </div>
-      <div class="summary-card">
-        <div class="card-icon red">!</div>
-        <div class="card-info">
-          <span class="card-value">{{ totalTodo }}</span>
-          <span class="card-label">To Do</span>
+
+      <div class="bg-white rounded-[20px] border border-[#FFDDD2]/50 shadow-sm p-5 flex flex-col items-center text-center group hover:-translate-y-1 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-[#FFDDD2]/30 flex items-center justify-center text-[#E29578] mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         </div>
+        <span class="text-3xl font-black text-[#E29578]">{{ totalTodo }}</span>
+        <span class="text-[10px] font-bold text-[#E29578]/70 uppercase tracking-widest mt-1">To Do</span>
       </div>
-      <div class="summary-card">
-        <div class="card-icon orange">~</div>
-        <div class="card-info">
-          <span class="card-value">{{ totalDoing }}</span>
-          <span class="card-label">In Progress</span>
+
+      <div class="bg-white rounded-[20px] border border-[#83C5BE]/20 shadow-sm p-5 flex flex-col items-center text-center group hover:-translate-y-1 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-[#83C5BE]/10 flex items-center justify-center text-[#006D77] mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
         </div>
+        <span class="text-3xl font-black text-[#006D77]">{{ totalDoing }}</span>
+        <span class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">In Progress</span>
       </div>
-      <div class="summary-card">
-        <div class="card-icon green">&#10003;</div>
-        <div class="card-info">
-          <span class="card-value">{{ totalDone }}</span>
-          <span class="card-label">Completed</span>
+
+      <div class="bg-white rounded-[20px] border border-green-100 shadow-sm p-5 flex flex-col items-center text-center group hover:-translate-y-1 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-500 mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
+        <span class="text-3xl font-black text-green-500">{{ totalDone }}</span>
+        <span class="text-[10px] font-bold text-green-400 uppercase tracking-widest mt-1">Completed</span>
       </div>
-      <div class="summary-card">
-        <div class="card-icon dark-red">!!</div>
-        <div class="card-info">
-          <span class="card-value">{{ totalOverdue }}</span>
-          <span class="card-label">Overdue</span>
+
+      <div class="bg-white rounded-[20px] border border-[#E29578]/30 shadow-sm p-5 flex flex-col items-center text-center group hover:-translate-y-1 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-[#FFDDD2]/50 flex items-center justify-center text-[#E29578] mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
+        <span class="text-3xl font-black text-[#E29578]">{{ totalOverdue }}</span>
+        <span class="text-[10px] font-bold text-[#E29578]/70 uppercase tracking-widest mt-1">Overdue</span>
       </div>
-      <div class="summary-card">
-        <div class="card-icon teal">%</div>
-        <div class="card-info">
-          <span class="card-value">{{ completionRate }}%</span>
-          <span class="card-label">Completion Rate</span>
+
+      <div class="bg-gradient-to-br from-[#006D77] to-[#83C5BE] rounded-[20px] shadow-md p-5 flex flex-col items-center text-center group hover:-translate-y-1 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-white mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         </div>
+        <span class="text-3xl font-black text-white">{{ completionRate }}%</span>
+        <span class="text-[10px] font-bold text-white/70 uppercase tracking-widest mt-1">Completion</span>
       </div>
     </div>
 
-    <!-- Progress Bar -->
-    <div class="progress-section">
-      <h3>Overall Progress</h3>
-      <div class="progress-bar-outer">
-        <div class="progress-bar-inner" [style.width.%]="completionRate"></div>
+    <!-- PROGRESS BAR -->
+    <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-8">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-lg font-bold text-[#006D77]">Overall Progress</h2>
+          <p class="text-xs font-medium text-[#83C5BE] mt-0.5">{{ totalDone }} of {{ totalTasks }} tasks completed</p>
+        </div>
+        <span class="text-2xl font-black text-[#006D77]">{{ completionRate }}%</span>
       </div>
-      <p class="progress-text">{{ totalDone }} of {{ totalTasks }} tasks completed</p>
+      <div class="w-full h-3 bg-[#EDF6F9] rounded-full overflow-hidden">
+        <div class="h-full bg-gradient-to-r from-[#83C5BE] to-[#006D77] rounded-full transition-all duration-700" [style.width.%]="completionRate"></div>
+      </div>
     </div>
 
-    <!-- Module Sections -->
-    <div class="modules-grid">
-      <!-- Certifications Module -->
-      <div class="module-card" *ngIf="certifAnalysis">
-        <div class="module-header certif">
-          <h3>Certifications</h3>
-          <span class="module-date">{{ certifAnalysis.date }}</span>
-        </div>
-        <div class="module-stats">
-          <div class="stat">
-            <span class="stat-count">{{ certifAnalysis.totalTasks }}</span>
-            <span class="stat-label">Total</span>
-          </div>
-          <div class="stat">
-            <span class="stat-count todo">{{ certifAnalysis.todoCount }}</span>
-            <span class="stat-label">To Do</span>
-          </div>
-          <div class="stat">
-            <span class="stat-count doing">{{ certifAnalysis.doingCount }}</span>
-            <span class="stat-label">Doing</span>
-          </div>
-          <div class="stat">
-            <span class="stat-count done">{{ certifAnalysis.doneCount }}</span>
-            <span class="stat-label">Done</span>
-          </div>
-          <div class="stat">
-            <span class="stat-count overdue">{{ certifAnalysis.overdueCount }}</span>
-            <span class="stat-label">Overdue</span>
-          </div>
-        </div>
+    <!-- MODULE CARDS GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        <!-- Tasks Due Today -->
-        <div *ngIf="certifAnalysis.tasksDueToday?.length" class="task-section">
-          <h4>Due Today</h4>
-          <div *ngFor="let t of certifAnalysis.tasksDueToday" class="mini-task">
-            <span class="mini-status" [class]="t.status.toLowerCase()">{{ t.status }}</span>
-            <span class="mini-title">{{ t.title }}</span>
-            <span class="mini-deadline">{{ t.deadline | date:'HH:mm' }}</span>
+      <!-- CERTIFICATIONS MODULE -->
+      <div *ngIf="certifAnalysis" class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+        <div class="h-1.5 bg-gradient-to-r from-[#FFDDD2] to-[#E29578]"></div>
+        <div class="p-6 border-b border-gray-50 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-[#FFDDD2]/30 rounded-xl flex items-center justify-center text-[#E29578]">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            </div>
+            <div>
+              <h3 class="font-bold text-[#006D77]">Certifications</h3>
+              <p class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest">{{ certifAnalysis.date }}</p>
+            </div>
           </div>
         </div>
-
-        <!-- Overdue Tasks -->
-        <div *ngIf="certifAnalysis.overdueTasks?.length" class="task-section overdue-section">
-          <h4>Overdue</h4>
-          <div *ngFor="let t of certifAnalysis.overdueTasks" class="mini-task">
-            <span class="mini-status overdue-badge">OVERDUE</span>
-            <span class="mini-title">{{ t.title }}</span>
-            <span class="mini-deadline text-red">{{ t.deadline | date:'MMM d, HH:mm' }}</span>
+        <div class="p-6">
+          <div class="grid grid-cols-5 gap-3 mb-6">
+            <div class="text-center p-3 bg-gray-50 rounded-2xl">
+              <div class="text-xl font-black text-[#006D77]">{{ certifAnalysis.totalTasks }}</div>
+              <div class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Total</div>
+            </div>
+            <div class="text-center p-3 bg-[#FFDDD2]/20 rounded-2xl">
+              <div class="text-xl font-black text-[#E29578]">{{ certifAnalysis.todoCount }}</div>
+              <div class="text-[10px] font-bold text-[#E29578]/60 uppercase tracking-widest mt-1">To Do</div>
+            </div>
+            <div class="text-center p-3 bg-[#EDF6F9] rounded-2xl">
+              <div class="text-xl font-black text-[#006D77]">{{ certifAnalysis.doingCount }}</div>
+              <div class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Doing</div>
+            </div>
+            <div class="text-center p-3 bg-green-50 rounded-2xl">
+              <div class="text-xl font-black text-green-500">{{ certifAnalysis.doneCount }}</div>
+              <div class="text-[10px] font-bold text-green-400 uppercase tracking-widest mt-1">Done</div>
+            </div>
+            <div class="text-center p-3 bg-[#FFDDD2]/30 rounded-2xl">
+              <div class="text-xl font-black text-[#E29578]">{{ certifAnalysis.overdueCount }}</div>
+              <div class="text-[10px] font-bold text-[#E29578]/60 uppercase tracking-widest mt-1">Late</div>
+            </div>
           </div>
-        </div>
 
-        <div *ngIf="!certifAnalysis.tasksDueToday?.length && !certifAnalysis.overdueTasks?.length" class="no-tasks">
-          No tasks due today or overdue.
+          <div *ngIf="certifAnalysis.tasksDueToday?.length" class="mb-4">
+            <h4 class="text-xs font-black text-[#006D77] uppercase tracking-widest mb-3 flex items-center gap-2">
+              <span class="w-2 h-2 bg-[#006D77] rounded-full"></span> Due Today
+            </h4>
+            <div class="space-y-2">
+              <div *ngFor="let t of certifAnalysis.tasksDueToday" class="flex items-center gap-3 p-3 bg-[#EDF6F9]/50 rounded-xl">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest"
+                      [ngClass]="{'bg-[#FFDDD2] text-[#E29578]': t.status==='TODO','bg-[#EDF6F9] text-[#006D77]': t.status==='DOING','bg-green-100 text-green-600': t.status==='DONE'}">{{ t.status }}</span>
+                <span class="flex-1 text-sm font-medium text-gray-700 truncate">{{ t.title }}</span>
+                <span class="text-xs font-bold text-[#83C5BE]">{{ t.deadline | date:'HH:mm' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="certifAnalysis.overdueTasks?.length">
+            <h4 class="text-xs font-black text-[#E29578] uppercase tracking-widest mb-3 flex items-center gap-2">
+              <span class="w-2 h-2 bg-[#E29578] rounded-full"></span> Overdue
+            </h4>
+            <div class="space-y-2">
+              <div *ngFor="let t of certifAnalysis.overdueTasks" class="flex items-center gap-3 p-3 bg-[#FFDDD2]/20 rounded-xl border border-[#E29578]/20">
+                <span class="px-2 py-0.5 bg-[#E29578] text-white rounded-md text-[10px] font-black uppercase tracking-widest">Late</span>
+                <span class="flex-1 text-sm font-medium text-gray-700 truncate">{{ t.title }}</span>
+                <span class="text-xs font-bold text-[#E29578]">{{ t.deadline | date:'MMM d, HH:mm' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!certifAnalysis.tasksDueToday?.length && !certifAnalysis.overdueTasks?.length"
+               class="py-8 text-center text-[#83C5BE] font-medium text-sm">
+            ✅ No tasks due today or overdue.
+          </div>
         </div>
       </div>
 
-      <!-- Events Module -->
-      <div class="module-card" *ngIf="eventsAnalysis">
-        <div class="module-header events">
-          <h3>Community Events</h3>
-          <span class="module-date">{{ eventsAnalysis.date }}</span>
-        </div>
-        <div class="module-stats">
-          <div class="stat">
-            <span class="stat-count">{{ eventsAnalysis.totalTasks }}</span>
-            <span class="stat-label">Total</span>
-          </div>
-          <div class="stat">
-            <span class="stat-count todo">{{ eventsAnalysis.todoCount }}</span>
-            <span class="stat-label">To Do</span>
-          </div>
-          <div class="stat">
-            <span class="stat-count doing">{{ eventsAnalysis.doingCount }}</span>
-            <span class="stat-label">Doing</span>
-          </div>
-          <div class="stat">
-            <span class="stat-count done">{{ eventsAnalysis.doneCount }}</span>
-            <span class="stat-label">Done</span>
-          </div>
-          <div class="stat">
-            <span class="stat-count overdue">{{ eventsAnalysis.overdueCount }}</span>
-            <span class="stat-label">Overdue</span>
+      <!-- EVENTS MODULE -->
+      <div *ngIf="eventsAnalysis" class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+        <div class="h-1.5 bg-gradient-to-r from-[#83C5BE] to-[#006D77]"></div>
+        <div class="p-6 border-b border-gray-50 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-[#EDF6F9] rounded-xl flex items-center justify-center text-[#006D77]">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div>
+              <h3 class="font-bold text-[#006D77]">Community Events</h3>
+              <p class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest">{{ eventsAnalysis.date }}</p>
+            </div>
           </div>
         </div>
+        <div class="p-6">
+          <div class="grid grid-cols-5 gap-3 mb-6">
+            <div class="text-center p-3 bg-gray-50 rounded-2xl">
+              <div class="text-xl font-black text-[#006D77]">{{ eventsAnalysis.totalTasks }}</div>
+              <div class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Total</div>
+            </div>
+            <div class="text-center p-3 bg-[#FFDDD2]/20 rounded-2xl">
+              <div class="text-xl font-black text-[#E29578]">{{ eventsAnalysis.todoCount }}</div>
+              <div class="text-[10px] font-bold text-[#E29578]/60 uppercase tracking-widest mt-1">To Do</div>
+            </div>
+            <div class="text-center p-3 bg-[#EDF6F9] rounded-2xl">
+              <div class="text-xl font-black text-[#006D77]">{{ eventsAnalysis.doingCount }}</div>
+              <div class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Doing</div>
+            </div>
+            <div class="text-center p-3 bg-green-50 rounded-2xl">
+              <div class="text-xl font-black text-green-500">{{ eventsAnalysis.doneCount }}</div>
+              <div class="text-[10px] font-bold text-green-400 uppercase tracking-widest mt-1">Done</div>
+            </div>
+            <div class="text-center p-3 bg-[#FFDDD2]/30 rounded-2xl">
+              <div class="text-xl font-black text-[#E29578]">{{ eventsAnalysis.overdueCount }}</div>
+              <div class="text-[10px] font-bold text-[#E29578]/60 uppercase tracking-widest mt-1">Late</div>
+            </div>
+          </div>
 
-        <div *ngIf="eventsAnalysis.tasksDueToday?.length" class="task-section">
-          <h4>Due Today</h4>
-          <div *ngFor="let t of eventsAnalysis.tasksDueToday" class="mini-task">
-            <span class="mini-status" [class]="t.status.toLowerCase()">{{ t.status }}</span>
-            <span class="mini-title">{{ t.title }}</span>
-            <span class="mini-deadline">{{ t.deadline | date:'HH:mm' }}</span>
+          <div *ngIf="eventsAnalysis.tasksDueToday?.length" class="mb-4">
+            <h4 class="text-xs font-black text-[#006D77] uppercase tracking-widest mb-3 flex items-center gap-2">
+              <span class="w-2 h-2 bg-[#006D77] rounded-full"></span> Due Today
+            </h4>
+            <div class="space-y-2">
+              <div *ngFor="let t of eventsAnalysis.tasksDueToday" class="flex items-center gap-3 p-3 bg-[#EDF6F9]/50 rounded-xl">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest"
+                      [ngClass]="{'bg-[#FFDDD2] text-[#E29578]': t.status==='TODO','bg-[#EDF6F9] text-[#006D77]': t.status==='DOING','bg-green-100 text-green-600': t.status==='DONE'}">{{ t.status }}</span>
+                <span class="flex-1 text-sm font-medium text-gray-700 truncate">{{ t.title }}</span>
+                <span class="text-xs font-bold text-[#83C5BE]">{{ t.deadline | date:'HH:mm' }}</span>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div *ngIf="eventsAnalysis.overdueTasks?.length" class="task-section overdue-section">
-          <h4>Overdue</h4>
-          <div *ngFor="let t of eventsAnalysis.overdueTasks" class="mini-task">
-            <span class="mini-status overdue-badge">OVERDUE</span>
-            <span class="mini-title">{{ t.title }}</span>
-            <span class="mini-deadline text-red">{{ t.deadline | date:'MMM d, HH:mm' }}</span>
+          <div *ngIf="eventsAnalysis.overdueTasks?.length">
+            <h4 class="text-xs font-black text-[#E29578] uppercase tracking-widest mb-3 flex items-center gap-2">
+              <span class="w-2 h-2 bg-[#E29578] rounded-full"></span> Overdue
+            </h4>
+            <div class="space-y-2">
+              <div *ngFor="let t of eventsAnalysis.overdueTasks" class="flex items-center gap-3 p-3 bg-[#FFDDD2]/20 rounded-xl border border-[#E29578]/20">
+                <span class="px-2 py-0.5 bg-[#E29578] text-white rounded-md text-[10px] font-black uppercase tracking-widest">Late</span>
+                <span class="flex-1 text-sm font-medium text-gray-700 truncate">{{ t.title }}</span>
+                <span class="text-xs font-bold text-[#E29578]">{{ t.deadline | date:'MMM d, HH:mm' }}</span>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div *ngIf="!eventsAnalysis.tasksDueToday?.length && !eventsAnalysis.overdueTasks?.length" class="no-tasks">
-          No tasks due today or overdue.
+          <div *ngIf="!eventsAnalysis.tasksDueToday?.length && !eventsAnalysis.overdueTasks?.length"
+               class="py-8 text-center text-[#83C5BE] font-medium text-sm">
+            ✅ No tasks due today or overdue.
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>

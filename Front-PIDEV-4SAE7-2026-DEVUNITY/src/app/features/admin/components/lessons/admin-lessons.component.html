@@ -1,146 +1,316 @@
-<div class="max-w-7xl mx-auto px-6 py-8">
-
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-8">
-        <div>
-            <h1 class="text-3xl font-bold text-[#006D77] heading-font">Manage Lessons</h1>
-            <p class="text-gray-500 mt-1">Create, edit, and delete lessons</p>
-        </div>
-        <button (click)="openAdd()"
-            class="px-5 py-2.5 bg-[#006D77] text-white font-semibold rounded-lg hover:bg-[#005560] transition-colors flex items-center gap-2">
-            + Add Lesson
-        </button>
-    </div>
-
-    <!-- Sub Navbar -->
-    <div class="flex gap-1 mb-8 border-b border-gray-200">
-        <a routerLink="../courses" routerLinkActive="border-b-2 border-[#006D77] text-[#006D77] bg-[#006D77]/5"
-            class="px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors flex items-center gap-2">
-            📚 Courses
-        </a>
-        <a routerLink="../lessons" routerLinkActive="border-b-2 border-[#006D77] text-[#006D77] bg-[#006D77]/5"
-            class="px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors flex items-center gap-2">
-            📖 Lessons
-        </a>
-        <a routerLink="../quizzes" routerLinkActive="border-b-2 border-[#006D77] text-[#006D77] bg-[#006D77]/5"
-            class="px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-[#006D77] hover:bg-[#006D77]/5 rounded-t-lg transition-colors flex items-center gap-2">
-            🧠 Quizzes
-        </a>
-    </div>
-
-    <!-- Success -->
-    <div *ngIf="successMessage"
-        class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm font-medium">
-        ✅ {{ successMessage }}
-    </div>
-
-    <!-- Error (outside form) -->
-    <div *ngIf="error && !showForm" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
-        ⚠️ {{ error }}
-        <button (click)="load()" class="ml-3 underline hover:no-underline">Retry</button>
-    </div>
-
-    <!-- Add / Edit Form -->
-    <div *ngIf="showForm" class="mb-8 bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-5">{{ isEditing ? 'Edit Lesson' : 'New Lesson' }}</h2>
-
-        <div *ngIf="error" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
-            ⚠️ {{ error }}
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Title <span class="text-red-500">*</span></label>
-                <input [(ngModel)]="formData.title" type="text" placeholder="e.g. Introduction to Grammar"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006D77]">
+<div class="min-h-screen p-8 bg-[#EDF6F9]/50 animate-fade-in">
+    <!-- 1. Header Moderne -->
+    <div class="mb-10 flex justify-between items-center">
+        <div class="flex items-center gap-5">
+            <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
             </div>
-
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Content <span class="text-red-500">*</span></label>
-                <textarea [(ngModel)]="formData.content" rows="4" placeholder="Lesson content..."
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006D77] resize-none"></textarea>
-            </div>
-
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1">File / URL</label>
-                <input [(ngModel)]="formData.file" type="text" placeholder="e.g. video-url or PDF link"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006D77]">
-            </div>
-
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Order</label>
-                <input [(ngModel)]="formData.order" type="number" min="1"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006D77]">
+                <h1 class="text-3xl font-bold text-[#006D77] tracking-tight">{{ pageTitle }}</h1>
+                <p class="text-[#83C5BE] font-medium">Organize and structure your course units</p>
             </div>
         </div>
-
-        <div class="flex gap-3 mt-6">
-            <button (click)="save()" [disabled]="isSaving"
-                class="px-6 py-2.5 bg-[#006D77] text-white font-semibold rounded-lg hover:bg-[#005560] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
-                {{ isSaving ? 'Saving...' : (isEditing ? 'Update Lesson' : 'Create Lesson') }}
-            </button>
-            <button (click)="cancel()"
-                class="px-6 py-2.5 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors">
-                Cancel
-            </button>
-        </div>
-    </div>
-
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="flex justify-center items-center py-20">
-        <div class="text-center">
-            <div class="w-12 h-12 border-4 border-[#006D77] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p class="text-gray-500">Loading lessons...</p>
-        </div>
-    </div>
-
-    <!-- Empty -->
-    <div *ngIf="!isLoading && lessons.length === 0 && !error" class="text-center py-20">
-        <p class="text-5xl mb-4">📖</p>
-        <p class="text-gray-500 text-lg mb-4">No lessons yet.</p>
-        <button (click)="openAdd()"
-            class="px-5 py-2.5 bg-[#006D77] text-white font-semibold rounded-lg hover:bg-[#005560] transition-colors">
-            + Add First Lesson
+        
+        <button (click)="openAdd()" class="group px-6 py-3 bg-[#006D77] text-white rounded-2xl hover:bg-[#83C5BE] transition-all duration-300 shadow-md flex items-center gap-3 font-semibold">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-500"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add New Lesson
         </button>
     </div>
 
-    <!-- Table -->
-    <div *ngIf="!isLoading && lessons.length > 0"
-        class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b border-gray-200">
-                <tr>
-                    <th class="text-left px-5 py-3 font-semibold text-gray-600">#</th>
-                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Title</th>
-                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Content</th>
-                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Order</th>
-                    <th class="text-left px-5 py-3 font-semibold text-gray-600">File</th>
-                    <th class="text-right px-5 py-3 font-semibold text-gray-600">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let lesson of lessons" class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td class="px-5 py-4 text-gray-400 text-xs font-mono">{{ lesson.lessonId }}</td>
-                    <td class="px-5 py-4 font-medium text-gray-900">{{ lesson.title }}</td>
-                    <td class="px-5 py-4 text-gray-500 max-w-xs truncate">{{ lesson.content || '—' }}</td>
-                    <td class="px-5 py-4 text-gray-600">{{ lesson.order ?? '—' }}</td>
-                    <td class="px-5 py-4 text-gray-600 text-xs truncate max-w-xs">{{ lesson.file || '—' }}</td>
-                    <td class="px-5 py-4 text-right">
-                        <button (click)="openEdit(lesson)"
-                            class="px-3 py-1.5 text-xs font-semibold text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors mr-2">
-                            Edit
-                        </button>
-                        <button (click)="delete(lesson)"
-                            class="px-3 py-1.5 text-xs font-semibold text-red-600 border border-red-300 rounded-lg hover:bg-red-600 hover:text-white transition-colors">
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="px-5 py-3 bg-gray-50 border-t border-gray-200 text-sm text-gray-500">
-            {{ lessons.length }} lesson{{ lessons.length !== 1 ? 's' : '' }} total
+    <!-- 2. Sub-Navigation Tabs (Consistent) -->
+    <div class="flex flex-wrap gap-2 mb-10 p-1.5 bg-white/50 backdrop-blur-md rounded-[24px] w-fit border border-white/50 shadow-sm">
+        <a routerLink="../courses" routerLinkActive="bg-white text-[#006D77] shadow-sm" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80 transition-all duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Courses
+        </a>
+        <a routerLink="../lessons" routerLinkActive="bg-white text-[#006D77] shadow-sm" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80 transition-all duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Lessons
+        </a>
+        <a routerLink="../quizzes" routerLinkActive="bg-white text-[#006D77] shadow-sm" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80 transition-all duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            Quizzes
+        </a>
+        <a routerLink="../enrollments" routerLinkActive="bg-white text-[#006D77] shadow-sm" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80 transition-all duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Enrollments
+        </a>
+    </div>
+
+    <!-- 4. Search & Filters -->
+    <div class="bg-white rounded-[20px] p-6 mb-8 shadow-sm border border-gray-100 flex flex-wrap gap-4 items-center justify-between">
+        <div class="flex flex-wrap gap-4 items-center flex-1">
+            <!-- Search -->
+            <div class="relative min-w-[300px]">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#83C5BE]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </span>
+                <input 
+                    type="text" 
+                    [(ngModel)]="searchTerm"
+                    placeholder="Search lessons by title or content..." 
+                    class="w-full pl-12 pr-4 py-3 bg-[#EDF6F9]/30 border-transparent focus:bg-white focus:border-[#006D77] rounded-2xl text-sm outline-none transition-all border-2"
+                >
+            </div>
+
+            <!-- Sort -->
+            <select 
+                [(ngModel)]="sortBy"
+                class="px-4 py-3 bg-[#EDF6F9]/30 border-transparent focus:bg-white focus:border-[#006D77] rounded-2xl text-sm outline-none transition-all border-2 font-medium text-gray-600 appearance-none min-w-[150px]"
+            >
+                <option value="order">Sort by Order</option>
+                <option value="title">Sort by Title</option>
+            </select>
+        </div>
+
+        <div class="px-5 py-2 bg-[#EDF6F9] rounded-2xl text-[#006D77] font-bold text-sm">
+            Total Lessons: {{ filteredLessons.length }}
         </div>
     </div>
 
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-2xl text-green-700 flex items-center gap-3 animate-fade-in shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span class="font-bold">{{ successMessage }}</span>
+    </div>
+
+    <!-- Loading State (Skeleton) -->
+    <div *ngIf="isLoading" class="space-y-4">
+        <div *ngFor="let i of [1,2,3,4,5]" class="h-20 bg-white rounded-[20px] animate-pulse border border-gray-50 shadow-sm"></div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="!isLoading && error && !showForm" class="bg-[#FFDDD2]/30 rounded-[20px] p-12 border border-[#E29578]/20 text-center">
+        <div class="flex justify-center mb-6 text-[#E29578]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+        </div>
+        <h3 class="text-[#E29578] font-bold text-xl mb-2">Service Error</h3>
+        <p class="text-gray-500 mb-6 max-w-md mx-auto font-medium">{{ error }}</p>
+        <button (click)="load()" class="px-8 py-3 bg-[#E29578] text-white rounded-2xl hover:bg-[#006D77] transition-all shadow-lg font-bold">
+            Retry Connection
+        </button>
+    </div>
+
+    <!-- 2. Tableau des Lessons -->
+    <div *ngIf="!isLoading && !error" class="bg-white rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-gray-50/50 border-b border-gray-100">
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Order</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Lesson Title</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Content Snippet</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Resources</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    <tr *ngFor="let l of filteredLessons" class="hover:bg-[#EDF6F9]/30 transition-all duration-200 group">
+                        <!-- Order -->
+                        <td class="px-8 py-5">
+                            <span class="w-8 h-8 rounded-lg bg-[#EDF6F9] text-[#006D77] flex items-center justify-center font-bold text-sm">
+                                {{ l.order }}
+                            </span>
+                        </td>
+
+                        <!-- Title -->
+                        <td class="px-8 py-5">
+                            <div class="font-bold text-[#006D77] text-base">{{ l.title }}</div>
+                        </td>
+
+                        <!-- Content Snippet -->
+                        <td class="px-8 py-5 text-gray-500 max-w-xs truncate">
+                            {{ l.content || 'No content provided' }}
+                        </td>
+
+                        <!-- Resources -->
+                        <td class="px-8 py-5">
+                            <div class="flex items-center gap-2">
+                                <span *ngIf="l.file" class="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold uppercase border border-blue-100 flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    Document
+                                </span>
+                                <span *ngIf="!l.file" class="text-xs text-gray-300 font-medium italic">None</span>
+                            </div>
+                        </td>
+
+                        <!-- Actions -->
+                        <td class="px-8 py-5 text-right">
+                            <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                                <button (click)="viewLesson(l)" class="p-2.5 hover:bg-[#EDF6F9] text-[#006D77] rounded-xl transition-all" title="View Lesson">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                                <button (click)="openEdit(l)" class="p-2.5 hover:bg-[#83C5BE]/20 text-[#006D77] rounded-xl transition-all" title="Edit Info">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                                </button>
+                                <button (click)="delete(l)" class="p-2.5 hover:bg-[#FFDDD2] text-[#E29578] rounded-xl transition-all" title="Delete Lesson">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination (Simple Placeholder) -->
+        <div *ngIf="filteredLessons.length > 0" class="p-6 border-t border-gray-50 flex items-center justify-between bg-gray-50/30">
+            <p class="text-sm text-gray-500 font-medium">Showing <span class="text-[#006D77] font-bold">{{ filteredLessons.length }}</span> curriculum units</p>
+            <div class="flex gap-2">
+                <button class="px-4 py-2 bg-white border border-gray-200 text-gray-400 rounded-xl cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <button class="px-4 py-2 bg-[#006D77] text-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredLessons.length === 0 && !error" class="py-24 text-center">
+        <div class="flex justify-center mb-8 text-[#83C5BE] opacity-40">
+            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>
+        </div>
+        <h3 class="text-2xl font-bold text-[#006D77]">No lessons found</h3>
+        <p class="text-[#83C5BE] mt-2 max-w-sm mx-auto font-medium">No units matching your criteria. Try different search terms.</p>
+        <button (click)="searchTerm = ''; sortBy = 'order'" class="mt-8 px-8 py-3 border-2 border-[#006D77] text-[#006D77] rounded-2xl hover:bg-[#006D77] hover:text-white transition-all font-bold">
+            Clear All Filters
+        </button>
+    </div>
+
+    <!-- 7. Modal de Vue (Premium) -->
+    <div *ngIf="isViewModalOpen && selectedLesson" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#006D77]/20 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-[32px] shadow-2xl w-full max-w-lg overflow-hidden border border-white/20 animate-scale-up">
+            <!-- Modal Header -->
+            <div class="p-8 bg-[#EDF6F9] flex justify-between items-center border-b border-gray-100">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center text-2xl">
+                        📖
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-[#006D77]">Lesson Overview</h2>
+                        <p class="text-[#83C5BE] font-medium text-sm">Curriculum unit details</p>
+                    </div>
+                </div>
+                <button (click)="isViewModalOpen = false" class="p-3 hover:bg-white rounded-2xl transition-all text-[#006D77]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-8 space-y-6">
+                <div class="space-y-1">
+                    <label class="text-[11px] uppercase tracking-widest font-bold text-[#83C5BE]">Lesson Title</label>
+                    <p class="text-[#006D77] font-bold text-xl">{{ selectedLesson.title }}</p>
+                </div>
+
+                <div class="space-y-1 p-4 bg-[#EDF6F9]/30 rounded-2xl border border-[#EDF6F9]">
+                    <label class="text-[11px] uppercase tracking-widest font-bold text-[#83C5BE]">Unit Content</label>
+                    <p class="text-[#006D77] font-semibold text-sm leading-relaxed">{{ selectedLesson.content || 'No content provided.' }}</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-1">
+                        <label class="text-[11px] uppercase tracking-widest font-bold text-[#83C5BE]">Sequence Order</label>
+                        <p class="text-[#006D77] font-bold">#{{ selectedLesson.order }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[11px] uppercase tracking-widest font-bold text-[#83C5BE]">Resource Link</label>
+                        <p class="text-[#006D77] font-bold truncate text-sm">{{ selectedLesson.file || 'None' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-8 bg-gray-50/50 flex gap-4">
+                <button (click)="isViewModalOpen = false" class="flex-1 py-4 bg-white border-2 border-[#EDF6F9] text-[#006D77] rounded-2xl font-bold hover:bg-[#EDF6F9] transition-all">
+                    Close
+                </button>
+                <button (click)="isViewModalOpen = false; openEdit(selectedLesson)" class="flex-1 py-4 bg-[#006D77] text-white rounded-2xl font-bold shadow-lg hover:bg-[#83C5BE] transition-all">
+                    Edit Lesson
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. Modal d'Édition (Premium Form) -->
+    <div *ngIf="showForm" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#006D77]/20 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-[32px] shadow-2xl w-full max-w-xl overflow-hidden border border-white/20 animate-scale-up">
+            <!-- Modal Header -->
+            <div class="p-8 bg-[#EDF6F9] flex justify-between items-center border-b border-gray-100">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-[#006D77] shadow-lg flex items-center justify-center text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-[#006D77]">{{ isEditing ? 'Edit Lesson' : 'Create Lesson' }}</h2>
+                        <p class="text-[#83C5BE] font-medium text-sm">Update curriculum details</p>
+                    </div>
+                </div>
+                <button (click)="cancel()" class="p-3 hover:bg-white rounded-2xl transition-all text-[#006D77]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Modal Form -->
+            <div class="p-8 space-y-6">
+                <div *ngIf="error" class="p-4 bg-[#FFDDD2] text-[#E29578] rounded-2xl font-bold text-sm flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                    {{ error }}
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-[#006D77] ml-1">Lesson Title</label>
+                    <input 
+                        [(ngModel)]="formData.title"
+                        type="text" 
+                        class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium"
+                        placeholder="e.g. Introduction to Advanced Grammar"
+                    >
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-[#006D77] ml-1">Content</label>
+                    <textarea 
+                        [(ngModel)]="formData.content"
+                        rows="4"
+                        class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium resize-none"
+                        placeholder="Detailed unit description..."
+                    ></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-[#006D77] ml-1">Order Index</label>
+                        <input 
+                            [(ngModel)]="formData.order"
+                            type="number" 
+                            class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium"
+                        >
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-[#006D77] ml-1">File URL / Name</label>
+                        <input 
+                            [(ngModel)]="formData.file"
+                            type="text" 
+                            class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium"
+                            placeholder="document_name.pdf"
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-8 bg-gray-50/50 flex gap-4">
+                <button (click)="cancel()" class="flex-1 py-4 bg-white border-2 border-[#EDF6F9] text-[#006D77] rounded-2xl font-bold hover:bg-[#EDF6F9] transition-all">
+                    Discard Changes
+                </button>
+                <button (click)="save()" [disabled]="isSaving" class="flex-1 py-4 bg-[#006D77] disabled:bg-gray-200 disabled:cursor-not-allowed text-white rounded-2xl font-bold shadow-lg hover:bg-[#83C5BE] transition-all flex items-center justify-center gap-3">
+                    <span *ngIf="isSaving" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    {{ isSaving ? 'Processing...' : (isEditing ? 'Save Updates' : 'Create Lesson') }}
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

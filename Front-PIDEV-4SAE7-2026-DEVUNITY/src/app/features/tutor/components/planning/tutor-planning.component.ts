@@ -9,7 +9,8 @@ import { RoomScheduleComplaintService } from '../../../../core/services/room-com
 
 @Component({
     selector: 'app-tutor-planning',
-    templateUrl: './tutor-planning.component.html'
+    templateUrl: './tutor-planning.component.html',
+    styleUrls: ['./tutor-planning.component.css']
 })
 export class TutorPlanningComponent implements OnInit {
     isLoading = true;
@@ -29,6 +30,9 @@ export class TutorPlanningComponent implements OnInit {
     selectedScheduleForComplaint: Schedule | null = null;
     complaintSubject = '';
     complaintDescription = '';
+
+    showDetailsModal = false;
+    selectedScheduleForDetails: Schedule | null = null;
 
     constructor(
         private authService: AuthService,
@@ -106,6 +110,16 @@ export class TutorPlanningComponent implements OnInit {
 
     getCourseTitle(courseId: number): string {
         return this.courseTitleById[courseId] || 'Unknown course';
+    }
+
+    openSessionDetails(schedule: Schedule): void {
+        this.selectedScheduleForDetails = schedule;
+        this.showDetailsModal = true;
+    }
+
+    closeSessionDetails(): void {
+        this.showDetailsModal = false;
+        this.selectedScheduleForDetails = null;
     }
 
     openComplaintModal(schedule: Schedule): void {

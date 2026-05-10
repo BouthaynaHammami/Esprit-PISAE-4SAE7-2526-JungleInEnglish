@@ -96,4 +96,89 @@ public class AnalyticsDocument {
 
     @Field(type = FieldType.Float)
     private Float challengePopularityScore;
+
+    // --- Certification Fields ---
+    @Field(type = FieldType.Long)
+    private Long certificateId;
+
+    @Field(type = FieldType.Keyword)
+    private String certificateNumber;
+
+    @Field(type = FieldType.Keyword)
+    private String certificateLevel;
+
+    @Field(type = FieldType.Integer)
+    private Integer certificateScore;
+
+    @Field(type = FieldType.Date)
+    private Date certificateIssuedAt;
+
+    @Field(type = FieldType.Long)
+    private Long studentId;
+
+    // --- Event Fields ---
+    @Field(type = FieldType.Long)
+    private Long eventId;
+
+    @Field(type = FieldType.Text, analyzer = "standard")
+    private String eventTitle;
+
+    @Field(type = FieldType.Text, analyzer = "standard")
+    private String eventDescription;
+
+    @Field(type = FieldType.Date)
+    private Date eventStartDate;
+
+    @Field(type = FieldType.Date)
+    private Date eventEndDate;
+
+    @Field(type = FieldType.Keyword)
+    private String eventLocation;
+
+    @Field(type = FieldType.Integer)
+    private Integer eventCapacity;
+
+    @Field(type = FieldType.Keyword)
+    private String eventStatus;
+
+    // --- Book Fields ---
+    @Field(type = FieldType.Long)
+    private Long bookId;
+
+    @Field(type = FieldType.Text, analyzer = "standard")
+    private String bookTitle;
+
+    @Field(type = FieldType.Keyword)
+    private String bookIsbn;
+
+    @Field(type = FieldType.Keyword)
+    private String bookStatus;
+
+    @Field(type = FieldType.Double)
+    private Double bookPrice;
+
+    @Field(type = FieldType.Keyword)
+    private String bookAuthor;
+
+    @Field(type = FieldType.Keyword)
+    private String bookCategory;
+
+    // --- Club Fields ---
+    @Field(type = FieldType.Long)
+    private Long clubId;
+
+    @Field(type = FieldType.Text, analyzer = "standard")
+    private String clubName;
+
+    @Field(type = FieldType.Text, analyzer = "standard")
+    private String clubDescription;
+
+    @Field(type = FieldType.Keyword)
+    private String clubType;
+
+    @Field(type = FieldType.Keyword)
+    private String clubStatus;
+
+    @Field(type = FieldType.Date)
+    private Date clubCreationDate;
 }

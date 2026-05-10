@@ -29,6 +29,7 @@ public class Course {
     private Level level;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "course_type")
     private TypeCourse type;
 
     private Float price;

@@ -9,11 +9,19 @@ import { Question } from '../../../../core/models/question.model';
     styleUrls: ['./admin-quizzes.component.scss']
 })
 export class AdminQuizzesComponent implements OnInit {
+    pageTitle: string = 'Quizzes Management';
+    pageIcon: string = '🧠';
     quizzes: Quiz[] = [];
     isLoading = true;
     error: string | null = null;
     successMessage: string | null = null;
 
+    // Filters & Search
+    searchTerm: string = '';
+    sortBy: string = 'title';
+
+    selectedQuiz: Quiz | null = null;
+    isViewModalOpen: boolean = false;
     showForm = false;
     isEditing = false;
     editingId: number | null = null;
@@ -25,6 +33,30 @@ export class AdminQuizzesComponent implements OnInit {
     constructor(private quizService: QuizService) { }
 
     ngOnInit(): void { this.load(); }
+
+    get filteredQuizzes(): Quiz[] {
+        let filtered = [...this.quizzes];
+
+        if (this.searchTerm) {
+            const term = this.searchTerm.toLowerCase();
+            filtered = filtered.filter(q => 
+                (q.title ?? '').toLowerCase().includes(term)
+            );
+        }
+
+        filtered.sort((a, b) => {
+            if (this.sortBy === 'title') return (a.title ?? '').localeCompare(b.title ?? '');
+            if (this.sortBy === 'questions') return (a.questions?.length || 0) - (b.questions?.length || 0);
+            return 0;
+        });
+
+        return filtered;
+    }
+
+    viewQuiz(quiz: Quiz): void {
+        this.selectedQuiz = quiz;
+        this.isViewModalOpen = true;
+    }
 
     load(): void {
         this.isLoading = true;

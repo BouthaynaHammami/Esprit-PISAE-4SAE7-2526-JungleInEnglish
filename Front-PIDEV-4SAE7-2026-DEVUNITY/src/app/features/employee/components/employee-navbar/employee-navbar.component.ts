@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { EnhancedNotificationService } from '../../../../core/services/enhanced-notification.service';
 import { Observable } from 'rxjs';
@@ -7,17 +7,10 @@ import { Notification } from '../../../../core/models/notification.model';
 @Component({
     selector: 'app-employee-navbar',
     templateUrl: './employee-navbar.component.html',
-    styles: [`
-        .slide-in {
-            animation: slideIn 0.2s ease-out;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    `]
+    styleUrl: './employee-navbar.component.css'
 })
-export class EmployeeNavbarComponent {
+export class EmployeeNavbarComponent implements OnInit {
+    name: string | null = null;
     unreadCount$: Observable<number>;
     notifications$: Observable<Notification[]>;
     showNotifications = false;
@@ -28,6 +21,10 @@ export class EmployeeNavbarComponent {
     ) {
         this.unreadCount$ = this.notificationService.unreadCount$;
         this.notifications$ = this.notificationService.notifications$;
+    }
+
+    ngOnInit(): void {
+        this.name = this.authService.getUserName();
     }
 
     toggleNotifications(): void {

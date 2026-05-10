@@ -1,43 +1,85 @@
-<div class="p-8">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-[#006D77]">Tutor Dashboard 🎓</h1>
-        <p class="text-gray-500 mt-1">Manage your classes and schedule.</p>
+<div class="dashboard-content">
+  <!-- HEADER WITH USERNAME -->
+  <div class="dashboard-header">
+    <div>
+      <h1 class="main-title">Welcome, <span>{{ userName }}</span></h1>
+      <p class="subtitle">Tutor Dashboard - Overview of your teaching activity</p>
+    </div>
+  </div>
+
+  <!-- STATS GRID -->
+  <div class="stats-grid">
+    <div *ngFor="let stat of stats" class="stat-card">
+      <div class="stat-icon-wrapper" [style.background-color]="stat.color + '15'" [style.color]="stat.color">
+        <!-- Dynamic Icons -->
+        <svg *ngIf="stat.icon === 'users'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <svg *ngIf="stat.icon === 'zap'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <svg *ngIf="stat.icon === 'award'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+        <svg *ngIf="stat.icon === 'pause'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stat.value }}</span>
+        <span class="stat-label">{{ stat.label }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDENTS TABLE SECTION -->
+  <div class="table-container shadow-premium">
+    <div class="table-header">
+      <div class="table-title-group">
+        <h2>My Students</h2>
+        <p>Real-time monitor of student academic advancement.</p>
+      </div>
+      <div class="table-actions">
+        <span class="total-pill">{{ students.length }} Students</span>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-[#FFDDD2] rounded-xl flex items-center justify-center text-2xl">📅</div>
-                <div>
-                    <p class="text-sm text-gray-500">Scheduled Classes</p>
-                    <p class="text-2xl font-bold text-[#006D77]">—</p>
+    <div class="scrollable-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Student Profile</th>
+            <th>Proficiency</th>
+            <th>Course Progress</th>
+            <th>Status</th>
+            <th>Enrollment Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let student of students" class="table-row">
+            <td class="profile-cell">
+              <div class="avatar">{{ student.avatar }}</div>
+              <div class="name-box">
+                <span class="name">{{ student.name }}</span>
+                <span class="sub">Tutor Student</span>
+              </div>
+            </td>
+            <td class="level-cell">
+              <span class="level-badge">{{ student.level }}</span>
+            </td>
+            <td class="progress-cell">
+              <div class="progress-wrapper">
+                <div class="progress-bar-bg">
+                  <div class="progress-fill" 
+                       [style.width.%]="student.progress"
+                       [style.background-color]="getProgressColor(student.progress)"></div>
                 </div>
-            </div>
-        </div>
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-[#FFDDD2] rounded-xl flex items-center justify-center text-2xl">📋</div>
-                <div>
-                    <p class="text-sm text-gray-500">Complaints</p>
-                    <p class="text-2xl font-bold text-[#006D77]">—</p>
-                </div>
-            </div>
-        </div>
+                <span class="progress-text">{{ student.progress }}%</span>
+              </div>
+            </td>
+            <td class="status-cell">
+              <span class="status-badge" [ngClass]="getStatusClass(student.status)">
+                {{ student.status | titlecase }}
+              </span>
+            </td>
+            <td class="date-cell">
+              {{ student.joinDate | date:'mediumDate' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h2 class="text-lg font-semibold text-gray-800 mb-4">Quick Access</h2>
-        <div class="grid grid-cols-2 gap-4">
-            <a routerLink="../planning"
-                class="flex flex-col items-center gap-2 p-4 bg-[#F0FAF9] rounded-xl hover:bg-[#83C5BE]/20 transition-colors cursor-pointer">
-                <span class="text-3xl">📅</span>
-                <span class="text-sm font-medium text-[#006D77]">My Planning</span>
-            </a>
-            <a routerLink="../complaints"
-                class="flex flex-col items-center gap-2 p-4 bg-[#F0FAF9] rounded-xl hover:bg-[#83C5BE]/20 transition-colors cursor-pointer">
-                <span class="text-3xl">📋</span>
-                <span class="text-sm font-medium text-[#006D77]">Complaints</span>
-            </a>
-        </div>
-    </div>
+  </div>
 </div>

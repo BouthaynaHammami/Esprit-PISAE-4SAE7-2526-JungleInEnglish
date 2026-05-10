@@ -28,6 +28,9 @@ export class EmployeeApplicationsComponent implements OnInit {
   showPreview = false;
 
   currentUserId: number | null = null;
+  showApplyModal = false;
+  selectedApplication: Applicant | null = null;
+  showApplicationDetails = false;
 
   constructor(
     private recruitmentService: RecruitmentService,
@@ -166,5 +169,31 @@ export class EmployeeApplicationsComponent implements OnInit {
     }
 
     return this.sanitizer.bypassSecurityTrustResourceUrl(target);
+  }
+
+  openApplyModal(): void {
+    this.showApplyModal = true;
+  }
+
+  closeApplyModal(): void {
+    this.showApplyModal = false;
+    this.submitSuccess = false;
+    this.submitError = '';
+  }
+
+  openApplicationDetails(app: Applicant): void {
+    this.selectedApplication = app;
+    this.showApplicationDetails = true;
+  }
+
+  closeApplicationDetails(): void {
+    this.showApplicationDetails = false;
+    this.selectedApplication = null;
+  }
+
+  refresh(): void {
+    this.loadingApplications = true;
+    this.loadRecruitments();
+    this.loadMyApplications();
   }
 }

@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import tn.esprit.Books_Clubs.Services.IServices.IBookService;
 import tn.esprit.Books_Clubs.entities.*;
 import tn.esprit.Books_Clubs.repositories.*;
+import tn.esprit.Books_Clubs.Producer.BookProducer;
+import tn.esprit.Books_Clubs.DTO.BookDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,13 +17,16 @@ public class BookServiceImpl implements IBookService {
     private final BookRepository bookRepo;
     private final AuthorRepository authorRepo;
     private final CategoryRepository categoryRepo;
+    private final BookProducer bookProducer;
 
     public BookServiceImpl(BookRepository bookRepo,
                            AuthorRepository authorRepo,
-                           CategoryRepository categoryRepo) {
+                           CategoryRepository categoryRepo,
+                           BookProducer bookProducer) {
         this.bookRepo = bookRepo;
         this.authorRepo = authorRepo;
         this.categoryRepo = categoryRepo;
+        this.bookProducer = bookProducer;
     }
 
     // â”€â”€ CREATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -45,8 +50,9 @@ public class BookServiceImpl implements IBookService {
         book.setStock(s);
 
         book.setStatus(qte > 0 ? BookStatus.AVAILABLE : BookStatus.OUT_OF_STOCK);
-
-        return bookRepo.save(book);
+        Book saved = bookRepo.save(book);
+        sendToElastic(saved);
+        return saved;
     }
 
     // â”€â”€ UPDATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -72,7 +78,21 @@ public class BookServiceImpl implements IBookService {
         existing.setAuthor(a);
         existing.setCategory(c);
 
-        return bookRepo.save(existing);
+        Book updatedBook = bookRepo.save(existing);
+        sendToElastic(updatedBook);
+        return updatedBook;
+    }
+
+    private void sendToElastic(Book book) {
+        bookProducer.sendBook(BookDTO.builder()
+                .bookId(book.getBookId())
+                .title(book.getTitle())
+                .isbn(book.getIsbn())
+                .status(book.getStatus() != null ? book.getStatus().name() : null)
+                .salePrice(book.getSalePrice())
+                .authorName(book.getAuthor() != null ? book.getAuthor().getName() : null)
+                .categoryName(book.getCategory() != null ? book.getCategory().getName() : null)
+                .build());
     }
 
     // â”€â”€ READ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

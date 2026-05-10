@@ -5,14 +5,16 @@ pipeline {
         maven 'MAVEN_HOME'
     }
     environment {
-        BACKEND_PATH      = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
+        BACKEND_PATH        = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
         SOCIAL_SERVICE_PATH = "${BACKEND_PATH}/Social_Interaction_Service"
-        SONAR_HOST_URL    = 'http://192.168.19.130:9000'
-        NEXUS_URL         = 'http://192.168.19.130:8081'
-        MAVEN_OPTS        = '-Xmx512m -XX:MaxMetaspaceSize=256m'
-        DOCKER_IMAGE      = 'hbouthayna/social-interaction-service'
+        SONAR_HOST_URL      = 'http://192.168.19.130:9000'
+        NEXUS_URL           = 'http://192.168.19.130:8081'
+        MAVEN_OPTS          = '-Xmx512m -XX:MaxMetaspaceSize=256m'
+        DOCKER_IMAGE        = 'hbouthayna/social-interaction-service'
     }
+
     stages {
+
         stage('Checkout') {
             steps {
                 echo 'Récupération du code source...'
@@ -21,6 +23,8 @@ pipeline {
                     url: 'https://github.com/saifelislem/Esprit-PIDEV-4SAE7-2026-DEVUNITY.git'
             }
         }
+
+
         stage('Clean & Build') {
             steps {
                 dir("${SOCIAL_SERVICE_PATH}") {
@@ -28,99 +32,93 @@ pipeline {
                 }
             }
         }
+
+
         stage('Test') {
             steps {
                 dir("${SOCIAL_SERVICE_PATH}") {
-                    sh 'mvn test || true'
+                    sh 'mvn test'
                 }
             }
         }
-	stage('Semgrep Security Scan') {
-	    steps {
-	        script {
-	            withCredentials([string(credentialsId: 'semgrep_token', variable: 'SEMGREP_APP_TOKEN')]) {
-	                sh """
-	                    docker run --rm \
-	                        --network host \
-	                        -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} \
-	                        -e HOME=/tmp \
-	                        -e SEMGREP_USER_DATA_DIR=/tmp/semgrep \
-	                        -v "${WORKSPACE}:/src" \
-	                        -w /src \
-	                        semgrep/semgrep semgrep ci || true
-	                """
-	            }
-	        }
-	    }
-	}
-		stage('SonarQube Analysis') {
-		    steps {
-		        script {
-		            withCredentials([string(credentialsId: 'sonar_token', variable: 'SONAR_TOKEN')]) {
-		                dir("${SOCIAL_SERVICE_PATH}") {
-		                    sh '''
-		                        mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
-		                        -Dsonar.projectKey=Social-Interaction-Service \
-		                        -Dsonar.projectName='Social Interaction Service' \
-		                        -Dsonar.host.url=http://192.168.19.130:9000 \
-		                        -Dsonar.token=$SONAR_TOKEN \
-		                        -Dsonar.ws.timeout=300
-		                    '''
-		                }
-		            }
-		        }
-		    }
-		}
-        stage('Deploy to Nexus') {
-            steps {
-                dir("${SOCIAL_SERVICE_PATH}") {
-                    sh """
-                        mvn deploy -DskipTests \
-                        -DaltDeploymentRepository=nexus::${NEXUS_URL}/repository/maven-snapshots/
-                    """
-                }
-            }
-        }
-        stage('Docker Build') {
-            steps {
-                dir("${SOCIAL_SERVICE_PATH}") {
-                    script {
-                        dockerImage = docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
-                    }
-                }
-            }
-        }
-        stage('Docker Push') {
+
+
+        stage('Semgrep Security Scan') {
             steps {
                 script {
-                    withCredentials([usernamePassword(
-                        credentialsId: 'docker_token',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASS'
-                    )]) {
+                    withCredentials([string(credentialsId: 'semgrep_token', variable: 'SEMGREP_APP_TOKEN')]) {
                         sh """
-                            echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
-                            docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
-                            docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest
-                            docker push ${DOCKER_IMAGE}:latest
+                            docker run --rm \\
+                                --network host \\
+                                -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} \\
+                                -e HOME=/tmp \\
+                                -e SEMGREP_USER_DATA_DIR=/tmp/semgrep \\
+                                -v "${WORKSPACE}:/src" \\
+                                -w /src \\
+                                semgrep/semgrep semgrep ci
                         """
                     }
                 }
             }
         }
 
-        // ── NOUVEAU : Déclencher automatiquement le pipeline CD ──
-        stage('Trigger CD 🚀') {
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'sonar_token', variable: 'SONAR_TOKEN')]) {
+                        dir("${SOCIAL_SERVICE_PATH}") {
+                            sh '''
+                                mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \\
+                                -Dsonar.projectKey=Social-Interaction-Service \\
+                                -Dsonar.projectName='Social Interaction Service' \\
+                                -Dsonar.host.url=http://192.168.19.130:9000 \\
+                                -Dsonar.token=$SONAR_TOKEN \\
+                                -Dsonar.ws.timeout=300
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+
+
+        stage('Deploy to Nexus') {
+            steps {
+                dir("${SOCIAL_SERVICE_PATH}") {
+                    sh """
+                        mvn deploy -DskipTests \\
+                        -DaltDeploymentRepository=nexus::${NEXUS_URL}/repository/maven-snapshots/
+                    """
+                }
+            }
+        }
+
+
+        stage('Docker Build') {
+            steps {
+                dir("${SOCIAL_SERVICE_PATH}") {
+                    script {
+                        dockerImage = docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
+                        echo "Image buildée : ${DOCKER_IMAGE}:${BUILD_NUMBER}"
+                    }
+                }
+            }
+        }
+
+
+        stage('Trigger CD') {
             steps {
                 script {
                     echo "Déclenchement du pipeline CD avec IMAGE_TAG=${BUILD_NUMBER}"
                     build job: 'DevUnity-Social-Pipeline-CD',
                           parameters: [string(name: 'IMAGE_TAG', value: "${BUILD_NUMBER}")],
-                          wait: false   // ne bloque pas le CI, le CD s'exécute en parallèle
+                          wait: false
                 }
             }
         }
     }
+
     post {
         always {
             junit testResults: "${SOCIAL_SERVICE_PATH}/target/surefire-reports/*.xml", allowEmptyResults: true

@@ -23,6 +23,8 @@ import { WalletService, Wallet } from '../../../../core/services/books_clubs/wal
   styleUrls: ['./admin-library.component.css']
 })
 export class AdminLibraryComponent implements OnInit {
+  pageTitle: string = 'Digital Library Management';
+  pageIcon: string = '📚';
 
   // =========================================================
   //  TABS

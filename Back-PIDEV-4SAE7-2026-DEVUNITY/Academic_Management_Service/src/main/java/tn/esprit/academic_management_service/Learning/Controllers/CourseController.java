@@ -129,12 +129,15 @@ public class CourseController {
     }
 
     @GetMapping("/type/{type}")
-    public ResponseEntity<?> getCoursesByType(@PathVariable("type") TypeCourse type) {
+    public ResponseEntity<?> getCoursesByType(@PathVariable("type") String typeStr) {
         try {
+            TypeCourse type = TypeCourse.valueOf(typeStr.toUpperCase());
             return ResponseEntity.ok(courseService.getCoursesByType(type));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body("Invalid course type: " + typeStr);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body(e.getMessage());
+            return ResponseEntity.status(500).body("Error fetching courses by type: " + e.getMessage());
         }
     }
 }

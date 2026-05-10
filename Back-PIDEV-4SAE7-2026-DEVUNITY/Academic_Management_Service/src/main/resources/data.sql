@@ -1,5 +1,5 @@
 -- Insert Sample Business English Courses
-INSERT IGNORE INTO course (course_id, title, description, level, type, price, lessons_number, is_hidden, image_url) VALUES
+INSERT IGNORE INTO course (course_id, title, description, level, course_type, price, lessons_number, is_hidden, image_url) VALUES
 (1, 'Business Communication Essentials', 'Master professional communication skills for the workplace', 'A1', 'BUSINESS_ENGLISH', 99.99, 12, false, 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800'),
 (2, 'Corporate Email Writing', 'Learn to write effective and professional business emails', 'A2', 'BUSINESS_ENGLISH', 79.99, 8, false, 'https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=800'),
 (3, 'Business Presentations & Public Speaking', 'Develop confidence in delivering business presentations', 'B1', 'BUSINESS_ENGLISH', 149.99, 15, false, 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800'),
@@ -8,7 +8,7 @@ INSERT IGNORE INTO course (course_id, title, description, level, type, price, le
 (6, 'Advanced Business Writing', 'Master reports, proposals, and business documents', 'C2', 'BUSINESS_ENGLISH', 179.99, 14, false, 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800');
 
 -- Insert Sample General English Courses
-INSERT IGNORE INTO course (course_id, title, description, level, type, price, lessons_number, is_hidden, image_url) VALUES
+INSERT IGNORE INTO course (course_id, title, description, level, course_type, price, lessons_number, is_hidden, image_url) VALUES
 (7, 'English for Beginners', 'Start your English learning journey from scratch', 'A1', 'GENERAL_ENGLISH', 49.99, 20, false, 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800'),
 (8, 'Everyday Conversation Skills', 'Learn practical English for daily situations', 'A2', 'GENERAL_ENGLISH', 59.99, 15, false, 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=800'),
 (9, 'Intermediate English Grammar', 'Strengthen your grammar foundation', 'B1', 'GENERAL_ENGLISH', 89.99, 18, false, 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800'),

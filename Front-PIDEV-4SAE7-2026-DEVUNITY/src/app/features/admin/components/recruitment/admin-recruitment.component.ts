@@ -391,16 +391,20 @@ export class AdminRecruitmentComponent implements AfterViewInit {
 
   private statusBadge(status: string): string {
     const map: Record<string, string> = {
-      OPEN: 'open', CLOSED: 'closed', CANCELLED: 'canceled',
-      PENDING: 'pending', ACCEPTED: 'accepted', REJECTED: 'rejected',
+      OPEN: 'bg-green-50 text-green-600 border border-green-100', 
+      CLOSED: 'bg-[#FFDDD2] text-[#E29578] border border-[#E29578]/20', 
+      CANCELLED: 'bg-red-50 text-red-600 border border-red-100',
+      PENDING: 'bg-[#FFDDD2] text-[#E29578] border border-[#E29578]/20', 
+      ACCEPTED: 'bg-green-50 text-green-600 border border-green-100', 
+      REJECTED: 'bg-red-50 text-red-600 border border-red-100',
     };
-    const cls = map[status] || 'closed';
+    const cls = map[status] || map['CLOSED'];
     const label = status.charAt(0) + status.slice(1).toLowerCase();
-    return `<span class="rc-pill rc-pill--${cls}">${label}</span>`;
+    return `<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${cls}">${label}</span>`;
   }
 
   private deptTag(dept: string): string {
-    return `<span class="rc-dept-tag">${this.escHtml(dept)}</span>`;
+    return `<span class="px-3 py-1 bg-[#EDF6F9] text-[#006D77] rounded-full text-xs font-bold">${this.escHtml(dept)}</span>`;
   }
 
   private interviewCount(rec: Recruitment): number {
@@ -412,28 +416,28 @@ export class AdminRecruitmentComponent implements AfterViewInit {
   private renderList(): void {
     const tbody = this.el('rc-recruitment-tbody');
     if (this.recruitments.length === 0) {
-      tbody.innerHTML = `<tr class="rc-empty"><td colspan="8">No recruitments found. Click "＋ New recruitment" to create one.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="px-8 py-10 text-center text-gray-500 font-medium">No recruitments found. Click "New Recruitment" to create one.</td></tr>`;
       this.updateStats();
       return;
     }
 
     tbody.innerHTML = this.recruitments.map((rec, idx) => `
-      <tr>
-        <td class="rc-td-num">${idx + 1}</td>
-        <td style="font-weight:700">${this.escHtml(rec.positionTitle)}</td>
-        <td>${this.deptTag(rec.department || 'N/A')}</td>
-        <td style="font-size:12px;opacity:.65">${this.fmtDate(rec.openedAt)}</td>
-        <td><span class="rc-count rc-count--purple">${this.interviewCount(rec)}</span></td>
-        <td><span class="rc-count rc-count--teal">${(rec.applicants || []).length}</span></td>
-        <td>${this.statusBadge(rec.status || 'OPEN')}</td>
-        <td>
-          <div class="rc-td-actions">
-            <button class="rc-btn rc-btn--ghost rc-btn--icon" title="View applicants"
-              onclick="window._rcComp.showDetailView(${rec.id})">👥</button>
-            <button class="rc-btn rc-btn--secondary rc-btn--icon" title="Edit"
-              onclick="window._rcComp.openEditModal(${rec.id})">✏️</button>
-            <button class="rc-btn rc-btn--soft rc-btn--icon" title="Delete"
-              onclick="window._rcComp.deleteRecruitment(${rec.id})">🗑️</button>
+      <tr class="hover:bg-[#EDF6F9]/30 transition-all duration-200 group">
+        <td class="px-8 py-5 text-sm font-bold text-gray-500">${idx + 1}</td>
+        <td class="px-8 py-5 font-bold text-[#006D77] text-sm">${this.escHtml(rec.positionTitle)}</td>
+        <td class="px-8 py-5">${this.deptTag(rec.department || 'N/A')}</td>
+        <td class="px-8 py-5 text-sm text-gray-500 font-medium">${this.fmtDate(rec.openedAt)}</td>
+        <td class="px-8 py-5 text-center"><span class="inline-flex items-center justify-center px-3 py-1 bg-purple-50 text-purple-600 rounded-lg text-sm font-bold border border-purple-100 shadow-sm">${this.interviewCount(rec)}</span></td>
+        <td class="px-8 py-5 text-center"><span class="inline-flex items-center justify-center px-3 py-1 bg-[#EDF6F9] text-[#006D77] rounded-lg text-sm font-bold border border-[#83C5BE]/30 shadow-sm">${(rec.applicants || []).length}</span></td>
+        <td class="px-8 py-5 text-center">${this.statusBadge(rec.status || 'OPEN')}</td>
+        <td class="px-8 py-5 text-right">
+          <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+            <button class="p-2.5 hover:bg-[#EDF6F9] text-[#006D77] rounded-xl transition-all" title="View applicants"
+              onclick="window._rcComp.showDetailView(${rec.id})"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
+            <button class="p-2.5 hover:bg-[#EDF6F9] text-[#006D77] rounded-xl transition-all" title="Edit"
+              onclick="window._rcComp.openEditModal(${rec.id})"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>
+            <button class="p-2.5 hover:bg-[#FFDDD2] text-[#E29578] rounded-xl transition-all" title="Delete"
+              onclick="window._rcComp.deleteRecruitment(${rec.id})"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
           </div>
         </td>
       </tr>
@@ -448,11 +452,7 @@ export class AdminRecruitmentComponent implements AfterViewInit {
       this.el('rc-detail-title-text').textContent = rec.positionTitle || 'Untitled';
       this.el('rc-detail-dept-tag').textContent   = rec.department || 'N/A';
 
-      const map: Record<string, string> = { OPEN: 'open', CLOSED: 'closed', CANCELLED: 'canceled' };
-      const badgeEl = this.el('rc-detail-status-badge');
-      const statusStr = rec.status || 'CLOSED';
-      badgeEl.className = `rc-pill rc-pill--${map[statusStr] || 'closed'}`;
-      badgeEl.textContent = statusStr.charAt(0) + statusStr.slice(1).toLowerCase();
+      this.el('rc-detail-status-badge').outerHTML = `<span id="rc-detail-status-badge">${this.statusBadge(rec.status || 'OPEN')}</span>`;
 
       this.el('rc-detail-opened-date').textContent = rec.openedAt ? `Opened ${this.fmtDate(rec.openedAt)}` : '';
 
@@ -460,7 +460,7 @@ export class AdminRecruitmentComponent implements AfterViewInit {
       const applicants = rec.applicants || [];
 
       if (applicants.length === 0) {
-        tbody.innerHTML = `<tr class="rc-empty"><td colspan="6">No applicants yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="px-8 py-10 text-center text-gray-500 font-medium">No applicants yet.</td></tr>`;
         return;
       }
 
@@ -469,55 +469,57 @@ export class AdminRecruitmentComponent implements AfterViewInit {
         const analysisResult = this.analysisResults.get(app.id!);
         
         const actions = app.status === 'PENDING'
-          ? `<div class="rc-td-actions">
-               <button class="rc-btn rc-btn--ai rc-btn--sm" 
+          ? `<div class="flex gap-1 justify-end">
+               <button class="px-3 py-1.5 bg-[#006D77] text-white rounded-xl text-xs font-bold hover:bg-[#83C5BE] shadow-sm transition-all disabled:opacity-50 disabled:bg-gray-400 flex items-center gap-1.5" 
                  onclick="window._rcComp.analyzeApplicantCV(${rec.id},${app.id})"
                  ${isAnalyzing ? 'disabled' : ''}>
-                 ${isAnalyzing ? '⏳ Analyzing...' : '🤖 Analyze with AI'}
+                 ${isAnalyzing ? '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Analyzing' : '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg> Analyze'}
                </button>
-               <button class="rc-btn rc-btn--primary rc-btn--sm"
-                 onclick="window._rcComp.updateApplicantStatus(${rec.id},${app.id},'ACCEPTED')">Accept</button>
-               <button class="rc-btn rc-btn--accent rc-btn--sm"
-                 onclick="window._rcComp.updateApplicantStatus(${rec.id},${app.id},'REJECTED')">Reject</button>
+               <button class="p-1.5 hover:bg-green-50 text-green-600 rounded-xl transition-all font-bold" title="Accept"
+                 onclick="window._rcComp.updateApplicantStatus(${rec.id},${app.id},'ACCEPTED')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+               <button class="p-1.5 hover:bg-red-50 text-[#E29578] rounded-xl transition-all font-bold" title="Reject"
+                 onclick="window._rcComp.updateApplicantStatus(${rec.id},${app.id},'REJECTED')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
              </div>`
-          : `<span style="font-size:12px;opacity:.38">—</span>`;
+          : `<span class="text-xs text-gray-300 font-bold">—</span>`;
 
         const interviewInfo = app.interview && app.interview.title 
-          ? `<div style="font-size:11px; color:#006D77; margin-top:4px">📅 ${this.escHtml(app.interview.title)}</div>`
+          ? `<div class="text-[10px] font-bold text-[#006D77] mt-1 bg-[#EDF6F9] px-2 py-0.5 rounded-md inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${this.escHtml(app.interview.title)}</div>`
           : '';
 
         const aiAnalysisInfo = analysisResult 
-          ? `<div class="rc-ai-result">
-               <div class="rc-ai-badge rc-ai-badge--${analysisResult.decision?.toLowerCase() || 'pending'}">
-                 🤖 AI: ${analysisResult.decision || 'PENDING'}
+          ? `<div class="mt-2 p-2 rounded-xl bg-[#EDF6F9]/50 border border-[#83C5BE]/30">
+               <div class="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 ${analysisResult.decision === 'ACCEPTED' ? 'text-green-600' : 'text-[#006D77]'}">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg> AI: ${analysisResult.decision || 'PENDING'}
                </div>
-               ${analysisResult.score ? `<div class="rc-ai-score">Score: ${analysisResult.score}/100</div>` : ''}
-               ${analysisResult.summary ? `<div class="rc-ai-summary">${this.escHtml(analysisResult.summary)}</div>` : ''}
+               ${analysisResult.score ? `<div class="text-xs font-bold text-gray-700 mt-1">Score: ${analysisResult.score}/100</div>` : ''}
+               ${analysisResult.summary ? `<div class="text-xs text-gray-500 mt-1 line-clamp-2" title="${this.escHtml(analysisResult.summary)}">${this.escHtml(analysisResult.summary)}</div>` : ''}
              </div>`
           : '';
 
         return `
-          <tr>
-            <td class="rc-td-num">${idx + 1}</td>
-            <td style="font-weight:700">
+          <tr class="hover:bg-[#EDF6F9]/30 transition-all duration-200 group">
+            <td class="px-8 py-5 text-sm font-bold text-gray-500">${idx + 1}</td>
+            <td class="px-8 py-5 font-bold text-[#006D77] text-sm">
               ${(app.firstName || app.lastName) 
                 ? this.escHtml(app.firstName + ' ' + app.lastName) 
                 : 'USR-' + this.escHtml(app.userId)}
             </td>
-            <td><div class="rc-cover-cell" title="${this.escHtml(app.reponse)}">${this.escHtml(app.reponse || 'No data')}</div></td>
-            <td>
-              <div style="display:flex; align-items:center; gap:8px">
-                <a class="rc-cv-link" href="${this.escHtml(app.cv)}" target="_blank">Link</a>
-                <button class="rc-btn rc-btn--ghost rc-btn--icon" style="height:24px; width:24px; font-size:12px" title="Quick View"
-                  onclick="window._rcComp.openViewer('${this.escHtml(app.cv)}')">👁️</button>
+            <td class="px-8 py-5 text-xs text-gray-500"><div class="truncate max-w-xs" title="${this.escHtml(app.reponse)}">${this.escHtml(app.reponse || 'No data')}</div></td>
+            <td class="px-8 py-5">
+              <div class="flex items-center gap-2">
+                <a class="text-[#006D77] font-bold text-xs hover:underline flex items-center gap-1" href="${this.escHtml(app.cv)}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Link</a>
+                <button class="p-1 text-gray-400 hover:text-[#006D77] transition-all" title="Quick View"
+                  onclick="window._rcComp.openViewer('${this.escHtml(app.cv)}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
               </div>
             </td>
-            <td>
+            <td class="px-8 py-5">
               ${this.statusBadge(app.status || 'PENDING')}
               ${interviewInfo}
               ${aiAnalysisInfo}
             </td>
-            <td>${actions}</td>
+            <td class="px-8 py-5 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+              ${actions}
+            </td>
           </tr>`;
       }).join('');
     });

@@ -1,179 +1,255 @@
-<!-- admin-test-niveau.component.html -->
-<div class="page">
-
-  <div class="page-header">
-    <h1>Level Test Management</h1>
-    <p class="muted">Manage test subjects and monitor student assessments.</p>
-  </div>
-
-  <!-- Tab Bar -->
-  <div class="tab-bar">
-    <button class="tab-btn" [class.active]="activeTab === 'subjects'" (click)="activeTab = 'subjects'; mode = 'LIST'">
-      📚 Test Subjects
-    </button>
-    <button class="tab-btn" [class.active]="activeTab === 'submissions'" (click)="activeTab = 'submissions'; loadAllSubmissions()">
-      📋 Submissions
-      <span *ngIf="allTentatives.length > 0" class="tab-badge">{{ allTentatives.length }}</span>
-    </button>
-  </div>
-
-  <!-- ========================= -->
-  <!-- SUBJECTS TAB              -->
-  <!-- ========================= -->
-  <div *ngIf="activeTab === 'subjects'">
-
-    <!-- LIST VIEW -->
-    <div *ngIf="mode === 'LIST'">
-      <div class="card filters">
-        <div class="filters-left">
-          <button class="btn btn-primary" (click)="openNewSubject()">+ New Test Subject</button>
-          <button class="btn btn-soft" (click)="loadSubjects()">Refresh</button>
-        </div>
-      </div>
-
-      <div *ngIf="loadingSubjects" class="loading-state card">Loading subjects...</div>
-
-      <div *ngIf="!loadingSubjects && subjects.length === 0" class="empty-state card">
-        No test subjects found. Create one to get started.
-      </div>
-
-      <div class="grid" *ngIf="!loadingSubjects && subjects.length > 0">
-        <div class="card item" *ngFor="let s of subjects">
-          <div class="title">{{ s.title }}</div>
-          <div class="meta">
-            <span class="pill">⏱️ {{ s.time }} min</span>
-            <span class="pill muted-pill">ID: #{{ s.id }}</span>
-          </div>
-          <p class="desc">{{ s.description }}</p>
-          <div class="actions">
-            <button class="btn btn-secondary" (click)="openEditSubject(s)">Edit</button>
-            <button class="btn btn-accent" (click)="deleteSubject(s.id!)">Delete</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- FORM VIEW -->
-    <div *ngIf="mode === 'FORM'">
-      <div class="card">
-        <div class="form-header">
-          <div>
-            <h3>{{ isEdit ? 'Edit' : 'Create' }} Test Subject</h3>
-            <p class="muted">Define the writing task for students.</p>
-          </div>
-          <button class="btn btn-soft" (click)="cancelForm()">← Back</button>
-        </div>
-
-        <div class="form">
-          <div class="row">
-            <div class="col">
-              <label>Subject Title</label>
-              <input [(ngModel)]="subjectForm.tstitle" placeholder="Ex: Career Aspirations & Future Goals" />
+<div class="min-h-screen p-8 bg-[#EDF6F9]/50 animate-fade-in">
+    <!-- Header -->
+    <div class="mb-10 flex justify-between items-center">
+        <div class="flex items-center gap-5">
+            <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg>
             </div>
-            <div class="col">
-              <label>Time Limit (minutes)</label>
-              <input type="number" [(ngModel)]="subjectForm.time" placeholder="Ex: 20" min="1" max="120" />
+            <div>
+                <h1 class="text-3xl font-bold text-[#006D77] tracking-tight">Level Test Management</h1>
+                <p class="text-[#83C5BE] font-medium">Manage test subjects and monitor student assessments.</p>
             </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <label>Writing Prompt / Description</label>
-              <textarea rows="6" [(ngModel)]="subjectForm.description"
-                        placeholder="Enter the detailed instructions for the student..."></textarea>
-            </div>
-          </div>
-          <div class="actions">
-            <button class="btn btn-primary" (click)="saveSubject()"
-                    [disabled]="!subjectForm.tstitle || !subjectForm.description">
-              {{ isEdit ? 'Update Subject' : 'Save Subject' }}
-            </button>
-            <button class="btn btn-secondary" (click)="cancelForm()">Cancel</button>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========================= -->
-  <!-- SUBMISSIONS TAB           -->
-  <!-- ========================= -->
-  <div *ngIf="activeTab === 'submissions'">
-
-    <!-- Stats Row -->
-    <div class="stats-row" *ngIf="!loadingTentatives && allTentatives.length > 0">
-      <div class="stat-card">
-        <span class="stat-value">{{ allTentatives.length }}</span>
-        <span class="stat-label">Total Submissions</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-value pending-val">{{ pendingCount }}</span>
-        <span class="stat-label">Awaiting Correction</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-value corrected-val">{{ correctedCount }}</span>
-        <span class="stat-label">Corrected</span>
-      </div>
+        
+        <button *ngIf="activeTab === 'subjects'" (click)="openNewSubject()" class="group px-6 py-3 bg-[#006D77] text-white rounded-2xl hover:bg-[#83C5BE] transition-all duration-300 shadow-md flex items-center gap-3 font-semibold text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-500"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Test Subject
+        </button>
     </div>
 
-    <div *ngIf="loadingTentatives" class="loading-state card">Loading submissions...</div>
-
-    <div *ngIf="!loadingTentatives && allTentatives.length === 0" class="empty-state card">
-      No submissions yet. Students will appear here once they complete their tests.
+    <!-- Sub-Navigation Tabs -->
+    <div class="flex flex-wrap gap-2 mb-10 p-1.5 bg-white/50 backdrop-blur-md rounded-[24px] w-fit border border-white/50 shadow-sm">
+        <button (click)="activeTab = 'subjects'; mode = 'LIST'" 
+                [class]="'flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold transition-all duration-300 ' + (activeTab === 'subjects' ? 'bg-white text-[#006D77] shadow-sm' : 'text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Test Subjects
+        </button>
+        <button (click)="activeTab = 'submissions'; loadAllSubmissions()" 
+                [class]="'flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold transition-all duration-300 ' + (activeTab === 'submissions' ? 'bg-white text-[#006D77] shadow-sm' : 'text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Submissions
+            <span *ngIf="allTentatives.length > 0" class="ml-1 text-[10px] px-2 py-0.5 rounded-full bg-[#EDF6F9] text-[#006D77] font-extrabold">{{ allTentatives.length }}</span>
+        </button>
     </div>
 
-    <!-- Submissions Table -->
-    <div class="card" *ngIf="!loadingTentatives && allTentatives.length > 0" style="padding: 0; overflow: hidden;">
-      <table class="submissions-table">
-        <thead>
-          <tr>
-            <th>Subject</th>
-            <th>Student</th>
-            <th>Status</th>
-            <th>Score</th>
-            <th>Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          <ng-container *ngFor="let t of allTentatives">
-            <tr class="main-row" (click)="toggleExpand(t.id)" [class.expanded]="expandedId === t.id">
-              <td><strong>{{ t.subject?.title ?? '—' }}</strong></td>
-              <td>
-                <span class="student-name">{{ getStudentName(t.userId) }}</span>
-              </td>
-              <td>
-                <span [class]="'badge ' + getStatusClass(t.status)">{{ t.status ?? 'PENDING' }}</span>
-              </td>
-              <td>
-                <span class="score-pill" *ngIf="t.score !== null && t.score !== undefined">{{ t.score }}/100</span>
-                <span class="muted-text" *ngIf="t.score === null || t.score === undefined">—</span>
-              </td>
-              <td>
-                <span class="expand-icon">{{ expandedId === t.id ? '▲' : '▼' }}</span>
-              </td>
-            </tr>
-            <!-- Expanded Row -->
-            <tr *ngIf="expandedId === t.id" class="detail-row">
-              <td colspan="6">
-                <div class="detail-panel">
-                  <div class="detail-section">
-                    <h5>✍️ Student Response</h5>
-                    <div class="text-block">{{ t.paragraph ?? 'No response recorded.' }}</div>
-                  </div>
-                  <div class="detail-section" *ngIf="t.status === 'CORRECTED'">
-                    <h5>🖊️ Tutor Feedback</h5>
-                    <div class="text-block feedback">{{ t.tutorFeedback ?? 'No feedback provided.' }}</div>
-                    <div class="score-display">Final Score: <strong>{{ t.score }}/100</strong></div>
-                  </div>
-                  <div class="detail-section" *ngIf="t.status !== 'CORRECTED'">
-                    <p class="muted">This submission is awaiting evaluation by a tutor.</p>
-                  </div>
+    <!-- TAB: SUBJECTS -->
+    <div *ngIf="activeTab === 'subjects'" class="animate-fade-in">
+        
+        <div *ngIf="mode === 'LIST'">
+            <div class="flex justify-between items-center mb-6">
+                <div class="px-5 py-2 bg-[#EDF6F9] rounded-2xl text-[#006D77] font-bold text-sm">
+                    Total Subjects: {{ subjects.length }}
                 </div>
-              </td>
-            </tr>
-          </ng-container>
-        </tbody>
-      </table>
-    </div>
-  </div>
+                <button (click)="loadSubjects()" class="p-2 hover:bg-[#EDF6F9] text-[#006D77] rounded-xl transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                </button>
+            </div>
 
+            <div *ngIf="loadingSubjects" class="space-y-4">
+                <div *ngFor="let i of [1,2,3]" class="h-20 bg-white rounded-[20px] animate-pulse border border-gray-50 shadow-sm"></div>
+            </div>
+
+            <div *ngIf="!loadingSubjects && subjects.length === 0" class="py-24 text-center">
+                <div class="flex justify-center mb-8 text-[#83C5BE] opacity-40">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </div>
+                <h3 class="text-2xl font-bold text-[#006D77]">No test subjects found</h3>
+                <p class="text-[#83C5BE] mt-2 max-w-sm mx-auto font-medium">Create your first subject to get started.</p>
+                <button (click)="openNewSubject()" class="mt-8 px-8 py-3 border-2 border-[#006D77] text-[#006D77] rounded-2xl hover:bg-[#006D77] hover:text-white transition-all font-bold">
+                    Create Subject
+                </button>
+            </div>
+
+            <!-- Grid of Subjects -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" *ngIf="!loadingSubjects && subjects.length > 0">
+                <div *ngFor="let s of subjects" class="group bg-white rounded-[24px] p-6 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.06)] transition-all duration-500 flex flex-col">
+                    <div class="mb-4">
+                        <span class="px-3 py-1 bg-[#EDF6F9] rounded-lg text-[#006D77] font-bold text-xs">ID #{{ s.id }}</span>
+                    </div>
+                    <h3 class="font-bold text-[#006D77] text-lg leading-tight mb-2">{{ s.title }}</h3>
+                    <p class="text-sm text-gray-500 line-clamp-3 mb-6 flex-1">{{ s.description }}</p>
+                    
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-50">
+                        <div class="flex items-center gap-2 text-xs font-bold text-[#E29578]">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            {{ s.time }} min
+                        </div>
+                        <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                            <button (click)="openEditSubject(s)" class="p-2 hover:bg-[#EDF6F9] text-[#006D77] rounded-xl transition-all" title="Edit">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                            </button>
+                            <button (click)="deleteSubject(s.id!)" class="p-2 hover:bg-[#FFDDD2] text-[#E29578] rounded-xl transition-all" title="Delete">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORM MODAL (Overlaid when mode === 'FORM') -->
+        <div *ngIf="mode === 'FORM'" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#006D77]/20 backdrop-blur-sm animate-fade-in">
+            <div class="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl overflow-hidden border border-white/20 animate-scale-up">
+                <!-- Modal Header -->
+                <div class="p-8 bg-[#EDF6F9] flex justify-between items-center border-b border-gray-100">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-[#006D77] shadow-lg flex items-center justify-center text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-[#006D77]">{{ isEdit ? 'Edit Test Subject' : 'Create Test Subject' }}</h2>
+                            <p class="text-[#83C5BE] font-medium text-sm">Define the writing task</p>
+                        </div>
+                    </div>
+                    <button (click)="cancelForm()" class="p-3 hover:bg-white rounded-2xl transition-all text-[#006D77]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+
+                <!-- Modal Content -->
+                <div class="p-8 space-y-6">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Subject Title</label>
+                            <input [(ngModel)]="subjectForm.tstitle" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Ex: Career Aspirations & Future Goals">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Time Limit (mins)</label>
+                            <input type="number" [(ngModel)]="subjectForm.time" min="1" max="120" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Ex: 20">
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Writing Prompt / Description</label>
+                        <textarea rows="6" [(ngModel)]="subjectForm.description" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium resize-none" placeholder="Enter detailed instructions..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="p-8 bg-gray-50/50 flex gap-4">
+                    <button (click)="cancelForm()" class="flex-1 py-4 bg-white border-2 border-[#EDF6F9] text-[#006D77] rounded-2xl font-bold hover:bg-[#EDF6F9] transition-all">Cancel</button>
+                    <button (click)="saveSubject()" [disabled]="!subjectForm.tstitle || !subjectForm.description" class="flex-1 py-4 bg-[#006D77] disabled:bg-gray-200 text-white rounded-2xl font-bold shadow-lg hover:bg-[#83C5BE] transition-all">
+                        {{ isEdit ? 'Update Subject' : 'Save Subject' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TAB: SUBMISSIONS -->
+    <div *ngIf="activeTab === 'submissions'" class="animate-fade-in">
+        
+        <!-- Stats Row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" *ngIf="!loadingTentatives && allTentatives.length > 0">
+            <div class="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 flex flex-col justify-center">
+                <p class="text-[10px] uppercase tracking-widest font-bold text-[#83C5BE] mb-2">Total Submissions</p>
+                <div class="text-3xl font-black text-[#006D77]">{{ allTentatives.length }}</div>
+            </div>
+            <div class="bg-[#FFDDD2] rounded-[24px] p-6 shadow-sm flex flex-col justify-center">
+                <p class="text-[10px] uppercase tracking-widest font-bold text-[#E29578] mb-2">Awaiting Correction</p>
+                <div class="text-3xl font-black text-[#E29578]">{{ pendingCount }}</div>
+            </div>
+            <div class="bg-green-50 rounded-[24px] p-6 shadow-sm flex flex-col justify-center">
+                <p class="text-[10px] uppercase tracking-widest font-bold text-green-600 mb-2">Corrected</p>
+                <div class="text-3xl font-black text-green-700">{{ correctedCount }}</div>
+            </div>
+        </div>
+
+        <div *ngIf="loadingTentatives" class="space-y-4">
+            <div *ngFor="let i of [1,2,3]" class="h-20 bg-white rounded-[20px] animate-pulse border border-gray-50 shadow-sm"></div>
+        </div>
+
+        <div *ngIf="!loadingTentatives && allTentatives.length === 0" class="py-24 text-center">
+            <div class="flex justify-center mb-8 text-[#83C5BE] opacity-40">
+                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <h3 class="text-2xl font-bold text-[#006D77]">No submissions yet</h3>
+            <p class="text-[#83C5BE] mt-2 max-w-sm mx-auto font-medium">Students will appear here once they complete their tests.</p>
+        </div>
+
+        <!-- Table -->
+        <div *ngIf="!loadingTentatives && allTentatives.length > 0" class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-gray-50/50 border-b border-gray-100">
+                            <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Subject</th>
+                            <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Student</th>
+                            <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Status</th>
+                            <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Score</th>
+                            <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-right">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        <ng-container *ngFor="let t of allTentatives">
+                            <!-- Main Row -->
+                            <tr class="hover:bg-[#EDF6F9]/30 transition-all duration-200 cursor-pointer" (click)="toggleExpand(t.id)" [ngClass]="{'bg-[#EDF6F9]/50': expandedId === t.id}">
+                                <td class="px-8 py-5">
+                                    <div class="font-bold text-[#006D77] text-sm">{{ t.subject?.title || '—' }}</div>
+                                </td>
+                                <td class="px-8 py-5">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-[#83C5BE]/20 text-[#006D77] flex items-center justify-center font-bold text-xs">
+                                            {{ getStudentName(t.userId).charAt(0) | uppercase }}
+                                        </div>
+                                        <div class="font-bold text-gray-700 text-sm">{{ getStudentName(t.userId) }}</div>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-5 text-center">
+                                    <span *ngIf="t.status === 'CORRECTED'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-green-50 text-green-600 border border-green-100">Corrected</span>
+                                    <span *ngIf="t.status === 'PENDING'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#FFDDD2] text-[#E29578] border border-[#E29578]/20">Pending</span>
+                                    <span *ngIf="t.status !== 'CORRECTED' && t.status !== 'PENDING'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-gray-100 text-gray-600 border border-gray-200">{{ t.status || '—' }}</span>
+                                </td>
+                                <td class="px-8 py-5 text-center">
+                                    <span *ngIf="t.score !== null && t.score !== undefined" class="font-black text-[#006D77]">{{ t.score }}/100</span>
+                                    <span *ngIf="t.score === null || t.score === undefined" class="text-gray-400 font-bold">—</span>
+                                </td>
+                                <td class="px-8 py-5 text-right text-[#83C5BE]">
+                                    <svg *ngIf="expandedId !== t.id" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block"><path d="m6 9 6 6 6-6"/></svg>
+                                    <svg *ngIf="expandedId === t.id" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block"><path d="m18 15-6-6-6 6"/></svg>
+                                </td>
+                            </tr>
+                            <!-- Expanded Detail Row -->
+                            <tr *ngIf="expandedId === t.id" class="bg-[#EDF6F9]/10">
+                                <td colspan="5" class="p-8">
+                                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col md:flex-row">
+                                        <!-- Student Response -->
+                                        <div class="flex-1 p-6 border-b md:border-b-0 md:border-r border-gray-100">
+                                            <h5 class="text-[11px] uppercase tracking-widest font-black text-[#83C5BE] mb-4 flex items-center gap-2">
+                                                <span>✍️</span> Student Response
+                                            </h5>
+                                            <div class="p-4 bg-gray-50 rounded-xl text-sm text-gray-700 leading-relaxed font-medium whitespace-pre-wrap">
+                                                {{ t.paragraph || 'No response recorded.' }}
+                                            </div>
+                                        </div>
+                                        <!-- Feedback & Score -->
+                                        <div class="flex-1 p-6 bg-[#EDF6F9]/30">
+                                            <div *ngIf="t.status === 'CORRECTED'">
+                                                <h5 class="text-[11px] uppercase tracking-widest font-black text-[#83C5BE] mb-4 flex items-center gap-2">
+                                                    <span>🖊️</span> Tutor Feedback
+                                                </h5>
+                                                <div class="p-4 bg-white rounded-xl text-sm text-[#006D77] leading-relaxed font-bold border border-[#83C5BE]/20 mb-4 whitespace-pre-wrap">
+                                                    {{ t.tutorFeedback || 'No feedback provided.' }}
+                                                </div>
+                                                <div class="flex justify-between items-center bg-white px-5 py-3 rounded-xl border border-gray-100 shadow-sm">
+                                                    <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Final Score</span>
+                                                    <span class="text-xl font-black text-green-600">{{ t.score }}/100</span>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="t.status !== 'CORRECTED'" class="h-full flex flex-col items-center justify-center text-center p-6">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#E29578" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mb-4 opacity-50"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                                <p class="text-sm font-bold text-[#E29578]">Awaiting Evaluation</p>
+                                                <p class="text-xs text-gray-500 mt-2">A tutor needs to grade this submission.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
 </div>

@@ -7,33 +7,26 @@ pipeline {
     }
 
     parameters {
-        // IMAGE_TAG est passé par le CI via build job 'Trigger CD'
-        string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Tag de l\'image Docker à déployer')
+        string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Tag de l\'image Docker à déployer (passé par le CI)')
     }
 
     environment {
-        // Chemins projet
         BACKEND_PATH            = 'Back-PIDEV-4SAE7-2026-DEVUNITY'
         SOCIAL_SERVICE_PATH     = "${BACKEND_PATH}/Social_Interaction_Service"
 
-        // Docker
         DOCKER_IMAGE            = 'hbouthayna/social-interaction-service'
 
-        // Helm / Kubernetes
         HELM_CHART_PATH         = "${SOCIAL_SERVICE_PATH}/charts/social-interaction"
         KUBE_CREDENTIALS_ID     = 'kubeconfig'
         NAMESPACE               = 'dev-unity'
 
-        // Slack
         SLACK_CHANNEL           = '#dev-unity-cd'
-
-        // JMeter  ─ chemin corrigé (plus /usr/bin/jmeter introuvable)
         JMETER_PATH             = '/opt/apache-jmeter/bin/jmeter'
     }
 
+
     stages {
 
-        // ── ÉTAPE 1 : Checkout (manquait totalement dans la version originale) ──
         stage('Checkout') {
             steps {
                 git branch: 'main',
@@ -42,7 +35,27 @@ pipeline {
             }
         }
 
-        // ── ÉTAPE 2 : Déploiement Helm avec image.tag paramétrisé ──
+        stage('Docker Push') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'docker_token',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
+                        sh """
+                            echo "\$DOCKER_PASS" | docker login -u "\$DOCKER_USER" --password-stdin
+                            docker push ${DOCKER_IMAGE}:${params.IMAGE_TAG}
+                            docker tag ${DOCKER_IMAGE}:${params.IMAGE_TAG} ${DOCKER_IMAGE}:latest
+                            docker push ${DOCKER_IMAGE}:latest
+                            docker logout
+                        """
+                    }
+                }
+            }
+        }
+
+
         stage('Helm Deploy') {
             steps {
                 script {
@@ -63,7 +76,8 @@ pipeline {
                                 --set config.dbUsername="\${DB_USER}" \\
                                 --set config.dbPassword="\${DB_PASS}" \\
                                 --set config.elasticsearchPassword="\${ES_PASS}" \\
-                                --namespace ${NAMESPACE} --create-namespace
+                                --namespace ${NAMESPACE} --create-namespace \\
+                                --atomic --timeout 10m
                             """
                         }
                     }
@@ -71,12 +85,47 @@ pipeline {
             }
         }
 
-        // ── ÉTAPE 3 : Attendre + Rollback automatique si échec ──
+
+        stage('kubectl apply') {
+            steps {
+                script {
+                    withKubeConfig([credentialsId: "${KUBE_CREDENTIALS_ID}"]) {
+                        withCredentials([
+                            usernamePassword(credentialsId: 'db-credentials',
+                                            usernameVariable: 'DB_USER',
+                                            passwordVariable: 'DB_PASS'),
+                            string(credentialsId: 'elasticsearch-password',
+                                   variable: 'ES_PASS')
+                        ]) {
+                            sh """
+                                helm template social-interaction ${HELM_CHART_PATH} \\
+                                --set image.repository=${DOCKER_IMAGE} \\
+                                --set image.tag=${params.IMAGE_TAG} \\
+                                --set image.pullPolicy=Always \\
+                                --set config.dbUsername="\${DB_USER}" \\
+                                --set config.dbPassword="\${DB_PASS}" \\
+                                --set config.elasticsearchPassword="\${ES_PASS}" \\
+                                --namespace ${NAMESPACE} \\
+                                > /tmp/social-interaction-manifests.yaml
+                            """
+
+                            sh """
+                                kubectl apply -f /tmp/social-interaction-manifests.yaml \\
+                                --namespace ${NAMESPACE}
+                            """
+
+                            sh "rm -f /tmp/social-interaction-manifests.yaml"
+                        }
+                    }
+                }
+            }
+        }
+
+
         stage('Wait & Verify') {
             steps {
                 script {
                     withKubeConfig([credentialsId: "${KUBE_CREDENTIALS_ID}"]) {
-                        // Récupérer le nom réel du Deployment généré par Helm
                         def deployName = sh(
                             script: "kubectl get deployment -n ${NAMESPACE} -l 'app.kubernetes.io/instance=social-interaction' -o jsonpath='{.items[0].metadata.name}'",
                             returnStdout: true
@@ -95,7 +144,7 @@ pipeline {
                                 echo "=== DESCRIBE PODS ==="
                                 kubectl describe pod -n ${NAMESPACE} -l 'app.kubernetes.io/instance=social-interaction' || true
                                 echo "=== LOGS POD (dernières 100 lignes) ==="
-                                kubectl logs -n ${NAMESPACE} -l 'app.kubernetes.io/instance=social-interaction' --tail=100 --previous || \
+                                kubectl logs -n ${NAMESPACE} -l 'app.kubernetes.io/instance=social-interaction' --tail=100 --previous || \\
                                 kubectl logs -n ${NAMESPACE} -l 'app.kubernetes.io/instance=social-interaction' --tail=100 || true
                                 echo "=== EVENTS NAMESPACE ==="
                                 kubectl get events -n ${NAMESPACE} --sort-by='.lastTimestamp' | tail -20 || true
@@ -109,16 +158,23 @@ pipeline {
             }
         }
 
-        // ── ÉTAPE 4 : JMeter avec URL dynamique vers le service K8s ──
+
         stage('JMeter Performance Tests') {
             steps {
                 script {
-                    dir("${SOCIAL_SERVICE_PATH}") {
-                        sh """
-                            ${JMETER_PATH} -n -t performance-test.jmx -l results.jtl \\
-                            -Jtarget_host=social-interaction.${NAMESPACE}.svc.cluster.local \\
-                            -Jtarget_port=8085
-                        """
+                    withKubeConfig([credentialsId: "${KUBE_CREDENTIALS_ID}"]) {
+                        sh "kubectl port-forward svc/social-interaction -n ${NAMESPACE} 8085:8085 &"
+                        sh "sleep 5"
+
+                        dir("${SOCIAL_SERVICE_PATH}") {
+                            sh """
+                                ${JMETER_PATH} -n -t performance-test.jmx -l results.jtl \\
+                                -Jtarget_host=localhost \\
+                                -Jtarget_port=8085
+                            """
+                        }
+
+                        sh "pkill -f 'kubectl port-forward' || true"
                     }
                 }
             }
@@ -130,12 +186,11 @@ pipeline {
             }
         }
 
-        // ── ÉTAPE 5 : Vérification Prometheus (fonctionnelle) ──
+
         stage('Prometheus/Grafana') {
             steps {
                 script {
                     withKubeConfig([credentialsId: "${KUBE_CREDENTIALS_ID}"]) {
-                        // Vérifier que les métriques Actuator sont accessibles depuis le cluster
                         def podName = sh(
                             script: "kubectl get pod -n ${NAMESPACE} -l 'app.kubernetes.io/instance=social-interaction' -o jsonpath='{.items[0].metadata.name}'",
                             returnStdout: true
@@ -157,7 +212,7 @@ pipeline {
             }
         }
 
-        // ── ÉTAPE 6 : Notification Slack ──
+
         stage('Slack Notify') {
             steps {
                 script {

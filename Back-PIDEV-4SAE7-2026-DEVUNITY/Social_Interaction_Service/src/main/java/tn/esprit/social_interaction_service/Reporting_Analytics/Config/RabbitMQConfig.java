@@ -13,6 +13,10 @@ public class RabbitMQConfig {
 
     public static final String COURSE_QUEUE = "course.queue";
     public static final String CHALLENGE_QUEUE = "challenge.queue";
+    public static final String CERTIFICATION_QUEUE = "certification.queue";
+    public static final String EVENT_QUEUE = "event.queue";
+    public static final String BOOK_QUEUE = "book.queue";
+    public static final String CLUB_QUEUE = "club.queue";
 
     @Bean
     public Queue courseQueue() {
@@ -22,6 +26,26 @@ public class RabbitMQConfig {
     @Bean
     public Queue challengeQueue() {
         return new Queue(CHALLENGE_QUEUE, true);
+    }
+
+    @Bean
+    public Queue certificationQueue() {
+        return new Queue(CERTIFICATION_QUEUE, true);
+    }
+
+    @Bean
+    public Queue eventQueue() {
+        return new Queue(EVENT_QUEUE, true);
+    }
+
+    @Bean
+    public Queue bookQueue() {
+        return new Queue(BOOK_QUEUE, true);
+    }
+
+    @Bean
+    public Queue clubQueue() {
+        return new Queue(CLUB_QUEUE, true);
     }
 
     @Bean

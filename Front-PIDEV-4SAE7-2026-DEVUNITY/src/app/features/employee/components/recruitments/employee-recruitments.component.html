@@ -1,44 +1,176 @@
-<!-- employee-recruitments.component.html -->
-<div class="re-page">
+<!-- EMPLOYEE RECRUITMENTS - PREMIUM DESIGN SYSTEM -->
+<div class="recruitments-container">
+  
+  <header class="recruitments-header">
+    <div class="header-content">
+      <h1 class="main-title">Open <span>Recruitments</span></h1>
+      <p class="subtitle">Discover available positions that match your profile and expertise.</p>
+    </div>
+    <button class="refresh-btn" (click)="refresh()" [disabled]="loading">
+      <svg [class.spin]="loading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+      <span>Sync Positions</span>
+    </button>
+  </header>
 
-  <div class="re-header">
-    <div>
-      <h1 class="re-title">💼 Open Recruitments</h1>
-      <p class="re-subtitle">Browse available positions and apply to the ones that match your profile.</p>
-    </div>
-    <div class="re-toolbar">
-      <label>Filter Status</label>
-      <select [(ngModel)]="filterStatus" (ngModelChange)="loadRecruitments()" class="re-select">
-        <option value="OPEN">Open</option>
-        <option value="CLOSED">Closed</option>
-        <option value="">All</option>
-      </select>
-    </div>
+  <!-- FILTER SECTION -->
+  <div class="filter-section">
+    <label class="filter-label">Filter Status</label>
+    <select [(ngModel)]="filterStatus" (ngModelChange)="loadRecruitments()" class="modern-select">
+      <option value="OPEN">Open</option>
+      <option value="CLOSED">Closed</option>
+      <option value="">All Statuses</option>
+    </select>
   </div>
 
-  <div *ngIf="loading" class="re-loading">Loading positions…</div>
-
-  <div *ngIf="!loading && recruitments.length === 0" class="re-empty">
-    No open positions at the moment. Check back later!
+  <!-- LOADING STATE -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loader"></div>
+    <p>Loading available positions...</p>
   </div>
 
-  <div class="re-grid">
-    <div *ngFor="let r of recruitments" class="re-card">
-      <div class="re-card-body">
-        <div class="re-pos-title">{{ r.positionTitle }}</div>
-        <div class="re-dept">{{ r.department }}</div>
-        <p style="font-size: 13px; opacity: 0.6; line-height: 1.4; margin-bottom: 0;">
-          Join our team and help us build the future of education together.
-        </p>
+  <!-- RECRUITMENTS GRID -->
+  <div class="recruitments-grid" *ngIf="recruitments.length > 0 && !loading">
+    <div class="recruitment-card" *ngFor="let r of recruitments">
+      
+      <div class="card-wave"></div>
+      
+      <div class="card-content">
+        <h3 class="recruitment-title">{{ r.positionTitle }}</h3>
+        <p class="recruitment-desc">{{ r.department }} • Full-time position</p>
+
+        <div class="recruitment-meta">
+          <div class="meta-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="11" r="3"></circle></svg>
+            <span>{{ r.department }}</span>
+          </div>
+          <div class="meta-item" [ngClass]="{
+            'status-open': r.status === 'OPEN',
+            'status-closed': r.status === 'CLOSED' || r.status === 'CANCELLED'
+          }">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+            <span>{{ r.status ?? 'OPEN' }}</span>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button class="details-btn" (click)="openRecrutmentDetails(r)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>Details</span>
+          </button>
+          <button class="action-btn" (click)="openApplyModal(r)" [disabled]="r.status !== 'OPEN'">
+            <span>Apply Now</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
       </div>
-      <div class="re-card-foot">
-        <span class="re-pill" [ngClass]="r.status === 'OPEN' ? 're-pill--open' : 're-pill--closed'">
-          {{ r.status || 'OPEN' }}
-        </span>
-        <button class="re-btn re-btn--primary" (click)="applyTo(r)" [disabled]="r.status !== 'OPEN'">
-          📨 Apply Now
+    </div>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div *ngIf="!loading && recruitments.length === 0" class="empty-state">
+    <div class="empty-icon">🎯</div>
+    <div class="empty-title">No Positions Available</div>
+    <div class="empty-desc">There are no {{ filterStatus ? filterStatus.toLowerCase() : '' }} positions at the moment. Check back later for new opportunities!</div>
+    <button class="apply-action-btn" (click)="filterStatus = ''; loadRecruitments()">View All Statuses</button>
+  </div>
+
+  <!-- RECRUITMENT DETAILS MODAL -->
+  <div class="modal-overlay" *ngIf="showRecruitmentDetails && selectedRecruitment" (click)="closeRecrutmentDetails()">
+    <div class="details-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 class="modal-title">Position Details</h2>
+          <p class="modal-subtitle">{{ selectedRecruitment.positionTitle }}</p>
+        </div>
+        <button class="close-modal-btn" (click)="closeRecrutmentDetails()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
+
+      <div class="modal-body scrollable">
+        <div class="detail-section">
+          <label class="section-label">Position Information</label>
+          <div class="info-box">
+            <div class="info-item">
+              <span class="info-key">Position Title:</span>
+              <span class="info-value">{{ selectedRecruitment.positionTitle }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-key">Department:</span>
+              <span class="info-value">{{ selectedRecruitment.department }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-key">Status:</span>
+              <span class="info-value badge" [ngClass]="{
+                'badge-open': selectedRecruitment.status === 'OPEN',
+                'badge-closed': selectedRecruitment.status === 'CLOSED'
+              }">{{ selectedRecruitment.status ?? 'OPEN' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section" *ngIf="selectedRecruitment.openedAt">
+          <label class="section-label">Timeline</label>
+          <div class="info-box">
+            <div class="info-item">
+              <span class="info-key">Opened:</span>
+              <span class="info-value">{{ selectedRecruitment.openedAt | date:'medium' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <label class="section-label">About This Role</label>
+          <div class="description-box">
+            Join our {{ selectedRecruitment.department }} team and help us build the future of education together. We're looking for talented individuals who are passionate about making a difference.
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="modal-btn-secondary" (click)="closeRecrutmentDetails()">Close</button>
+        <button class="modal-btn-primary" (click)="proceedToApply()" [disabled]="selectedRecruitment.status !== 'OPEN'">
+          <span>Apply for Position</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLY MODAL -->
+  <div class="modal-overlay" *ngIf="showApplyModal && selectedRecruitmentForApply" (click)="closeApplyModal()">
+    <div class="apply-modal" (click)="$event.stopPropagation()">
+      
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 class="modal-title">Apply Now</h2>
+          <p class="modal-subtitle">{{ selectedRecruitmentForApply.positionTitle }}</p>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-intro">To apply for this position, you'll be redirected to complete your application with your cover letter and CV.</p>
+        
+        <div class="position-summary">
+          <div class="summary-item">
+            <span class="summary-label">Position</span>
+            <span class="summary-value">{{ selectedRecruitmentForApply.positionTitle }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Department</span>
+            <span class="summary-value">{{ selectedRecruitmentForApply.department }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="modal-btn-secondary" (click)="closeApplyModal()">Cancel</button>
+        <button class="modal-btn-primary" (click)="proceedToApplication()">
+          <span>Continue to Application</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
+
     </div>
   </div>
 

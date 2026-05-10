@@ -11,13 +11,20 @@ import { Course } from '../../../../../core/models/course.model';
   styleUrls: ['./admin-enrollments.component.css']
 })
 export class AdminEnrollmentsComponent implements OnInit {
-
+  pageTitle: string = 'Enrollments Management';
+  pageIcon: string = '🎓';
   enrollments: Enrollment[] = [];
   courses: Course[] = [];
   isLoading = true;
   error: string | null = null;
   successMessage: string | null = null;
 
+  // Filters & Search
+  searchTerm: string = '';
+  filterCourseId: number | null = null;
+
+  selectedEnrollment: Enrollment | null = null;
+  isViewModalOpen: boolean = false;
   showForm = false;
   isSaving = false;
 
@@ -26,9 +33,6 @@ export class AdminEnrollmentsComponent implements OnInit {
   newCourseId: number | null = null;
   userEmailById: Record<number, string> = {};
 
-  // Filter
-  filterCourseId: number | null = null;
-
   constructor(
     private enrollmentService: EnrollmentService,
     private courseService: CourseService,
@@ -36,6 +40,11 @@ export class AdminEnrollmentsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void { this.load(); }
+
+  viewEnrollment(e: Enrollment): void {
+    this.selectedEnrollment = e;
+    this.isViewModalOpen = true;
+  }
 
   load(): void {
     this.isLoading = true;
@@ -117,7 +126,8 @@ export class AdminEnrollmentsComponent implements OnInit {
     });
   }
 
-  getCourseName(courseId: number): string {
+  getCourseName(courseId: number | undefined): string {
+    if (!courseId) return '—';
     return this.courses.find(c => c.courseId === courseId)?.title ?? '—';
   }
 

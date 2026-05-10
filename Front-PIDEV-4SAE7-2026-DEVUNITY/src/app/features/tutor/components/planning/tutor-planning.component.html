@@ -1,107 +1,200 @@
-<div class="p-8 space-y-6">
-    <div class="rounded-2xl bg-gradient-to-r from-[#006D77] to-[#83C5BE] p-7 text-white shadow-lg">
-        <h1 class="text-3xl font-bold heading-font">📅 My Planning</h1>
-        <p class="text-white/85 mt-1">All schedules allocated to you, filterable by week.</p>
-        <div class="mt-4">
-            <span class="inline-flex px-3 py-1 rounded-full text-sm bg-white/20">Tutor ID: {{ tutorId || '—' }}</span>
+<div class="planning-container">
+  
+  <header class="planning-header">
+    <div class="header-content">
+      <h1 class="main-title">My <span>Planning</span></h1>
+      <p class="subtitle">All your teaching sessions and schedules in one place.</p>
+    </div>
+    <button class="refresh-btn" (click)="loadTutorSchedules()" [disabled]="isLoading">
+      <svg [class.spin]="isLoading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+      <span>Sync Schedule</span>
+    </button>
+  </header>
+
+  <div *ngIf="error" class="error-banner">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <span>{{ error }}</span>
+  </div>
+
+  <div *ngIf="complaintSuccess" class="success-banner">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span>{{ complaintSuccess }}</span>
+  </div>
+
+  <!-- FILTER CONTROLS -->
+  <div class="filter-section">
+    <div class="filter-group">
+      <label class="filter-label">Week Start (Monday)</label>
+      <input type="date" [(ngModel)]="weekStart" (change)="applyWeekFilter()" class="filter-input" />
+    </div>
+    <div class="stats-info">
+      {{ weekSchedules.length }} sessions this week
+    </div>
+  </div>
+
+  <!-- LOADING STATE -->
+  <div *ngIf="isLoading && !weekSchedules.length" class="loading-state">
+    <div class="loader"></div>
+    <p>Loading your schedule...</p>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div *ngIf="!isLoading && weekSchedules.length === 0" class="empty-state">
+    <div class="empty-state-icon">🗓️</div>
+    <p class="empty-state-text">No sessions scheduled for this week</p>
+  </div>
+
+  <!-- PLANNING GRID -->
+  <div class="planning-grid" *ngIf="weekSchedules.length && !isLoading">
+    <div class="session-card" *ngFor="let session of weekSchedules">
+      
+      <div class="card-wave"></div>
+      
+      <div class="card-content">
+        <h3 class="session-title">{{ session.title }}</h3>
+        <p class="session-desc">{{ session.room?.name ? 'Room ' + session.room?.name + ' - ' : '' }}{{ session.classEntity?.name || 'No class specified' }}</p>
+
+        <div class="session-meta">
+          <div class="meta-item type">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>{{ formatDate(session.startTime) }}</span>
+          </div>
+          <div class="meta-item room">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0-1.1-.9-2-2-2h-3V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3h3c1.1 0 2-.9 2-2v-4z"></path><line x1="8" y1="7" x2="8" y2="17"></line><line x1="14" y1="7" x2="14" y2="17"></line></svg>
+            <span>{{ session.room?.name || 'No room' }}</span>
+          </div>
+          <div class="meta-item class">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            <span>{{ session.classEntity?.name || 'No class' }}</span>
+          </div>
         </div>
-    </div>
 
-    <div *ngIf="error" class="px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-medium">
-        ❌ {{ error }}
-    </div>
-
-    <div *ngIf="complaintSuccess" class="px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm font-medium">
-        ✅ {{ complaintSuccess }}
-    </div>
-
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-wrap gap-3 items-end">
-        <div>
-            <label class="text-xs font-semibold text-gray-500">Week Start (Monday)</label>
-            <input type="date" [(ngModel)]="weekStart" (change)="applyWeekFilter()"
-                class="mt-1 px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none" />
+        <div class="card-actions">
+          <button class="view-btn" (click)="openSessionDetails(session)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>Details</span>
+          </button>
+          <button class="report-btn" (click)="openComplaintModal(session)">
+            <span>Report Issue</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <button (click)="loadTutorSchedules()"
-            class="px-4 py-2 bg-[#006D77] text-white text-sm font-semibold rounded-lg hover:bg-[#005962] transition-colors">
-            Refresh
+  <!-- SESSION DETAILS MODAL -->
+  <div class="modal-overlay" *ngIf="showDetailsModal && selectedScheduleForDetails" (click)="closeSessionDetails()">
+    <div class="details-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 class="modal-title">Session Details</h2>
+          <p class="modal-subtitle">{{ selectedScheduleForDetails.title }}</p>
+        </div>
+        <button class="close-modal-alt" (click)="closeSessionDetails()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
+      </div>
 
-        <p class="text-sm text-gray-500 ml-auto">{{ weekSchedules.length }} schedule(s) this week</p>
-    </div>
-
-    <div *ngIf="isLoading" class="flex justify-center py-16">
-        <div class="w-10 h-10 border-4 border-[#006D77]/30 border-t-[#006D77] rounded-full animate-spin"></div>
-    </div>
-
-    <div *ngIf="!isLoading && weekSchedules.length === 0" class="bg-white border border-gray-100 rounded-2xl p-14 text-center text-gray-400">
-        <div class="text-5xl mb-3">🗓️</div>
-        <p class="font-semibold">No schedules found for this week.</p>
-    </div>
-
-    <div *ngIf="!isLoading && weekSchedules.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        <div *ngFor="let s of weekSchedules" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
-            <div class="flex items-start justify-between gap-2">
-                <h3 class="font-bold text-gray-800">{{ s.title }}</h3>
-                <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">{{ s.type }}</span>
+      <div class="modal-body">
+        <div class="session-details">
+          <div class="detail-row">
+            <div class="detail-icon">📅</div>
+            <div class="detail-content">
+              <div class="detail-label">Start Time</div>
+              <div class="detail-value">{{ formatDate(selectedScheduleForDetails.startTime) }}</div>
             </div>
+          </div>
 
-            <div class="text-sm text-gray-600 space-y-1">
-                <p>🕐 {{ formatDate(s.startTime) }}</p>
-                <p>➡️ {{ formatDate(s.endTime) }}</p>
+          <div class="detail-row">
+            <div class="detail-icon">⏱️</div>
+            <div class="detail-content">
+              <div class="detail-label">End Time</div>
+              <div class="detail-value">{{ formatDate(selectedScheduleForDetails.endTime) }}</div>
             </div>
+          </div>
 
-            <div class="flex flex-wrap gap-2 text-xs">
-                <span class="px-2 py-1 rounded-lg bg-indigo-50 text-indigo-700">📘 {{ getCourseTitle(s.courseId) }}</span>
-                <span class="px-2 py-1 rounded-lg bg-orange-50 text-orange-700">🚪 Room {{ s.room?.name || '-' }}</span>
-                <span class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700">🏫 Class {{ s.classEntity?.name || '-' }}</span>
+          <div class="detail-row">
+            <div class="detail-icon">🏫</div>
+            <div class="detail-content">
+              <div class="detail-label">Class</div>
+              <div class="detail-value">{{ selectedScheduleForDetails.classEntity?.name || 'No class' }}</div>
             </div>
+          </div>
 
-            <div class="pt-1 flex justify-end">
-                <button (click)="openComplaintModal(s)"
-                    class="text-xs text-amber-700 bg-amber-100 px-3 py-1 rounded-lg font-semibold hover:bg-amber-200 transition-colors">
-                    Report Complaint
-                </button>
+          <div class="detail-row">
+            <div class="detail-icon">🚪</div>
+            <div class="detail-content">
+              <div class="detail-label">Room</div>
+              <div class="detail-value">{{ selectedScheduleForDetails.room?.name || 'No room assigned' }}</div>
             </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-icon">📘</div>
+            <div class="detail-content">
+              <div class="detail-label">Course</div>
+              <div class="detail-value">{{ getCourseTitle(selectedScheduleForDetails.courseId) }}</div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="cancel-modal-btn" (click)="closeSessionDetails()">Close</button>
+      </div>
     </div>
+  </div>
 
-    <div *ngIf="showComplaintModal" class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-        <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl p-6 space-y-4">
-            <div class="flex items-start justify-between gap-4">
-                <div>
-                    <h3 class="text-lg font-bold text-gray-800">Report Room Complaint</h3>
-                    <p class="text-sm text-gray-500 mt-1">{{ selectedScheduleForComplaint?.title }}</p>
-                </div>
-                <button (click)="closeComplaintModal()" class="text-gray-400 hover:text-gray-600">✕</button>
-            </div>
-
-            <div *ngIf="complaintError" class="px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                {{ complaintError }}
-            </div>
-
-            <div>
-                <label class="text-xs font-semibold text-gray-600">Subject</label>
-                <input type="text" [(ngModel)]="complaintSubject"
-                    class="mt-1 w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none" />
-            </div>
-
-            <div>
-                <label class="text-xs font-semibold text-gray-600">Description</label>
-                <textarea rows="4" [(ngModel)]="complaintDescription"
-                    class="mt-1 w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-[#006D77]/30 outline-none"></textarea>
-            </div>
-
-            <div class="flex justify-end gap-2 pt-1">
-                <button (click)="closeComplaintModal()"
-                    class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-200 transition-colors">
-                    Cancel
-                </button>
-                <button (click)="submitComplaint()" [disabled]="isComplaintSubmitting"
-                    class="px-4 py-2 bg-[#006D77] text-white text-sm font-semibold rounded-lg hover:bg-[#005962] disabled:opacity-60 transition-colors">
-                    {{ isComplaintSubmitting ? 'Submitting...' : 'Submit Complaint' }}
-                </button>
-            </div>
+  <!-- COMPLAINT MODAL -->
+  <div class="modal-overlay" *ngIf="showComplaintModal && selectedScheduleForComplaint" (click)="closeComplaintModal()">
+    <div class="complaint-modal" (click)="$event.stopPropagation()">
+      
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 class="modal-title">Report Issue</h2>
+          <p class="modal-subtitle">Session: <strong>{{ selectedScheduleForComplaint.title }}</strong></p>
         </div>
+        <button class="close-modal-alt" (click)="closeComplaintModal()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div *ngIf="complaintError" style="background: #FFDDD2; color: #E29578; padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; font-size: 13px; font-weight: 700;">
+          {{ complaintError }}
+        </div>
+
+        <div class="form-group">
+          <label class="input-label">Subject</label>
+          <input 
+            type="text" 
+            [(ngModel)]="complaintSubject"
+            class="modern-input"
+            placeholder="Brief description of the issue" />
+        </div>
+
+        <div class="form-group">
+          <label class="input-label">Description</label>
+          <p class="input-hint">Provide detailed information about the issue.</p>
+          <textarea
+            [(ngModel)]="complaintDescription"
+            rows="5"
+            class="modern-textarea"
+            placeholder="Describe the issue in detail...">
+          </textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="cancel-modal-btn" (click)="closeComplaintModal()">Cancel</button>
+        <button class="confirm-btn" (click)="submitComplaint()" [disabled]="isComplaintSubmitting">
+          <span *ngIf="!isComplaintSubmitting">Submit Report</span>
+          <div *ngIf="isComplaintSubmitting" class="loader" style="width: 16px; height: 16px; margin: 0;"></div>
+        </button>
+      </div>
+
     </div>
+  </div>
+
 </div>

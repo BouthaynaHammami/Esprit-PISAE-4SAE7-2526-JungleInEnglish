@@ -10,6 +10,10 @@ export class LearnerUserLookupService {
 
   constructor(private http: HttpClient) {}
 
+  getAll(): Observable<UserDTO[]> {
+    return this.http.get<UserDTO[]>(this.base);
+  }
+
   getByEmail(email: string): Observable<UserDTO> {
     return this.http.get<UserDTO>(`${this.base}/email/${encodeURIComponent(email)}`);
   }

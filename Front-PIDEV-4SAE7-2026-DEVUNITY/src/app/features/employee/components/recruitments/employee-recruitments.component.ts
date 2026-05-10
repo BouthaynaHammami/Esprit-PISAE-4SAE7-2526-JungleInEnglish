@@ -14,6 +14,12 @@ export class EmployeeRecruitmentsComponent implements OnInit {
   loading = true;
   filterStatus = 'OPEN';
 
+  showRecruitmentDetails = false;
+  selectedRecruitment: Recruitment | null = null;
+  
+  showApplyModal = false;
+  selectedRecruitmentForApply: Recruitment | null = null;
+
   constructor(
     private recruitmentService: RecruitmentService,
     private router: Router
@@ -34,8 +40,45 @@ export class EmployeeRecruitmentsComponent implements OnInit {
     });
   }
 
-  applyTo(r: Recruitment): void {
-    // Navigate to applications tab pre-filled with recruitmentId
-    this.router.navigate(['/employee/applications'], { queryParams: { recruitmentId: r.id } });
+  refresh(): void {
+    this.loading = true;
+    this.loadRecruitments();
+  }
+
+  openRecrutmentDetails(r: Recruitment): void {
+    this.selectedRecruitment = r;
+    this.showRecruitmentDetails = true;
+  }
+
+  closeRecrutmentDetails(): void {
+    this.showRecruitmentDetails = false;
+    this.selectedRecruitment = null;
+  }
+
+  openApplyModal(r: Recruitment): void {
+    this.selectedRecruitmentForApply = r;
+    this.showApplyModal = true;
+  }
+
+  closeApplyModal(): void {
+    this.showApplyModal = false;
+    this.selectedRecruitmentForApply = null;
+  }
+
+  proceedToApply(): void {
+    if (this.selectedRecruitment?.id) {
+      this.closeRecrutmentDetails();
+      this.openApplyModal(this.selectedRecruitment);
+    }
+  }
+
+  proceedToApplication(): void {
+    if (this.selectedRecruitmentForApply?.id) {
+      // Navigate to applications tab pre-filled with recruitmentId
+      this.router.navigate(['/employee/applications'], { 
+        queryParams: { recruitmentId: this.selectedRecruitmentForApply.id } 
+      });
+      this.closeApplyModal();
+    }
   }
 }

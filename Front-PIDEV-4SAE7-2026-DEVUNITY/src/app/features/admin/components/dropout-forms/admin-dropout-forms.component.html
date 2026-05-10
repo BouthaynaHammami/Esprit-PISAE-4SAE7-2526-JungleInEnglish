@@ -1,144 +1,197 @@
-<div class="dropout-forms-container">
-  <!-- Header -->
-  <div class="page-header">
-    <h1 class="page-title">📊 Student Dropout Analysis</h1>
-    <p class="page-subtitle">Monitor student responses and predicted dropout risks</p>
-  </div>
+<div class="min-h-screen p-8 bg-[#EDF6F9]/50 space-y-8">
 
-  <!-- Stats Cards -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon">📋</div>
-      <div class="stat-content">
-        <div class="stat-number">{{ forms.length }}</div>
-        <div class="stat-label">Total Responses</div>
+  <!-- HEADER -->
+  <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-8 flex flex-wrap gap-6 items-center justify-between relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-[#E29578]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+    <div class="relative z-10 flex items-center gap-5">
+      <div class="w-14 h-14 bg-[#FFDDD2]/30 rounded-2xl border border-[#E29578]/20 flex items-center justify-center text-[#E29578] shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
       </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">⚠️</div>
-      <div class="stat-content">
-        <div class="stat-number">{{ atRiskCount }}</div>
-        <div class="stat-label">At-Risk Students</div>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">✅</div>
-      <div class="stat-content">
-        <div class="stat-number">{{ onTrackCount }}</div>
-        <div class="stat-label">On-Track Students</div>
+      <div>
+        <h1 class="text-3xl font-bold text-[#006D77] tracking-tight">Student Dropout Analysis</h1>
+        <p class="text-[#83C5BE] font-medium text-sm mt-1">Monitor student responses and predicted dropout risks</p>
       </div>
     </div>
   </div>
 
-  <!-- Filters & Controls -->
-  <div class="controls-section">
-    <div class="filters-row">
-      <div class="filter-group">
-        <label for="filter-status">Filter by Status:</label>
-        <select id="filter-status" [(ngModel)]="filterStatus" (change)="onFilterChange()" class="select-input">
-          <option value="all">All Students</option>
-          <option value="yes">At-Risk Only</option>
-          <option value="no">On-Track Only</option>
-        </select>
+  <!-- KPI CARDS -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white rounded-[20px] border border-gray-100 shadow-sm p-6 flex items-center gap-5 hover:-translate-y-1 transition-all">
+      <div class="w-14 h-14 rounded-2xl bg-[#EDF6F9] flex items-center justify-center text-[#006D77] flex-shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
       </div>
-
-      <div class="filter-group">
-        <label for="search-email">Search by Email:</label>
-        <input 
-          type="text" 
-          id="search-email" 
-          [(ngModel)]="searchEmail" 
-          (keyup)="onSearchChange()"
-          placeholder="e.g., student@example.com"
-          class="input-text"
-        />
+      <div>
+        <div class="text-3xl font-black text-[#006D77]">{{ forms.length }}</div>
+        <div class="text-xs font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Total Responses</div>
       </div>
+    </div>
 
-      <div class="filter-group">
-        <label for="sort-by">Sort by:</label>
-        <select id="sort-by" [(ngModel)]="sortBy" (change)="onSortChange()" class="select-input">
-          <option value="date">Date (Newest)</option>
-          <option value="email">Email (A-Z)</option>
-          <option value="status">Status</option>
-        </select>
+    <div class="bg-white rounded-[20px] border border-[#E29578]/20 shadow-sm p-6 flex items-center gap-5 hover:-translate-y-1 transition-all">
+      <div class="w-14 h-14 rounded-2xl bg-[#FFDDD2]/30 flex items-center justify-center text-[#E29578] flex-shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       </div>
+      <div>
+        <div class="text-3xl font-black text-[#E29578]">{{ atRiskCount }}</div>
+        <div class="text-xs font-bold text-[#E29578]/60 uppercase tracking-widest mt-1">At-Risk Students</div>
+      </div>
+    </div>
 
-      <button (click)="exportToCSV()" class="btn btn-export">
-        📥 Export as CSV
-      </button>
+    <div class="bg-white rounded-[20px] border border-green-100 shadow-sm p-6 flex items-center gap-5 hover:-translate-y-1 transition-all">
+      <div class="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center text-green-500 flex-shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <div>
+        <div class="text-3xl font-black text-green-500">{{ onTrackCount }}</div>
+        <div class="text-xs font-bold text-green-400 uppercase tracking-widest mt-1">On-Track Students</div>
+      </div>
     </div>
   </div>
 
-  <!-- Loading State -->
-  <div *ngIf="loading" class="loading-container">
-    <div class="spinner"></div>
-    <p>Loading forms...</p>
+  <!-- FILTERS -->
+  <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-6 flex flex-wrap gap-4 items-end">
+    <div class="flex-1 min-w-[160px]">
+      <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Filter by Status</label>
+      <select id="filter-status" [(ngModel)]="filterStatus" (change)="onFilterChange()"
+              class="w-full px-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] rounded-xl outline-none transition-all font-medium appearance-none text-sm">
+        <option value="all">All Students</option>
+        <option value="yes">At-Risk Only</option>
+        <option value="no">On-Track Only</option>
+      </select>
+    </div>
+    <div class="flex-1 min-w-[200px]">
+      <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Search by Email</label>
+      <input type="text" id="search-email" [(ngModel)]="searchEmail" (keyup)="onSearchChange()" placeholder="e.g., student@example.com"
+             class="w-full px-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] rounded-xl outline-none transition-all font-medium text-sm" />
+    </div>
+    <div class="flex-1 min-w-[160px]">
+      <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Sort by</label>
+      <select id="sort-by" [(ngModel)]="sortBy" (change)="onSortChange()"
+              class="w-full px-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] rounded-xl outline-none transition-all font-medium appearance-none text-sm">
+        <option value="date">Date (Newest)</option>
+        <option value="email">Email (A-Z)</option>
+        <option value="status">Status</option>
+      </select>
+    </div>
+    <button (click)="exportToCSV()" class="px-6 py-3 bg-[#006D77] text-white rounded-xl font-bold hover:bg-[#83C5BE] transition-all shadow-md flex items-center gap-2 text-sm flex-shrink-0">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export CSV
+    </button>
   </div>
 
-  <!-- Error State -->
-  <div *ngIf="error && !loading" class="error-container">
-    <p>{{ error }}</p>
-    <button (click)="loadForms()" class="btn btn-primary">Retry</button>
+  <!-- LOADING -->
+  <div *ngIf="loading" class="bg-white rounded-[24px] border border-gray-100 p-20 flex flex-col items-center gap-4">
+    <div class="w-10 h-10 border-4 border-[#EDF6F9] border-t-[#006D77] rounded-full animate-spin"></div>
+    <p class="text-[#83C5BE] font-bold text-sm">Loading forms...</p>
   </div>
 
-  <!-- Empty State -->
-  <div *ngIf="!loading && !error && filteredForms.length === 0" class="empty-container">
-    <div class="empty-icon">📭</div>
-    <h3>No forms found</h3>
-    <p>Adjust your filters or wait for student submissions.</p>
+  <!-- ERROR -->
+  <div *ngIf="error && !loading" class="bg-[#FFDDD2] text-[#E29578] rounded-[24px] border border-[#E29578]/20 p-8 flex items-center justify-between">
+    <div class="flex items-center gap-3 font-bold">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      {{ error }}
+    </div>
+    <button (click)="loadForms()" class="px-4 py-2 bg-[#E29578] text-white rounded-xl font-bold hover:bg-[#006D77] transition-all text-sm">Retry</button>
   </div>
 
-  <!-- Table View -->
-  <div *ngIf="!loading && !error && filteredForms.length > 0" class="table-wrapper">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Student Email</th>
-          <th>Status</th>
-          <th>Risk Score</th>
-          <th>Motivation</th>
-          <th>Study Hours</th>
-          <th>Satisfaction</th>
-          <th>Learning Mode</th>
-          <th>English Level</th>
-          <th>Submitted</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let form of filteredForms" [ngClass]="'row-' + form.predictedDropout">
-          <td class="cell-email">
-            <strong>{{ form.userEmail }}</strong>
-          </td>
-          <td class="cell-status">
-            <span [ngClass]="'status-badge ' + getRiskClass(form.predictedDropout)">
-              {{ getRiskLabel(form.predictedDropout) }}
-            </span>
-          </td>
-          <td class="cell-score">
-            <div class="progress-bar">
-              <div 
-                class="progress-fill" 
-                [style.width.%]="form.predictedProbability * 100"
-                [ngClass]="form.predictedProbability > 0.7 ? 'high' : 'low'"
-              ></div>
-            </div>
-            <span>{{ formatProbability(form.predictedProbability) }}</span>
-          </td>
-          <td class="cell-metric">{{ form.motivationLevel }}/10</td>
-          <td class="cell-metric">{{ form.weeklyStudyHours }}h</td>
-          <td class="cell-metric">{{ form.satisfactionLevel }}/10</td>
-          <td class="cell-metric">{{ form.preferredLearningMode }}</td>
-          <td class="cell-metric">{{ form.englishLevelSelf }}</td>
-          <td class="cell-date">{{ formatDate(form.createdAt) }}</td>
-          <td class="cell-actions">
-            <button class="btn-icon" title="View details">👁️</button>
-            <button class="btn-icon" title="Send intervention">📧</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- EMPTY -->
+  <div *ngIf="!loading && !error && filteredForms.length === 0"
+       class="bg-white rounded-[24px] border border-gray-100 p-20 flex flex-col items-center gap-4">
+    <div class="w-20 h-20 bg-[#EDF6F9] rounded-full flex items-center justify-center text-[#83C5BE]">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    </div>
+    <h3 class="text-xl font-bold text-gray-600">No forms found</h3>
+    <p class="text-gray-400 text-sm">Adjust your filters or wait for student submissions.</p>
   </div>
+
+  <!-- TABLE -->
+  <div *ngIf="!loading && !error && filteredForms.length > 0"
+       class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+    <div class="p-6 border-b border-gray-50 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-[#EDF6F9] rounded-xl flex items-center justify-center text-[#006D77]">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </div>
+        <div>
+          <h2 class="font-bold text-[#006D77]">Student Responses</h2>
+          <p class="text-xs font-medium text-[#83C5BE]">{{ filteredForms.length }} records</p>
+        </div>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="bg-gray-50/50 border-b border-gray-100">
+            <th class="px-5 py-4 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Student Email</th>
+            <th class="px-5 py-4 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Status</th>
+            <th class="px-5 py-4 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Risk Score</th>
+            <th class="px-5 py-4 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Motivation</th>
+            <th class="px-5 py-4 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Study Hrs</th>
+            <th class="px-5 py-4 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Satisfaction</th>
+            <th class="px-5 py-4 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Mode</th>
+            <th class="px-5 py-4 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">English</th>
+            <th class="px-5 py-4 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Submitted</th>
+            <th class="px-5 py-4 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          <tr *ngFor="let form of filteredForms"
+              class="transition-all duration-200 group"
+              [ngClass]="form.predictedDropout === 'yes' ? 'hover:bg-[#FFDDD2]/10' : 'hover:bg-[#EDF6F9]/30'">
+            <td class="px-5 py-4">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-black flex-shrink-0"
+                     [ngClass]="form.predictedDropout === 'yes' ? 'bg-[#E29578]' : 'bg-[#006D77]'">
+                  {{ form.userEmail.charAt(0).toUpperCase() }}
+                </div>
+                <span class="font-bold text-[#006D77] text-sm">{{ form.userEmail }}</span>
+              </div>
+            </td>
+            <td class="px-5 py-4 text-center">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border"
+                    [ngClass]="form.predictedDropout === 'yes' ? 'bg-[#FFDDD2] text-[#E29578] border-[#E29578]/20' : 'bg-[#EDF6F9] text-[#006D77] border-[#83C5BE]/30'">
+                {{ form.predictedDropout === 'yes' ? 'At Risk' : 'On Track' }}
+              </span>
+            </td>
+            <td class="px-5 py-4">
+              <div class="flex items-center gap-2">
+                <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full transition-all"
+                       [ngClass]="form.predictedProbability > 0.7 ? 'bg-[#E29578]' : 'bg-[#83C5BE]'"
+                       [style.width.%]="form.predictedProbability * 100"></div>
+                </div>
+                <span class="text-xs font-black text-[#006D77] w-12 text-right">{{ formatProbability(form.predictedProbability) }}</span>
+              </div>
+            </td>
+            <td class="px-5 py-4 text-center">
+              <span class="text-sm font-bold text-[#006D77]">{{ form.motivationLevel }}<span class="text-[#83C5BE] font-medium">/10</span></span>
+            </td>
+            <td class="px-5 py-4 text-center">
+              <span class="text-sm font-bold text-[#006D77]">{{ form.weeklyStudyHours }}<span class="text-[#83C5BE] font-medium">h</span></span>
+            </td>
+            <td class="px-5 py-4 text-center">
+              <span class="text-sm font-bold text-[#006D77]">{{ form.satisfactionLevel }}<span class="text-[#83C5BE] font-medium">/10</span></span>
+            </td>
+            <td class="px-5 py-4">
+              <span class="text-xs font-bold text-gray-500 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-100">{{ form.preferredLearningMode }}</span>
+            </td>
+            <td class="px-5 py-4">
+              <span class="text-xs font-bold text-gray-500 bg-[#EDF6F9] px-2.5 py-1 rounded-lg">{{ form.englishLevelSelf }}</span>
+            </td>
+            <td class="px-5 py-4 text-xs font-medium text-gray-400">{{ formatDate(form.createdAt) }}</td>
+            <td class="px-5 py-4 text-right">
+              <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                <button title="View details" class="w-8 h-8 rounded-xl bg-[#EDF6F9] text-[#006D77] hover:bg-[#006D77] hover:text-white transition-all flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+                <button title="Send intervention" class="w-8 h-8 rounded-xl bg-[#FFDDD2] text-[#E29578] hover:bg-[#E29578] hover:text-white transition-all flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </div>

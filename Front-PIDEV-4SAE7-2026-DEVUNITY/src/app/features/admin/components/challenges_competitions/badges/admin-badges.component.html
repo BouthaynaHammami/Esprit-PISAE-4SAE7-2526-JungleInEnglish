@@ -1,138 +1,179 @@
-<div class="admin-wrapper">
+<div class="min-h-screen p-8 bg-[#EDF6F9]/50 animate-fade-in">
   <!-- HEADER SECTION -->
-  <header class="dashboard-header">
-    <div class="header-content">
-      <h1 class="page-title">Challenges Management</h1>
-      <p class="page-subtitle">Manage badges for gamification and student recognition.</p>
+  <div class="mb-10 flex justify-between items-center">
+    <div class="flex items-center gap-5">
+      <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-[#006D77]">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/></svg>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold text-[#006D77] tracking-tight">Challenges Management</h1>
+        <p class="text-[#83C5BE] font-medium">Manage badges for gamification and student recognition.</p>
+      </div>
     </div>
-    
-    <div class="header-actions">
-      <nav class="sub-nav">
-        <a class="nav-link" routerLink="/admin/challenges">Challenges</a>
-        <a class="nav-link" routerLink="/admin/student-stats">Stats</a>
-        <a class="nav-link active" routerLink="/admin/badges">Badges</a>
-      </nav>
-    </div>
-  </header>
+  </div>
+
+  <!-- Sub-Navigation Tabs -->
+  <div class="flex flex-wrap gap-2 mb-10 p-1.5 bg-white/50 backdrop-blur-md rounded-[24px] w-fit border border-white/50 shadow-sm">
+    <a routerLink="/admin/challenges" routerLinkActive="bg-white text-[#006D77] shadow-sm" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80 transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+      Challenges
+    </a>
+    <a routerLink="/admin/student-stats" routerLinkActive="bg-white text-[#006D77] shadow-sm" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80 transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+      Stats
+    </a>
+    <a routerLink="/admin/badges" routerLinkActive="bg-white text-[#006D77] shadow-sm" [routerLinkActiveOptions]="{exact: true}" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80 transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/></svg>
+      Badges
+    </a>
+  </div>
 
   <!-- ACTION BAR -->
-  <div class="action-bar" *ngIf="!showInlineForm">
-    <div class="action-group">
-      <button class="btn btn--primary" (click)="startCreate()">
-        <i class="fas fa-plus"></i> New Badge
+  <div class="bg-white rounded-[20px] p-6 mb-8 shadow-sm border border-gray-100 flex flex-wrap gap-4 items-center justify-between" *ngIf="!showInlineForm">
+    <div class="flex gap-3">
+      <button (click)="startCreate()" class="group px-6 py-3 bg-[#006D77] text-white rounded-2xl hover:bg-[#83C5BE] transition-all duration-300 shadow-md flex items-center gap-3 font-semibold text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-500"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Badge
       </button>
-      <button class="btn btn--secondary" (click)="loadAll()" [disabled]="loading">
-        <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i> Refresh
+      <button (click)="loadAll()" [disabled]="loading" class="px-6 py-3 bg-[#EDF6F9] text-[#006D77] rounded-2xl hover:bg-[#83C5BE] hover:text-white transition-all duration-300 flex items-center gap-3 font-semibold text-sm shadow-sm disabled:opacity-50">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.animate-spin]="loading"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        Refresh
       </button>
     </div>
 
-    <div class="action-group">
-      <div class="search-container">
-        <div class="search-input-wrapper">
-          <i class="fas fa-search search-icon"></i>
-          <input type="text" [(ngModel)]="nameQuery" (ngModelChange)="applyFilter()" placeholder="Search badges by name..." class="search-input" />
-        </div>
+    <div class="flex items-center gap-4 flex-1 justify-end">
+      <div class="relative w-64">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#83C5BE]">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </span>
+        <input type="text" [(ngModel)]="nameQuery" (ngModelChange)="applyFilter()" placeholder="Search badges..." class="w-full pl-11 pr-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl text-sm outline-none transition-all font-medium">
       </div>
-      <select class="filter-select" [(ngModel)]="pointsFilter" (ngModelChange)="applyFilter()">
-        <option value="">All Points</option>
-        <option value="0-50">0 - 50</option>
-        <option value="51-100">51 - 100</option>
-        <option value="101-200">101 - 200</option>
-        <option value="200+">200+</option>
-      </select>
+      <div class="relative w-48">
+        <select [(ngModel)]="pointsFilter" (ngModelChange)="applyFilter()" class="w-full pl-4 pr-10 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl text-sm outline-none transition-all font-medium appearance-none text-[#006D77]">
+          <option value="">All Points</option>
+          <option value="0-50">0 - 50</option>
+          <option value="51-100">51 - 100</option>
+          <option value="101-200">101 - 200</option>
+          <option value="200+">200+</option>
+        </select>
+        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[#006D77] pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </span>
+      </div>
     </div>
   </div>
 
   <!-- INLINE FORM -->
-  <div class="inline-editor" *ngIf="showInlineForm">
-    <div class="editor-header">
-      <h2 class="editor-title">{{ isEdit ? 'Edit Badge' : 'Create New Badge' }}</h2>
-      <p class="editor-subtitle">Fill in the details below to add or update a badge.</p>
+  <div *ngIf="showInlineForm" class="bg-white rounded-[32px] shadow-2xl border border-gray-100 overflow-hidden animate-scale-up mb-8">
+    <div class="p-8 bg-[#EDF6F9] flex justify-between items-center border-b border-gray-100">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-2xl bg-[#006D77] shadow-lg flex items-center justify-center text-white">
+          <svg *ngIf="!isEdit" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          <svg *ngIf="isEdit" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold text-[#006D77]">{{ isEdit ? 'Edit Badge' : 'Create New Badge' }}</h2>
+          <p class="text-[#83C5BE] font-medium text-sm">Fill in the details below to add or update a badge.</p>
+        </div>
+      </div>
+      <button (click)="cancelForm()" class="p-3 hover:bg-white rounded-2xl transition-all text-[#006D77]">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
     </div>
 
     <form [formGroup]="form" (ngSubmit)="save()">
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Badge Name *</label>
-          <input formControlName="name" class="form-input" placeholder="e.g. Grammar Guru" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Points Required *</label>
-          <input type="number" formControlName="pointsRequired" class="form-input" placeholder="100" />
-        </div>
-        <div class="form-group full-width">
-          <label class="form-label">Badge Image URL</label>
-          <input formControlName="imageUrl" class="form-input" placeholder="https://..." />
-        </div>
-        <div class="form-group full-width">
-          <label class="form-label">Description</label>
-          <textarea formControlName="description" class="form-input" rows="3" placeholder="Describe how to earn this badge..."></textarea>
+      <div class="p-8 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Badge Name *</label>
+            <input formControlName="name" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="e.g. Grammar Guru" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Points Required *</label>
+            <input type="number" formControlName="pointsRequired" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="100" />
+          </div>
+          <div class="space-y-2 md:col-span-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Badge Image URL</label>
+            <input formControlName="imageUrl" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="https://..." />
+          </div>
+          <div class="space-y-2 md:col-span-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Description</label>
+            <textarea formControlName="description" rows="3" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium resize-none" placeholder="Describe how to earn this badge..."></textarea>
+          </div>
         </div>
       </div>
 
-      <div class="form-footer">
-        <button class="btn btn--secondary" type="button" (click)="cancelForm()">Cancel</button>
-        <button class="btn btn--primary" type="submit" [disabled]="loading || form.invalid">
-          <i class="fas fa-check"></i> {{ isEdit ? 'Update Badge' : 'Create Badge' }}
+      <div class="p-8 bg-gray-50/50 flex gap-4 rounded-b-[32px] border-t border-gray-100">
+        <button type="button" (click)="cancelForm()" class="flex-1 py-4 bg-white border-2 border-[#EDF6F9] text-[#006D77] rounded-2xl font-bold hover:bg-[#EDF6F9] transition-all">Cancel</button>
+        <button type="submit" [disabled]="loading || form.invalid" class="flex-1 py-4 bg-[#006D77] disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-2xl font-bold shadow-lg hover:bg-[#83C5BE] transition-all flex items-center justify-center gap-3">
+          <svg *ngIf="loading" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          {{ isEdit ? 'Update Badge' : 'Create Badge' }}
         </button>
       </div>
     </form>
   </div>
 
   <!-- DATA TABLE -->
-  <div class="table-container" *ngIf="!loading && !showInlineForm">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Badge</th>
-          <th>Requirements</th>
-          <th>Description</th>
-          <th class="text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let b of filtered" class="table-row">
-          <td>
-            <div style="display:flex; align-items:center; gap:15px;">
-              <div class="badge-preview">
-                <img *ngIf="b.imageUrl" [src]="b.imageUrl" [alt]="b.name" />
-                <span *ngIf="!b.imageUrl">🏅</span>
+  <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden mb-8 animate-fade-in" *ngIf="!loading && !showInlineForm && filtered.length > 0">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="bg-gray-50/50 border-b border-gray-100">
+            <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Badge</th>
+            <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Requirements</th>
+            <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest w-1/3">Description</th>
+            <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          <tr *ngFor="let b of filtered" class="hover:bg-[#EDF6F9]/30 transition-all duration-200 group">
+            <td class="px-8 py-5">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 shadow-sm flex items-center justify-center overflow-hidden flex-shrink-0">
+                  <img *ngIf="b.imageUrl" [src]="b.imageUrl" [alt]="b.name" class="w-full h-full object-cover" />
+                  <span *ngIf="!b.imageUrl" class="text-xl">🏅</span>
+                </div>
+                <div class="font-bold text-[#006D77] text-sm">{{ b.name }}</div>
               </div>
-              <div class="cell-main">{{ b.name }}</div>
-            </div>
-          </td>
-          <td>
-            <span class="points-badge">
-              <i class="fas fa-star"></i> {{ b.pointsRequired }} Points
-            </span>
-          </td>
-          <td>
-            <div class="cell-sub">{{ (b.description | slice:0:60) + ((b.description?.length ?? 0) > 60 ? '...' : '') }}</div>
-          </td>
-          <td class="text-right">
-            <div class="row-actions">
-              <button class="action-btn edit-btn" (click)="onEdit(b)">
-                <i class="fas fa-edit"></i> <span>Edit</span>
-              </button>
-              <button class="action-btn delete-btn" (click)="onDelete(b)">
-                <i class="fas fa-trash"></i> <span>Delete</span>
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- EMPTY STATE -->
-    <div class="empty-state" *ngIf="filtered.length === 0">
-      <div class="empty-state__visual"><i class="fas fa-medal"></i></div>
-      <h3 class="empty-state__title">No badges found</h3>
-      <p class="empty-state__text">Try adjusting your filters or create a new badge.</p>
+            </td>
+            <td class="px-8 py-5 text-center">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-yellow-50 text-yellow-600 border border-yellow-100 rounded-lg text-xs font-bold shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                {{ b.pointsRequired }} Points
+              </span>
+            </td>
+            <td class="px-8 py-5">
+              <div class="text-xs text-gray-500 font-medium">
+                {{ (b.description | slice:0:60) + ((b.description?.length ?? 0) > 60 ? '...' : '') }}
+              </div>
+            </td>
+            <td class="px-8 py-5 text-right">
+              <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                <button (click)="onEdit(b)" class="p-2.5 hover:bg-[#EDF6F9] text-[#006D77] rounded-xl transition-all" title="Edit">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                </button>
+                <button (click)="onDelete(b)" class="p-2.5 hover:bg-[#FFDDD2] text-[#E29578] rounded-xl transition-all" title="Delete">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
+  <!-- EMPTY STATE -->
+  <div *ngIf="filtered.length === 0 && !loading && !showInlineForm" class="py-24 text-center">
+    <div class="flex justify-center mb-8 text-[#83C5BE] opacity-40">
+      <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/></svg>
+    </div>
+    <h3 class="text-2xl font-bold text-[#006D77]">No badges found</h3>
+    <p class="text-[#83C5BE] mt-2 max-w-sm mx-auto font-medium">Try adjusting your filters or create a new badge.</p>
+  </div>
+
   <!-- LOADER -->
-  <div *ngIf="loading" style="padding: 100px; text-align: center;">
-    <i class="fas fa-spinner fa-spin fa-3x" style="color: #83C5BE;"></i>
+  <div *ngIf="loading" class="space-y-4">
+    <div *ngFor="let i of [1,2,3]" class="h-20 bg-white rounded-[20px] animate-pulse border border-gray-50 shadow-sm"></div>
   </div>
 </div>

@@ -1,234 +1,128 @@
-<div class="ae-page">
+<div class="min-h-screen p-8 bg-[#EDF6F9]/50 animate-fade-in space-y-8">
 
-  <!-- ═══════ TOAST ALERTS ═══════ -->
-  <div class="ae-toast ae-toast--success" *ngIf="successMessage">
-    <div class="ae-toast__bar"></div>
-    <span class="ae-toast__icon-wrap">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-    </span>
-    <div class="ae-toast__body">
-      <span class="ae-toast__title">Success</span>
-      <span class="ae-toast__text">{{ successMessage }}</span>
-    </div>
-    <button class="ae-toast__close" (click)="successMessage = ''">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
+  <!-- TOAST ALERTS -->
+  <div *ngIf="successMessage" class="px-6 py-4 bg-green-50 text-green-700 rounded-2xl border border-green-100 flex items-center gap-3 animate-fade-in shadow-sm font-bold text-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    {{ successMessage }}
+    <button (click)="successMessage = ''" class="ml-auto text-green-400 hover:text-green-600 transition-colors">✕</button>
+  </div>
+  <div *ngIf="errorMessage" class="px-6 py-4 bg-[#FFDDD2] text-[#E29578] rounded-2xl border border-[#E29578]/20 flex items-center gap-3 animate-fade-in shadow-sm font-bold text-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+    {{ errorMessage }}
+    <button (click)="errorMessage = ''" class="ml-auto text-[#E29578] hover:text-red-500 transition-colors">✕</button>
   </div>
 
-  <div class="ae-toast ae-toast--error" *ngIf="errorMessage">
-    <div class="ae-toast__bar"></div>
-    <span class="ae-toast__icon-wrap">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-    </span>
-    <div class="ae-toast__body">
-      <span class="ae-toast__title">Error</span>
-      <span class="ae-toast__text">{{ errorMessage }}</span>
-    </div>
-    <button class="ae-toast__close" (click)="errorMessage = ''">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
-
-  <!-- ═══════ HERO HEADER ═══════ -->
-  <header class="ae-hero">
-    <div class="ae-hero__orb ae-hero__orb--1"></div>
-    <div class="ae-hero__orb ae-hero__orb--2"></div>
-    <div class="ae-hero__orb ae-hero__orb--3"></div>
-
-    <div class="ae-hero__content">
-      <div class="ae-hero__icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+  <!-- HERO HEADER & METRICS -->
+  <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-8 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-[#83C5BE]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+    <div class="relative z-10 flex items-center gap-5">
+      <div class="w-14 h-14 bg-[#EDF6F9] rounded-2xl shadow-sm flex items-center justify-center text-[#006D77] border border-[#83C5BE]/20">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       </div>
       <div>
-        <h1 class="ae-hero__title">Event Management</h1>
-        <p class="ae-hero__subtitle">Create, manage, and track all your events and registrations in one place</p>
+        <h1 class="text-3xl font-bold text-[#006D77] tracking-tight">Event Management</h1>
+        <p class="text-[#83C5BE] font-medium text-sm mt-1">Create, manage, and track all your events and registrations</p>
       </div>
     </div>
-
-    <div class="ae-hero__metrics">
-      <div class="ae-metric">
-        <div class="ae-metric__icon-wrap ae-metric__icon-wrap--teal">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </div>
-        <div class="ae-metric__data">
-          <span class="ae-metric__value">{{ events.length }}</span>
-          <span class="ae-metric__label">Total Events</span>
-        </div>
+    <div class="relative z-10 flex gap-4 overflow-x-auto pb-2 xl:pb-0 w-full xl:w-auto">
+      <div class="bg-gray-50 px-6 py-4 rounded-[20px] border border-gray-100 flex flex-col items-center flex-1 min-w-[120px]">
+        <span class="text-2xl font-black text-[#006D77]">{{ events.length }}</span>
+        <span class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Total Events</span>
       </div>
-
-      <div class="ae-metric__sep"></div>
-
-      <div class="ae-metric">
-        <div class="ae-metric__icon-wrap ae-metric__icon-wrap--blue">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <div class="ae-metric__data">
-          <span class="ae-metric__value">{{ registrations.length }}</span>
-          <span class="ae-metric__label">Registrations</span>
-        </div>
+      <div class="bg-[#EDF6F9] px-6 py-4 rounded-[20px] border border-[#83C5BE]/20 flex flex-col items-center flex-1 min-w-[120px]">
+        <span class="text-2xl font-black text-[#006D77]">{{ registrations.length }}</span>
+        <span class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Registrations</span>
       </div>
-
-      <div class="ae-metric__sep"></div>
-
-      <div class="ae-metric">
-        <div class="ae-metric__icon-wrap ae-metric__icon-wrap--amber">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        </div>
-        <div class="ae-metric__data">
-          <span class="ae-metric__value" [class.ae-metric__value--alert]="getPendingCount() > 0">{{ getPendingCount() }}</span>
-          <span class="ae-metric__label">Pending</span>
-        </div>
+      <div class="bg-[#FFDDD2]/40 px-6 py-4 rounded-[20px] border border-[#E29578]/20 flex flex-col items-center flex-1 min-w-[120px] shadow-sm">
+        <span class="text-2xl font-black" [ngClass]="getPendingCount() > 0 ? 'text-[#E29578]' : 'text-gray-400'">{{ getPendingCount() }}</span>
+        <span class="text-[10px] font-bold text-[#E29578] uppercase tracking-widest mt-1">Pending</span>
       </div>
     </div>
-  </header>
+  </div>
 
-  <!-- ═══════════════════════════════════
-       SECTION 1 — ADD / EDIT EVENT FORM
-       ═══════════════════════════════════ -->
-  <section class="ae-card ae-card--form">
-    <div class="ae-card__gradient-accent"></div>
-
-    <header class="ae-card__header">
-      <div class="ae-card__header-icon" [class.ae-card__header-icon--edit]="editingId">
-        <svg *ngIf="!editingId" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <svg *ngIf="editingId" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      </div>
-      <div class="ae-card__header-text">
-        <h2 class="ae-card__title">{{ editingId ? 'Edit Event' : 'Create New Event' }}</h2>
-        <p class="ae-card__subtitle">{{ editingId ? 'Modify the event details below' : 'Fill in the details to create and publish a new event' }}</p>
-      </div>
-      <div class="ae-card__header-badge" *ngIf="editingId">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Editing
-      </div>
-    </header>
-
-    <form (ngSubmit)="onSubmit()" #eventForm="ngForm" class="ae-form">
-
-      <!-- IMAGE UPLOAD — Featured Banner -->
-      <div class="ae-field ae-field--full">
-        <label class="ae-label">
-          <span class="ae-label__icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          </span>
-          Event Banner <span class="ae-required">*</span>
-        </label>
-        <label class="ae-upload" [class.ae-upload--has-preview]="imagePreview">
-          <input type="file" accept="image/*" (change)="onFileSelected($event)" class="ae-upload__input" />
-          <div class="ae-upload__placeholder" *ngIf="!imagePreview">
-            <div class="ae-upload__icon-float">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            </div>
-            <div class="ae-upload__content">
-              <span class="ae-upload__cta">
-                <strong>Click to upload</strong> or drag and drop
-              </span>
-              <span class="ae-upload__formats">
-                <span class="ae-upload__format-tag">PNG</span>
-                <span class="ae-upload__format-tag">JPG</span>
-                <span class="ae-upload__format-tag">WebP</span>
-                <span class="ae-upload__format-sep">&middot;</span>
-                Max 10 MB
-              </span>
-            </div>
+  <!-- SECTION 1: ADD / EDIT EVENT FORM -->
+  <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+    <div class="h-2" [ngClass]="editingId ? 'bg-gradient-to-r from-orange-300 to-[#E29578]' : 'bg-gradient-to-r from-[#83C5BE] to-[#006D77]'"></div>
+    <div class="p-8">
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-sm" [ngClass]="editingId ? 'bg-[#E29578]' : 'bg-[#006D77]'">
+            <svg *ngIf="!editingId" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <svg *ngIf="editingId" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </div>
-          <div class="ae-upload__preview-wrap" *ngIf="imagePreview">
-            <img [src]="imagePreview" class="ae-upload__preview" alt="Preview" />
-            <div class="ae-upload__preview-overlay">
-              <div class="ae-upload__overlay-btn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                Change Image
+          <div>
+            <h2 class="text-xl font-bold" [ngClass]="editingId ? 'text-[#E29578]' : 'text-[#006D77]'">{{ editingId ? 'Edit Event' : 'Create New Event' }}</h2>
+            <p class="text-xs font-medium text-[#83C5BE]">{{ editingId ? 'Modify the event details below' : 'Fill in the details to publish a new event' }}</p>
+          </div>
+        </div>
+        <div *ngIf="editingId" class="px-3 py-1 bg-[#FFDDD2] text-[#E29578] rounded-lg text-[10px] font-black uppercase tracking-widest border border-[#E29578]/30 flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editing Mode
+        </div>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" #eventForm="ngForm" class="space-y-6">
+        
+        <!-- Image Upload -->
+        <div>
+          <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-2 block">Event Banner *</label>
+          <label class="block relative w-full rounded-2xl border-2 border-dashed transition-all cursor-pointer overflow-hidden group" [ngClass]="imagePreview ? 'border-transparent bg-gray-50' : 'border-[#83C5BE]/40 bg-[#EDF6F9]/30 hover:bg-[#EDF6F9] hover:border-[#006D77]/50'">
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden" />
+            
+            <div *ngIf="!imagePreview" class="py-12 px-6 text-center flex flex-col items-center">
+              <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[#83C5BE] mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <p class="font-bold text-[#006D77]">Click to upload <span class="text-[#83C5BE] font-medium">or drag and drop</span></p>
+              <p class="text-xs text-gray-400 mt-2 font-medium">PNG, JPG, WebP (Max 10 MB)</p>
+            </div>
+
+            <div *ngIf="imagePreview" class="relative aspect-video max-h-64 w-full">
+              <img [src]="imagePreview" class="w-full h-full object-cover" alt="Preview" />
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                <span class="px-4 py-2 bg-white text-[#006D77] rounded-lg font-bold text-sm shadow-lg flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  Change Image
+                </span>
               </div>
             </div>
+          </label>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="md:col-span-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Event Title *</label>
+            <input type="text" name="title" required placeholder="Enter a descriptive event title..." [(ngModel)]="event.title" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-bold text-[#006D77]" />
           </div>
-        </label>
-      </div>
 
-      <!-- TITLE -->
-      <div class="ae-field ae-field--full">
-        <label class="ae-label">
-          <span class="ae-label__icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </span>
-          Event Title <span class="ae-required">*</span>
-        </label>
-        <input type="text" class="ae-input ae-input--lg" name="title" required placeholder="Enter a descriptive event title..." [(ngModel)]="event.title" />
-      </div>
+          <div class="md:col-span-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Description *</label>
+            <textarea name="description" required rows="4" placeholder="Describe the event purpose, agenda, and key details..." [(ngModel)]="event.description" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium resize-none"></textarea>
+          </div>
 
-      <!-- DESCRIPTION -->
-      <div class="ae-field ae-field--full">
-        <label class="ae-label">
-          <span class="ae-label__icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
-          </span>
-          Description <span class="ae-required">*</span>
-        </label>
-        <textarea class="ae-input ae-textarea" name="description" required rows="4" placeholder="Describe the event purpose, agenda, and key details..." [(ngModel)]="event.description"></textarea>
-      </div>
+          <div>
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Start Date *</label>
+            <input type="datetime-local" name="startDate" required [(ngModel)]="event.startDate" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
+          </div>
 
-      <!-- SECTION DIVIDER -->
-      <div class="ae-divider">
-        <span class="ae-divider__label">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          Schedule & Details
-        </span>
-      </div>
+          <div>
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">End Date *</label>
+            <input type="datetime-local" name="endDate" required [(ngModel)]="event.endDate" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
+          </div>
 
-      <!-- ROW: START / END -->
-      <div class="ae-row ae-row--2">
-        <div class="ae-field">
-          <label class="ae-label">
-            <span class="ae-label__icon ae-label__icon--green">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            </span>
-            Start Date <span class="ae-required">*</span>
-          </label>
-          <input type="datetime-local" class="ae-input" name="startDate" required [(ngModel)]="event.startDate" />
-        </div>
-        <div class="ae-field">
-          <label class="ae-label">
-            <span class="ae-label__icon ae-label__icon--red">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            </span>
-            End Date <span class="ae-required">*</span>
-          </label>
-          <input type="datetime-local" class="ae-input" name="endDate" required [(ngModel)]="event.endDate" />
-        </div>
-      </div>
+          <div>
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Location *</label>
+            <input type="text" name="location" required placeholder="e.g. Main Auditorium" [(ngModel)]="event.location" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
+          </div>
 
-      <!-- ROW: LOCATION / CAPACITY -->
-      <div class="ae-row ae-row--2">
-        <div class="ae-field">
-          <label class="ae-label">
-            <span class="ae-label__icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            </span>
-            Location <span class="ae-required">*</span>
-          </label>
-          <input type="text" class="ae-input" name="location" required placeholder="e.g. Main Auditorium, Building A" [(ngModel)]="event.location" />
-        </div>
-        <div class="ae-field">
-          <label class="ae-label">
-            <span class="ae-label__icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            </span>
-            Capacity <span class="ae-required">*</span>
-          </label>
-          <input type="number" class="ae-input" name="capacity" required min="1" [(ngModel)]="event.capacity" />
-        </div>
-      </div>
+          <div>
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Capacity *</label>
+            <input type="number" name="capacity" required min="1" [(ngModel)]="event.capacity" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
+          </div>
 
-      <!-- STATUS -->
-      <div class="ae-row ae-row--2">
-        <div class="ae-field">
-          <label class="ae-label">
-            <span class="ae-label__icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            </span>
-            Status <span class="ae-required">*</span>
-          </label>
-          <div class="ae-select-wrap">
-            <select class="ae-input ae-select" name="status" required [(ngModel)]="event.status">
+          <div>
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Status *</label>
+            <select name="status" required [(ngModel)]="event.status" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
               <option value="">Select Status</option>
               <option value="SCHEDULED">Scheduled</option>
               <option value="REGISTRATION_OPEN">Registration Open</option>
@@ -236,125 +130,104 @@
               <option value="CANCELED">Canceled</option>
               <option value="COMPLETED">Completed</option>
             </select>
-            <svg class="ae-select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
         </div>
-        <div class="ae-field"></div>
-      </div>
 
-      <!-- FORM ACTIONS -->
-      <div class="ae-actions">
-        <button type="button" class="ae-btn ae-btn--ghost" (click)="onCancel()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          Cancel
-        </button>
-        <button type="submit" class="ae-btn ae-btn--primary" [disabled]="eventForm.invalid || isLoading">
-          <svg *ngIf="isLoading" class="ae-btn__spinner" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-dasharray="30 60" /></svg>
-          <svg *ngIf="!isLoading && editingId === null" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          <svg *ngIf="!isLoading && editingId !== null" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          <span *ngIf="isLoading">Saving...</span>
-          <span *ngIf="!isLoading && editingId === null">Create Event</span>
-          <span *ngIf="!isLoading && editingId !== null">Update Event</span>
-        </button>
-      </div>
+        <div class="flex justify-end gap-3 pt-6 border-t border-gray-50 mt-6">
+          <button type="button" (click)="onCancel()" class="px-6 py-3 bg-white border-2 border-gray-100 text-gray-500 rounded-xl font-bold hover:bg-gray-50 hover:text-gray-700 transition-all">Cancel</button>
+          <button type="submit" [disabled]="eventForm.invalid || isLoading" class="px-8 py-3 bg-[#006D77] text-white rounded-xl font-bold shadow-md hover:bg-[#83C5BE] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+            <svg *ngIf="isLoading" class="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-dasharray="30 60" /></svg>
+            <svg *ngIf="!isLoading && editingId === null" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg *ngIf="!isLoading && editingId !== null" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            {{ isLoading ? 'Saving...' : editingId === null ? 'Create Event' : 'Update Event' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    </form>
-  </section>
-
-  <!-- ═══════════════════════════════════
-       SECTION 2 — EVENTS LIST
-       ═══════════════════════════════════ -->
-  <section class="ae-card">
-
-    <header class="ae-card__header ae-card__header--between">
-      <div class="ae-card__header-left">
-        <div class="ae-card__header-icon ae-card__header-icon--list">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+  <!-- SECTION 2: EVENTS LIST -->
+  <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+    <div class="p-8 border-b border-gray-50 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 bg-[#EDF6F9] rounded-xl flex items-center justify-center text-[#006D77]">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         </div>
         <div>
-          <h2 class="ae-card__title">Events List</h2>
-          <p class="ae-card__subtitle">All registered events at a glance</p>
+          <h2 class="text-lg font-bold text-[#006D77]">Events List</h2>
+          <p class="text-xs font-medium text-[#83C5BE]">All registered events at a glance</p>
         </div>
       </div>
-      <span class="ae-badge ae-badge--count">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        {{ events.length }} total
-      </span>
-    </header>
-
-    <!-- EMPTY STATE -->
-    <div class="ae-empty" *ngIf="events.length === 0">
-      <div class="ae-empty__visual">
-        <div class="ae-empty__ring ae-empty__ring--outer"></div>
-        <div class="ae-empty__ring ae-empty__ring--inner"></div>
-        <div class="ae-empty__icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </div>
-      </div>
-      <p class="ae-empty__title">No events yet</p>
-      <p class="ae-empty__text">Create your first event using the form above to get started.</p>
     </div>
 
-    <!-- TABLE -->
-    <div class="ae-table-wrap" *ngIf="events.length > 0">
-      <table class="ae-table">
+    <!-- Empty State -->
+    <div *ngIf="events.length === 0" class="py-20 text-center">
+      <div class="w-20 h-20 mx-auto bg-gray-50 rounded-full flex items-center justify-center text-gray-300 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <h3 class="text-xl font-bold text-gray-600">No events yet</h3>
+      <p class="text-gray-400 mt-2">Create your first event using the form above.</p>
+    </div>
+
+    <div *ngIf="events.length > 0" class="overflow-x-auto">
+      <table class="w-full text-left">
         <thead>
-          <tr>
-            <th>Image</th>
-            <th>Title</th>
-            <th>Location</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Capacity</th>
-            <th>Status</th>
-            <th class="ae-th--center">Actions</th>
+          <tr class="bg-gray-50/50 border-b border-gray-100">
+            <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest w-24">Banner</th>
+            <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Title</th>
+            <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Location</th>
+            <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Timing</th>
+            <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Capacity</th>
+            <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Status</th>
+            <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-right">Actions</th>
           </tr>
         </thead>
-        <tbody>
-          <tr *ngFor="let e of paginatedEvents; let i = index" class="ae-table__row" [style.animation-delay]="i * 40 + 'ms'">
-            <td>
-              <img *ngIf="e.imageUrl"
-                   [src]="e.imageUrl.startsWith('http') ? e.imageUrl : 'http://localhost:8089' + e.imageUrl"
-                   class="ae-thumb" alt="Event" />
-              <span *ngIf="!e.imageUrl" class="ae-thumb-placeholder">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              </span>
+        <tbody class="divide-y divide-gray-50">
+          <tr *ngFor="let e of paginatedEvents" class="hover:bg-[#EDF6F9]/30 transition-all duration-200 group">
+            <td class="px-6 py-4">
+              <div class="w-16 h-10 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center">
+                <img *ngIf="e.imageUrl" [src]="e.imageUrl.startsWith('http') ? e.imageUrl : 'http://localhost:8089' + e.imageUrl" class="w-full h-full object-cover" alt="Event" />
+                <svg *ngIf="!e.imageUrl" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-gray-400"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
             </td>
-            <td>
-              <span class="ae-td--title">{{ e.title }}</span>
+            <td class="px-6 py-4">
+              <span class="font-bold text-[#006D77] text-sm">{{ e.title }}</span>
             </td>
-            <td>
-              <span class="ae-location-pill">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 {{ e.location }}
               </span>
             </td>
-            <td class="ae-td--date">{{ e.startDate | date:'dd MMM yyyy, HH:mm' }}</td>
-            <td class="ae-td--date">{{ e.endDate | date:'dd MMM yyyy, HH:mm' }}</td>
-            <td class="ae-td--center">
-              <span class="ae-capacity-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <td class="px-6 py-4">
+              <div class="text-xs font-bold text-gray-600">{{ e.startDate | date:'dd MMM yy, HH:mm' }}</div>
+              <div class="text-[10px] font-bold text-gray-400 mt-0.5">to {{ e.endDate | date:'dd MMM yy, HH:mm' }}</div>
+            </td>
+            <td class="px-6 py-4 text-center">
+              <span class="inline-flex items-center gap-1 text-xs font-black text-[#83C5BE] bg-[#EDF6F9] px-2.5 py-1 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
                 {{ e.capacity }}
               </span>
             </td>
-            <td>
-              <span class="ae-status-chip"
-                    [class.ae-status--open]="e.status === 'REGISTRATION_OPEN'"
-                    [class.ae-status--scheduled]="e.status === 'SCHEDULED'"
-                    [class.ae-status--closed]="e.status === 'CLOSED'"
-                    [class.ae-status--canceled]="e.status === 'CANCELED'"
-                    [class.ae-status--completed]="e.status === 'COMPLETED'">
-                <span class="ae-status-dot"></span>
+            <td class="px-6 py-4 text-center">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border"
+                    [ngClass]="{
+                      'bg-[#EDF6F9] text-[#006D77] border-[#83C5BE]/30': e.status === 'REGISTRATION_OPEN',
+                      'bg-[#83C5BE]/20 text-[#006D77] border-[#83C5BE]/40': e.status === 'SCHEDULED',
+                      'bg-[#FFDDD2] text-[#E29578] border-[#E29578]/20': e.status === 'CLOSED',
+                      'bg-[#FFDDD2] text-[#E29578] border-[#E29578]/30': e.status === 'CANCELED',
+                      'bg-gray-50 text-gray-500 border-gray-200': e.status === 'COMPLETED'
+                    }">
                 {{ e.status | lowercase }}
               </span>
             </td>
-            <td class="ae-td--center">
-              <div class="ae-actions-cell">
-                <button class="ae-icon-btn ae-icon-btn--edit" title="Edit" (click)="editEvent(e)">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <td class="px-6 py-4 text-right">
+              <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                <button (click)="editEvent(e)" class="p-2.5 hover:bg-[#EDF6F9] text-[#006D77] rounded-xl transition-all" title="Edit">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 </button>
-                <button class="ae-icon-btn ae-icon-btn--delete" title="Delete" (click)="confirmDelete(e)">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <button (click)="confirmDelete(e)" class="p-2.5 hover:bg-[#FFDDD2] text-[#E29578] rounded-xl transition-all" title="Delete">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                 </button>
               </div>
             </td>
@@ -363,152 +236,116 @@
       </table>
     </div>
 
-    <!-- PAGINATION -->
-    <div class="ae-pagination" *ngIf="events.length > pageSize">
-      <div class="ae-pagination__info">
+    <!-- Pagination -->
+    <div class="p-6 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between" *ngIf="events.length > pageSize">
+      <span class="text-xs font-bold text-gray-500">
         Showing {{ (currentPage - 1) * pageSize + 1 }}–{{ currentPage * pageSize > events.length ? events.length : currentPage * pageSize }} of {{ events.length }}
-      </div>
-      <div class="ae-pagination__controls">
-        <button class="ae-pagination__btn ae-pagination__btn--nav" [disabled]="currentPage === 1" (click)="prevPage()" title="Previous page">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </span>
+      <div class="flex gap-1">
+        <button [disabled]="currentPage === 1" (click)="prevPage()" class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 disabled:opacity-50 hover:bg-gray-50 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
-        <button *ngFor="let p of pageNumbers"
-                class="ae-pagination__btn"
-                [class.ae-pagination__btn--active]="p === currentPage"
-                (click)="goToPage(p)">
+        <button *ngFor="let p of pageNumbers" (click)="goToPage(p)" [ngClass]="p === currentPage ? 'bg-[#006D77] text-white border-transparent shadow-sm' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'" class="w-8 h-8 flex items-center justify-center rounded-lg border font-bold text-xs transition-colors">
           {{ p }}
         </button>
-        <button class="ae-pagination__btn ae-pagination__btn--nav" [disabled]="currentPage === totalPages" (click)="nextPage()" title="Next page">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        <button [disabled]="currentPage === totalPages" (click)="nextPage()" class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 disabled:opacity-50 hover:bg-gray-50 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: PARTICIPATIONS (REGISTRATIONS) -->
+  <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+    <div class="p-8 border-b border-gray-50 flex items-center justify-between flex-wrap gap-4">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 bg-[#FFDDD2]/50 rounded-xl flex items-center justify-center text-[#E29578]">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-[#E29578]">Participations</h2>
+          <p class="text-xs font-medium text-[#c9785f]">Manage event registrations and approvals</p>
+        </div>
+      </div>
+      <div class="flex gap-2 bg-gray-50 p-1.5 rounded-[16px] border border-gray-100 overflow-x-auto">
+        <button *ngFor="let f of regFilters" (click)="activeRegFilter = f.value" [ngClass]="activeRegFilter === f.value ? 'bg-white text-[#E29578] shadow-sm' : 'text-gray-500 hover:text-[#E29578]'" class="px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap">
+          {{ f.label }}
         </button>
       </div>
     </div>
 
-  </section>
-
-  <!-- ═══════════════════════════════════
-       SECTION 3 — PARTICIPATIONS
-       ═══════════════════════════════════ -->
-  <section class="ae-card">
-
-    <header class="ae-card__header ae-card__header--between">
-      <div class="ae-card__header-left">
-        <div class="ae-card__header-icon ae-card__header-icon--purple">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <div>
-          <h2 class="ae-card__title">Participations</h2>
-          <p class="ae-card__subtitle">Manage event registrations and approvals</p>
-        </div>
+    <!-- Empty State -->
+    <div *ngIf="filteredRegistrations().length === 0" class="py-20 text-center">
+      <div class="w-20 h-20 mx-auto bg-[#FFDDD2]/20 rounded-full flex items-center justify-center text-[#FFDDD2] mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="11" x2="23" y2="11"/></svg>
       </div>
-      <div class="ae-pending-badge" *ngIf="getPendingCount() > 0">
-        <span class="ae-pending-dot"></span>
-        {{ getPendingCount() }} pending
-      </div>
-    </header>
-
-    <!-- FILTER TABS -->
-    <div class="ae-filters">
-      <button *ngFor="let f of regFilters"
-              class="ae-filter"
-              [class.ae-filter--active]="activeRegFilter === f.value"
-              (click)="activeRegFilter = f.value">
-        {{ f.label }}
-      </button>
+      <h3 class="text-xl font-bold text-gray-600">No participations found</h3>
+      <p class="text-gray-400 mt-2">No registrations match the selected filter.</p>
     </div>
 
-    <!-- EMPTY STATE -->
-    <div class="ae-empty" *ngIf="filteredRegistrations().length === 0">
-      <div class="ae-empty__visual">
-        <div class="ae-empty__ring ae-empty__ring--outer"></div>
-        <div class="ae-empty__ring ae-empty__ring--inner"></div>
-        <div class="ae-empty__icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="11" x2="23" y2="11"/></svg>
-        </div>
-      </div>
-      <p class="ae-empty__title">No participations found</p>
-      <p class="ae-empty__text">No registrations match the selected filter.</p>
-    </div>
-
-    <!-- TABLE -->
-    <div class="ae-table-wrap" *ngIf="filteredRegistrations().length > 0">
-      <table class="ae-table">
+    <!-- Table -->
+    <div *ngIf="filteredRegistrations().length > 0" class="overflow-x-auto">
+      <table class="w-full text-left">
         <thead>
-          <tr>
-            <th>User</th>
-            <th>Event</th>
-            <th>Status</th>
-            <th>Comment</th>
-            <th>Ticket ID</th>
-            <th class="ae-th--center">Actions</th>
+          <tr class="bg-gray-50/50 border-b border-gray-100">
+            <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">User</th>
+            <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Event</th>
+            <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Status</th>
+            <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Comment</th>
+            <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Ticket ID</th>
+            <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-right">Actions</th>
           </tr>
         </thead>
-        <tbody>
-          <tr *ngFor="let r of filteredRegistrations(); let i = index" class="ae-table__row" [style.animation-delay]="i * 40 + 'ms'">
-            <td>
-              <div class="ae-user-cell">
-                <span class="ae-user-avatar">{{ getUserName(r.user).charAt(0) }}</span>
-                <span class="ae-td--user">{{ getUserName(r.user) }}</span>
+        <tbody class="divide-y divide-gray-50">
+          <tr *ngFor="let r of filteredRegistrations()" class="hover:bg-[#EDF6F9]/30 transition-all duration-200">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-[#006D77] text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                  {{ getUserName(r.user).charAt(0) }}
+                </div>
+                <span class="font-bold text-gray-800 text-sm">{{ getUserName(r.user) }}</span>
               </div>
             </td>
-            <td>{{ r.events?.title || '—' }}</td>
-            <td>
-              <span class="ae-reg-chip"
-                    [class.ae-reg--confirmed]="r.status === 'CONFIRMED'"
-                    [class.ae-reg--pending]="r.status === 'PENDING'"
-                    [class.ae-reg--waitlisted]="r.status === 'WAITLISTED'"
-                    [class.ae-reg--rejected]="r.status === 'REJECTED'"
-                    [class.ae-reg--cancelled]="r.status === 'CANCELLED'">
-                <span class="ae-reg-dot"></span>
+            <td class="px-6 py-4 font-bold text-[#006D77] text-sm">{{ r.events?.title || '—' }}</td>
+            <td class="px-6 py-4 text-center">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border"
+                    [ngClass]="{
+                      'bg-[#EDF6F9] text-[#006D77] border-[#83C5BE]/30': r.status === 'CONFIRMED',
+                      'bg-[#FFDDD2] text-[#E29578] border-[#E29578]/20': r.status === 'PENDING',
+                      'bg-[#83C5BE]/20 text-[#006D77] border-[#83C5BE]/40': r.status === 'WAITLISTED',
+                      'bg-[#FFDDD2] text-[#E29578] border-[#E29578]/30': r.status === 'REJECTED',
+                      'bg-gray-50 text-gray-400 border-gray-200': r.status === 'CANCELLED'
+                    }">
                 {{ r.status | lowercase }}
               </span>
             </td>
-            <td class="ae-td--comment">{{ r.comment || '—' }}</td>
-            <td class="ae-td--mono">{{ r.ticketId || '—' }}</td>
-            <td class="ae-td--center">
-              <div class="ae-actions-cell">
-
-                <button *ngIf="r.status === 'CONFIRMED'"
-                        class="ae-action ae-action--danger"
-                        (click)="updateRegistrationStatus(r, 'CANCELLED')">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <td class="px-6 py-4 text-xs font-medium text-gray-500 italic max-w-[200px] truncate" [title]="r.comment">{{ r.comment || '—' }}</td>
+            <td class="px-6 py-4 text-xs font-mono font-bold text-gray-400">{{ r.ticketId || '—' }}</td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex justify-end gap-2">
+                <button *ngIf="r.status === 'CONFIRMED'" (click)="updateRegistrationStatus(r, 'CANCELLED')" class="px-3 py-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg text-xs font-bold transition-colors shadow-sm flex items-center gap-1">
                   Cancel
                 </button>
-
-                <button *ngIf="r.status === 'WAITLISTED'"
-                        class="ae-action ae-action--success"
-                        (click)="updateRegistrationStatus(r, 'CONFIRMED')">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <button *ngIf="r.status === 'WAITLISTED'" (click)="updateRegistrationStatus(r, 'CONFIRMED')" class="px-3 py-1.5 bg-green-500 text-white hover:bg-green-600 rounded-lg text-xs font-bold transition-colors shadow-sm flex items-center gap-1">
                   Accept
                 </button>
-
                 <ng-container *ngIf="r.status === 'PENDING'">
-                  <button class="ae-action ae-action--success"
-                          (click)="updateRegistrationStatus(r, 'CONFIRMED')">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <button (click)="updateRegistrationStatus(r, 'CONFIRMED')" class="px-3 py-1.5 bg-green-500 text-white hover:bg-green-600 rounded-lg text-xs font-bold transition-colors shadow-sm flex items-center gap-1">
                     Accept
                   </button>
-                  <button class="ae-action ae-action--warn"
-                          (click)="updateRegistrationStatus(r, 'REJECTED')">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  <button (click)="updateRegistrationStatus(r, 'REJECTED')" class="px-3 py-1.5 bg-[#E29578] text-white hover:bg-red-500 rounded-lg text-xs font-bold transition-colors shadow-sm flex items-center gap-1">
                     Reject
                   </button>
                 </ng-container>
-
-                <button *ngIf="r.status === 'CANCELLED' || r.status === 'REJECTED'"
-                        class="ae-action ae-action--neutral"
-                        (click)="updateRegistrationStatus(r, 'PENDING')">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                <button *ngIf="r.status === 'CANCELLED' || r.status === 'REJECTED'" (click)="updateRegistrationStatus(r, 'PENDING')" class="px-3 py-1.5 bg-[#006D77] text-white hover:bg-[#83C5BE] rounded-lg text-xs font-bold transition-colors shadow-sm flex items-center gap-1">
                   Restore
                 </button>
-
               </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-
-  </section>
+  </div>
 
 </div>

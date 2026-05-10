@@ -8,12 +8,12 @@ import { AuthService } from '../../../../core/services/auth.service';
     styleUrl: './company-navbar.component.css'
 })
 export class CompanyNavbarComponent implements OnInit {
-    email: string | null = null;
+    name: string | null = null;
 
     constructor(private authService: AuthService) { }
 
     ngOnInit(): void {
-        this.email = this.authService.getUserEmail();
+        this.name = this.authService.getUserName();
     }
 
     logout(): void {

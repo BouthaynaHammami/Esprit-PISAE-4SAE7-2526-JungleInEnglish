@@ -1,67 +1,86 @@
-<div class="p-8 space-y-6">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-            <h1 class="text-3xl font-bold text-[#006D77] heading-font">{{ pageTitle }}</h1>
-            <p class="text-gray-500 mt-1">All complaints you created from tutor planning.</p>
-        </div>
-        <button (click)="loadMine()"
-            class="px-4 py-2 bg-[#006D77] text-white text-sm font-semibold rounded-lg hover:bg-[#005962] transition-colors">
-            Refresh
-        </button>
-    </div>
+<!-- TUTOR COMPLAINTS - PREMIUM DESIGN SYSTEM -->
+<div class="complaints-container">
 
-    <div *ngIf="successMessage"
-        class="flex items-center gap-3 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm font-medium">
-        <span>✅</span><span>{{ successMessage }}</span>
+  <!-- Header -->
+  <div class="complaints-header">
+    <div>
+      <h1 class="main-title">Complaints <span>Management</span></h1>
+      <p class="subtitle">View and manage all complaints you created from tutor planning</p>
     </div>
+    <button class="refresh-btn" (click)="loadMine()" [disabled]="isLoading">
+      <svg [class.spin]="isLoading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+      <span>Reload Complaints</span>
+    </button>
+  </div>
 
-    <div *ngIf="error"
-        class="flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-medium">
-        <span>❌</span><span>{{ error }}</span>
-    </div>
+  <!-- Success Banner -->
+  <div *ngIf="successMessage" class="success-banner">
+    ✅ {{ successMessage }}
+  </div>
 
-    <div *ngIf="isLoading" class="flex justify-center py-16">
-        <div class="w-10 h-10 border-4 border-[#006D77]/30 border-t-[#006D77] rounded-full animate-spin"></div>
-    </div>
+  <!-- Error Banner -->
+  <div *ngIf="error" class="error-banner">
+    ❌ {{ error }}
+  </div>
 
-    <div *ngIf="!isLoading && complaints.length === 0" class="bg-white border border-gray-100 rounded-2xl p-14 text-center text-gray-400">
-        <div class="text-5xl mb-3">📭</div>
-        <p class="font-semibold">No complaints found.</p>
-    </div>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loader"></div>
+    <p class="loading-text">Loading complaints...</p>
+  </div>
 
-    <div *ngIf="!isLoading && complaints.length > 0" class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b border-gray-200">
-                <tr>
-                    <th class="text-left px-5 py-3 font-semibold text-gray-600">ID</th>
-                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Subject</th>
-                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Room</th>
-                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Status</th>
-                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Answer</th>
-                    <th class="text-right px-5 py-3 font-semibold text-gray-600">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let c of complaints" class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td class="px-5 py-4 text-gray-500">#{{ c.complaintId }}</td>
-                    <td class="px-5 py-4 font-medium text-gray-900">{{ c.subject }}</td>
-                    <td class="px-5 py-4 text-gray-600">{{ c.room?.name || '-' }}</td>
-                    <td class="px-5 py-4">
-                        <span [class]="c.status
-                            ? 'px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold'
-                            : 'px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold'">
-                            {{ c.status ? 'Answered' : 'Pending' }}
-                        </span>
-                    </td>
-                    <td class="px-5 py-4 text-gray-600 max-w-sm truncate">{{ c.answer || '-' }}</td>
-                    <td class="px-5 py-4 text-right">
-                        <button (click)="deleteComplaint(c)"
-                            class="px-3 py-1.5 text-xs font-semibold text-red-600 border border-red-300 rounded-lg hover:bg-red-600 hover:text-white transition-colors">
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && complaints.length === 0" class="empty-state">
+    <div class="empty-state-icon">📭</div>
+    <div class="empty-state-text">No Complaints Found</div>
+    <div class="empty-state-desc">You haven't created any complaints yet. Start creating complaints from the planning module</div>
+    <button class="refresh-action-btn" (click)="loadMine()">Refresh</button>
+  </div>
+
+  <!-- Complaints Table -->
+  <div *ngIf="!isLoading && complaints.length > 0" class="table-wrapper">
+    <table class="complaints-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Subject</th>
+          <th>Room</th>
+          <th>Status</th>
+          <th>Answer</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of complaints">
+          <td>
+            <div class="complaint-ref">#{{ c.complaintId }}</div>
+          </td>
+          <td>
+            <div class="complaint-title">{{ c.subject }}</div>
+          </td>
+          <td>
+            <div class="date-cell">{{ c.room?.name || '—' }}</div>
+          </td>
+          <td>
+            <span [ngClass]="c.status 
+              ? 'status-badge status-resolved' 
+              : 'status-badge status-pending'">
+              {{ c.status ? '✓ Answered' : '⏳ Pending' }}
+            </span>
+          </td>
+          <td>
+            <div class="complaint-description">
+              {{ c.answer || '—' }}
+            </div>
+          </td>
+          <td>
+            <button class="delete-btn" (click)="deleteComplaint(c)" [disabled]="isLoading">
+              🗑️ Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
 </div>

@@ -1,201 +1,268 @@
-<!-- ══════════════════  LIST VIEW  ══════════════════ -->
-<div id="rc-list-view">
-  <div class="rc-page">
+<div class="min-h-screen p-8 bg-[#EDF6F9]/50 animate-fade-in">
+
+  <!-- ══════════════════  LIST VIEW  ══════════════════ -->
+  <div id="rc-list-view">
+    <!-- Header -->
+    <div class="mb-10 flex justify-between items-center">
+        <div class="flex items-center gap-5">
+            <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-[#006D77] tracking-tight">Recruitment Management</h1>
+                <p class="text-[#83C5BE] font-medium">Manage open positions, applicants, and hiring status</p>
+            </div>
+        </div>
+        
+        <button (click)="openCreateModal()" class="group px-6 py-3 bg-[#006D77] text-white rounded-2xl hover:bg-[#83C5BE] transition-all duration-300 shadow-md flex items-center gap-3 font-semibold text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-500"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Recruitment
+        </button>
+    </div>
+
+    <!-- Stats & Filters -->
+    <div class="bg-white rounded-[20px] p-6 mb-8 shadow-sm border border-gray-100 flex flex-wrap gap-4 items-center justify-between">
+        <div class="flex gap-4">
+            <div class="px-5 py-2.5 bg-[#EDF6F9] rounded-2xl flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full bg-[#006D77]"></div>
+                <span class="text-[#006D77] font-bold text-sm"><span id="rc-stat-total">0</span> Total</span>
+            </div>
+            <div class="px-5 py-2.5 bg-green-50 border border-green-100 rounded-2xl flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                <span class="text-green-700 font-bold text-sm"><span id="rc-stat-open">0</span> Open</span>
+            </div>
+            <div class="px-5 py-2.5 bg-[#FFDDD2] border border-[#E29578]/20 rounded-2xl flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full bg-[#E29578]"></div>
+                <span class="text-[#E29578] font-bold text-sm"><span id="rc-stat-closed">0</span> Closed</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden animate-fade-in">
+        <div class="p-6 border-b border-gray-50 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-[#006D77]">All Recruitments</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-gray-50/50 border-b border-gray-100">
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest w-16">#</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Position</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Department</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Opened at</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Interviews</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Applicants</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Status</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50" id="rc-recruitment-tbody">
+                    <!-- Injected via TS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════  DETAIL VIEW  ══════════════════ -->
+  <div id="rc-detail-view" style="display: none;">
+    
+    <div class="mb-6">
+      <button class="flex items-center gap-2 text-[#83C5BE] hover:text-[#006D77] font-bold text-sm transition-all" (click)="showListView()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        Back to list
+      </button>
+    </div>
 
     <!-- Header -->
-    <div class="rc-page-header">
-      <div>
-        <div class="rc-page-title">Recruitment management</div>
-        <div class="rc-page-subtitle">Manage open positions, applicants and hiring status</div>
-      </div>
-      <div class="rc-stat-chips">
-        <span class="rc-stat-chip rc-stat-chip--total">
-          <span class="rc-stat-dot"></span>
-          <span id="rc-stat-total">0</span> total
-        </span>
-        <span class="rc-stat-chip rc-stat-chip--open">
-          <span class="rc-stat-dot"></span>
-          <span id="rc-stat-open">0</span> open
-        </span>
-        <span class="rc-stat-chip rc-stat-chip--closed">
-          <span class="rc-stat-dot"></span>
-          <span id="rc-stat-closed">0</span> closed
-        </span>
-      </div>
+    <div class="bg-white rounded-[24px] shadow-sm border border-gray-100 p-8 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <h2 class="text-3xl font-bold text-[#006D77]" id="rc-detail-title-text">–</h2>
+            <div class="flex items-center gap-4 mt-3">
+                <span class="px-3 py-1 bg-[#EDF6F9] text-[#006D77] rounded-full text-xs font-bold" id="rc-detail-dept-tag">–</span>
+                <span id="rc-detail-status-badge">–</span>
+            </div>
+        </div>
+        <div class="text-[#83C5BE] font-bold text-sm" id="rc-detail-opened-date">–</div>
     </div>
 
-    <!-- Toolbar -->
-    <div class="rc-toolbar">
-      <button class="rc-btn rc-btn--primary" (click)="openCreateModal()">＋ New recruitment</button>
+    <!-- Applicants Table -->
+    <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden animate-fade-in">
+        <div class="p-6 border-b border-gray-50 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-[#006D77]">Applicants</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-gray-50/50 border-b border-gray-100">
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest w-16">#</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">User Name</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest w-1/4">Response</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">CV</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Status & AI</th>
+                        <th class="px-8 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50" id="rc-applicants-tbody">
+                    <!-- Injected via TS -->
+                </tbody>
+            </table>
+        </div>
     </div>
-
-    <!-- Main card -->
-    <div class="rc-card">
-      <div class="rc-card-toolbar">
-        <span class="rc-card-toolbar-label">All recruitments</span>
-      </div>
-      <div class="rc-table-wrap">
-        <table class="rc-table">
-          <thead>
-            <tr>
-              <th class="rc-td-num">#</th>
-              <th>Position</th>
-              <th>Department</th>
-              <th>Opened at</th>
-              <th>Interviews</th>
-              <th>Applicants</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="rc-recruitment-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-
   </div>
+
+  <!-- ══════════════════  MODAL (CREATE/EDIT)  ══════════════════ -->
+  <div id="rc-modal-overlay" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#006D77]/20 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300" (click)="onOverlayClick($event)">
+    <div class="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl border border-white/20 transform scale-95 transition-transform duration-300" id="rc-modal-box">
+
+      <div class="p-8 bg-[#EDF6F9] flex justify-between items-center border-b border-gray-100 rounded-t-[32px]">
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-[#006D77] shadow-lg flex items-center justify-center text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-[#006D77]" id="rc-modal-title">New recruitment</h2>
+                <p class="text-[#83C5BE] font-medium text-sm">Fill in the position details</p>
+            </div>
+        </div>
+        <button class="p-3 hover:bg-white rounded-2xl transition-all text-[#006D77]" (click)="closeModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="p-8 space-y-6">
+        <input type="hidden" id="rc-edit-id" value="" />
+
+        <div class="grid grid-cols-2 gap-6">
+          <div class="space-y-2" id="rc-field-position">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1" for="rc-f-position">Position title *</label>
+            <input type="text" id="rc-f-position" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium rc-input-val" placeholder="e.g. Frontend developer" />
+            <span class="text-red-500 text-xs font-bold hidden rc-error-msg mt-1">Position title is required.</span>
+          </div>
+          <div class="space-y-2" id="rc-field-department">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1" for="rc-f-department">Department *</label>
+            <input type="text" id="rc-f-department" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium rc-input-val" placeholder="e.g. Engineering" />
+            <span class="text-red-500 text-xs font-bold hidden rc-error-msg mt-1">Department is required.</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1" for="rc-f-status">Status</label>
+            <select id="rc-f-status" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
+              <option value="OPEN">Open</option>
+              <option value="CLOSED">Closed</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1" for="rc-f-opened">Opening date</label>
+            <input type="date" id="rc-f-opened" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
+          </div>
+        </div>
+      </div>
+
+      <div class="p-8 bg-gray-50/50 flex gap-4 rounded-b-[32px]">
+        <button class="flex-1 py-4 bg-white border-2 border-[#EDF6F9] text-[#006D77] rounded-2xl font-bold hover:bg-[#EDF6F9] transition-all" (click)="closeModal()">Cancel</button>
+        <button class="flex-1 py-4 bg-[#006D77] text-white rounded-2xl font-bold shadow-lg hover:bg-[#83C5BE] transition-all" (click)="saveRecruitment()">Save</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════  CV VIEWER (fixed overlay)  ══════════════════ -->
+  <div id="rc-viewer-overlay" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col">
+    <div class="p-6 flex justify-between items-center bg-black/40 text-white">
+      <span class="text-xl font-bold">CV Quick Viewer</span>
+      <button class="p-3 hover:bg-white/20 rounded-2xl transition-all" (click)="closeViewer()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="flex-1 w-full p-6">
+      <iframe id="rc-viewer-frame" src="" frameborder="0" class="w-full h-full bg-white rounded-2xl shadow-2xl"></iframe>
+    </div>
+  </div>
+
+  <!-- ══════════════════  SCHEDULE INTERVIEW MODAL  ══════════════════ -->
+  <div id="rc-schedule-overlay" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#006D77]/20 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl border border-white/20 transform scale-95 transition-transform duration-300">
+      
+      <div class="p-8 bg-[#EDF6F9] flex justify-between items-center border-b border-gray-100 rounded-t-[32px]">
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-[#006D77] shadow-lg flex items-center justify-center text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-[#006D77]">Schedule Interview</h2>
+                <p class="text-[#83C5BE] font-medium text-sm">Set up a meeting with the applicant</p>
+            </div>
+        </div>
+        <button class="p-3 hover:bg-white rounded-2xl transition-all text-[#006D77]" (click)="closeScheduleModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="p-8 space-y-6">
+        <div class="space-y-2">
+          <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1" for="in-f-title">Interview title *</label>
+          <input type="text" id="in-f-title" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="e.g. Technical Interview" />
+        </div>
+        
+        <div class="grid grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1" for="in-f-date">Start date & time *</label>
+            <input type="datetime-local" id="in-f-date" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1" for="in-f-duration">Duration (minutes)</label>
+            <input type="number" id="in-f-duration" value="30" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1" for="in-f-link">Meeting link / Location</label>
+            <input type="text" id="in-f-link" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="https://meet.google.com/..." />
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1" for="in-f-type">Type</label>
+            <select id="in-f-type" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
+              <option value="ENLIGNE">Online (En ligne)</option>
+              <option value="PRESENTIEL">In-person (Présentiel)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-8 bg-gray-50/50 flex gap-4 rounded-b-[32px]">
+        <button class="flex-1 py-4 bg-white border-2 border-[#EDF6F9] text-[#006D77] rounded-2xl font-bold hover:bg-[#EDF6F9] transition-all" (click)="closeScheduleModal()">Cancel</button>
+        <button class="flex-1 py-4 bg-[#006D77] text-white rounded-2xl font-bold shadow-lg hover:bg-[#83C5BE] transition-all" (click)="submitInterview()">Schedule & Accept</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<!-- ══════════════════  DETAIL VIEW  ══════════════════ -->
-<div id="rc-detail-view">
-  <div class="rc-page">
-
-    <div class="rc-detail-back">
-      <button class="rc-btn rc-btn--secondary rc-btn--sm" (click)="showListView()">← Back to list</button>
-    </div>
-
-    <div class="rc-detail-head">
-      <div class="rc-detail-title" id="rc-detail-title-text">–</div>
-      <div class="rc-detail-meta">
-        <span class="rc-dept-tag" id="rc-detail-dept-tag">–</span>
-        <span class="rc-pill" id="rc-detail-status-badge">–</span>
-        <span class="rc-detail-date" id="rc-detail-opened-date">–</span>
-      </div>
-    </div>
-
-    <div class="rc-card">
-      <div class="rc-card-toolbar">
-        <span class="rc-card-toolbar-label">Applicants</span>
-      </div>
-      <div class="rc-table-wrap">
-        <table class="rc-table">
-          <thead>
-            <tr>
-              <th class="rc-td-num">#</th>
-              <th>User Name</th>
-              <th>Response</th>
-              <th>CV</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="rc-applicants-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ══════════════════  MODAL (fixed overlay)  ══════════════════ -->
-<div id="rc-modal-overlay" class="rc-modal-overlay" (click)="onOverlayClick($event)">
-  <div class="rc-modal-box" id="rc-modal-box">
-
-    <div class="rc-modal-head">
-      <span class="rc-modal-head-title" id="rc-modal-title">New recruitment</span>
-      <button class="rc-modal-close-btn" (click)="closeModal()" aria-label="Close">×</button>
-    </div>
-
-    <div class="rc-modal-body">
-      <input type="hidden" id="rc-edit-id" value="" />
-
-      <div class="rc-form-row">
-        <div class="rc-form-group" id="rc-field-position">
-          <label for="rc-f-position">Position title *</label>
-          <input type="text" id="rc-f-position" placeholder="e.g. Frontend developer" />
-          <span class="rc-form-error">Position title is required.</span>
-        </div>
-        <div class="rc-form-group" id="rc-field-department">
-          <label for="rc-f-department">Department *</label>
-          <input type="text" id="rc-f-department" placeholder="e.g. Engineering" />
-          <span class="rc-form-error">Department is required.</span>
-        </div>
-      </div>
-
-      <div class="rc-form-row">
-        <div class="rc-form-group">
-          <label for="rc-f-status">Status</label>
-          <select id="rc-f-status">
-            <option value="OPEN">Open</option>
-            <option value="CLOSED">Closed</option>
-            <option value="CANCELLED">Cancelled</option>
-          </select>
-        </div>
-        <div class="rc-form-group">
-          <label for="rc-f-opened">Opening date</label>
-          <input type="date" id="rc-f-opened" />
-        </div>
-      </div>
-    </div>
-
-    <div class="rc-modal-foot">
-      <button class="rc-btn rc-btn--secondary rc-btn--sm" (click)="closeModal()">Cancel</button>
-      <button class="rc-btn rc-btn--primary rc-btn--sm" (click)="saveRecruitment()">Save</button>
-    </div>
-
-  </div>
-</div>
-
-<!-- ══════════════════  CV VIEWER (full screen)  ══════════════════ -->
-<div id="rc-viewer-overlay" class="rc-viewer-overlay">
-  <div class="rc-viewer-head">
-    <span class="rc-viewer-title">CV Quick Viewer</span>
-    <button class="rc-viewer-close" (click)="closeViewer()">×</button>
-  </div>
-  <div class="rc-viewer-body" id="rc-viewer-body">
-    <iframe id="rc-viewer-frame" src="" frameborder="0" style="width:100%; height:100%"></iframe>
-  </div>
-</div>
-
-<!-- ══════════════════  SCHEDULE INTERVIEW MODAL  ══════════════════ -->
-<div id="rc-schedule-overlay" class="rc-modal-overlay">
-  <div class="rc-modal-box">
-    <div class="rc-modal-head">
-      <span class="rc-modal-head-title">Schedule interview</span>
-      <button class="rc-modal-close-btn" (click)="closeScheduleModal()">×</button>
-    </div>
-    <div class="rc-modal-body">
-      <div class="rc-form-group">
-        <label for="in-f-title">Interview title *</label>
-        <input type="text" id="in-f-title" placeholder="e.g. Technical Interview" />
-      </div>
-      <div class="rc-form-row">
-        <div class="rc-form-group">
-          <label for="in-f-date">Start date & time *</label>
-          <input type="datetime-local" id="in-f-date" />
-        </div>
-        <div class="rc-form-group">
-          <label for="in-f-duration">Duration (minutes)</label>
-          <input type="number" id="in-f-duration" value="30" />
-        </div>
-      </div>
-      <div class="rc-form-row">
-        <div class="rc-form-group">
-          <label for="in-f-link">Meeting link / Location</label>
-          <input type="text" id="in-f-link" placeholder="https://meet.google.com/..." />
-        </div>
-        <div class="rc-form-group">
-          <label for="in-f-type">Type</label>
-          <select id="in-f-type">
-            <option value="ENLIGNE">Online (En ligne)</option>
-            <option value="PRESENTIEL">In-person (Présentiel)</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class="rc-modal-foot">
-      <button class="rc-btn rc-btn--secondary rc-btn--sm" (click)="closeScheduleModal()">Cancel</button>
-      <button class="rc-btn rc-btn--primary rc-btn--sm" (click)="submitInterview()">Schedule & Accept</button>
-    </div>
-  </div>
-</div>
+<!-- Styles pour le TS et les modales -->
+<style>
+  /* On gère les overlays de modale en ajoutant une classe via le TS */
+  #rc-modal-overlay.open,
+  #rc-viewer-overlay.open,
+  #rc-schedule-overlay.open {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  #rc-modal-overlay.open > div,
+  #rc-schedule-overlay.open > div {
+    transform: scale(1) !important;
+  }
+  
+  .has-error .rc-input-val {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+  }
+  .has-error .rc-error-msg {
+    display: block !important;
+  }
+</style>
