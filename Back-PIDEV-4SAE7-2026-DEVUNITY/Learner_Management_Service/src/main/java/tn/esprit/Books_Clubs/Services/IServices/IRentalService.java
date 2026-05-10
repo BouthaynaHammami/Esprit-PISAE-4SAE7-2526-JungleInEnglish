@@ -1,6 +1,6 @@
 package tn.esprit.Books_Clubs.Services.IServices;
 
-import tn.esprit.Books_Clubs.entities.*;
+import tn.esprit.jungleinenglishuser.entities.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,7 +20,7 @@ public interface IRentalService {
     List<Rental> getAll();
     void delete(Long id);
 
-    // â”€â”€ Currency â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Currency ──────────────────────────────────────────────────────────────
     BigDecimal getDailyPriceIn(Long rentalId, Currency targetCurrency);
     BigDecimal getTotalPriceIn(Long rentalId, Currency targetCurrency);
 }

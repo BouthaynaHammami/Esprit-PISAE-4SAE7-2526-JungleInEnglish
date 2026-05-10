@@ -7,7 +7,7 @@ import { Parent } from '../models/parent.model';
   providedIn: 'root'
 })
 export class ParentService {
-  private apiUrl = 'http://localhost:8087/language/api/parents';
+  private apiUrl = 'http://localhost:8081/languages/api/parents';
 
   constructor(private http: HttpClient) {}
 

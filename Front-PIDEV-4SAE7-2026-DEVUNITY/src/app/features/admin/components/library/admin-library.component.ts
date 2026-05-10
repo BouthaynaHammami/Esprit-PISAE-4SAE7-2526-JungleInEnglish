@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { environment } from '../../../../../environments/environment';
 
 import { BookService }     from '../../../../core/services/books_clubs/book.service';
 import { AuthorService }   from '../../../../core/services/books_clubs/author.service';
@@ -12,7 +13,6 @@ import { OrderService }    from '../../../../core/services/books_clubs/order.ser
 import { RentalService }   from '../../../../core/services/books_clubs/rental.service';
 import { StockService }    from '../../../../core/services/books_clubs/stock.service';
 import { AuthService }     from '../../../../core/services/auth.service';
-import { environment } from '../../../../../environments/environment';
 
 import { Book, Author, Category, Order, Rental, Currency } from '../../../../core/models/book-models';
 import { WalletService, Wallet } from '../../../../core/services/books_clubs/wallet.service';
@@ -23,8 +23,6 @@ import { WalletService, Wallet } from '../../../../core/services/books_clubs/wal
   styleUrls: ['./admin-library.component.css']
 })
 export class AdminLibraryComponent implements OnInit {
-  pageTitle: string = 'Digital Library Management';
-  pageIcon: string = '📚';
 
   // =========================================================
   //  TABS
@@ -192,7 +190,7 @@ export class AdminLibraryComponent implements OnInit {
   // =========================================================
   //  BASE URL
   // =========================================================
-  private readonly BASE = `${environment.apiUrl}/learners/api`;
+  private readonly BASE = `${environment.devUnityUrl}/learners/api`;
 
   constructor(
     private fb:          FormBuilder,
@@ -324,7 +322,7 @@ export class AdminLibraryComponent implements OnInit {
             book: { bookId: b.bookId, title: b.title, isbn: b.isbn, status: b.status }
           }));
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('loadAll error', err);
         if (err.status === 403 || err.status === 401) {
           this.showError('Accès refusé (403). Vérifiez vos droits ou reconnectez-vous.');
@@ -459,7 +457,7 @@ export class AdminLibraryComponent implements OnInit {
           this.loadAll();
           this.showSuccess('Livre mis à jour avec succès.');
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('updateBook error', err);
           this.isLoading = false;
           this.showError(err.status === 403 ? 'Accès refusé (403) — droits insuffisants.' : 'Échec de la mise à jour.');
@@ -475,7 +473,7 @@ export class AdminLibraryComponent implements OnInit {
         this.loadAll();
         this.showSuccess('Livre ajouté avec succès.');
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('addBook error', err);
         this.isLoading = false;
         this.showError(err.status === 403 ? 'Accès refusé (403) — droits insuffisants.' : 'Échec de l\'ajout.');
@@ -500,7 +498,7 @@ export class AdminLibraryComponent implements OnInit {
         this.loadAll();
         this.showSuccess('Livre supprimé avec succès.');
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('deleteBook error', err);
         this.showError(err.status === 403 ? 'Accès refusé (403).' : 'Échec de la suppression.');
       }
@@ -527,7 +525,7 @@ export class AdminLibraryComponent implements OnInit {
         this.loadAll();
         this.showSuccess('Stock mis à jour avec succès.');
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('updateStock error', err);
         // ✅ FIX — Message d'erreur clair selon le code HTTP
         if (err.status === 403) {
@@ -544,7 +542,7 @@ export class AdminLibraryComponent implements OnInit {
   addQty(b: Book): void {
     this.stockSvc.add(b.bookId, 1).subscribe({
       next: () => this.loadAll(),
-      error: (err) => {
+      error: (err: any) => {
         console.error('addQty error', err);
         if (err.status === 403) this.showError('Accès refusé (403) pour modifier le stock.');
       }
@@ -555,7 +553,7 @@ export class AdminLibraryComponent implements OnInit {
     if ((b.stock?.quantity ?? 0) <= 0) return;
     this.stockSvc.remove(b.bookId, 1).subscribe({
       next: () => this.loadAll(),
-      error: (err) => {
+      error: (err: any) => {
         console.error('removeQty error', err);
         if (err.status === 403) this.showError('Accès refusé (403) pour modifier le stock.');
       }
@@ -578,21 +576,21 @@ export class AdminLibraryComponent implements OnInit {
     const quantity = Number(this.stockEditForm.value.quantity);
     this.stockSvc.update(this.selectedStock.book.bookId, quantity).subscribe({
       next: () => { this.closeStockEditModal(); this.loadAll(); this.showSuccess('Stock mis à jour.'); },
-      error: (err) => { console.error('submitStockEdit error', err); this.showError('Échec de la mise à jour du stock.'); }
+      error: (err: any) => { console.error('submitStockEdit error', err); this.showError('Échec de la mise à jour du stock.'); }
     });
   }
 
   addStockQty(s: any, qty: number): void {
     this.stockSvc.add(s.book.bookId, qty).subscribe({
       next: () => { this.loadAll(); this.showSuccess(`+${qty} ajouté au stock.`); },
-      error: (err) => { console.error('addStockQty error', err); this.showError('Échec de l\'ajout de quantité.'); }
+      error: (err: any) => { console.error('addStockQty error', err); this.showError('Échec de l\'ajout de quantité.'); }
     });
   }
 
   removeStockQty(s: any, qty: number): void {
     this.stockSvc.remove(s.book.bookId, qty).subscribe({
       next: () => { this.loadAll(); this.showSuccess(`-${qty} retiré du stock.`); },
-      error: (err) => { console.error('removeStockQty error', err); this.showError('Échec du retrait de quantité.'); }
+      error: (err: any) => { console.error('removeStockQty error', err); this.showError('Échec du retrait de quantité.'); }
     });
   }
 
@@ -615,7 +613,7 @@ export class AdminLibraryComponent implements OnInit {
     const userId = this.getCurrentUserId();
     this.orderSvc.create(currency, userId).subscribe({
       next: () => { this.loadAll(); this.showSuccess(`Commande en ${currency} créée.`); },
-      error: (err) => { console.error('createOrder error', err); this.showError('Échec de la création de la commande.'); }
+      error: (err: any) => { console.error('createOrder error', err); this.showError('Échec de la création de la commande.'); }
     });
   }
 
@@ -632,7 +630,7 @@ export class AdminLibraryComponent implements OnInit {
     const qty    = Number(v.qty);
     this.orderSvc.addItem(this.selectedOrderId, bookId, qty).subscribe({
       next: () => { this.showAddItemModal = false; this.loadAll(); this.showSuccess('Article ajouté à la commande.'); },
-      error: (err) => { console.error('submitAddItem error', err); this.showError('Échec de l\'ajout à la commande.'); }
+      error: (err: any) => { console.error('submitAddItem error', err); this.showError('Échec de l\'ajout à la commande.'); }
     });
   }
 
@@ -660,7 +658,7 @@ export class AdminLibraryComponent implements OnInit {
           this.loadAll();
           this.showSuccess('✅ Commande payée — facture téléchargée.');
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('payOrder error', err);
           if (err.status === 403) {
             this.showError('Accès refusé (403). Token JWT invalide ou expiré.');
@@ -695,14 +693,14 @@ export class AdminLibraryComponent implements OnInit {
   cancelOrder(id: number): void {
     this.orderSvc.cancel(id).subscribe({
       next: () => { this.loadAll(); this.showSuccess('Commande annulée.'); },
-      error: (err) => { console.error('cancelOrder error', err); this.showError('Échec de l\'annulation.'); }
+      error: (err: any) => { console.error('cancelOrder error', err); this.showError('Échec de l\'annulation.'); }
     });
   }
 
   deleteOrder(id: number): void {
     this.orderSvc.delete(id).subscribe({
       next: () => { this.loadAll(); this.showSuccess('Commande supprimée.'); },
-      error: (err) => { console.error('deleteOrder error', err); this.showError('Échec de la suppression.'); }
+      error: (err: any) => { console.error('deleteOrder error', err); this.showError('Échec de la suppression.'); }
     });
   }
 
@@ -727,7 +725,7 @@ export class AdminLibraryComponent implements OnInit {
       userId
     ).subscribe({
       next: () => { this.showRentalModal = false; this.loadAll(); this.showSuccess('Location créée avec succès.'); },
-      error: (err) => { console.error('submitRental error', err); this.showError('Échec de la création de la location.'); }
+      error: (err: any) => { console.error('submitRental error', err); this.showError('Échec de la création de la location.'); }
     });
   }
 
@@ -755,7 +753,7 @@ export class AdminLibraryComponent implements OnInit {
           this.loadAll();
           this.showSuccess('✅ Location payée — facture téléchargée.');
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('payRental error', err);
           if (err.status === 403) {
             this.showError('Accès refusé (403). Token JWT invalide ou expiré.');
@@ -802,14 +800,14 @@ export class AdminLibraryComponent implements OnInit {
         this.loadAll();
         this.showSuccess('Retour enregistré avec succès.');
       },
-      error: (err) => { console.error('submitReturn error', err); this.showError('Échec de l\'enregistrement du retour.'); }
+      error: (err: any) => { console.error('submitReturn error', err); this.showError('Échec de l\'enregistrement du retour.'); }
     });
   }
 
   deleteRental(id: number): void {
     this.rentalSvc.delete(id).subscribe({
       next: () => { this.loadAll(); this.showSuccess('Location supprimée.'); },
-      error: (err) => { console.error('deleteRental error', err); this.showError('Échec de la suppression.'); }
+      error: (err: any) => { console.error('deleteRental error', err); this.showError('Échec de la suppression.'); }
     });
   }
 
@@ -877,9 +875,9 @@ export class AdminLibraryComponent implements OnInit {
     const headers = this.getAuthHeaders().headers;
 
     this.http.get<any[]>(`${this.BASE}/users`, { headers }).subscribe({
-      next: (students) => {
-        this.students = (students || []).filter((s: any) => (s?.role || '').toString().toUpperCase() === 'STUDENT');
-        students = this.students;
+      next: (allUsers) => {
+        const students = allUsers.filter((u: any) => u.role === 'STUDENT');
+        this.students = students;
         this.studentWallets = students.map((s: any) => ({ student: s, wallet: null }));
         let loaded = 0;
         if (students.length === 0) { this.walletLoading = false; return; }

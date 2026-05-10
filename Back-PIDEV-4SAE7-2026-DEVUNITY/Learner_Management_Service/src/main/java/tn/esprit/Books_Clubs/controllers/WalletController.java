@@ -1,11 +1,11 @@
-package tn.esprit.Books_Clubs.controllers;
+package tn.esprit.Books_Clubs.Controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.Books_Clubs.Services.IServices.IWalletService;
-import tn.esprit.Books_Clubs.entities.Transaction;
-import tn.esprit.Books_Clubs.entities.Wallet;
+import tn.esprit.jungleinenglishuser.Services.IServices.IWalletService;
+import tn.esprit.jungleinenglishuser.entities.Transaction;
+import tn.esprit.jungleinenglishuser.entities.Wallet;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,20 +18,20 @@ public class WalletController {
 
     private final IWalletService walletService;
 
-    // ðŸŸ¢ CREATE WALLET
+    // 🟢 CREATE WALLET
     @PostMapping("/create/{userId}")
     public Wallet createWallet(@PathVariable Integer userId) {
         return walletService.createWallet(userId);
     }
 
-    // ðŸ’° RECHARGE
+    // 💰 RECHARGE
     @PostMapping("/recharge")
     public Wallet recharge(@RequestParam Integer userId,
                            @RequestParam BigDecimal amount) {
         return walletService.recharge(userId, amount);
     }
 
-    // ðŸ’³ PAY FROM WALLET
+    // 💳 PAY FROM WALLET
     @PostMapping("/pay")
     public ResponseEntity<?> pay(@RequestParam Integer userId,
                                  @RequestParam BigDecimal amount) {
@@ -43,7 +43,7 @@ public class WalletController {
         }
     }
 
-    // ðŸ’³ GET WALLET
+    // 💳 GET WALLET
     @GetMapping("/{userId}")
     public ResponseEntity<Wallet> getWallet(@PathVariable Integer userId) {
         try {
@@ -53,7 +53,7 @@ public class WalletController {
         }
     }
 
-    // ðŸ“œ TRANSACTIONS
+    // 📜 TRANSACTIONS
     @GetMapping("/transactions/{userId}")
     public List<Transaction> getTransactions(@PathVariable Integer userId) {
         return walletService.getTransactions(userId);

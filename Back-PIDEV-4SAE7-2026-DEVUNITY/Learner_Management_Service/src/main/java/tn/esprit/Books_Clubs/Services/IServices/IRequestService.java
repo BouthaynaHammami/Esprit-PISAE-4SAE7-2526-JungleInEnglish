@@ -1,7 +1,7 @@
 package tn.esprit.Books_Clubs.Services.IServices;
 
 
-import tn.esprit.Books_Clubs.entities.MembershipRequest;
+import tn.esprit.jungleinenglishuser.entities.MembershipRequest;
 
 import java.util.List;
 
@@ -12,4 +12,3 @@ public interface IRequestService {
     List<MembershipRequest> byClub(Long clubId);
     List<MembershipRequest> byMember(Long memberId);
 }
-

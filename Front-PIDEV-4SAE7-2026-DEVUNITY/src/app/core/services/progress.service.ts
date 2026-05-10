@@ -7,7 +7,7 @@ import { Progress } from '../models/progress.model';
   providedIn: 'root'
 })
 export class ProgressService {
-  private apiUrl = 'http://localhost:8087/language/api/progress';
+  private apiUrl = 'http://localhost:8081/languages/api/progress';
 
   constructor(private http: HttpClient) {}
 

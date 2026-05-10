@@ -7,7 +7,7 @@ import { Child } from '../models/child.model';
   providedIn: 'root'
 })
 export class ChildService {
-  private apiUrl = 'http://localhost:8087/language/api/children';
+  private apiUrl = 'http://localhost:8081/languages/api/children';
 
   constructor(private http: HttpClient) {}
 

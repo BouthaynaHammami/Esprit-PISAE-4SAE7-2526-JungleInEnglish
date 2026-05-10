@@ -1,8 +1,8 @@
-package tn.esprit.Books_Clubs.controllers;
+package tn.esprit.Books_Clubs.Controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.Books_Clubs.Services.ImplServices.DiscountService;
+import tn.esprit.jungleinenglishuser.Services.ImplServices.DiscountService;
 
 @RestController
 @RequestMapping("/discount")

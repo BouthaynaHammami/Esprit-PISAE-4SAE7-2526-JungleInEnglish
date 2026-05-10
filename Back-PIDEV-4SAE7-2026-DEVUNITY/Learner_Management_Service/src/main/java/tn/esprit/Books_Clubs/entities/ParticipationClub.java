@@ -8,17 +8,21 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Entity
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "participation_clubs")
+@Entity
 public class ParticipationClub {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long participationId;
 
-    private Long memberId;
+    @ManyToOne
+    private User member;
 
     private LocalDate joinDate;
     private LocalDate endDate;

@@ -7,7 +7,7 @@ import { Reward, TypeReward } from '../models/reward.model';
   providedIn: 'root'
 })
 export class RewardService {
-  private apiUrl = 'http://localhost:8087/language/api/rewards';
+  private apiUrl = 'http://localhost:8081/languages/api/rewards';
 
   constructor(private http: HttpClient) {}
 

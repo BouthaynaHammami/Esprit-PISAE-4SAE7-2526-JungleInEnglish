@@ -1,12 +1,14 @@
 package tn.esprit.Books_Clubs.Services.ImplServices;
 
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tn.esprit.Books_Clubs.entities.*;
-import tn.esprit.Books_Clubs.repositories.*;
+import tn.esprit.jungleinenglishuser.entities.*;
+import tn.esprit.jungleinenglishuser.repositories.*;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
@@ -20,7 +22,7 @@ public class InvoiceService {
     private final OrderRepository  orderRepository;
     private final RentalRepository rentalRepository;
 
-    // â”€â”€ Palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Palette ────────────────────────────────────────────
     private static final BaseColor TEAL       = new BaseColor(0x00, 0x6D, 0x77); // #006D77
     private static final BaseColor TEAL_LIGHT = new BaseColor(0x83, 0xC5, 0xBE); // #83C5BE
     private static final BaseColor BG_LIGHT   = new BaseColor(0xED, 0xF6, 0xF9); // #EDF6F9
@@ -40,7 +42,7 @@ public class InvoiceService {
         PdfWriter writer = PdfWriter.getInstance(doc, baos);
         doc.open();
 
-        // â”€â”€ Fonts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Fonts ──────────────────────────────────────────
         Font fHero      = new Font(Font.FontFamily.HELVETICA, 26, Font.BOLD,   WHITE);
         Font fSubHero   = new Font(Font.FontFamily.HELVETICA, 10, Font.NORMAL, PEACH);
         Font fTagline   = new Font(Font.FontFamily.HELVETICA,  8, Font.NORMAL, TEAL_LIGHT);
@@ -55,15 +57,15 @@ public class InvoiceService {
         Font fDiscount  = new Font(Font.FontFamily.HELVETICA,  9, Font.BOLD,   SALMON);
         Font fInvoiceNo = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD,   SALMON);
 
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-        //  HERO BANNER (fond dÃ©gradÃ© simulÃ© par tableau)
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ══════════════════════════════════════════════════
+        //  HERO BANNER (fond dégradé simulé par tableau)
+        // ══════════════════════════════════════════════════
         PdfPTable banner = new PdfPTable(2);
         banner.setWidthPercentage(100);
         banner.setWidths(new float[]{60, 40});
         banner.setSpacingAfter(0);
 
-        // Cellule gauche â€” Nom & coordonnÃ©es
+        // Cellule gauche — Nom & coordonnées
         PdfPCell cBrandCell = new PdfPCell();
         cBrandCell.setBackgroundColor(TEAL);
         cBrandCell.setBorder(Rectangle.NO_BORDER);
@@ -74,12 +76,12 @@ public class InvoiceService {
         cBrandCell.addElement(brand);
         cBrandCell.addElement(new Paragraph("Librairie & Location de Livres", fSubHero));
         cBrandCell.addElement(new Paragraph(" ", fTagline));
-        cBrandCell.addElement(new Paragraph("ðŸ“ Tunis, Tunisie", fTagline));
-        cBrandCell.addElement(new Paragraph("âœ‰  contact@jungleinenglish.tn", fTagline));
-        cBrandCell.addElement(new Paragraph("ðŸŒ www.jungleinenglish.tn", fTagline));
+        cBrandCell.addElement(new Paragraph("📍 Tunis, Tunisie", fTagline));
+        cBrandCell.addElement(new Paragraph("✉  contact@jungleinenglish.tn", fTagline));
+        cBrandCell.addElement(new Paragraph("🌐 www.jungleinenglish.tn", fTagline));
         banner.addCell(cBrandCell);
 
-        // Cellule droite â€” NumÃ©ro de facture
+        // Cellule droite — Numéro de facture
         PdfPCell cInvoCell = new PdfPCell();
         cInvoCell.setBackgroundColor(TEAL_LIGHT);
         cInvoCell.setBorder(Rectangle.NO_BORDER);
@@ -99,14 +101,14 @@ public class InvoiceService {
         invoNum.setAlignment(Element.ALIGN_RIGHT);
         cInvoCell.addElement(invoNum);
 
-        Paragraph invoDate = new Paragraph("Ã‰mise le : " + LocalDate.now().format(FMT), fMeta);
+        Paragraph invoDate = new Paragraph("Émise le : " + LocalDate.now().format(FMT), fMeta);
         invoDate.setAlignment(Element.ALIGN_RIGHT);
         cInvoCell.addElement(invoDate);
         banner.addCell(cInvoCell);
 
         doc.add(banner);
 
-        // Bande dÃ©corative fine sous le banner
+        // Bande décorative fine sous le banner
         PdfPTable stripe = new PdfPTable(1);
         stripe.setWidthPercentage(100);
         stripe.setSpacingAfter(20);
@@ -117,15 +119,15 @@ public class InvoiceService {
         stripe.addCell(stripeCell);
         doc.add(stripe);
 
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ══════════════════════════════════════════════════
         //  COMMANDE
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ══════════════════════════════════════════════════
         if (orderId != null) {
             Order order = orderRepository.findById(orderId).orElseThrow();
 
             // Bloc info commande
-            addInfoBlock(doc, "ðŸ›’  DÃ©tail de la Commande",
-                    "Commande NÂ°", "CMD-" + String.format("%04d", order.getOrderId()),
+            addInfoBlock(doc, "🛒  Détail de la Commande",
+                    "Commande N°", "CMD-" + String.format("%04d", order.getOrderId()),
                     "Date", order.getOrderDate().format(FMT),
                     "Statut", order.getStatus().name(),
                     fSectionH, fMetaBold, fMeta, BG_LIGHT);
@@ -137,7 +139,7 @@ public class InvoiceService {
             t.setSpacingBefore(8);
             t.setSpacingAfter(4);
 
-            String[] headers = {"Titre", "Auteur", "QtÃ©", "Prix unit.", "Total"};
+            String[] headers = {"Titre", "Auteur", "Qté", "Prix unit.", "Total"};
             for (String h : headers) addHeaderCell(t, h, fColHead, TEAL);
 
             boolean alt = false;
@@ -155,12 +157,12 @@ public class InvoiceService {
             addSubtotalRow(t, "Sous-total",
                     fmt(order.getTotalAmount(), order.getCurrency()), fCell, BG_LIGHT);
 
-            // RÃ©duction ?
+            // Réduction ?
             if (order.isDiscountApplied()) {
                 BigDecimal original = order.getTotalAmount().divide(
                         BigDecimal.valueOf(0.80), 2, java.math.RoundingMode.HALF_UP);
                 BigDecimal saved = original.subtract(order.getTotalAmount());
-                addSubtotalRow(t, "ðŸŽ‰ RÃ©duction fidÃ©litÃ© (-20%)",
+                addSubtotalRow(t, "🎉 Réduction fidélité (-20%)",
                         "- " + fmt(saved, order.getCurrency()), fDiscount, PEACH);
             }
 
@@ -170,7 +172,7 @@ public class InvoiceService {
             doc.add(t);
 
             if (order.isDiscountApplied()) {
-                Paragraph disc = new Paragraph("â˜…  RÃ©duction de fidÃ©litÃ© appliquÃ©e : -20% pour ce client !", fDiscount);
+                Paragraph disc = new Paragraph("★  Réduction de fidélité appliquée : -20% pour ce client !", fDiscount);
                 disc.setSpacingBefore(4);
                 doc.add(disc);
             }
@@ -178,16 +180,16 @@ public class InvoiceService {
             doc.add(new Paragraph(" "));
         }
 
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ══════════════════════════════════════════════════
         //  LOCATION
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ══════════════════════════════════════════════════
         if (rentalId != null) {
             Rental rental = rentalRepository.findById(rentalId).orElseThrow();
 
-            addInfoBlock(doc, "ðŸ”–  DÃ©tail de la Location",
-                    "Location NÂ°", "LOC-" + String.format("%04d", rental.getRentalId()),
+            addInfoBlock(doc, "🔖  Détail de la Location",
+                    "Location N°", "LOC-" + String.format("%04d", rental.getRentalId()),
                     "Statut", rental.getStatus().name(),
-                    "PayÃ©e", rental.isPaid() ? "Oui" : "Non",
+                    "Payée", rental.isPaid() ? "Oui" : "Non",
                     fSectionH, fMetaBold, fMeta, BG_LIGHT);
 
             PdfPTable t = new PdfPTable(5);
@@ -196,7 +198,7 @@ public class InvoiceService {
             t.setSpacingBefore(8);
             t.setSpacingAfter(4);
 
-            String[] headers = {"Titre", "DÃ©but", "Fin", "Prix / jour", "Total"};
+            String[] headers = {"Titre", "Début", "Fin", "Prix / jour", "Total"};
             for (String h : headers) addHeaderCell(t, h, fColHead, TEAL);
 
             addDataCell(t, rental.getBook().getTitle(),                         WHITE, fCellBold);
@@ -209,7 +211,7 @@ public class InvoiceService {
                 BigDecimal original = rental.getTotalRentalPrice().divide(
                         BigDecimal.valueOf(0.80), 2, java.math.RoundingMode.HALF_UP);
                 BigDecimal saved = original.subtract(rental.getTotalRentalPrice());
-                addSubtotalRow(t, "ðŸŽ‰ RÃ©duction fidÃ©litÃ© (-20%)",
+                addSubtotalRow(t, "🎉 Réduction fidélité (-20%)",
                         "- " + fmt(saved, rental.getCurrency()), fDiscount, PEACH);
             }
 
@@ -218,7 +220,7 @@ public class InvoiceService {
             doc.add(t);
 
             if (rental.isDiscountApplied()) {
-                Paragraph disc = new Paragraph("â˜…  RÃ©duction de fidÃ©litÃ© appliquÃ©e : -20% pour ce client !", fDiscount);
+                Paragraph disc = new Paragraph("★  Réduction de fidélité appliquée : -20% pour ce client !", fDiscount);
                 disc.setSpacingBefore(4);
                 doc.add(disc);
             }
@@ -226,9 +228,9 @@ public class InvoiceService {
             doc.add(new Paragraph(" "));
         }
 
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ══════════════════════════════════════════════════
         //  FOOTER
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ══════════════════════════════════════════════════
         doc.add(new Paragraph(" "));
         doc.add(new LineSeparator(1, 100, TEAL_LIGHT, Element.ALIGN_CENTER, -4));
         doc.add(new Paragraph(" "));
@@ -239,14 +241,14 @@ public class InvoiceService {
 
         PdfPCell fLeft = new PdfPCell();
         fLeft.setBorder(Rectangle.NO_BORDER);
-        fLeft.addElement(new Paragraph("Merci pour votre confiance ! ðŸŒ¿", fFooter));
-        fLeft.addElement(new Paragraph("Jungle in English â€” Tunis, Tunisie", fFooter));
+        fLeft.addElement(new Paragraph("Merci pour votre confiance ! 🌿", fFooter));
+        fLeft.addElement(new Paragraph("Jungle in English — Tunis, Tunisie", fFooter));
         footer.addCell(fLeft);
 
         PdfPCell fRight = new PdfPCell();
         fRight.setBorder(Rectangle.NO_BORDER);
         fRight.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        Paragraph generated = new Paragraph("Document gÃ©nÃ©rÃ© le " + LocalDate.now().format(FMT), fFooter);
+        Paragraph generated = new Paragraph("Document généré le " + LocalDate.now().format(FMT), fFooter);
         generated.setAlignment(Element.ALIGN_RIGHT);
         fRight.addElement(generated);
         footer.addCell(fRight);
@@ -257,7 +259,7 @@ public class InvoiceService {
         return baos.toByteArray();
     }
 
-    // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Helpers ────────────────────────────────────────────
 
     private void addHeaderCell(PdfPTable t, String text, Font f, BaseColor bg) {
         PdfPCell c = new PdfPCell(new Phrase(text, f));
@@ -269,7 +271,7 @@ public class InvoiceService {
     }
 
     private void addDataCell(PdfPTable t, String text, BaseColor bg, Font f) {
-        PdfPCell c = new PdfPCell(new Phrase(text != null ? text : "â€”", f));
+        PdfPCell c = new PdfPCell(new Phrase(text != null ? text : "—", f));
         c.setBackgroundColor(bg);
         c.setPadding(7);
         c.setBorderColor(new BaseColor(0xE5, 0xE7, 0xEB));

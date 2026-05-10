@@ -610,17 +610,30 @@
     <div class="modal-content modal-premium" (click)="$event.stopPropagation()">
         <div class="modal-top-bar modal-top-bar-coral"></div>
         <div class="modal-body">
+
+            <!-- Header -->
             <div class="modal-header-row">
                 <div class="modal-icon-wrap modal-icon-coral">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
                 </div>
                 <div>
                     <h2 class="modal-title">Create Account</h2>
-                    <p class="modal-subtitle">Start your learning journey</p>
+                    <p class="modal-subtitle">
+                        <span *ngIf="registerStep === 'role'">Who are you?</span>
+                        <span *ngIf="registerStep === 'form'">Fill in your details</span>
+                        <span *ngIf="registerStep === 'add-kids'">Add your children</span>
+                    </p>
                 </div>
                 <button (click)="closeAllModals()" class="modal-close-btn">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
+            </div>
+
+            <!-- Step indicator -->
+            <div style="display:flex;gap:6px;margin-bottom:20px;">
+                <div style="flex:1;height:4px;border-radius:4px;" [style.background]="registerStep !== 'role' ? '#006D77' : '#e2e8f0'"></div>
+                <div style="flex:1;height:4px;border-radius:4px;" [style.background]="registerStep === 'form' || registerStep === 'add-kids' ? '#006D77' : '#e2e8f0'"></div>
+                <div style="flex:1;height:4px;border-radius:4px;" [style.background]="registerStep === 'add-kids' ? '#006D77' : '#e2e8f0'"></div>
             </div>
 
             <div *ngIf="errorMessage" class="modal-alert modal-alert-error">
@@ -632,73 +645,177 @@
                 <span>{{ successMessage }}</span>
             </div>
 
-            <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="modal-form">
-                <div class="form-row-2col">
+            <!-- ── STEP 1: Role Selection ── -->
+            <div *ngIf="registerStep === 'role'">
+                <p style="text-align:center;color:#64748b;margin-bottom:20px;font-size:14px;">Choose your role to get started</p>
+                <div style="display:flex;flex-direction:column;gap:12px;">
+
+                    <!-- Student -->
+                    <button (click)="selectRole('STUDENT')" style="display:flex;align-items:center;gap:16px;padding:18px 20px;border:2px solid #e2e8f0;border-radius:14px;background:#fff;cursor:pointer;text-align:left;transition:all 0.2s;" 
+                        onmouseover="this.style.borderColor='#006D77';this.style.background='#f0fdf9'" 
+                        onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#fff'">
+                        <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#006D77,#83C5BE);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 3 6 3s6-1.9 6-3v-5"/></svg>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;font-size:15px;color:#1e293b;">Student</div>
+                            <div style="font-size:13px;color:#64748b;">Access courses, take exams & earn certificates</div>
+                        </div>
+                        <svg style="margin-left:auto;color:#94a3b8;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+
+                    <!-- Tutor -->
+                    <button (click)="selectRole('TUTOR')" style="display:flex;align-items:center;gap:16px;padding:18px 20px;border:2px solid #e2e8f0;border-radius:14px;background:#fff;cursor:pointer;text-align:left;transition:all 0.2s;"
+                        onmouseover="this.style.borderColor='#E29578';this.style.background='#fff8f5'"
+                        onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#fff'">
+                        <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#E29578,#f4a87c);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;font-size:15px;color:#1e293b;">Tutor</div>
+                            <div style="font-size:13px;color:#64748b;">Teach students, manage classes & sessions</div>
+                        </div>
+                        <svg style="margin-left:auto;color:#94a3b8;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+
+                    <!-- Parent -->
+                    <button (click)="selectRole('PARENT')" style="display:flex;align-items:center;gap:16px;padding:18px 20px;border:2px solid #e2e8f0;border-radius:14px;background:#fff;cursor:pointer;text-align:left;transition:all 0.2s;"
+                        onmouseover="this.style.borderColor='#8b5cf6';this.style.background='#faf5ff'"
+                        onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#fff'">
+                        <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#a78bfa);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;font-size:15px;color:#1e293b;">Parent</div>
+                            <div style="font-size:13px;color:#64748b;">Enroll your children & track their progress</div>
+                        </div>
+                        <svg style="margin-left:auto;color:#94a3b8;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+
+                </div>
+
+                <div class="form-divider" style="margin-top:20px;"><span>Already have an account?</span></div>
+                <button type="button" (click)="switchToLogin()" class="btn-form-secondary">Sign In</button>
+            </div>
+
+            <!-- ── STEP 2: Registration Form ── -->
+            <div *ngIf="registerStep === 'form'">
+                <!-- Selected role badge -->
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+                    <button (click)="backToRoleSelect()" style="border:none;background:none;cursor:pointer;color:#64748b;padding:4px;display:flex;align-items:center;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    </button>
+                    <span style="font-size:13px;color:#64748b;">Registering as</span>
+                    <span style="font-size:13px;font-weight:700;padding:2px 10px;border-radius:20px;"
+                        [style.background]="selectedRole==='STUDENT' ? '#e0f7f5' : selectedRole==='TUTOR' ? '#fff1ec' : '#f5f0ff'"
+                        [style.color]="selectedRole==='STUDENT' ? '#006D77' : selectedRole==='TUTOR' ? '#E29578' : '#8b5cf6'">
+                        {{ selectedRole === 'PARENT' ? 'Parent' : selectedRole === 'TUTOR' ? 'Tutor' : 'Student' }}
+                    </span>
+                </div>
+
+                <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="modal-form">
+                    <div class="form-row-2col">
+                        <div class="form-group">
+                            <label class="form-label">First Name</label>
+                            <input type="text" formControlName="firstName" class="form-input"
+                                [class.form-input-error]="fieldInvalid(registerForm, 'firstName')" placeholder="John">
+                            <p *ngIf="getFieldError(registerForm, 'firstName')" class="form-error">{{ getFieldError(registerForm, 'firstName') }}</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" formControlName="lastName" class="form-input"
+                                [class.form-input-error]="fieldInvalid(registerForm, 'lastName')" placeholder="Doe">
+                            <p *ngIf="getFieldError(registerForm, 'lastName')" class="form-error">{{ getFieldError(registerForm, 'lastName') }}</p>
+                        </div>
+                    </div>
+
                     <div class="form-group">
-                        <label class="form-label">First Name</label>
-                        <input type="text" formControlName="firstName" class="form-input"
-                            [class.form-input-error]="fieldInvalid(registerForm, 'firstName')" placeholder="John">
-                        <p *ngIf="getFieldError(registerForm, 'firstName')" class="form-error">{{ getFieldError(registerForm, 'firstName') }}</p>
+                        <label class="form-label">Email</label>
+                        <div class="form-input-wrap">
+                            <svg class="form-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            <input type="email" formControlName="email" class="form-input form-input-icon-pad"
+                                [class.form-input-error]="fieldInvalid(registerForm, 'email')" placeholder="your@email.com">
+                        </div>
+                        <p *ngIf="getFieldError(registerForm, 'email')" class="form-error">{{ getFieldError(registerForm, 'email') }}</p>
                     </div>
+
                     <div class="form-group">
-                        <label class="form-label">Last Name</label>
-                        <input type="text" formControlName="lastName" class="form-input"
-                            [class.form-input-error]="fieldInvalid(registerForm, 'lastName')" placeholder="Doe">
-                        <p *ngIf="getFieldError(registerForm, 'lastName')" class="form-error">{{ getFieldError(registerForm, 'lastName') }}</p>
+                        <label class="form-label">Password</label>
+                        <div class="form-input-wrap">
+                            <svg class="form-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <input type="password" formControlName="password" class="form-input form-input-icon-pad"
+                                [class.form-input-error]="fieldInvalid(registerForm, 'password')"
+                                placeholder="Min. 6 characters">
+                        </div>
+                        <p *ngIf="getFieldError(registerForm, 'password')" class="form-error">{{ getFieldError(registerForm, 'password') }}</p>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <div class="form-input-wrap">
-                        <svg class="form-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        <input type="email" formControlName="email" class="form-input form-input-icon-pad"
-                            [class.form-input-error]="fieldInvalid(registerForm, 'email')" placeholder="your@email.com">
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <div class="form-input-wrap">
+                            <svg class="form-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <input type="password" formControlName="confirmPassword" class="form-input form-input-icon-pad"
+                                [class.form-input-error]="passwordMismatch" placeholder="Re-enter password">
+                        </div>
+                        <p *ngIf="passwordMismatch" class="form-error">Passwords do not match.</p>
                     </div>
-                    <p *ngIf="getFieldError(registerForm, 'email')" class="form-error">{{ getFieldError(registerForm, 'email') }}</p>
-                </div>
 
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <div class="form-input-wrap">
-                        <svg class="form-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        <input type="password" formControlName="password" class="form-input form-input-icon-pad"
-                            [class.form-input-error]="fieldInvalid(registerForm, 'password')"
-                            placeholder="Min. 6 characters">
+                    <div class="form-checkbox-row">
+                        <input type="checkbox" class="form-checkbox" required>
+                        <label class="form-checkbox-label">
+                            I agree to the <a href="#" class="form-link-inline">Terms of Service</a>
+                            and <a href="#" class="form-link-inline">Privacy Policy</a>
+                        </label>
                     </div>
-                    <p *ngIf="getFieldError(registerForm, 'password')" class="form-error">{{ getFieldError(registerForm, 'password') }}</p>
-                </div>
 
-                <div class="form-group">
-                    <label class="form-label">Confirm Password</label>
-                    <div class="form-input-wrap">
-                        <svg class="form-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        <input type="password" formControlName="confirmPassword" class="form-input form-input-icon-pad"
-                            [class.form-input-error]="passwordMismatch" placeholder="Re-enter password">
+                    <button type="submit" [disabled]="isLoading" class="btn-form-primary btn-form-coral">
+                        {{ isLoading ? 'Creating account...' : (selectedRole === 'PARENT' ? 'Next: Add Children' : 'Create Account') }}
+                    </button>
+
+                    <div class="form-divider"><span>Already have an account?</span></div>
+                    <button type="button" (click)="switchToLogin()" class="btn-form-secondary">Sign In</button>
+                </form>
+            </div>
+
+            <!-- ── STEP 3: Add Kids (Parent only) ── -->
+            <div *ngIf="registerStep === 'add-kids'">
+                <p style="font-size:13px;color:#64748b;margin-bottom:16px;">Add your children so they can access English Kids activities. You can also do this later.</p>
+
+                <!-- Kids added so far -->
+                <div *ngFor="let kid of kids; let i = index" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f0fdf9;border:1px solid #a7f3d0;border-radius:10px;margin-bottom:8px;">
+                    <span style="font-size:20px;">👶</span>
+                    <div style="flex:1;">
+                        <div style="font-weight:600;font-size:14px;color:#1e293b;">{{ kid.name }}</div>
+                        <div style="font-size:12px;color:#64748b;">Born: {{ kid.birthDate }}</div>
                     </div>
-                    <p *ngIf="passwordMismatch" class="form-error">Passwords do not match.</p>
+                    <button (click)="removeKid(i)" style="border:none;background:none;cursor:pointer;color:#ef4444;font-size:18px;">×</button>
                 </div>
 
-                <div class="form-checkbox-row">
-                    <input type="checkbox" class="form-checkbox" required>
-                    <label class="form-checkbox-label">
-                        I agree to the <a href="#" class="form-link-inline">Terms of Service</a>
-                        and <a href="#" class="form-link-inline">Privacy Policy</a>
-                    </label>
+                <!-- Add kid form -->
+                <div style="padding:16px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:12px;margin-bottom:16px;">
+                    <div style="font-weight:600;font-size:13px;color:#475569;margin-bottom:12px;">Add a child</div>
+                    <div class="form-group" style="margin-bottom:10px;">
+                        <label class="form-label">Child's Name</label>
+                        <input type="text" [(ngModel)]="newKidName" class="form-input" placeholder="e.g. Sofia">
+                    </div>
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" [(ngModel)]="newKidBirthDate" class="form-input">
+                    </div>
+                    <button (click)="addKidToList()" [disabled]="!newKidName.trim() || !newKidBirthDate"
+                        style="width:100%;padding:10px;border:2px dashed #006D77;border-radius:10px;background:transparent;color:#006D77;font-weight:600;font-size:14px;cursor:pointer;"
+                        [style.opacity]="(!newKidName.trim() || !newKidBirthDate) ? '0.4' : '1'">
+                        + Add Child
+                    </button>
                 </div>
 
-                <button type="submit" [disabled]="isLoading" class="btn-form-primary btn-form-coral">
-                    {{ isLoading ? 'Creating account...' : 'Create Account' }}
+                <!-- Finish button -->
+                <button (click)="finishParentSetup()" [disabled]="kidsLoading"
+                    class="btn-form-primary btn-form-coral">
+                    {{ kidsLoading ? 'Saving...' : (kids.length > 0 ? 'Save & Continue' : 'Skip for now') }}
                 </button>
+            </div>
 
-                <div class="form-divider">
-                    <span>Already have an account?</span>
-                </div>
-
-                <button type="button" (click)="switchToLogin()" class="btn-form-secondary">
-                    Sign In
-                </button>
-            </form>
         </div>
     </div>
 </div>

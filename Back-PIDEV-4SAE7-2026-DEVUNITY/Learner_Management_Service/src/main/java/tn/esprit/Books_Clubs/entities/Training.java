@@ -7,12 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "trainings")
 public class Training {
 
@@ -26,8 +29,13 @@ public class Training {
 
     private LocalDate startDate;
     private LocalDate endDate;
+
     private Integer nbrDeplace;
     private Integer nbrDeReservation = 0;
+
+    private BigDecimal price;
+    private BigDecimal rewardMax;
+    private Boolean rewardEnabled = false;
 
     @Enumerated(EnumType.STRING)
     private ActivityStatus status;

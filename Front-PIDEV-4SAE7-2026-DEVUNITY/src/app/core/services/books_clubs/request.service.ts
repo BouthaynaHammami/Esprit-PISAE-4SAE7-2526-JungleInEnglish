@@ -17,7 +17,7 @@ export interface MembershipRequest {
 
 @Injectable({ providedIn: 'root' })
 export class RequestService {
-  private baseUrl = `${environment.apiUrl}/learners/api/api/requests`;
+  private baseUrl = `${environment.devUnityUrl}/learners/api/api/requests`;
 
   constructor(private http: HttpClient) {}
 

@@ -1,7 +1,7 @@
 package tn.esprit.Books_Clubs.Services.IServices;
 
-import tn.esprit.Books_Clubs.entities.Transaction;
-import tn.esprit.Books_Clubs.entities.Wallet;
+import tn.esprit.jungleinenglishuser.entities.Transaction;
+import tn.esprit.jungleinenglishuser.entities.Wallet;
 
 import java.math.BigDecimal;
 import java.util.List;

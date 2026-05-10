@@ -2,6 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
+import { ChildService } from '../../core/services/language/child.service';
 
 @Component({
   selector: 'app-landing',
@@ -22,10 +23,23 @@ export class LandingComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  constructor(private fb: FormBuilder, private authService: AuthService) { }
+  // ── Register flow ──────────────────────────────────────────────────────────
+  registerStep: 'role' | 'form' | 'add-kids' = 'role';
+  selectedRole: 'STUDENT' | 'TUTOR' | 'PARENT' = 'STUDENT';
+
+  // Kids management (parent flow)
+  kids: { name: string; birthDate: string }[] = [];
+  newKidName = '';
+  newKidBirthDate = '';
+  kidsLoading = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private childService: ChildService
+  ) { }
 
   ngOnInit(): void {
-    // Always initialize forms first — template binds to them unconditionally
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -44,7 +58,6 @@ export class LandingComponent implements OnInit {
       confirmPassword: ['', Validators.required]
     }, { validators: this.passwordMatchValidator });
 
-    // Redirect after forms are ready so template never sees undefined FormGroups
     if (this.authService.isLoggedIn()) {
       this.authService.redirectByRole();
     }
@@ -54,7 +67,15 @@ export class LandingComponent implements OnInit {
 
   openStudentLogin(): void { this.resetMessages(); this.showStudentLoginModal = true; }
   openAdminLogin(): void { this.resetMessages(); this.showAdminLoginModal = true; }
-  openRegister(): void { this.resetMessages(); this.showRegisterModal = true; }
+  openRegister(): void {
+    this.resetMessages();
+    this.registerStep = 'role';
+    this.selectedRole = 'STUDENT';
+    this.kids = [];
+    this.newKidName = '';
+    this.newKidBirthDate = '';
+    this.showRegisterModal = true;
+  }
 
   closeAllModals(): void {
     this.showStudentLoginModal = false;
@@ -73,6 +94,19 @@ export class LandingComponent implements OnInit {
     setTimeout(() => this.openStudentLogin(), 50);
   }
 
+  // ── Role selection ────────────────────────────────────────────────────────
+
+  selectRole(role: 'STUDENT' | 'TUTOR' | 'PARENT'): void {
+    this.selectedRole = role;
+    this.registerStep = 'form';
+    this.resetMessages();
+  }
+
+  backToRoleSelect(): void {
+    this.registerStep = 'role';
+    this.resetMessages();
+  }
+
   // ── Submissions ───────────────────────────────────────────────────────────
 
   onStudentLogin(): void {
@@ -84,10 +118,28 @@ export class LandingComponent implements OnInit {
       next: () => {
         this.isLoading = false;
         this.successMessage = '✅ Login successful! Redirecting…';
-        setTimeout(() => {
-          this.closeAllModals();
-          this.authService.redirectByRole();
-        }, 800);
+        // After login, check if this user has children → mark as parent automatically
+        // This ensures the parent UI works on any device, not just where they registered
+        const userId = this.authService.getUserId();
+        if (userId) {
+          this.childService.getAllChildren().subscribe({
+            next: (children) => {
+              const myKids = children.filter(c => c.parentId === userId);
+              if (myKids.length > 0) {
+                localStorage.setItem('devunity_user_type', 'parent');
+              } else {
+                localStorage.removeItem('devunity_user_type');
+              }
+              setTimeout(() => { this.closeAllModals(); this.authService.redirectByRole(); }, 500);
+            },
+            error: () => {
+              // If check fails, fall through normally
+              setTimeout(() => { this.closeAllModals(); this.authService.redirectByRole(); }, 500);
+            }
+          });
+        } else {
+          setTimeout(() => { this.closeAllModals(); this.authService.redirectByRole(); }, 800);
+        }
       },
       error: (err) => {
         this.isLoading = false;
@@ -127,15 +179,21 @@ export class LandingComponent implements OnInit {
     this.resetMessages();
 
     const { confirmPassword: _, ...payload } = this.registerForm.value;
+    const backendRole = this.selectedRole === 'PARENT' ? 'STUDENT' : this.selectedRole;
 
-    this.authService.register({ ...payload, role: 'STUDENT' }).subscribe({
+    this.authService.register({ ...payload, role: backendRole }).subscribe({
       next: () => {
         this.isLoading = false;
-        this.successMessage = '✅ Account created! Redirecting…';
-        setTimeout(() => {
-          this.closeAllModals();
-          this.authService.redirectByRole();
-        }, 800);
+        if (this.selectedRole === 'PARENT') {
+          this.successMessage = '✅ Account created! Now add your children.';
+          this.registerStep = 'add-kids';
+        } else {
+          this.successMessage = '✅ Account created! Redirecting…';
+          setTimeout(() => {
+            this.closeAllModals();
+            this.authService.redirectByRole();
+          }, 800);
+        }
       },
       error: (err) => {
         this.isLoading = false;
@@ -144,6 +202,68 @@ export class LandingComponent implements OnInit {
           : 'Registration failed. Please try again.';
       }
     });
+  }
+
+  // ── Kids (parent flow) ────────────────────────────────────────────────────
+
+  addKidToList(): void {
+    if (!this.newKidName.trim() || !this.newKidBirthDate) return;
+    this.kids.push({ name: this.newKidName.trim(), birthDate: this.newKidBirthDate });
+    this.newKidName = '';
+    this.newKidBirthDate = '';
+  }
+
+  removeKid(index: number): void {
+    this.kids.splice(index, 1);
+  }
+
+  finishParentSetup(): void {
+    // Mark this account as a parent so we can show the parent UI on next login
+    localStorage.setItem('devunity_user_type', 'parent');
+    if (this.kids.length === 0) {
+      this.closeAllModals();
+      this.authService.redirectByRole();
+      return;
+    }
+    this.kidsLoading = true;
+    let saved = 0;
+    const parentId = this.authService.getUserId() ?? 0;
+    this.kids.forEach(kid => {
+      this.childService.createChild({
+        name: kid.name,
+        age: this.calculateAge(kid.birthDate),
+        avatar: '👶',
+        parentId: parentId,
+        xp: 0,
+        level: 1
+      }).subscribe({
+        next: () => {
+          saved++;
+          if (saved === this.kids.length) {
+            this.kidsLoading = false;
+            this.closeAllModals();
+            this.authService.redirectByRole();
+          }
+        },
+        error: () => {
+          saved++;
+          if (saved === this.kids.length) {
+            this.kidsLoading = false;
+            this.closeAllModals();
+            this.authService.redirectByRole();
+          }
+        }
+      });
+    });
+  }
+
+  private calculateAge(birthDate: string): number {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    return Math.max(1, age);
   }
 
   // ── Template Helpers ──────────────────────────────────────────────────────
@@ -160,8 +280,6 @@ export class LandingComponent implements OnInit {
       this.registerForm.get('confirmPassword')?.touched
     );
   }
-
-  // ── Field Error Accessor ──────────────────────────────────────────────────
 
   getFieldError(form: FormGroup, field: string): string {
     if (!form) return '';

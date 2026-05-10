@@ -1,3 +1,6 @@
+<!-- src/app/features/student/components/library/student-library.component.html -->
+
+<!-- Background decorations -->
 <div class="bg-decor">
   <div class="bg-orb bg-orb--1"></div>
   <div class="bg-orb bg-orb--2"></div>
@@ -6,307 +9,641 @@
   <div class="bg-sphere bg-sphere--2"></div>
   <div class="bg-sphere bg-sphere--3"></div>
   <div class="bg-sphere bg-sphere--4"></div>
-  <div class="bg-plane">
-    <svg width="90" height="60" viewBox="0 0 90 60" fill="none">
-      <path d="M5 50 L85 10 L50 30 L85 10 L60 55 L50 30 L5 50Z" fill="url(#planeGrad)" opacity="0.18"/>
-      <defs><linearGradient id="planeGrad" x1="0" y1="0" x2="90" y2="60"><stop stop-color="#5ad0d0"/><stop offset="1" stop-color="#83C5BE" stop-opacity="0.3"/></linearGradient></defs>
+</div>
+
+<div class="page">
+
+  <!-- ── HERO ─────────────────────────────────────────────────────────── -->
+  <div class="hero">
+    <h1>📚 Bibliothèque</h1>
+    <p>Parcourez les livres disponibles — allouez ou commandez en un clic</p>
+  </div>
+
+  <!-- ── TOASTS ──────────────────────────────────────────────────────── -->
+  <div *ngIf="successMessage" class="ev-toast ev-toast--success">
+    <div class="ev-toast__ico">✓</div>
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="ev-toast ev-toast--error">
+    <div class="ev-toast__ico">✕</div>
+    {{ errorMessage }}
+  </div>
+
+  <!-- ── SEARCH BAR ────────────────────────────────────────────────── -->
+  <div class="search-bar">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
     </svg>
-  </div>
-</div>
-
-<div *ngIf="successMessage || errorMessage" class="ev-toast" [class.ev-toast--success]="successMessage" [class.ev-toast--error]="errorMessage">
-  <div class="ev-toast__ico">
-    <svg *ngIf="successMessage" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-    <svg *ngIf="errorMessage" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-  </div>
-  <span>{{ successMessage || errorMessage }}</span>
-</div>
-
-<div *ngIf="showDiscountModal" class="ev-overlay">
-  <div class="ev-overlay__bg" (click)="showDiscountModal = false"></div>
-  <div class="ev-modal" (click)="$event.stopPropagation()">
-    <div class="ev-modal__bar"></div>
-    <div class="ev-modal__head">
-      <div class="ev-modal__head-ico">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2 7h7l-5.7 4.2L17 22l-5-3.3L7 22l1.7-8.8L3 9h7l2-7z"/></svg>
-      </div>
-      <h2>{{ discountTitle || 'Discount unlocked' }}</h2>
-      <button class="ev-modal__x" (click)="showDiscountModal = false">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="ev-modal__body">
-      <p class="ev-modal__evt-name">{{ discountContext }}</p>
-      <p class="ev-modal__meta-r">Profitez de votre réduction sur vos prochaines commandes et locations.</p>
-      <div class="ev-modal__btns">
-        <button class="ev-btn ev-btn--prim" (click)="showDiscountModal = false">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div *ngIf="showWalletModal" class="ev-overlay ev-overlay--dark" (click)="closeWalletModal()">
-  <div class="ev-overlay__bg"></div>
-  <div class="ev-modal" (click)="$event.stopPropagation()">
-    <div class="ev-modal__bar"></div>
-    <div class="ev-modal__head">
-      <div class="ev-modal__head-ico">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M4 11h16"/></svg>
-      </div>
-      <h2>Library Wallet</h2>
-      <button class="ev-modal__x" (click)="closeWalletModal()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="ev-modal__body">
-      <div class="wallet-tabs">
-        <button class="tab-btn" [class.tab-btn--active]="walletTab === 'overview'" (click)="setWalletTab('overview')">Overview</button>
-        <button class="tab-btn" [class.tab-btn--active]="walletTab === 'history'" (click)="setWalletTab('history')">Transactions</button>
-      </div>
-      <div *ngIf="walletTab === 'overview'" class="wallet-summary">
-        <div class="sidebar-card__label">Current Balance</div>
-        <div class="wallet-balance">{{ wallet?.balance | number:'1.2-2' }} TND</div>
-        <div class="wallet-grid">
-          <div>
-            <span class="sidebar-card__label">Currency</span>
-            <p>TND</p>
-          </div>
-          <div>
-            <span class="sidebar-card__label">Available</span>
-            <p>{{ wallet?.balance | number:'1.2-2' }} TND</p>
-          </div>
-        </div>
-        <form [formGroup]="rechargeForm" (ngSubmit)="wallet && rechargeForm.valid ? rechargeForm.reset() : null">
-          <label class="sidebar-card__label">Recharge Amount</label>
-          <input type="number" class="sidebar-card__input" formControlName="amount" placeholder="Enter amount" min="1">
-          <button type="button" class="sidebar-card__submit" (click)="openWalletModal()">Recharge</button>
-        </form>
-      </div>
-      <div *ngIf="walletTab === 'history'" class="wallet-history">
-        <div *ngIf="walletTransactions.length === 0" class="empty-state">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <p class="empty-state__title">No wallet activity</p>
-          <p class="empty-state__sub">Your recent transactions will appear here.</p>
-        </div>
-        <div *ngIf="walletTransactions.length > 0" class="transaction-list">
-          <div *ngFor="let tx of walletTransactions" class="transaction-item">
-            <span>{{ tx.description || tx.type || 'Transaction' }}</span>
-            <strong>{{ tx.amount | number:'1.2-2' }} TND</strong>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div *ngIf="showRentModal" class="ev-overlay">
-  <div class="ev-overlay__bg" (click)="closeRentModal()"></div>
-  <div class="ev-modal" (click)="$event.stopPropagation()">
-    <div class="ev-modal__bar"></div>
-    <div class="ev-modal__head">
-      <div class="ev-modal__head-ico">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M4 11h16"/></svg>
-      </div>
-      <h2>Rent Book</h2>
-      <button class="ev-modal__x" (click)="closeRentModal()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="ev-modal__body">
-      <h3 class="ev-modal__evt-name">{{ selectedBook?.title }}</h3>
-      <div *ngIf="selectedBook && getBookImageSrc(selectedBook)" class="ev-modal__img">
-        <img [src]="getBookImageSrc(selectedBook)" alt="Book cover">
-      </div>
-      <div class="ev-modal__metas">
-        <div class="ev-modal__meta-r">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M4 11h16"/></svg>
-          {{ selectedBook?.author?.name || 'Unknown author' }}
-        </div>
-        <div class="ev-modal__meta-r">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l5 5L22 4"/></svg>
-          Available: {{ selectedBook ? getAvailableStock(selectedBook) : 0 }} copies
-        </div>
-        <div class="ev-modal__meta-r">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z"/></svg>
-          Rental price: {{ getRentalPriceConverted(selectedBook, rentForm.get('currency')?.value || 'TND') | number:'1.2-2' }} {{ rentForm.get('currency')?.value || 'TND' }} / day
-        </div>
-      </div>
-      <form [formGroup]="rentForm" (ngSubmit)="submitRent()">
-        <label class="sidebar-card__label">Start Date</label>
-        <input type="date" class="sidebar-card__input" formControlName="startDate">
-        <label class="sidebar-card__label">Due Date</label>
-        <input type="date" class="sidebar-card__input" formControlName="dueDate">
-        <label class="sidebar-card__label">Currency</label>
-        <select class="sidebar-card__select" formControlName="currency">
-          <option value="TND">TND</option>
-          <option value="EUR">EUR</option>
-          <option value="USD">USD</option>
-        </select>
-        <label class="sidebar-card__label">Payment Mode</label>
-        <select class="sidebar-card__select" formControlName="paymentMode">
-          <option value="CAISSE">Caisse</option>
-          <option value="WALLET">Wallet</option>
-        </select>
-        <div class="ev-modal__btns">
-          <button type="button" class="ev-btn ev-btn--ghost" (click)="closeRentModal()">Cancel</button>
-          <button type="submit" class="ev-btn ev-btn--prim" [disabled]="isLoading">
-            <span *ngIf="!isLoading">Confirm Rent</span>
-            <span *ngIf="isLoading" class="ev-btn__ld"><span class="ev-spin"></span> Renting...</span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div *ngIf="showOrderModal" class="ev-overlay">
-  <div class="ev-overlay__bg" (click)="closeOrderModal()"></div>
-  <div class="ev-modal" (click)="$event.stopPropagation()">
-    <div class="ev-modal__bar"></div>
-    <div class="ev-modal__head">
-      <div class="ev-modal__head-ico">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h14v12H5z"/><path d="M8 6v12"/></svg>
-      </div>
-      <h2>Order Book</h2>
-      <button class="ev-modal__x" (click)="closeOrderModal()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="ev-modal__body">
-      <h3 class="ev-modal__evt-name">{{ selectedBook?.title }}</h3>
-      <div *ngIf="selectedBook && getBookImageSrc(selectedBook)" class="ev-modal__img">
-        <img [src]="getBookImageSrc(selectedBook)" alt="Book cover">
-      </div>
-      <div class="ev-modal__metas">
-        <div class="ev-modal__meta-r">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M4 11h16"/></svg>
-          Price per copy: {{ getSalePriceConverted(selectedBook, orderForm.get('currency')?.value || 'TND') | number:'1.2-2' }} {{ orderForm.get('currency')?.value || 'TND' }}
-        </div>
-        <div class="ev-modal__meta-r">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l5 5L22 4"/></svg>
-          Stock available: {{ selectedBook ? getAvailableStock(selectedBook) : 0 }}
-        </div>
-      </div>
-      <form [formGroup]="orderForm" (ngSubmit)="submitOrder()">
-        <label class="sidebar-card__label">Quantity</label>
-        <input type="number" class="sidebar-card__input" formControlName="qty" min="1">
-        <label class="sidebar-card__label">Currency</label>
-        <select class="sidebar-card__select" formControlName="currency">
-          <option value="TND">TND</option>
-          <option value="EUR">EUR</option>
-          <option value="USD">USD</option>
-        </select>
-        <label class="sidebar-card__label">Payment Mode</label>
-        <select class="sidebar-card__select" formControlName="paymentMode">
-          <option value="CAISSE">Caisse</option>
-          <option value="WALLET">Wallet</option>
-        </select>
-        <div class="ev-modal__btns">
-          <button type="button" class="ev-btn ev-btn--ghost" (click)="closeOrderModal()">Cancel</button>
-          <button type="submit" class="ev-btn ev-btn--prim" [disabled]="isLoading">
-            <span *ngIf="!isLoading">Confirm Order</span>
-            <span *ngIf="isLoading" class="ev-btn__ld"><span class="ev-spin"></span> Ordering...</span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<main class="page">
-  <nav class="breadcrumb">
-    <span class="breadcrumb__back">&#8249;</span>
-    <a routerLink="/student/dashboard">Home</a>
-    <span class="breadcrumb__sep">&#8250;</span>
-    <strong>Library</strong>
-  </nav>
-
-  <header class="hero">
-    <h1>Library Collection</h1>
-    <p>Browse academic resources, request rentals, and place orders with the same premium experience.</p>
-  </header>
-
-  <div class="tabs-bar">
-    <div class="tabs-group">
-      <button class="tab-btn tab-btn--active">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Browse Books
-        <span class="tab-count">{{ filteredBooks.length }}</span>
-      </button>
-    </div>
+    <input [(ngModel)]="searchQuery" (ngModelChange)="onSearch()"
+           placeholder="Rechercher par titre, ISBN, auteur, catégorie…" />
+    <div class="search-divider" *ngIf="searchQuery"></div>
+    <button *ngIf="searchQuery" (click)="searchQuery=''; onSearch()"
+            style="background:none;border:none;cursor:pointer;color:#006d77;font-size:14px;padding:0">✕</button>
   </div>
 
+  <!-- ── LAYOUT ────────────────────────────────────────────────────── -->
   <div class="layout">
+
+    <!-- ── MAIN : books list ──────────────────────────────────────── -->
     <div class="layout__main">
-      <div class="search-bar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" [(ngModel)]="searchQuery" (input)="onSearch()" placeholder="Search books, authors, ISBN...">
-      </div>
 
+      <!-- Empty state -->
       <div *ngIf="filteredBooks.length === 0" class="empty-state">
-        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><path d="M3 6h18M4 6v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6"/><path d="M8 6V4a4 4 0 0 1 8 0v2"/></svg>
-        <p class="empty-state__title">No books found</p>
-        <p class="empty-state__sub">Try another search term or refresh the library.</p>
+        <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <p class="empty-state__title">Aucun livre disponible</p>
+        <p class="empty-state__sub">Essayez un autre mot-clé ou revenez plus tard</p>
       </div>
 
-      <div *ngIf="filteredBooks.length > 0" class="events-list">
-        <article *ngFor="let book of filteredBooks; let i = index" class="event-card glass" [style.--card-delay]="(i * 0.07) + 's'">
-          <div class="event-card__img-side">
-            <img *ngIf="getBookImageSrc(book)" [src]="getBookImageSrc(book)" [alt]="book.title" class="event-card__img">
-            <div *ngIf="!getBookImageSrc(book)" class="event-card__img-ph">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(90,208,208,0.35)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            </div>
-            <div class="event-card__date-badge" [class.orange]="isBookUnavailable(book)" [class.teal]="!isBookUnavailable(book)">
-              <span class="event-card__date-month">{{ isBookUnavailable(book) ? 'OUT' : 'IN' }}</span>
-              <span class="event-card__date-day">{{ getAvailableStock(book) }}</span>
-            </div>
-          </div>
-          <div class="event-card__body">
-            <div class="event-card__header">
-              <h3 class="event-card__title">{{ book.title }}</h3>
-              <span class="event-card__pill" [class.pill--demand]="book.status === 'AVAILABLE'" [class.pill--rated]="book.status !== 'AVAILABLE'">
-                {{ book.status === 'AVAILABLE' ? 'Available' : 'Unavailable' }}
+      <!-- Books list -->
+      <div class="events-list">
+        <div *ngFor="let b of filteredBooks; let i = index"
+             class="event-card glass"
+             [style.--card-delay]="(i * 0.08) + 's'"
+             [style.opacity]="isBookUnavailable(b) ? '0.7' : '1'">
+
+          <!-- ── Image / Cover side ─────────────────────────────── -->
+          <div class="event-card__img-side" [style]="getCoverStyle(i)">
+
+            <img *ngIf="getBookImageSrc(b)"
+                 [src]="getBookImageSrc(b)!"
+                 class="event-card__img"
+                 [alt]="b.title" />
+
+            <div *ngIf="!getBookImageSrc(b)" class="event-card__img-ph" [style]="getCoverStyle(i)">
+              <span style="font-size:64px;font-weight:900;color:rgba(255,255,255,0.85);letter-spacing:-4px">
+                {{ b.title.charAt(0) }}
               </span>
             </div>
-            <p class="event-card__desc">{{ book.category?.name || book.author?.name || book.isbn || 'Book details unavailable.' }}</p>
+
+            <!-- Availability badge reusing date-badge style -->
+            <div class="event-card__date-badge"
+                 [class.teal]="!isBookUnavailable(b)"
+                 [class.orange]="isBookUnavailable(b)">
+              <span class="event-card__date-month">{{ !isBookUnavailable(b) ? 'DISPO' : 'ÉPUISÉ' }}</span>
+              <span class="event-card__date-day" style="font-size:18px">
+                {{ getAvailableStock(b) }}
+              </span>
+            </div>
+
+          </div>
+
+          <!-- ── Body ───────────────────────────────────────────── -->
+          <div class="event-card__body">
+
+            <div class="event-card__header">
+              <h3 class="event-card__title">{{ b.title }}</h3>
+              <span class="event-card__pill"
+                    [class.pill--rated]="!isBookUnavailable(b)"
+                    [class.pill--demand]="isBookUnavailable(b)">
+                {{ !isBookUnavailable(b) ? '✅ Disponible' : '🚫 Épuisé' }}
+              </span>
+            </div>
+
+            <p class="event-card__desc" style="font-family:monospace;font-size:12px">
+              ISBN : {{ b.isbn }}
+            </p>
+
             <div class="event-card__separator"></div>
+
             <div class="event-card__footer">
               <div class="event-card__meta">
-                <span class="event-card__meta-item">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2A7 7 0 0 0 5 9v5A7 7 0 0 0 12 21h0A7 7 0 0 0 19 14V9A7 7 0 0 0 12 2z"/></svg>
-                  {{ book.author?.name || 'Unknown Author' }}
-                </span>
-                <span class="event-card__meta-item" *ngIf="book.category?.name">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
-                  {{ book.category?.name }}
-                </span>
+                <div class="event-card__meta-item">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  {{ b.author?.name || '—' }}
+                </div>
+                <div class="event-card__meta-item">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+                  </svg>
+                  {{ b.category?.name || '—' }}
+                </div>
+                <div class="event-card__meta-item">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  {{ fmt(b.publicationYear) }}
+                </div>
+                <div class="event-card__meta-item" style="gap:14px;margin-top:4px">
+                  <span style="font-weight:700;color:#006d77;font-size:16px">
+                    {{ b.salePrice }} <span style="font-size:12px;color:#83c5be">{{ b.currency }}</span>
+                  </span>
+                  <span style="font-size:12px;color:#8a9ab0">
+                    · location : {{ getRentalPrice(b) | number:'1.2-2' }} {{ b.currency }}/j
+                  </span>
+                </div>
               </div>
+
               <div class="event-card__actions">
-                <button *ngIf="!isBookUnavailable(book)" (click)="openRentModal(book)" class="btn-register">Rent</button>
-                <button *ngIf="!isBookUnavailable(book)" (click)="openOrderModal(book)" class="btn-register">Order</button>
-                <div *ngIf="isBookUnavailable(book)" class="badge-registered">Out of stock</div>
+                <button (click)="openRentModal(b)"
+                        [disabled]="isBookUnavailable(b)"
+                        class="btn-register"
+                        style="background: linear-gradient(135deg, #006D77 0%, #0B7A81 100%);gap:6px">
+                  🔖 Allouer
+                </button>
+                <button (click)="openOrderModal(b)"
+                        [disabled]="isBookUnavailable(b)"
+                        class="btn-register"
+                        style="background: linear-gradient(135deg, #E29578 0%, #D97F60 100%);gap:6px">
+                  🛒 Commander
+                </button>
               </div>
             </div>
+
           </div>
-        </article>
+        </div>
       </div>
     </div>
 
-    <aside class="layout__sidebar">
-      <div class="sidebar-card glass">
-        <h2 class="sidebar-card__title">Library Wallet</h2>
-        <label class="sidebar-card__label">Balance</label>
-        <div class="wallet-balance">{{ wallet?.balance | number:'1.2-2' }} TND</div>
-        <button class="sidebar-card__submit" type="button" (click)="openWalletModal()">Manage Wallet</button>
-        <p class="sidebar-card__terms">View your balance, top up, and pay directly for rentals and orders.</p>
+    <!-- ── SIDEBAR ────────────────────────────────────────────────── -->
+    <div class="layout__sidebar">
+
+      <!-- Wallet card -->
+      <div class="sidebar-card glass" style="margin-bottom:24px">
+        <h2 class="sidebar-card__title">💳 Mon Portefeuille</h2>
+
+        <div class="wallet-balance" *ngIf="!walletLoading">
+          {{ wallet?.balance | number:'1.3-3' }}
+          <span style="font-size:18px;color:#83c5be;font-weight:600"> TND</span>
+        </div>
+        <div *ngIf="walletLoading" style="font-size:14px;color:#8a9ab0;margin-bottom:20px">Chargement…</div>
+
+        <div class="wallet-grid">
+          <div>
+            <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#83c5be;margin-bottom:4px">Portefeuille ID</p>
+            <p style="font-size:15px;font-weight:700;color:#1a2332">#{{ wallet?.id || '—' }}</p>
+          </div>
+          <div>
+            <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#83c5be;margin-bottom:4px">Statut</p>
+            <p style="font-size:15px;font-weight:700;color:#059669">● Actif</p>
+          </div>
+        </div>
+
+        <div style="background:rgba(0,109,119,0.06);border:1px solid rgba(131,197,190,0.2);border-radius:14px;padding:14px;margin-bottom:20px;font-size:13px;color:#5a6b7f;line-height:1.6">
+          💡 La recharge se fait uniquement à l'administration. Présentez-vous à la caisse avec le montant en espèces.
+        </div>
+
+        <button (click)="openWalletModal()" class="sidebar-card__submit">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+          </svg>
+          Voir l'historique
+        </button>
+
+        <p class="sidebar-card__terms">
+          Paiement sécurisé · Solde débité instantanément lors des transactions
+        </p>
       </div>
+
+      <!-- Quick filters card -->
       <div class="sidebar-card glass">
-        <h2 class="sidebar-card__title">Quick Actions</h2>
-        <label class="sidebar-card__label">Search</label>
-        <input class="sidebar-card__input" type="text" [(ngModel)]="searchQuery" (input)="onSearch()" placeholder="Search title, author, ISBN">
-        <button class="sidebar-card__submit" type="button" (click)="loadBooks()">Refresh Books</button>
-        <p class="sidebar-card__terms">Use the main search bar for fast filtering and refresh the library list.</p>
+        <h2 class="sidebar-card__title" style="font-size:18px;margin-bottom:20px">🔎 Recherche rapide</h2>
+
+        <label class="sidebar-card__label">Par titre ou auteur</label>
+        <input class="sidebar-card__input"
+               [(ngModel)]="searchQuery"
+               (ngModelChange)="onSearch()"
+               placeholder="Rechercher…" />
+
+        <div style="font-size:12px;color:#8a9ab0;text-align:center">
+          {{ filteredBooks.length }} livre(s) trouvé(s)
+        </div>
       </div>
-    </aside>
+
+    </div>
   </div>
-</main>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL — 💳 PORTEFEUILLE
+══════════════════════════════════════════════════════════════ -->
+<div *ngIf="showWalletModal" class="ev-overlay ev-overlay--dark">
+  <div class="ev-overlay__bg" (click)="closeWalletModal()"></div>
+
+  <div class="ev-modal" style="max-width:480px">
+    <div class="ev-modal__bar"></div>
+
+    <div class="ev-modal__head" style="background:linear-gradient(135deg,#004e45,#006D77);border-bottom:none;padding-bottom:0">
+      <div class="ev-modal__head-ico" style="background:rgba(131,197,190,0.25);color:#83C5BE">💳</div>
+      <h2 style="color:white">Mon Portefeuille</h2>
+      <button class="ev-modal__x" (click)="closeWalletModal()" style="background:rgba(255,255,255,0.1);color:white;border-color:rgba(255,255,255,0.15)">✕</button>
+    </div>
+
+    <!-- Balance card inside header area -->
+    <div style="background:linear-gradient(135deg,#004e45,#006D77);padding:20px 26px 0">
+      <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,221,210,0.2);border-radius:16px;padding:18px;margin-bottom:16px">
+        <p style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#83C5BE;margin-bottom:6px">Solde disponible</p>
+        <p style="font-size:36px;font-weight:800;color:white;line-height:1;margin-bottom:4px">
+          <span *ngIf="walletLoading" style="font-size:16px;opacity:0.6">Chargement…</span>
+          <span *ngIf="!walletLoading">{{ wallet?.balance | number:'1.3-3' }}</span>
+          <span *ngIf="!walletLoading" style="font-size:16px;font-weight:700;color:#83C5BE;margin-left:6px">TND</span>
+        </p>
+        <p style="font-size:11px;color:rgba(255,221,210,0.6)">ID : #{{ wallet?.id }}</p>
+      </div>
+
+      <!-- Tabs -->
+      <div style="display:flex;gap:4px;background:rgba(0,0,0,0.2);border-radius:12px;padding:4px;margin-bottom:0">
+        <button (click)="setWalletTab('overview')"
+                [style]="walletTab==='overview' ? 'background:#006D77;color:white' : 'color:rgba(255,255,255,0.5);background:transparent'"
+                style="flex:1;padding:8px;border-radius:8px;border:none;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s">
+          💰 Mon Solde
+        </button>
+        <button (click)="setWalletTab('history')"
+                [style]="walletTab==='history' ? 'background:#006D77;color:white' : 'color:rgba(255,255,255,0.5);background:transparent'"
+                style="flex:1;padding:8px;border-radius:8px;border:none;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s">
+          📜 Historique
+        </button>
+      </div>
+    </div>
+
+    <div class="ev-modal__body">
+
+      <!-- TAB : MON SOLDE -->
+      <div *ngIf="walletTab === 'overview'">
+        <div style="background:linear-gradient(135deg,#EDF6F9,#d4f0eb);border:1px solid rgba(131,197,190,0.3);border-radius:16px;padding:18px;margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+            <div style="width:40px;height:40px;border-radius:12px;background:rgba(0,109,119,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🏦</div>
+            <div>
+              <p style="font-size:13px;font-weight:700;color:#006D77;margin:0">Comment recharger votre solde ?</p>
+              <p style="font-size:12px;color:#5a6b7f;margin:0">Uniquement à l'administration</p>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div *ngFor="let step of ['Présentez-vous à la caisse avec le montant en espèces','L\'administrateur crédite votre portefeuille instantanément','Votre solde est mis à jour et prêt à l\'emploi']; let j = index"
+                 style="display:flex;align-items:flex-start;gap:10px">
+              <div style="width:22px;height:22px;border-radius:50%;background:#006D77;color:white;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">{{ j+1 }}</div>
+              <p style="font-size:12px;color:#5a6b7f;margin:0">{{ step }}</p>
+            </div>
+          </div>
+        </div>
+        <div style="background:white;border:1px solid rgba(131,197,190,0.2);border-radius:14px;padding:14px">
+          <p style="font-size:12px;font-weight:700;color:#006D77;margin:0 0 10px">💡 Payer avec votre portefeuille</p>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px">
+            <li *ngFor="let tip of ['Choisissez Payer via Portefeuille lors d\'une allocation/commande','Le montant est débité instantanément si votre solde est suffisant','Consultez l\'historique pour suivre vos transactions']"
+                style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#5a6b7f">
+              <span style="color:#059669;flex-shrink:0;margin-top:1px">✓</span> {{ tip }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- TAB : HISTORIQUE -->
+      <div *ngIf="walletTab === 'history'">
+        <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#83C5BE;margin-bottom:12px">Transactions récentes</p>
+
+        <div *ngIf="walletTransactions.length === 0"
+             style="display:flex;flex-direction:column;align-items:center;padding:40px 0;color:#8a9ab0">
+          <div style="font-size:36px;margin-bottom:10px;opacity:0.4">📭</div>
+          <p style="font-size:14px">Aucune transaction</p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto">
+          <div *ngFor="let t of walletTransactions"
+               style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;border:1px solid"
+               [style.background]="t.type === 'CREDIT' ? 'rgba(212,240,235,0.3)' : 'rgba(255,221,210,0.3)'"
+               [style.border-color]="t.type === 'CREDIT' ? 'rgba(131,197,190,0.3)' : 'rgba(226,149,120,0.3)'">
+            <div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0"
+                 [style.background]="t.type === 'CREDIT' ? '#d4f0eb' : '#FFDDD2'"
+                 [style.color]="t.type === 'CREDIT' ? '#006D77' : '#c9785f'">
+              {{ t.type === 'CREDIT' ? '↓' : '↑' }}
+            </div>
+            <div style="flex:1;min-width:0">
+              <p style="font-size:12px;font-weight:700;color:#1a2332;margin:0">{{ t.type === 'CREDIT' ? 'Recharge portefeuille' : 'Paiement livre' }}</p>
+              <p style="font-size:11px;color:#8a9ab0;margin:0">{{ fmtDateTime(t.date) }}</p>
+            </div>
+            <p style="font-size:14px;font-weight:800;flex-shrink:0;margin:0"
+               [style.color]="t.type === 'CREDIT' ? '#006D77' : '#c9785f'">
+              {{ t.type === 'CREDIT' ? '+' : '-' }}{{ t.amount | number:'1.3-3' }} TND
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="padding:0 26px 22px">
+      <button (click)="closeWalletModal()" class="ev-btn ev-btn--ghost" style="width:100%;justify-content:center;padding:14px">
+        Fermer
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     MODAL — ALLOUER
+══════════════════════════════════ -->
+<div *ngIf="showRentModal" class="ev-overlay ev-overlay--dark">
+  <div class="ev-overlay__bg" (click)="closeRentModal()"></div>
+
+  <div class="ev-modal" style="max-width:440px">
+    <div class="ev-modal__bar" style="background:linear-gradient(90deg,#006D77,#83C5BE,#EDF6F9)"></div>
+
+    <div class="ev-modal__head" style="background:linear-gradient(135deg,#EDF6F9,#d4f0eb);border-bottom-color:rgba(131,197,190,0.2)">
+      <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+        <div style="width:44px;height:64px;border-radius:10px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,0.15);background:linear-gradient(135deg,#006D77,#83C5BE);position:relative">
+          <img *ngIf="getBookImageSrc(selectedBook!)" [src]="getBookImageSrc(selectedBook!)!" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" alt="" />
+          <span *ngIf="!getBookImageSrc(selectedBook!)" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:20px">{{ selectedBook?.title?.charAt(0) }}</span>
+        </div>
+        <div style="min-width:0">
+          <p style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#006D77;margin:0 0 2px">🔖 Allocation</p>
+          <h2 style="font-size:16px;font-weight:800;color:#1a2332;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ selectedBook?.title }}</h2>
+          <p style="font-size:12px;color:#5a6b7f;margin:0">{{ selectedBook?.author?.name }}</p>
+        </div>
+      </div>
+      <button class="ev-modal__x" (click)="closeRentModal()">✕</button>
+    </div>
+
+    <div class="ev-modal__body">
+      <form [formGroup]="rentForm" (ngSubmit)="submitRent()">
+
+        <!-- Dates -->
+        <p style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#83C5BE;margin:0 0 10px">📅 Période d'emprunt</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:#5a6b7f;display:block;margin-bottom:4px">Début <span style="color:#ef4444">*</span></label>
+            <input type="date" formControlName="startDate" [min]="today"
+                   style="width:100%;padding:10px 12px;border:1.5px solid rgba(131,197,190,0.25);border-radius:12px;font-size:13px;outline:none;font-family:Inter,sans-serif;background:#f8fffe;color:#1a2332;box-sizing:border-box" />
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:#5a6b7f;display:block;margin-bottom:4px">Retour <span style="color:#ef4444">*</span></label>
+            <input type="date" formControlName="dueDate"
+                   [min]="rentForm.get('startDate')?.value || today"
+                   style="width:100%;padding:10px 12px;border:1.5px solid rgba(131,197,190,0.25);border-radius:12px;font-size:13px;outline:none;font-family:Inter,sans-serif;background:#f8fffe;color:#1a2332;box-sizing:border-box" />
+          </div>
+        </div>
+
+        <!-- Currency -->
+        <p style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#83C5BE;margin:0 0 8px">💱 Devise</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+          <label *ngFor="let c of [{v:'TND',f:'🇹🇳'},{v:'EUR',f:'🇪🇺'},{v:'USD',f:'🇺🇸'}]"
+                 style="display:flex;align-items:center;justify-content:center;gap:4px;padding:9px;border-radius:12px;border:2px solid;cursor:pointer;font-size:12px;font-weight:700;transition:all 0.2s;user-select:none"
+                 [style.border-color]="rentForm.get('currency')?.value === c.v ? '#006D77' : '#e5e7eb'"
+                 [style.background]="rentForm.get('currency')?.value === c.v ? '#EDF6F9' : 'white'"
+                 [style.color]="rentForm.get('currency')?.value === c.v ? '#006D77' : '#9ca3af'">
+            <input type="radio" formControlName="currency" [value]="c.v" style="display:none" />
+            {{ c.f }} {{ c.v }}
+          </label>
+        </div>
+
+        <!-- Summary -->
+        <div *ngIf="rentForm.get('startDate')?.value && rentForm.get('dueDate')?.value && getDuration() > 0"
+             style="border-radius:12px;overflow:hidden;border:1px solid rgba(131,197,190,0.3);margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px;background:#EDF6F9">
+            <span style="font-size:12px;color:#83C5BE;font-weight:600">⏱ Durée</span>
+            <span style="font-size:12px;font-weight:800;color:#006D77">{{ getDuration() }} jour(s)</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px;background:white;border-top:1px solid rgba(131,197,190,0.15)">
+            <span style="font-size:12px;color:#8a9ab0">💳 Prix / jour</span>
+            <span style="font-size:12px;font-weight:700;color:#1a2332">{{ getRentalPriceConverted(selectedBook, rentForm.get('currency')?.value) | number:'1.3-3' }} {{ rentForm.get('currency')?.value }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:linear-gradient(135deg,#EDF6F9,#d4f0eb)">
+            <span style="font-size:13px;font-weight:700;color:#006D77">💰 Total estimé</span>
+            <span style="font-size:18px;font-weight:800;color:#006D77">{{ rentTotal | number:'1.3-3' }} {{ rentForm.get('currency')?.value }}</span>
+          </div>
+        </div>
+
+        <!-- Payment mode -->
+        <p style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#83C5BE;margin:0 0 8px">💳 Mode de paiement</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+          <label style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px;border-radius:14px;border:2px solid;cursor:pointer;transition:all 0.2s;user-select:none"
+                 [style.border-color]="rentForm.get('paymentMode')?.value === 'CAISSE' ? '#E29578' : '#e5e7eb'"
+                 [style.background]="rentForm.get('paymentMode')?.value === 'CAISSE' ? '#fff5f0' : 'white'">
+            <input type="radio" formControlName="paymentMode" value="CAISSE" style="display:none" />
+            <span style="font-size:24px">💵</span>
+            <span style="font-size:12px;font-weight:700" [style.color]="rentForm.get('paymentMode')?.value === 'CAISSE' ? '#c9785f' : '#9ca3af'">Caisse</span>
+            <span style="font-size:11px" [style.color]="rentForm.get('paymentMode')?.value === 'CAISSE' ? '#E29578' : '#d1d5db'">En espèces</span>
+          </label>
+          <label style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px;border-radius:14px;border:2px solid;cursor:pointer;transition:all 0.2s;user-select:none"
+                 [style.border-color]="rentForm.get('paymentMode')?.value === 'WALLET' ? '#006D77' : '#e5e7eb'"
+                 [style.background]="rentForm.get('paymentMode')?.value === 'WALLET' ? '#EDF6F9' : 'white'">
+            <input type="radio" formControlName="paymentMode" value="WALLET" style="display:none" />
+            <span style="font-size:24px">💳</span>
+            <span style="font-size:12px;font-weight:700" [style.color]="rentForm.get('paymentMode')?.value === 'WALLET' ? '#006D77' : '#9ca3af'">Portefeuille</span>
+            <span style="font-size:12px;font-weight:700" [style.color]="rentForm.get('paymentMode')?.value === 'WALLET' ? '#83C5BE' : '#d1d5db'">{{ wallet?.balance | number:'1.2-2' }} TND</span>
+          </label>
+        </div>
+
+        <div *ngIf="insufficientFunds"
+             style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#FFDDD2;border:1px solid #E29578;border-radius:12px;font-size:12px;font-weight:600;color:#c9785f;margin-bottom:12px">
+          ⚠️ Solde insuffisant — rechargez votre portefeuille ou payez à la caisse.
+        </div>
+
+        <div class="ev-modal__btns" style="justify-content:stretch;gap:10px">
+          <button type="button" (click)="closeRentModal()" class="ev-btn ev-btn--ghost" style="flex:1;justify-content:center;padding:12px">Annuler</button>
+          <button type="submit" [disabled]="rentForm.invalid || isLoading" class="ev-btn ev-btn--prim" style="flex:1;justify-content:center;padding:12px">
+            <span *ngIf="isLoading" class="ev-btn__ld"><span class="ev-spin"></span> Traitement…</span>
+            <span *ngIf="!isLoading">✓ Confirmer</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     MODAL — COMMANDER
+══════════════════════════════════ -->
+<div *ngIf="showOrderModal" class="ev-overlay ev-overlay--dark">
+  <div class="ev-overlay__bg" (click)="closeOrderModal()"></div>
+
+  <div class="ev-modal" style="max-width:420px">
+    <div class="ev-modal__bar" style="background:linear-gradient(90deg,#FFDDD2,#E29578,#c9785f)"></div>
+
+    <div class="ev-modal__head">
+      <div class="ev-modal__head-ico">🛒</div>
+      <h2>Commander un Livre</h2>
+      <button class="ev-modal__x" (click)="closeOrderModal()">✕</button>
+    </div>
+
+    <div class="ev-modal__body">
+
+      <!-- Book preview -->
+      <div style="display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:linear-gradient(135deg,#EDF6F9,#d4f0eb);border:1px solid rgba(131,197,190,0.3);margin-bottom:18px">
+        <div style="width:40px;height:58px;border-radius:10px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,0.15);background:linear-gradient(135deg,#006D77,#83C5BE);position:relative">
+          <img *ngIf="getBookImageSrc(selectedBook!)" [src]="getBookImageSrc(selectedBook!)!" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" alt="" />
+          <span *ngIf="!getBookImageSrc(selectedBook!)" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:16px">{{ selectedBook?.title?.charAt(0) }}</span>
+        </div>
+        <div style="flex:1;min-width:0">
+          <p style="font-size:14px;font-weight:800;color:#1a2332;margin:0 0 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ selectedBook?.title }}</p>
+          <p style="font-size:12px;color:#5a6b7f;margin:0 0 8px">{{ selectedBook?.author?.name }}</p>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:15px;font-weight:800;color:#006D77">{{ selectedBook?.salePrice }} {{ selectedBook?.currency }}</span>
+            <span style="font-size:12px;color:#8a9ab0">📦 <span style="font-weight:700" [style.color]="getAvailableStock(selectedBook!) === 0 ? '#dc2626' : getAvailableStock(selectedBook!) < 5 ? '#E29578' : '#006D77'">{{ getAvailableStock(selectedBook!) }}</span> dispo</span>
+          </div>
+        </div>
+      </div>
+
+      <form [formGroup]="orderForm" (ngSubmit)="submitOrder()">
+
+        <!-- Quantity -->
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#5a6b7f;display:block;margin-bottom:6px">Quantité <span style="color:#ef4444">*</span></label>
+        <input type="number" formControlName="qty" min="1"
+               [max]="getAvailableStock(selectedBook!)"
+               style="width:100%;padding:12px 16px;border:1.5px solid rgba(131,197,190,0.25);border-radius:14px;font-size:14px;font-weight:700;outline:none;font-family:Inter,sans-serif;background:#f8fffe;color:#1a2332;margin-bottom:14px;box-sizing:border-box" />
+
+        <!-- Currency -->
+        <p style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#83C5BE;margin:0 0 8px">💱 Devise</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+          <label *ngFor="let c of [{v:'TND',f:'🇹🇳'},{v:'EUR',f:'🇪🇺'},{v:'USD',f:'🇺🇸'}]"
+                 style="display:flex;align-items:center;justify-content:center;gap:4px;padding:9px;border-radius:12px;border:2px solid;cursor:pointer;font-size:12px;font-weight:700;transition:all 0.2s;user-select:none"
+                 [style.border-color]="orderForm.get('currency')?.value === c.v ? '#E29578' : '#e5e7eb'"
+                 [style.background]="orderForm.get('currency')?.value === c.v ? '#fff5f0' : 'white'"
+                 [style.color]="orderForm.get('currency')?.value === c.v ? '#c9785f' : '#9ca3af'">
+            <input type="radio" formControlName="currency" [value]="c.v" style="display:none" />
+            {{ c.f }} {{ c.v }}
+          </label>
+        </div>
+
+        <!-- Total -->
+        <div style="border-radius:12px;overflow:hidden;border:1px solid rgba(131,197,190,0.3);margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px;background:white;border-bottom:1px solid rgba(131,197,190,0.1)">
+            <span style="font-size:12px;color:#8a9ab0">Prix unitaire converti</span>
+            <span style="font-size:12px;font-weight:700;color:#1a2332">{{ getSalePriceConverted(selectedBook, orderForm.get('currency')?.value) | number:'1.3-3' }} {{ orderForm.get('currency')?.value }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:linear-gradient(135deg,#EDF6F9,#d4f0eb)">
+            <span style="font-size:13px;font-weight:700;color:#006D77">💰 Total estimé</span>
+            <span style="font-size:20px;font-weight:800;color:#006D77">{{ orderTotal | number:'1.3-3' }} {{ orderForm.get('currency')?.value }}</span>
+          </div>
+        </div>
+
+        <!-- Payment mode -->
+        <p style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#83C5BE;margin:0 0 8px">💳 Mode de paiement</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+          <label style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px;border-radius:14px;border:2px solid;cursor:pointer;transition:all 0.2s;user-select:none"
+                 [style.border-color]="orderForm.get('paymentMode')?.value === 'CAISSE' ? '#E29578' : '#e5e7eb'"
+                 [style.background]="orderForm.get('paymentMode')?.value === 'CAISSE' ? '#fff5f0' : 'white'">
+            <input type="radio" formControlName="paymentMode" value="CAISSE" style="display:none" />
+            <span style="font-size:24px">💵</span>
+            <span style="font-size:12px;font-weight:700" [style.color]="orderForm.get('paymentMode')?.value === 'CAISSE' ? '#c9785f' : '#9ca3af'">Caisse</span>
+            <span style="font-size:11px" [style.color]="orderForm.get('paymentMode')?.value === 'CAISSE' ? '#E29578' : '#d1d5db'">En espèces</span>
+          </label>
+          <label style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px;border-radius:14px;border:2px solid;cursor:pointer;transition:all 0.2s;user-select:none"
+                 [style.border-color]="orderForm.get('paymentMode')?.value === 'WALLET' ? '#006D77' : '#e5e7eb'"
+                 [style.background]="orderForm.get('paymentMode')?.value === 'WALLET' ? '#EDF6F9' : 'white'">
+            <input type="radio" formControlName="paymentMode" value="WALLET" style="display:none" />
+            <span style="font-size:24px">💳</span>
+            <span style="font-size:12px;font-weight:700" [style.color]="orderForm.get('paymentMode')?.value === 'WALLET' ? '#006D77' : '#9ca3af'">Portefeuille</span>
+            <span style="font-size:12px;font-weight:700" [style.color]="orderForm.get('paymentMode')?.value === 'WALLET' ? '#83C5BE' : '#d1d5db'">{{ wallet?.balance | number:'1.2-2' }} TND</span>
+          </label>
+        </div>
+
+        <div *ngIf="insufficientFunds"
+             style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#FFDDD2;border:1px solid #E29578;border-radius:12px;font-size:12px;font-weight:600;color:#c9785f;margin-bottom:12px">
+          ⚠️ Solde insuffisant — rechargez votre portefeuille ou payez à la caisse.
+        </div>
+
+        <div class="ev-modal__btns" style="justify-content:stretch;gap:10px">
+          <button type="button" (click)="closeOrderModal()" class="ev-btn ev-btn--ghost" style="flex:1;justify-content:center;padding:12px">Annuler</button>
+          <button type="submit" [disabled]="orderForm.invalid || isLoading" class="ev-btn ev-btn--dang" style="flex:1;justify-content:center;padding:12px">
+            <span *ngIf="isLoading" class="ev-btn__ld"><span class="ev-spin"></span> Traitement…</span>
+            <span *ngIf="!isLoading">✓ Commander</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     MODAL — 🎉 FÉLICITATION RÉDUCTION
+══════════════════════════════════ -->
+<div *ngIf="showDiscountModal" class="ev-overlay ev-overlay--dark">
+  <div class="ev-overlay__bg" (click)="closeDiscountModal()"></div>
+
+  <div class="ev-modal" style="max-width:360px;text-align:center">
+    <div class="ev-modal__bar" style="background:linear-gradient(90deg,#f59e0b,#E29578,#006D77,#83C5BE,#f59e0b);background-size:300% 100%;animation:shimmer 3s linear infinite"></div>
+
+    <div class="ev-modal__body">
+
+      <!-- Bank card -->
+      <div class="bank-card" style="margin-bottom:20px">
+        <div class="card-top">
+          <div class="logo">🌿 Jungle</div>
+          <div class="chip"></div>
+        </div>
+        <div class="card-number">**** **** **** {{ wallet?.id || '0000' }}</div>
+        <div class="card-bottom">
+          <div><p>Nom</p><h4>Étudiant</h4></div>
+          <div><p>Solde</p><h4>{{ wallet?.balance | number:'1.3-3' }} TND</h4></div>
+        </div>
+      </div>
+
+      <div style="width:60px;height:60px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;background:linear-gradient(135deg,#f59e0b,#E29578);box-shadow:0 8px 24px rgba(226,149,120,0.4)">🎉</div>
+
+      <h2 style="font-size:20px;font-weight:800;color:#1a2332;margin:0 0 4px">Félicitations !</h2>
+      <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#83C5BE;margin:0 0 14px">Récompense de fidélité</p>
+
+      <p style="font-size:13px;color:#5a6b7f;margin:0 0 14px;line-height:1.6">
+        Vous êtes un client fidèle de <strong style="color:#006D77">Jungle in English</strong> !<br>
+        Votre prochaine <strong>{{ discountContext === 'rental' ? 'location' : 'commande' }}</strong> bénéficiera d'une réduction de :
+      </p>
+
+      <div style="background:linear-gradient(135deg,#006D77,#83C5BE);border-radius:14px;padding:14px;margin-bottom:14px">
+        <p style="font-size:40px;font-weight:800;color:white;line-height:1;margin:0">-20%</p>
+        <p style="font-size:11px;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:1px;margin:4px 0 0">réduction fidélité</p>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(255,221,210,0.3);border:1px solid #FFDDD2;border-radius:12px;margin-bottom:18px;text-align:left">
+        <span style="font-size:16px;flex-shrink:0">🏷️</span>
+        <p style="font-size:12px;color:#c9785f;margin:0">La réduction sera automatiquement appliquée lors du paiement.</p>
+      </div>
+
+      <button (click)="closeDiscountModal()" class="ev-btn ev-btn--prim" style="width:100%;justify-content:center;padding:14px;font-size:14px">
+        Super, merci ! 🌿
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes shimmer {
+    0%   { background-position: 0% 0% }
+    100% { background-position: 300% 0% }
+  }
+
+  .bank-card {
+    width: 100%;
+    height: 155px;
+    border-radius: 16px;
+    padding: 16px;
+    color: white;
+    background: linear-gradient(135deg, #004e45, #006D77, #83C5BE);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    transition: 0.3s;
+    text-align: left;
+  }
+
+  .bank-card:hover { transform: translateY(-4px) scale(1.01); }
+
+  .bank-card::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.15), transparent);
+  }
+
+  .card-top { display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-weight: bold; font-size: 14px; }
+  .chip { width: 32px; height: 20px; border-radius: 5px; background: linear-gradient(135deg, #ffd700, #e6c200); }
+  .card-number { font-size: 13px; letter-spacing: 2px; font-weight: bold; }
+  .card-bottom { display: flex; justify-content: space-between; font-size: 10px; }
+  .card-bottom p { margin: 0; opacity: 0.7; }
+  .card-bottom h4 { font-size: 12px; margin: 2px 0 0; }
+</style>

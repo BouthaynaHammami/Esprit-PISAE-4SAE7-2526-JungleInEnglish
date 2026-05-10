@@ -1,540 +1,200 @@
-<!-- ══════════════════════════════════════════════
-     DECORATIVE BACKGROUND SHAPES
-══════════════════════════════════════════════ -->
+<!-- Decorative background -->
 <div class="bg-decor">
   <div class="bg-orb bg-orb--1"></div>
   <div class="bg-orb bg-orb--2"></div>
   <div class="bg-orb bg-orb--3"></div>
-  <div class="bg-sphere bg-sphere--1"></div>
-  <div class="bg-sphere bg-sphere--2"></div>
-  <div class="bg-sphere bg-sphere--3"></div>
-  <div class="bg-sphere bg-sphere--4"></div>
-  <div class="bg-plane">
-    <svg width="90" height="60" viewBox="0 0 90 60" fill="none">
-      <path d="M5 50 L85 10 L50 30 L85 10 L60 55 L50 30 L5 50Z" fill="url(#planeGrad)" opacity="0.18"/>
-      <defs><linearGradient id="planeGrad" x1="0" y1="0" x2="90" y2="60"><stop stop-color="#5ad0d0"/><stop offset="1" stop-color="#83C5BE" stop-opacity="0.3"/></linearGradient></defs>
-    </svg>
+</div>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>🌴 English Kids</h1>
+    <p>{{ isParent ? "Track and explore your children's English learning journey" : 'Explore English learning activities for kids' }}</p>
   </div>
-</div>
 
-<!-- ──────────────────────────────────────────
-     LOADING STATE
-──────────────────────────────────────────── -->
-<div *ngIf="loading" class="flex items-center justify-center min-h-[60vh]">
-    <div class="flex flex-col items-center gap-4">
-        <div class="w-14 h-14 border-4 border-[#006D77] border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-gray-500 font-medium">Loading English Kids…</p>
-    </div>
-</div>
-
-<!-- ──────────────────────────────────────────
-     ERROR STATE
-──────────────────────────────────────────── -->
-<div *ngIf="!loading && errorMsg" class="flex items-center justify-center min-h-[60vh]">
-    <div class="bg-red-50 border border-red-200 rounded-2xl p-8 text-center max-w-md">
-        <span class="text-4xl">⚠️</span>
-        <p class="mt-3 text-red-600 font-medium">{{ errorMsg }}</p>
-    </div>
-</div>
-
-<!-- ══════════════════════════════════════════════
-     MAIN PAGE
-══════════════════════════════════════════════ -->
-<main *ngIf="!loading && !errorMsg" class="page">
-
-  <!-- Breadcrumb -->
-  <nav class="breadcrumb">
-    <span class="breadcrumb__back">&#8249;</span>
-    <a routerLink="/student/dashboard">Home</a>
-    <span class="breadcrumb__sep">&#8250;</span>
-    <strong>English Kids</strong>
-  </nav>
-
-  <!-- Hero -->
-  <header class="hero">
-    <h1>English for Kids</h1>
-    <p>Fun and engaging activities for young learners</p>
-  </header>
-
-  <!-- Two-column layout -->
+  <!-- LAYOUT: main + sidebar -->
   <div class="layout">
 
-    <!-- LEFT: Kids/Activities -->
+    <!-- MAIN: filters + activities grid -->
     <div class="layout__main">
 
-      <!-- Profile Selection View -->
-      <div *ngIf="viewMode === 'profile-select'">
-
-        <!-- Search bar -->
-        <div class="search-bar">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" placeholder="Search children..." [(ngModel)]="searchQuery">
-        </div>
-
-        <!-- Empty state -->
-        <div *ngIf="children.length === 0" class="empty-state">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16c-2 0-3-1-3-2s1-1 3-1 3 1 3 2-1 2-3 2M9 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3M15 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3"/></svg>
-          <p class="empty-state__title">No child profiles yet</p>
-          <p class="empty-state__sub">Create a profile to get started with learning</p>
-        </div>
-
-        <!-- Kids grid -->
-        <div *ngIf="children.length > 0" class="courses-grid">
-          <article *ngFor="let child of children; let i = index"
-                   class="course-card glass"
-                   [style.--card-delay]="(i * 0.07) + 's'"
-                   (click)="selectChild(child)">
-
-            <!-- Avatar side -->
-            <div class="course-card__img-side">
-              <div class="kid-avatar-placeholder">
-                <span class="kid-avatar-emoji">{{ child.avatar || '👶' }}</span>
-              </div>
-              <div class="course-level-badge teal">
-                Level {{ child.level }}
-              </div>
-            </div>
-
-            <!-- Content side -->
-            <div class="course-card__body">
-              <div class="course-card__header">
-                <h3 class="course-card__title">{{ child.name }}</h3>
-                <span class="course-card__pill pill--enrolled">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z" fill="#006D77"/>
-                  </svg>
-                  Active
-                </span>
-              </div>
-
-              <p class="course-card__desc">Age {{ child.age }} • {{ child.xp }} XP earned</p>
-
-              <div class="course-card__separator"></div>
-
-              <div class="course-card__footer">
-                <div class="course-card__meta">
-                  <span class="course-card__meta-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    Learning since {{ child.createdAt | date:'shortDate' }}
-                  </span>
-                </div>
-
-                <div class="course-card__actions">
-                  <button class="btn-continue">
-                    Select Profile
-                  </button>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <!-- Add new child -->
-          <article class="course-card glass"
-                   [style.--card-delay]="(children.length * 0.07) + 's'"
-                   (click)="viewMode = 'profile-create'">
-
-            <!-- Plus icon side -->
-            <div class="course-card__img-side add-child-bg">
-              <div class="add-child-icon">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"/>
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-              </div>
-            </div>
-
-            <!-- Content side -->
-            <div class="course-card__body">
-              <div class="course-card__header">
-                <h3 class="course-card__title">Add New Child</h3>
-                <span class="course-card__pill pill--locked">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#E29578"/>
-                  </svg>
-                  Create
-                </span>
-              </div>
-
-              <p class="course-card__desc">Create a new learning profile for your child</p>
-
-              <div class="course-card__separator"></div>
-
-              <div class="course-card__footer">
-                <div class="course-card__actions">
-                  <button class="btn-continue">
-                    Create Profile
-                  </button>
-                </div>
-              </div>
-            </div>
-          </article>
-        </div>
-
+      <!-- Search bar -->
+      <div class="search-bar">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input
+          type="text"
+          placeholder="Search activities by title or description…"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="applyFilters()">
+        <button *ngIf="searchQuery"
+                (click)="searchQuery=''; applyFilters()"
+                style="background:none;border:none;cursor:pointer;font-size:16px;color:#8a9ab0;line-height:1;">✕</button>
       </div>
 
-      <!-- Profile Create View -->
-      <div *ngIf="viewMode === 'profile-create'">
+      <!-- Filters bar -->
+      <div class="filters-bar">
+        <select class="filter-select" [(ngModel)]="selectedCategory" (ngModelChange)="applyFilters()">
+          <option value="">All Categories</option>
+          <option *ngFor="let cat of categories" [value]="cat">{{ getCategoryIcon(cat) }} {{ cat }}</option>
+        </select>
 
-        <div class="section-title">Create New Profile</div>
+        <select class="filter-select" [(ngModel)]="selectedDifficulty" (ngModelChange)="applyFilters()">
+          <option value="">All Levels</option>
+          <option *ngFor="let diff of difficulties" [value]="diff">{{ diff }}</option>
+        </select>
 
-        <div class="profile-form glass">
-          <div class="form-group">
-            <label class="form-label">Child's Name</label>
-            <input type="text" class="form-input" placeholder="Enter name" [(ngModel)]="newChild.name">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Age</label>
-            <input type="number" class="form-input" placeholder="Age" [(ngModel)]="newChild.age" min="4" max="18">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Choose Avatar</label>
-            <div class="avatar-grid">
-              <div *ngFor="let avatar of ['👦', '👧', '🧒', '👶', '🐻', '🐱', '🐶', '🦁']"
-                   (click)="newChild.avatar = avatar"
-                   [class.selected]="newChild.avatar === avatar"
-                   class="avatar-option">
-                {{ avatar }}
-              </div>
-            </div>
-          </div>
-
-          <div class="form-actions">
-            <button (click)="viewMode = 'profile-select'" class="btn-secondary">Cancel</button>
-            <button (click)="createChildProfile()" class="btn-continue">Create Profile</button>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Activities View -->
-      <div *ngIf="viewMode === 'activities' && currentChild">
-
-        <!-- Search bar -->
-        <div class="search-bar">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" placeholder="Search activities..." [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange()">
-        </div>
-
-        <!-- Filters -->
-        <div class="filters-bar">
-          <select [(ngModel)]="selectedCategory" (ngModelChange)="onCategoryChange()" class="filter-select">
-            <option value="">All Categories</option>
-            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
-          </select>
-          <select [(ngModel)]="selectedDifficulty" (ngModelChange)="onDifficultyChange()" class="filter-select">
-            <option value="">All Levels</option>
-            <option *ngFor="let diff of difficulties" [value]="diff">{{ diff }}</option>
-          </select>
-        </div>
-
-        <!-- Empty state -->
-        <div *ngIf="filteredActivities.length === 0 && activities.length === 0" class="empty-state">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <p class="empty-state__title">No activities available</p>
-          <p class="empty-state__sub">Check back soon for new learning activities</p>
-        </div>
-
-        <!-- No search results -->
-        <div *ngIf="filteredActivities.length === 0 && activities.length > 0" class="empty-state">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <p class="empty-state__title">No activities found</p>
-          <p class="empty-state__sub">Try searching with different keywords</p>
-        </div>
-
-        <!-- Activities grid -->
-        <div *ngIf="filteredActivities.length > 0" class="courses-grid">
-          <article *ngFor="let activity of filteredActivities; let i = index"
-                   class="course-card glass"
-                   [style.--card-delay]="(i * 0.07) + 's'"
-                   (click)="startActivity(activity)">
-
-            <!-- Activity icon side -->
-            <div class="course-card__img-side activity-bg">
-              <div class="activity-icon">
-                {{ getCategoryIcon(activity.category) }}
-              </div>
-              <div class="course-level-badge"
-                   [ngClass]="{ 'orange': i % 2 === 0, 'teal': i % 2 !== 0 }">
-                {{ activity.difficulty }}
-              </div>
-            </div>
-
-            <!-- Content side -->
-            <div class="course-card__body">
-              <div class="course-card__header">
-                <h3 class="course-card__title">{{ activity.title }}</h3>
-                <span class="course-card__pill pill--enrolled">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z" fill="#006D77"/>
-                  </svg>
-                  Available
-                </span>
-              </div>
-
-              <p class="course-card__desc">{{ activity.description }}</p>
-
-              <div class="course-card__separator"></div>
-
-              <div class="course-card__footer">
-                <div class="course-card__meta">
-                  <span class="course-card__meta-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    {{ activity.estimatedTime }} min
-                  </span>
-                  <span class="course-card__meta-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 10.26 24 10.27 17 16.14 19.09 24.41 12 17.77 4.91 24.41 7 16.14 2 9.27 8.91 10.26"/></svg>
-                    {{ activity.xpReward }} XP
-                  </span>
-                </div>
-
-                <div class="course-card__actions">
-                  <button class="btn-continue">
-                    Start Activity
-                  </button>
-                </div>
-              </div>
-            </div>
-          </article>
-        </div>
-
-      </div>
-
-      <!-- Quiz View -->
-      <div *ngIf="viewMode === 'quiz' && quizSession">
-
-        <div class="quiz-header">
-          <h2>{{ quizSession.activity.title }}</h2>
-          <div class="quiz-timer">
-            <span class="timer-icon">⏱️</span>
-            <span class="timer-text">{{ quizSession.timeRemaining }}s</span>
-          </div>
-        </div>
-
-        <div class="progress-bar">
-          <div class="progress-fill" [style.width.%]="((quizSession.currentQuestionIndex + 1) / quizSession.questions.length) * 100"></div>
-        </div>
-
-        <div *ngIf="currentQuestion" class="quiz-question glass">
-          <div *ngIf="currentQuestion.imageUrl" class="question-image">
-            <img [src]="currentQuestion.imageUrl" alt="Question" />
-          </div>
-          <h3 class="question-text">{{ currentQuestion.questionText }}</h3>
-
-          <div class="answer-options">
-            <button *ngFor="let option of currentQuestion.options"
-                    (click)="selectAnswer(option)"
-                    [disabled]="showFeedback"
-                    [class.selected]="selectedAnswer === option"
-                    [class.correct]="showFeedback && option === currentQuestion.correctAnswer"
-                    [class.incorrect]="showFeedback && selectedAnswer === option && !isCorrect"
-                    class="answer-btn">
-              {{ option }}
-            </button>
-          </div>
-
-          <div *ngIf="showFeedback" class="feedback">
-            <div class="feedback-icon">{{ isCorrect ? '✅' : '❌' }}</div>
-            <p class="feedback-text">{{ isCorrect ? 'Correct!' : 'Try again!' }}</p>
-            <p *ngIf="!isCorrect && currentQuestion.explanation" class="feedback-explanation">{{ currentQuestion.explanation }}</p>
-          </div>
-
-          <button *ngIf="!showFeedback && selectedAnswer" (click)="submitAnswer(selectedAnswer)" class="btn-submit">
-            Submit Answer
-          </button>
-        </div>
-
-      </div>
-
-      <!-- Results View -->
-      <div *ngIf="viewMode === 'results' && quizResults">
-
-        <div class="results-card glass">
-          <div class="results-header">
-            <div class="celebration-icon">{{ quizResults.score === quizResults.totalQuestions ? '🎉' : quizResults.score >= quizResults.totalQuestions * 0.7 ? '😊' : '💪' }}</div>
-            <h2>{{ quizResults.score === quizResults.totalQuestions ? 'Perfect Score!' : quizResults.score >= quizResults.totalQuestions * 0.7 ? 'Great Job!' : 'Keep Practicing!' }}</h2>
-          </div>
-
-          <div class="results-stats">
-            <div class="stat-item">
-              <div class="stat-icon">📊</div>
-              <div class="stat-value">{{ quizResults.score }}/{{ quizResults.totalQuestions }}</div>
-              <div class="stat-label">Correct</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-icon">⭐</div>
-              <div class="stat-value">{{ quizResults.xpEarned }}</div>
-              <div class="stat-label">XP Earned</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-icon">⏱️</div>
-              <div class="stat-value">{{ quizResults.timeSpent }}s</div>
-              <div class="stat-label">Time</div>
-            </div>
-          </div>
-
-          <div *ngIf="newBadges.length > 0" class="new-badges">
-            <h3>🏆 New Badges!</h3>
-            <div class="badges-grid">
-              <div *ngFor="let badge of newBadges" class="badge-item">
-                <div class="badge-icon">{{ badge.badge?.iconUrl || '🏅' }}</div>
-                <p>{{ badge.badge?.name }}</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="results-actions">
-            <button (click)="retryQuiz()" class="btn-secondary">Try Again</button>
-            <button (click)="backToActivities()" class="btn-continue">Back to Activities</button>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Progress View -->
-      <div *ngIf="viewMode === 'progress' && progress">
-
-        <div class="progress-header">
-          <button (click)="backToActivities()" class="btn-back">← Back to Activities</button>
-        </div>
-
-        <div class="progress-grid">
-          <div class="progress-card glass">
-            <h3>Level Progress</h3>
-            <div class="level-info">
-              <span class="level-badge">Level {{ progress.currentLevel }}</span>
-              <span class="xp-text">{{ progress.totalXp }} / {{ progress.currentLevel * 1000 }} XP</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill" [style.width.%]="(progress.totalXp / (progress.currentLevel * 1000)) * 100"></div>
-            </div>
-            <p class="xp-needed">{{ progress.xpToNextLevel }} XP to next level!</p>
-          </div>
-
-          <div class="progress-card glass">
-            <h3>Statistics</h3>
-            <div class="stats-grid">
-              <div class="stat-item">
-                <div class="stat-icon">📚</div>
-                <div class="stat-value">{{ progress.totalActivitiesCompleted }}</div>
-                <div class="stat-label">Activities</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-icon">✓</div>
-                <div class="stat-value">{{ progress.accuracyPercentage }}%</div>
-                <div class="stat-label">Accuracy</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-icon">🔥</div>
-                <div class="stat-value">{{ progress.currentStreak }}</div>
-                <div class="stat-label">Day Streak</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-icon">🏆</div>
-                <div class="stat-value">{{ progress.badges.length }}</div>
-                <div class="stat-label">Badges</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="progress-card glass">
-            <h3>Badge Collection</h3>
-            <div *ngIf="progress.badges.length > 0" class="badges-grid">
-              <div *ngFor="let badge of progress.badges" class="badge-item">
-                <div class="badge-icon">{{ badge.badge?.iconUrl || '🏅' }}</div>
-                <p>{{ badge.badge?.name }}</p>
-              </div>
-            </div>
-            <div *ngIf="progress.badges.length === 0" class="no-badges">
-              <div class="no-badges-icon">🏅</div>
-              <p>No badges earned yet. Keep learning!</p>
-            </div>
-          </div>
-
-          <div class="progress-card glass">
-            <h3>Recent Activities</h3>
-            <div *ngIf="progress.recentActivities.length > 0" class="recent-activities">
-              <div *ngFor="let activity of progress.recentActivities" class="activity-item">
-                <div class="activity-info">
-                  <p class="activity-title">{{ activity.activityTitle }}</p>
-                  <p class="activity-date">{{ activity.completedAt | date:'short' }}</p>
-                </div>
-                <div class="activity-score">
-                  <p class="score">{{ activity.score }}%</p>
-                  <p class="xp">+{{ activity.xpEarned }} XP</p>
-                </div>
-              </div>
-            </div>
-            <div *ngIf="progress.recentActivities.length === 0" class="no-activities">
-              <p>No recent activities</p>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- RIGHT: Sidebar -->
-    <aside class="layout__sidebar" *ngIf="filteredActivities.length > 0 || viewMode === 'progress'">
-
-      <div class="sidebar-card glass">
-        <h2 class="sidebar-card__title">My Learning</h2>
-
-        <div *ngIf="currentChild" class="child-info">
-          <div class="child-avatar">
-            {{ currentChild.avatar || '👶' }}
-          </div>
-          <div class="child-details">
-            <h3>{{ currentChild.name }}</h3>
-            <p>Level {{ currentChild.level }} • {{ currentChild.xp }} XP</p>
-          </div>
-        </div>
-
-        <div class="sidebar-divider"></div>
-
-        <div class="sidebar-stats">
-          <div class="stat-item">
-            <span class="stat-label">Activities</span>
-            <span class="stat-value">{{ activities.length }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Completed</span>
-            <span class="stat-value">{{ progress?.totalActivitiesCompleted || 0 }}</span>
-          </div>
-        </div>
-
-        <div class="sidebar-divider"></div>
-
-        <p class="sidebar-card__terms">Browse fun activities and track your learning progress. Complete quizzes to earn XP and unlock new levels!</p>
-
-        <button *ngIf="viewMode !== 'progress'" (click)="showProgress()" class="btn-progress">
-          📊 View Progress
+        <button *ngIf="searchQuery || selectedCategory || selectedDifficulty"
+                (click)="clearFilters()"
+                class="btn-secondary" style="padding:12px 20px;">
+          Clear Filters
         </button>
       </div>
 
-      <!-- Leaderboard -->
-      <div *ngIf="leaderboard.length > 0" class="sidebar-card glass">
-        <h2 class="sidebar-card__title">🏆 Leaderboard</h2>
+      <!-- Loading -->
+      <div *ngIf="activitiesLoading" style="text-align:center;padding:60px 0;color:#83C5BE;font-size:15px;font-weight:500;">
+        <div style="font-size:32px;margin-bottom:12px;">⏳</div>
+        Loading activities…
+      </div>
 
-        <div class="leaderboard-list">
-          <div *ngFor="let entry of leaderboard; let i = index"
-               class="leaderboard-item"
-               [class.top-three]="i < 3">
-            <div class="rank">{{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1) }}</div>
-            <div class="child-avatar-small">{{ entry.avatar || '👶' }}</div>
-            <div class="child-info-small">
-              <p class="child-name">{{ entry.childName }}</p>
-              <p class="child-level">Level {{ entry.level }}</p>
+      <!-- Activities Grid -->
+      <div class="courses-grid" *ngIf="!activitiesLoading">
+
+        <div class="course-card glass"
+             *ngFor="let activity of filteredActivities; let i = index"
+             [style.--card-delay]="(i * 0.05) + 's'">
+
+          <!-- Image / Icon side -->
+          <div class="course-card__img-side">
+            <div class="course-card__img-ph activity-bg">
+              <span class="activity-icon">{{ getCategoryIcon(activity.category) }}</span>
             </div>
-            <div class="child-xp">{{ entry.totalXp }} XP</div>
+            <!-- Level badge -->
+            <div class="course-level-badge"
+                 [class.orange]="activity.difficulty === 'INTERMEDIATE'"
+                 [class.teal]="activity.difficulty !== 'INTERMEDIATE'">
+              {{ activity.difficulty }}
+            </div>
+            <!-- Completed badge -->
+            <div *ngIf="activity.isCompleted"
+                 style="position:absolute;top:12px;right:12px;background:rgba(16,185,129,0.9);
+                        color:white;font-size:11px;font-weight:700;padding:6px 10px;
+                        border-radius:12px;backdrop-filter:blur(4px);">
+              ✅ Done
+            </div>
           </div>
+
+          <!-- Body -->
+          <div class="course-card__body">
+            <div class="course-card__header">
+              <h3 class="course-card__title">{{ activity.title }}</h3>
+              <span class="course-card__pill pill--enrolled">{{ activity.category }}</span>
+            </div>
+
+            <p class="course-card__desc">{{ activity.description }}</p>
+
+            <div class="course-card__separator"></div>
+
+            <div class="course-card__footer">
+              <div class="course-card__meta">
+                <span class="course-card__meta-item">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                  </svg>
+                  {{ activity.estimatedTime }} min
+                </span>
+                <span class="course-card__meta-item">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                  </svg>
+                  +{{ activity.xpReward }} XP
+                </span>
+              </div>
+
+              <!-- Progress bar if partially completed -->
+              <div *ngIf="activity.completionRate !== undefined && activity.completionRate! > 0"
+                   style="margin-top:4px;">
+                <div class="progress-bar">
+                  <div class="progress-fill" [style.width.%]="activity.completionRate"></div>
+                </div>
+                <div style="font-size:11px;color:#8a9ab0;font-weight:500;margin-top:4px;text-align:right;">
+                  {{ activity.completionRate }}% completed
+                </div>
+              </div>
+
+              <div class="course-card__actions">
+                <button class="btn-continue" style="width:100%;">
+                  {{ activity.isCompleted ? '🔁 Play Again' : '▶ Start Activity' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div *ngIf="filteredActivities.length === 0"
+             style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;
+                    justify-content:center;padding:80px 20px;text-align:center;color:#8a9ab0;">
+          <div style="font-size:56px;margin-bottom:16px;opacity:0.4;">📭</div>
+          <p style="font-size:17px;font-weight:600;margin-bottom:6px;color:#5a6b7f;">No activities found</p>
+          <p style="font-size:13px;">Try adjusting your filters or search term</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SIDEBAR: Children list (parent view) -->
+    <div class="layout__sidebar" *ngIf="isParent">
+
+      <!-- Loading -->
+      <div *ngIf="loading"
+           style="padding:40px;text-align:center;color:#83C5BE;font-size:14px;font-weight:500;">
+        <div style="font-size:28px;margin-bottom:10px;">⏳</div>
+        Loading children…
+      </div>
+
+      <!-- No children -->
+      <div *ngIf="!loading && children.length === 0"
+           class="glass"
+           style="border-radius:20px;padding:32px 24px;text-align:center;">
+        <div style="font-size:48px;margin-bottom:12px;">👶</div>
+        <p style="font-size:15px;font-weight:600;color:#1a2332;margin-bottom:6px;">No children yet</p>
+        <p style="font-size:13px;color:#8a9ab0;line-height:1.5;">Add children from the<br><strong>My Kids</strong> dashboard</p>
+      </div>
+
+      <!-- Children cards -->
+      <div *ngIf="!loading && children.length > 0">
+        <div class="section-title" style="margin-bottom:16px;">My Kids</div>
+
+        <div *ngFor="let child of children"
+             class="course-card glass"
+             [style.cursor]="'pointer'"
+             [style.border]="selectedChild?.childId === child.childId ? '2px solid #006D77' : '2px solid transparent'"
+             (click)="selectChild(child)"
+             style="margin-bottom:16px;flex-direction:row;align-items:center;gap:0;overflow:visible;">
+
+          <div class="course-card__img-side kid-avatar-placeholder"
+               style="width:80px;height:80px;min-width:80px;border-radius:16px;margin:16px 0 16px 16px;">
+            <span class="kid-avatar-emoji" style="font-size:2.2rem;">{{ child.avatar || '🧒' }}</span>
+          </div>
+
+          <div class="course-card__body" style="padding:16px 16px 16px 12px;gap:6px;">
+            <p style="font-size:15px;font-weight:700;color:#1a2332;margin:0;">{{ child.name }}</p>
+            <p style="font-size:12px;color:#8a9ab0;margin:0;">Age {{ child.age }} · Level {{ getChildLevel(child) }}</p>
+            <div class="progress-bar" style="height:5px;margin-top:4px;">
+              <div class="progress-fill" [style.width.%]="getChildXp(child) % 100"></div>
+            </div>
+            <p style="font-size:11px;color:#006D77;font-weight:600;margin:0;">{{ getChildXp(child) }} XP</p>
+          </div>
+
+          <div *ngIf="selectedChild?.childId === child.childId"
+               style="padding-right:14px;color:#006D77;font-size:20px;font-weight:700;">›</div>
         </div>
       </div>
 
-    </aside>
+    </div><!-- end sidebar -->
 
-  </div>
-</main>
-
+  </div><!-- end layout -->
+</div><!-- end page -->

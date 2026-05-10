@@ -1,8 +1,8 @@
-package tn.esprit.Books_Clubs.controllers;
+package tn.esprit.Books_Clubs.Controllers;
 
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.Books_Clubs.Services.IServices.IBookService;
-import tn.esprit.Books_Clubs.entities.*;
+import tn.esprit.jungleinenglishuser.Services.IServices.IBookService;
+import tn.esprit.jungleinenglishuser.entities.*;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class BookController {
         this.service = service;
     }
 
-    // â”€â”€ CREATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── CREATE ────────────────────────────────────────────────────────────────
 
     @PostMapping
     public Book add(@RequestBody Book book,
@@ -27,7 +27,7 @@ public class BookController {
         return service.addBook(book, authorId, categoryId, qte);
     }
 
-    // â”€â”€ UPDATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── UPDATE ────────────────────────────────────────────────────────────────
 
     @PutMapping("/{id}")
     public Book update(@PathVariable Long id,
@@ -37,7 +37,7 @@ public class BookController {
         return service.updateBook(id, book, authorId, categoryId);
     }
 
-    // â”€â”€ READ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── READ ──────────────────────────────────────────────────────────────────
 
     @GetMapping
     public List<Book> all() {
@@ -49,7 +49,7 @@ public class BookController {
         return service.getBook(id);
     }
 
-    // â”€â”€ DELETE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── DELETE ────────────────────────────────────────────────────────────────
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {

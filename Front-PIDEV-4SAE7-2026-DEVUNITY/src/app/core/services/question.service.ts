@@ -7,7 +7,7 @@ import { Question, ActivityWithQuestions } from '../models/english-kids-question
   providedIn: 'root'
 })
 export class QuestionService {
-  private apiUrl = 'http://localhost:8087/language/api/questions';
+  private apiUrl = 'http://localhost:8081/languages/api/questions';
 
   constructor(private http: HttpClient) {}
 

@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tn.esprit.learner_managment_service.UserManagement.Entities.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -37,7 +36,6 @@ public class Rental {
     // cash à la caisse
     private boolean paid;
     private LocalDate paymentDate;
-    private Long userId;
     @Column(nullable = false)
     private boolean discountApplied = false;
 

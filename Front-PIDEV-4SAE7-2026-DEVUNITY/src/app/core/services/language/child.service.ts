@@ -9,7 +9,7 @@ import { Child } from '../../models/english-kids.model';
   providedIn: 'root'
 })
 export class ChildService {
-  private readonly apiUrl = `${environment.apiUrl}/language/api/children`;
+  private readonly apiUrl = `${environment.apiUrl}/languages/api/children`;
   private currentChildSubject = new BehaviorSubject<Child | null>(null);
   public currentChild$ = this.currentChildSubject.asObservable();
 

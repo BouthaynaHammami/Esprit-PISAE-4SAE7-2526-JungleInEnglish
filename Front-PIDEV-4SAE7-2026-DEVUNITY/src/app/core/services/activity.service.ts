@@ -7,7 +7,7 @@ import { Activity, ActivityDTO } from '../models/english-kids-activity.model';
   providedIn: 'root'
 })
 export class ActivityService {
-  private apiUrl = 'http://localhost:8087/language/api/activities';
+  private apiUrl = 'http://localhost:8081/languages/api/activities';
 
   constructor(private http: HttpClient) {}
 

@@ -7,7 +7,7 @@ import { AnalyticsData, OverviewStats } from '../models/analytics.model';
   providedIn: 'root'
 })
 export class AnalyticsService {
-  private apiUrl = 'http://localhost:8087/language/api/analytics';
+  private apiUrl = 'http://localhost:8081/languages/api/analytics';
 
   constructor(private http: HttpClient) {}
 

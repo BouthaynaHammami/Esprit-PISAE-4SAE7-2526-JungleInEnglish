@@ -1,0 +1,396 @@
+<div class="parent-dashboard">
+
+  <!-- HEADER -->
+  <div class="dash-header">
+    <div class="dash-header-left">
+      <div class="dash-icon">👨‍👩‍👧‍👦</div>
+      <div>
+        <h1 class="dash-title">Parent Dashboard</h1>
+        <p class="dash-subtitle">Track and play with your children's English learning journey</p>
+      </div>
+    </div>
+    <button class="btn-add-child" (click)="openAddModal()">
+      <i class="bi bi-plus-lg"></i> Add Child
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Loading your children...</p>
+  </div>
+
+  <!-- ERROR -->
+  <div class="error-state" *ngIf="error && !loading">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <p>{{ error }}</p>
+    <button class="btn-retry" (click)="loadChildren()">Retry</button>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div class="empty-state" *ngIf="!loading && !error && children.length === 0">
+    <div class="empty-icon">🌱</div>
+    <h2>No children added yet</h2>
+    <p>Add your first child to start tracking their English learning progress.</p>
+    <button class="btn-add-child" (click)="openAddModal()">
+      <i class="bi bi-plus-lg"></i> Add Child
+    </button>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="dash-layout" *ngIf="!loading && !error && children.length > 0">
+
+    <!-- LEFT PANEL: Kids List -->
+    <div class="kids-panel">
+      <h2 class="panel-title">
+        <i class="bi bi-people-fill"></i> My Kids
+        <span class="badge-count">{{ children.length }}</span>
+      </h2>
+
+      <div class="kids-list">
+        <div class="kid-card"
+             *ngFor="let child of children"
+             [class.selected]="selectedChild?.childId === child.childId"
+             (click)="selectChild(child)">
+
+          <div class="kid-avatar">{{ getChildAvatar(child) }}</div>
+          <div class="kid-info">
+            <div class="kid-name">{{ child.name }}</div>
+            <div class="kid-meta">
+              <span class="kid-level">Lvl {{ child.level }}</span>
+              <span class="kid-xp">{{ child.xp }} XP</span>
+            </div>
+          </div>
+          <div class="kid-actions">
+            <button class="btn-icon btn-edit" (click)="openEditModal(child); $event.stopPropagation()" title="Edit">
+              <i class="bi bi-pencil-fill"></i>
+            </button>
+            <button class="btn-icon btn-delete" (click)="confirmDelete(child.childId!); $event.stopPropagation()" title="Delete">
+              <i class="bi bi-trash-fill"></i>
+            </button>
+          </div>
+
+          <!-- Delete confirm inline -->
+          <div class="delete-confirm" *ngIf="deleteConfirmId === child.childId" (click)="$event.stopPropagation()">
+            <span>Remove {{ child.name }}?</span>
+            <button class="btn-confirm-yes" (click)="deleteChild(child.childId!)">Yes</button>
+            <button class="btn-confirm-no" (click)="cancelDelete()">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="progress-panel" *ngIf="selectedChild">
+
+      <!-- CHILD HEADER -->
+      <div class="child-detail-header">
+        <div class="child-big-avatar">{{ getChildAvatar(selectedChild) }}</div>
+        <div class="child-detail-info">
+          <h2>{{ selectedChild.name }}</h2>
+          <div class="child-detail-meta">
+            <span class="tag-level">Level {{ selectedChild.level }}</span>
+            <span class="tag-label">{{ getLevelLabel(selectedChild.level) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="tabs-bar">
+        <button class="tab-btn" [class.active]="activeTab === 'progress'" (click)="switchTab('progress')">
+          <i class="bi bi-bar-chart-fill"></i> Progress
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'play'" (click)="switchTab('play')">
+          <i class="bi bi-controller"></i> Play Activities
+        </button>
+      </div>
+
+      <!-- ═══════════════ PROGRESS TAB ═══════════════ -->
+      <div class="tab-content" *ngIf="activeTab === 'progress'">
+        <div class="progress-loading" *ngIf="progressLoading">
+          <div class="spinner"></div><p>Loading progress...</p>
+        </div>
+
+        <div class="no-progress" *ngIf="!progressLoading && !selectedProgress">
+          <i class="bi bi-bar-chart-line"></i>
+          <p>No progress yet. Let your child play activities first!</p>
+          <button class="btn-play-now" (click)="switchTab('play')">
+            <i class="bi bi-controller"></i> Go to Activities
+          </button>
+        </div>
+
+        <div *ngIf="!progressLoading && selectedProgress">
+          <!-- XP Bar -->
+          <div class="stat-card xp-card">
+            <div class="stat-card-header">
+              <span class="stat-label">Total XP</span>
+              <span class="stat-value">{{ selectedProgress.totalXp }}</span>
+            </div>
+            <div class="xp-bar-track">
+              <div class="xp-bar-fill" [style.width.%]="getXpPercent(selectedProgress)"></div>
+            </div>
+            <div class="xp-bar-label">
+              {{ getXpPercent(selectedProgress) }}% to Level {{ selectedProgress.currentLevel + 1 }}
+              ({{ selectedProgress.xpToNextLevel }} XP remaining)
+            </div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="mini-stat">
+              <div class="mini-stat-icon">✅</div>
+              <div class="mini-stat-val">{{ selectedProgress.totalActivitiesCompleted }}</div>
+              <div class="mini-stat-label">Activities Done</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-icon">🎯</div>
+              <div class="mini-stat-val">{{ selectedProgress.accuracyPercentage | number:'1.0-0' }}%</div>
+              <div class="mini-stat-label">Accuracy</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-icon">🔥</div>
+              <div class="mini-stat-val">{{ selectedProgress.currentStreak }}</div>
+              <div class="mini-stat-label">Day Streak</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-icon">🏆</div>
+              <div class="mini-stat-val">{{ selectedProgress.longestStreak }}</div>
+              <div class="mini-stat-label">Best Streak</div>
+            </div>
+          </div>
+
+          <!-- Badges -->
+          <div class="badges-section" *ngIf="selectedBadges.length > 0">
+            <h3 class="section-title"><i class="bi bi-award-fill"></i> Badges Earned</h3>
+            <div class="badges-list">
+              <div class="badge-chip" *ngFor="let cb of selectedBadges" [title]="cb.badge?.description || ''">
+                <img *ngIf="cb.badge?.iconUrl" [src]="cb.badge!.iconUrl" [alt]="cb.badge?.name" class="badge-icon"
+                     (error)="$any($event.target).style.display='none'">
+                <span *ngIf="!cb.badge?.iconUrl" class="badge-emoji">🏅</span>
+                <span class="badge-name">{{ cb.badge?.name || 'Badge' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activities -->
+          <div class="recent-section"
+               *ngIf="selectedProgress && selectedProgress.recentActivities && selectedProgress.recentActivities.length > 0">
+            <h3 class="section-title"><i class="bi bi-clock-history"></i> Recent Activities</h3>
+            <div class="recent-list">
+              <div class="recent-item" *ngFor="let act of selectedProgress.recentActivities">
+                <div class="recent-item-left">
+                  <div class="recent-dot"></div>
+                  <div>
+                    <div class="recent-title">{{ act.activityTitle }}</div>
+                    <div class="recent-date">{{ formatDate(act.completedAt) }}</div>
+                  </div>
+                </div>
+                <div class="recent-item-right">
+                  <span class="recent-score">{{ act.score }} pts</span>
+                  <span class="recent-xp">+{{ act.xpEarned }} XP</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════ PLAY TAB ═══════════════ -->
+      <div class="tab-content play-tab" *ngIf="activeTab === 'play'">
+
+        <!-- ── ACTIVITIES LIST ── -->
+        <div *ngIf="playView === 'activities'">
+          <div class="activities-loading" *ngIf="activitiesLoading">
+            <div class="spinner"></div><p>Loading activities...</p>
+          </div>
+
+          <div *ngIf="!activitiesLoading">
+            <!-- Filters -->
+            <div class="activity-filters">
+              <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange()"
+                       placeholder="Search activities..." class="search-input">
+              </div>
+              <select class="filter-select" [(ngModel)]="selectedCategory" (ngModelChange)="onCategoryChange()">
+                <option value="">All Categories</option>
+                <option *ngFor="let cat of categories" [value]="cat">{{ getCategoryIcon(cat) }} {{ cat }}</option>
+              </select>
+              <select class="filter-select" [(ngModel)]="selectedDifficulty" (ngModelChange)="onDifficultyChange()">
+                <option value="">All Levels</option>
+                <option *ngFor="let diff of difficulties" [value]="diff">{{ diff }}</option>
+              </select>
+            </div>
+
+            <div class="quiz-error" *ngIf="quizError">
+              <i class="bi bi-exclamation-circle"></i> {{ quizError }}
+            </div>
+
+            <div class="no-activities" *ngIf="filteredActivities.length === 0">
+              <div class="no-act-icon">🔍</div>
+              <p>No activities found. Try different filters!</p>
+            </div>
+
+            <!-- Loading overlay when starting a quiz -->
+            <div class="quiz-loading-overlay" *ngIf="quizLoading">
+              <div class="spinner"></div><p>Loading quiz...</p>
+            </div>
+
+            <div class="activities-grid" *ngIf="!quizLoading">
+              <div class="activity-card" *ngFor="let act of filteredActivities">
+                <div class="act-card-top">
+                  <div class="act-cat-icon">{{ getCategoryIcon(act.category) }}</div>
+                  <span [class]="'diff-badge ' + getDifficultyClass(act.difficulty)">{{ act.difficulty }}</span>
+                </div>
+                <img *ngIf="act.imageUrl" [src]="act.imageUrl" [alt]="act.title" class="act-image"
+                     (error)="$any($event.target).style.display='none'">
+                <div class="act-card-body">
+                  <h3 class="act-title">{{ act.title }}</h3>
+                  <p class="act-desc">{{ act.description }}</p>
+                  <div class="act-meta">
+                    <span><i class="bi bi-clock"></i> {{ act.estimatedTime }} min</span>
+                    <span><i class="bi bi-star-fill"></i> {{ act.xpReward }} XP</span>
+                  </div>
+                </div>
+                <button class="btn-start-activity" (click)="startActivity(act)">
+                  <i class="bi bi-play-fill"></i> Start Activity
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── QUIZ VIEW ── -->
+        <div class="quiz-view" *ngIf="playView === 'quiz' && quizSession">
+          <div class="quiz-header">
+            <button class="btn-back-quiz" (click)="backToActivities()">
+              <i class="bi bi-arrow-left"></i> Back
+            </button>
+            <div class="quiz-meta">
+              <span class="quiz-activity-name">{{ quizSession.activity.title }}</span>
+              <span class="quiz-progress-label">{{ questionProgress }}</span>
+            </div>
+            <div class="quiz-timer" [class.urgent]="quizSession.timeRemaining <= 10">
+              <i class="bi bi-stopwatch"></i> {{ quizSession.timeRemaining }}s
+            </div>
+          </div>
+
+          <!-- Progress bar -->
+          <div class="quiz-progress-bar">
+            <div class="quiz-progress-fill"
+                 [style.width.%]="((quizSession.currentQuestionIndex) / quizSession.questions.length) * 100">
+            </div>
+          </div>
+
+          <div class="question-card" *ngIf="currentQuestion">
+            <img *ngIf="currentQuestion.imageUrl" [src]="currentQuestion.imageUrl" class="question-img"
+                 (error)="$any($event.target).style.display='none'">
+            <h2 class="question-text">{{ currentQuestion.questionText }}</h2>
+            <div class="answer-options">
+              <button class="answer-btn"
+                      *ngFor="let opt of currentQuestion.options"
+                      [class.selected]="selectedAnswer === opt"
+                      [class.correct]="showFeedback && opt === currentQuestion.correctAnswer"
+                      [class.wrong]="showFeedback && selectedAnswer === opt && opt !== currentQuestion.correctAnswer"
+                      [disabled]="showFeedback"
+                      (click)="selectAnswer(opt); submitAnswer(opt)">
+                {{ opt }}
+              </button>
+            </div>
+
+            <!-- Feedback overlay -->
+            <div class="feedback-overlay" *ngIf="showFeedback">
+              <div class="feedback-box" [class.correct-fb]="isCorrect" [class.wrong-fb]="!isCorrect">
+                <div class="feedback-emoji">{{ isCorrect ? '🎉' : '😅' }}</div>
+                <div class="feedback-text">{{ isCorrect ? 'Correct!' : 'Wrong! Answer: ' + currentQuestion.correctAnswer }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── RESULTS VIEW ── -->
+        <div class="results-view" *ngIf="playView === 'results' && quizResults">
+          <div class="results-emoji">{{ getScoreEmoji(quizResults) }}</div>
+          <h2 class="results-title">Quiz Complete!</h2>
+          <p class="results-child">{{ selectedChild.name }} finished: <strong>{{ quizSession?.activity?.title || 'Activity' }}</strong></p>
+
+          <div class="results-score-circle">
+            <div class="score-big">{{ getScorePercent(quizResults) }}%</div>
+            <div class="score-sub">{{ quizResults.score }} / {{ quizResults.totalQuestions }} correct</div>
+          </div>
+
+          <div class="results-stats">
+            <div class="res-stat">
+              <div class="res-stat-val">+{{ quizResults.xpEarned }}</div>
+              <div class="res-stat-label">XP Earned</div>
+            </div>
+            <div class="res-stat">
+              <div class="res-stat-val">{{ quizResults.score }}</div>
+              <div class="res-stat-label">Correct</div>
+            </div>
+            <div class="res-stat">
+              <div class="res-stat-val">{{ quizResults.totalQuestions - quizResults.score }}</div>
+              <div class="res-stat-label">Wrong</div>
+            </div>
+          </div>
+
+          <div class="results-actions">
+            <button class="btn-retry" (click)="retryQuiz()">
+              <i class="bi bi-arrow-counterclockwise"></i> Try Again
+            </button>
+            <button class="btn-more-activities" (click)="backToActivities()">
+              <i class="bi bi-grid"></i> More Activities
+            </button>
+          </div>
+        </div>
+
+      </div><!-- end play tab -->
+
+    </div><!-- end progress-panel -->
+
+    <!-- No child selected -->
+    <div class="no-selection" *ngIf="!selectedChild && !loading">
+      <div class="no-sel-icon">👈</div>
+      <p>Select a child to see their progress</p>
+    </div>
+
+  </div><!-- end dash-layout -->
+
+  <!-- MODAL: Add / Edit Child -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editingChild ? 'Edit Child' : 'Add Child' }}</h2>
+        <button class="modal-close" (click)="closeModal()"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="avatar-picker">
+          <label class="form-label">Choose Avatar</label>
+          <div class="avatar-grid">
+            <button class="avatar-opt" *ngFor="let av of avatarOptions"
+                    [class.selected]="form.avatar === av" (click)="form.avatar = av">{{ av }}</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Child's Name</label>
+          <input class="form-input" type="text" [(ngModel)]="form.name" placeholder="e.g. Sofia" maxlength="50">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Age</label>
+          <input class="form-input" type="number" [(ngModel)]="form.age" min="3" max="18">
+        </div>
+      </div>
+      <div *ngIf="saveError" class="modal-error">
+        <i class="bi bi-exclamation-triangle-fill"></i> {{ saveError }}
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+        <button class="btn-save" (click)="saveChild()" [disabled]="!form.name.trim() || savingChild">
+          <span *ngIf="savingChild"><i class="bi bi-hourglass-split"></i> Saving...</span>
+          <span *ngIf="!savingChild"><i class="bi bi-check-lg"></i> {{ editingChild ? 'Update' : 'Add Child' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end .parent-dashboard -->

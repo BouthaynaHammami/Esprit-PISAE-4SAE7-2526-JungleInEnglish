@@ -1,11 +1,11 @@
-package tn.esprit.Books_Clubs.controllers;
+package tn.esprit.Books_Clubs.Controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import tn.esprit.Books_Clubs.Services.IServices.IRequestService;
-import tn.esprit.Books_Clubs.entities.MembershipRequest;
+import tn.esprit.jungleinenglishuser.Services.IServices.IRequestService;
+import tn.esprit.jungleinenglishuser.entities.MembershipRequest;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class RequestController {
         try {
             return requestService.create(memberId, clubId, motivation);
         } catch (IllegalStateException e) {
-            // âœ… Retourne 409 Conflict au lieu de 500 Internal Server Error
+            // ✅ Retourne 409 Conflict au lieu de 500 Internal Server Error
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
     }

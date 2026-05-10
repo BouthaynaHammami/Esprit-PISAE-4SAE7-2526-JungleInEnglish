@@ -1,6 +1,6 @@
 package tn.esprit.Books_Clubs.Services.IServices;
 
-import tn.esprit.Books_Clubs.entities.Club;
+import tn.esprit.jungleinenglishuser.entities.Club;
 
 import java.util.List;
 

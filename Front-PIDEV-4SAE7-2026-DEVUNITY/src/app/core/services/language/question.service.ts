@@ -8,7 +8,7 @@ import { Question, QuizAttempt } from '../../models/english-kids.model';
   providedIn: 'root'
 })
 export class QuestionService {
-  private readonly apiUrl = `${environment.apiUrl}/language/api`;
+  private readonly apiUrl = `${environment.apiUrl}/languages/api`;
 
   constructor(private http: HttpClient) {}
 

@@ -32,6 +32,7 @@ import { StudentKanbanEventsComponent } from './components/kanban-events/student
 import { StudentDailyAnalysisComponent } from './components/daily-analysis/student-daily-analysis.component';
 
 import { StudentDropoutFormComponent } from './components/dropout-form/student-dropout-form.component';
+import { ParentDashboardComponent } from './components/parent-dashboard/parent-dashboard.component';
 
 const routes: Routes = [
   {
@@ -67,6 +68,8 @@ const routes: Routes = [
       { path: 'kanban-certif', component: StudentKanbanCertifComponent },
       { path: 'kanban-events', component: StudentKanbanEventsComponent },
       { path: 'daily-analysis', component: StudentDailyAnalysisComponent },
+
+      { path: 'parent-dashboard', component: ParentDashboardComponent },
 
       { path: 'profile', component: StudentProfileComponent },
     ]

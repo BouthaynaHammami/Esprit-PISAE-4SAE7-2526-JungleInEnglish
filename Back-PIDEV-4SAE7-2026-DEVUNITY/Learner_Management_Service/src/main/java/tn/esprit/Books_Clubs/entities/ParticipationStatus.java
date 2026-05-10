@@ -4,6 +4,7 @@ public enum ParticipationStatus {
 
     REGISTERED,
     CONFIRMED,
-    ABSENT
+    FAILED
+
 
 }

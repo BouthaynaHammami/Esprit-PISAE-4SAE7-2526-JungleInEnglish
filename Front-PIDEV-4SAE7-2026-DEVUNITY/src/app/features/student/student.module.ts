@@ -38,6 +38,7 @@ import { StudentKanbanEventsComponent } from './components/kanban-events/student
 import { StudentDailyAnalysisComponent } from './components/daily-analysis/student-daily-analysis.component';
 import { StudentDropoutFormComponent } from './components/dropout-form/student-dropout-form.component';
 import { CourseRecommendationsComponent } from './components/course-recommendations/course-recommendations.component';
+import { ParentDashboardComponent } from './components/parent-dashboard/parent-dashboard.component';
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import { CourseRecommendationsComponent } from './components/course-recommendati
     StudentDailyAnalysisComponent,
     StudentDropoutFormComponent,
     CourseRecommendationsComponent,
+    ParentDashboardComponent,
   ],
   imports: [
     CommonModule,

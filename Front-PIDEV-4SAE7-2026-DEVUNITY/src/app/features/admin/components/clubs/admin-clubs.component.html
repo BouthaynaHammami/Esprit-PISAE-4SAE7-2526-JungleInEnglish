@@ -1,314 +1,521 @@
-<div class="min-h-screen p-8 bg-[#EDF6F9]/50 animate-fade-in">
+<!-- ═══════════════════════════════════════════════════════════════
+     ADMIN CLUBS — COMPLETE PRO DESIGN
+     Palette: #004e45 · #006D77 · #83C5BE · #EDF6F9 · #E29578 · #FFDDD2
+════════════════════════════════════════════════════════════════ -->
+<div class="min-h-screen p-6 lg:p-8" style="background:#EDF6F9">
 
-  <!-- HEADER & STATS -->
-  <div class="mb-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
-    <div class="flex items-center gap-5">
-      <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-[#006D77]">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      </div>
-      <div>
-        <h1 class="text-3xl font-bold text-[#006D77] tracking-tight">Clubs Management</h1>
-        <p class="text-[#83C5BE] font-medium">Manage clubs, memberships, requests & activities</p>
-      </div>
-    </div>
+  <!-- ══════════════════════════════ HERO HEADER ══════════════════════════════ -->
+  <div class="relative rounded-3xl overflow-hidden mb-8"
+       style="background:linear-gradient(135deg,#003d36 0%,#005f69 50%,#006D77 100%)">
 
-    <div class="flex gap-4 overflow-x-auto pb-2 xl:pb-0">
-      <div class="bg-white px-5 py-3 rounded-[20px] shadow-sm border border-gray-50 flex flex-col items-center min-w-[100px]">
-        <span class="text-xl font-black text-[#006D77]">{{ clubs.length }}</span>
-        <span class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Clubs</span>
+    <!-- Decorative blobs -->
+    <div class="absolute -top-20 -right-20 w-96 h-96 rounded-full opacity-10"
+         style="background:radial-gradient(circle,#83C5BE,transparent)"></div>
+    <div class="absolute -bottom-16 left-1/4 w-64 h-64 rounded-full opacity-10"
+         style="background:radial-gradient(circle,#FFDDD2,transparent)"></div>
+    <div class="absolute top-1/2 right-1/4 w-32 h-32 rounded-full opacity-5"
+         style="background:radial-gradient(circle,#E29578,transparent)"></div>
+
+    <!-- Noise texture overlay -->
+    <div class="absolute inset-0 opacity-5"
+         style="background-image:url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E')"></div>
+
+    <div class="relative z-10 p-8">
+      <div class="flex items-start justify-between flex-wrap gap-4 mb-8">
+        <div class="flex items-center gap-5">
+          <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-lg"
+               style="background:rgba(255,255,255,0.12);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.15)">
+            🎭
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] mb-1" style="color:#83C5BE;letter-spacing:0.25em">Administration</p>
+            <h1 class="text-3xl font-black text-white" style="font-family:'Georgia',serif;letter-spacing:-0.02em">
+              Clubs Management
+            </h1>
+            <p class="text-sm mt-1" style="color:rgba(255,221,210,0.8)">
+              Gérez clubs, adhésions, demandes & activités
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-3 flex-wrap">
+          <button (click)="setTab('requests')"
+                  class="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold text-white border transition-all duration-200 hover:bg-white/10"
+                  style="background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border-color:rgba(131,197,190,0.4)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
+            </svg>
+            Demandes
+          </button>
+          <button (click)="openClubModal()"
+                  class="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold text-white transition-all duration-200 hover:scale-105 active:scale-95"
+                  style="background:linear-gradient(135deg,#E29578,#c9785f);box-shadow:0 6px 20px rgba(226,149,120,0.45)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+            </svg>
+            Nouveau Club
+          </button>
+        </div>
       </div>
-      <div class="bg-white px-5 py-3 rounded-[20px] shadow-sm border border-gray-50 flex flex-col items-center min-w-[100px]">
-        <span class="text-xl font-black text-green-600">{{ activeClubsCount }}</span>
-        <span class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Active</span>
-      </div>
-      <div class="bg-white px-5 py-3 rounded-[20px] shadow-sm border border-gray-50 flex flex-col items-center min-w-[100px]">
-        <span class="text-xl font-black text-[#E29578]">{{ requests.length }}</span>
-        <span class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Requests</span>
-      </div>
-      <div class="bg-[#006D77] px-5 py-3 rounded-[20px] shadow-md flex flex-col items-center min-w-[100px]">
-        <span class="text-xl font-black text-white">{{ excursions.length + trainings.length }}</span>
-        <span class="text-[10px] font-bold text-[#83C5BE] uppercase tracking-widest mt-1">Activities</span>
+
+      <!-- Stats bar -->
+      <div class="grid grid-cols-5 divide-x rounded-2xl overflow-hidden border"
+           style="background:rgba(255,255,255,0.07);backdrop-filter:blur(16px);border-color:rgba(131,197,190,0.2);divide-color:rgba(131,197,190,0.2)">
+        <div class="flex flex-col items-center px-6 py-4">
+          <span class="text-2xl font-black text-white">{{ clubs.length }}</span>
+          <span class="text-xs font-bold uppercase tracking-widest mt-1" style="color:#83C5BE">Clubs</span>
+        </div>
+        <div class="flex flex-col items-center px-6 py-4">
+          <span class="text-2xl font-black" style="color:#83C5BE">{{ activeClubsCount }}</span>
+          <span class="text-xs font-bold uppercase tracking-widest mt-1" style="color:rgba(131,197,190,0.7)">Actifs</span>
+        </div>
+        <div class="flex flex-col items-center px-6 py-4">
+          <span class="text-2xl font-black" style="color:#FFDDD2">{{ requests.length }}</span>
+          <span class="text-xs font-bold uppercase tracking-widest mt-1" style="color:rgba(255,221,210,0.7)">Demandes</span>
+        </div>
+        <div class="flex flex-col items-center px-6 py-4">
+          <span class="text-2xl font-black" style="color:#EDF6F9">{{ excursions.length }}</span>
+          <span class="text-xs font-bold uppercase tracking-widest mt-1" style="color:rgba(255,221,210,0.7)">Excursions</span>
+        </div>
+        <div class="flex flex-col items-center px-6 py-4">
+          <span class="text-2xl font-black" style="color:#E29578">{{ trainings.length }}</span>
+          <span class="text-xs font-bold uppercase tracking-widest mt-1" style="color:rgba(255,221,210,0.7)">Formations</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ALERTS -->
-  <div *ngIf="successMsg" class="mb-6 px-6 py-4 bg-green-50 text-green-700 rounded-2xl border border-green-100 flex items-center gap-3 animate-fade-in shadow-sm font-bold text-sm">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-    {{ successMsg }}
-    <button (click)="successMsg=''" class="ml-auto text-green-400 hover:text-green-600">✕</button>
-  </div>
-  <div *ngIf="errorMsg" class="mb-6 px-6 py-4 bg-[#FFDDD2] text-[#E29578] rounded-2xl border border-[#E29578]/20 flex items-center gap-3 animate-fade-in shadow-sm font-bold text-sm">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  <!-- ══════════════════════════════ MESSAGES ══════════════════════════════ -->
+  <div *ngIf="errorMsg"
+       class="mb-5 flex items-center gap-3 px-5 py-4 rounded-2xl border text-sm font-semibold animate-pulse"
+       style="background:#FFF1F2;border-color:#FECDD3;color:#E11D48">
+    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+    </svg>
     {{ errorMsg }}
-    <button (click)="errorMsg=''" class="ml-auto text-[#E29578] hover:text-red-500">✕</button>
-  </div>
-  <div *ngIf="loading" class="mb-6 h-1 bg-[#EDF6F9] rounded-full overflow-hidden">
-    <div class="h-full bg-[#006D77] rounded-full animate-pulse w-3/5"></div>
-  </div>
-
-  <!-- TABS -->
-  <div class="flex flex-wrap gap-2 mb-10 p-1.5 bg-white/50 backdrop-blur-md rounded-[24px] w-fit border border-white/50 shadow-sm">
-    <button (click)="setTab('clubs')" [ngClass]="{'bg-white text-[#006D77] shadow-sm': tab==='clubs', 'text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80': tab!=='clubs'}" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold transition-all duration-300">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Clubs
-      <span class="ml-1 px-2 py-0.5 rounded-full text-xs" [ngClass]="tab==='clubs' ? 'bg-[#EDF6F9] text-[#006D77]' : 'bg-gray-100 text-gray-500'">{{ clubs.length }}</span>
-    </button>
-    <button (click)="setTab('requests')" [ngClass]="{'bg-white text-[#006D77] shadow-sm': tab==='requests', 'text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80': tab!=='requests'}" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold transition-all duration-300">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      Requests
-      <span class="ml-1 px-2 py-0.5 rounded-full text-xs" [ngClass]="tab==='requests' ? 'bg-[#FFDDD2] text-[#E29578]' : 'bg-gray-100 text-gray-500'">{{ requests.length }}</span>
-    </button>
-    <button (click)="setTab('activities')" [ngClass]="{'bg-white text-[#006D77] shadow-sm': tab==='activities', 'text-[#83C5BE] hover:text-[#006D77] hover:bg-white/80': tab!=='activities'}" class="flex items-center gap-2.5 px-6 py-3 rounded-[20px] text-sm font-bold transition-all duration-300">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      Activities
+    <button (click)="errorMsg=''" class="ml-auto p-1 rounded-lg hover:bg-red-100 transition-all">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
     </button>
   </div>
 
-  <!-- ═══════════════════════════ CLUBS TAB ═══════════════════════════ -->
-  <div *ngIf="tab==='clubs'" class="animate-fade-in">
-    <!-- Filter Bar -->
-    <div class="bg-white rounded-[20px] p-6 mb-8 shadow-sm border border-gray-100 flex flex-wrap gap-4 items-center justify-between">
-      <div class="flex items-center gap-4 flex-1">
-        <div class="relative w-64">
-          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#83C5BE]">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          </span>
-          <input type="text" [(ngModel)]="searchQuery" placeholder="Search clubs..." class="w-full pl-11 pr-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl text-sm outline-none transition-all font-medium">
-          <button *ngIf="searchQuery" (click)="searchQuery=''" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">✕</button>
-        </div>
-        <div class="flex gap-2 flex-wrap">
-          <button (click)="filterType=''" [ngClass]="filterType==='' ? 'bg-[#006D77] text-white shadow-sm border-transparent' : 'bg-white text-[#006D77] border-[#83C5BE]/30 hover:border-[#006D77]'" class="px-4 py-2 rounded-xl text-xs font-bold transition-all border">All</button>
-          <button *ngFor="let r of roles" (click)="filterType=r" [ngClass]="filterType===r ? 'bg-[#006D77] text-white shadow-sm border-transparent' : 'bg-white text-[#006D77] border-[#83C5BE]/30 hover:border-[#006D77]'" class="px-4 py-2 rounded-xl text-xs font-bold transition-all border">{{ r }}</button>
-        </div>
+  <div *ngIf="successMsg"
+       class="mb-5 flex items-center gap-3 px-5 py-4 rounded-2xl border text-sm font-semibold"
+       style="background:#F0FDF4;border-color:#BBF7D0;color:#16A34A">
+    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    {{ successMsg }}
+    <button (click)="successMsg=''" class="ml-auto p-1 rounded-lg hover:bg-green-100 transition-all">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Loading bar -->
+  <div *ngIf="loading" class="mb-5 h-1 rounded-full overflow-hidden" style="background:#D1EFF2">
+    <div class="h-full rounded-full" style="background:linear-gradient(90deg,#83C5BE,#006D77,#83C5BE);width:70%;animation:shimmer 1.5s infinite linear;background-size:200%"></div>
+  </div>
+
+  <!-- ══════════════════════════════ TABS ══════════════════════════════ -->
+  <div class="flex gap-1 mb-7 bg-white rounded-2xl p-1.5 w-fit shadow-sm border" style="border-color:rgba(131,197,190,0.2)">
+    <button (click)="setTab('clubs')"
+            [class]="tab==='clubs' ? 'text-white shadow-md' : 'text-gray-400 hover:text-[#006D77] hover:bg-[#EDF6F9]'"
+            [style]="tab==='clubs' ? 'background:linear-gradient(135deg,#005f69,#006D77)' : ''"
+            class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200">
+      <span>🏛</span> Clubs
+      <span class="text-xs px-2 py-0.5 rounded-full font-bold"
+            [style]="tab==='clubs' ? 'background:rgba(255,255,255,0.2);color:white' : 'background:#EDF6F9;color:#006D77'">
+        {{ clubs.length }}
+      </span>
+    </button>
+
+    <button (click)="setTab('requests')"
+            [class]="tab==='requests' ? 'text-white shadow-md' : 'text-gray-400 hover:text-[#006D77] hover:bg-[#EDF6F9]'"
+            [style]="tab==='requests' ? 'background:linear-gradient(135deg,#005f69,#006D77)' : ''"
+            class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200">
+      <span>📬</span> Demandes
+      <span class="text-xs px-2 py-0.5 rounded-full font-bold"
+            [style]="tab==='requests' ? 'background:rgba(255,255,255,0.2);color:white' : 'background:#EDF6F9;color:#006D77'">
+        {{ requests.length }}
+      </span>
+    </button>
+
+    <button (click)="setTab('activities')"
+            [class]="tab==='activities' ? 'text-white shadow-md' : 'text-gray-400 hover:text-[#006D77] hover:bg-[#EDF6F9]'"
+            [style]="tab==='activities' ? 'background:linear-gradient(135deg,#005f69,#006D77)' : ''"
+            class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200">
+      <span>⚡</span> Activités
+    </button>
+  </div>
+
+  <!-- ═══════════════════════════════ CLUBS TAB ═══════════════════════════════ -->
+  <div *ngIf="tab==='clubs'">
+
+    <!-- Toolbar -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div class="flex items-center gap-3 bg-white border-2 rounded-2xl px-4 py-3 flex-1 max-w-sm shadow-sm transition-all focus-within:border-[#006D77] focus-within:shadow-md"
+           style="border-color:rgba(131,197,190,0.3)">
+        <svg class="w-4 h-4 flex-shrink-0" style="color:#83C5BE" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input [(ngModel)]="searchQuery" placeholder="Rechercher un club…"
+               class="border-none outline-none text-sm text-gray-700 w-full bg-transparent placeholder-gray-300" />
+        <button *ngIf="searchQuery" (click)="searchQuery=''" class="text-gray-300 hover:text-gray-500 transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
       </div>
-      <button (click)="openClubModal()" class="px-6 py-3 bg-[#006D77] text-white rounded-2xl hover:bg-[#83C5BE] transition-all duration-300 shadow-md flex items-center gap-2 font-semibold text-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        New Club
-      </button>
+
+      <div class="flex gap-2 flex-wrap">
+        <button (click)="filterType=''"
+                [style]="filterType==='' ? 'background:#006D77;color:white;box-shadow:0 4px 12px rgba(0,109,119,0.35)' : 'background:white;color:#006D77;border:1.5px solid rgba(131,197,190,0.4)'"
+                class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 hover:scale-105">
+          Tous
+        </button>
+        <button *ngFor="let r of roles" (click)="filterType=r"
+                [style]="filterType===r ? 'background:#006D77;color:white;box-shadow:0 4px 12px rgba(0,109,119,0.35)' : 'background:white;color:#006D77;border:1.5px solid rgba(131,197,190,0.4)'"
+                class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 hover:scale-105">
+          {{ typeIcon(r) }} {{ r }}
+        </button>
+      </div>
     </div>
 
-    <!-- Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      <div *ngFor="let c of filteredClubs" class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden relative group hover:-translate-y-1 transition-all duration-300">
-        <div class="h-2" [ngClass]="c.status==='ACTIVE' ? 'bg-gradient-to-r from-[#83C5BE] to-[#006D77]' : c.status==='INACTIVE' ? 'bg-gradient-to-r from-[#FFDDD2] to-[#E29578]' : 'bg-gray-200'"></div>
+    <!-- Clubs Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+      <div *ngFor="let c of filteredClubs"
+           class="bg-white rounded-3xl border overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group hover:-translate-y-1"
+           style="border-color:rgba(131,197,190,0.15)">
+
+        <!-- Color accent top -->
+        <div class="h-2" [style]="'background:' + (c.status==='ACTIVE' ? 'linear-gradient(90deg,#006D77,#83C5BE)' : c.status==='INACTIVE' ? 'linear-gradient(90deg,#E29578,#FFDDD2)' : 'linear-gradient(90deg,#d1d5db,#9ca3af)')"></div>
+
         <div class="p-6">
+          <!-- Header -->
           <div class="flex items-start justify-between mb-4">
-            <div class="flex items-center gap-4">
-              <div class="w-12 h-12 rounded-2xl bg-[#EDF6F9] text-[#006D77] flex items-center justify-center text-2xl shadow-sm border border-[#83C5BE]/20">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm" style="background:#EDF6F9">
                 {{ typeIcon(c.type) }}
               </div>
               <div>
-                <h3 class="font-bold text-[#006D77] text-lg leading-tight">{{ c.name }}</h3>
-                <p class="text-[10px] font-black uppercase tracking-widest text-[#83C5BE] mt-1">{{ c.type }}</p>
+                <h3 class="font-black text-gray-800 text-sm leading-tight">{{ c.name }}</h3>
+                <p class="text-xs font-semibold mt-0.5" style="color:#83C5BE">{{ c.type }}</p>
               </div>
             </div>
-          </div>
-          <p *ngIf="c.description" class="text-xs font-medium text-gray-500 mb-6 line-clamp-2">{{ c.description }}</p>
-          <div class="flex items-center justify-between pt-4 border-t border-gray-50">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border"
-                  [ngClass]="c.status==='ACTIVE' ? 'bg-green-50 text-green-600 border-green-100' : c.status==='INACTIVE' ? 'bg-[#FFDDD2] text-[#E29578] border-[#E29578]/20' : 'bg-gray-50 text-gray-500 border-gray-200'">
+            <span class="text-xs font-bold px-3 py-1.5 rounded-full"
+                  [style]="c.status==='ACTIVE' ? 'background:#DCFCE7;color:#16A34A' : c.status==='INACTIVE' ? 'background:#FEF3C7;color:#D97706' : 'background:#F3F4F6;color:#6B7280'">
               {{ c.status }}
             </span>
-            <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
-              <button (click)="openEditClubModal(c)" class="p-2 hover:bg-[#EDF6F9] text-[#006D77] rounded-xl transition-all" title="Edit">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+          </div>
+
+          <!-- Description -->
+          <p *ngIf="c.description" class="text-xs text-gray-400 mb-4 line-clamp-2 leading-relaxed">{{ c.description }}</p>
+
+          <!-- Footer -->
+          <div class="flex items-center justify-between pt-4 border-t" style="border-color:#F1F5F9">
+            <div class="flex items-center gap-1.5 text-xs text-gray-400">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5"/>
+              </svg>
+              {{ c.creationDate | date:'mediumDate' }}
+            </div>
+            <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
+              <button (click)="openEditClubModal(c)"
+                      class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-105"
+                      style="background:#EDF6F9;color:#006D77">
+                Modifier
               </button>
-              <button (click)="deleteClub(c.clubId)" class="p-2 hover:bg-[#FFDDD2] text-[#E29578] rounded-xl transition-all" title="Delete">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+              <button (click)="deleteClub(c.clubId)"
+                      class="px-3 py-1.5 rounded-xl text-xs font-bold text-white transition-all hover:scale-105"
+                      style="background:linear-gradient(135deg,#E29578,#c9785f)">
+                Supprimer
               </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Empty State -->
-    <div *ngIf="filteredClubs.length===0" class="py-24 text-center">
-      <div class="flex justify-center mb-6 text-[#83C5BE] opacity-40">
-        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22v-8"/><path d="M7 22v-4"/><path d="M11 22v-8"/><path d="M15 22v-4"/><path d="M19 22v-8"/><path d="M2 14h20"/><path d="M2 10h20"/><path d="M2 6h20"/></svg>
+      <!-- Empty state -->
+      <div *ngIf="filteredClubs.length===0" class="col-span-3 py-20 flex flex-col items-center gap-4">
+        <div class="w-24 h-24 rounded-3xl flex items-center justify-center text-5xl" style="background:#EDF6F9">🏛</div>
+        <p class="text-gray-400 font-semibold">Aucun club trouvé</p>
+        <button (click)="openClubModal()"
+                class="mt-1 px-6 py-3 rounded-2xl text-sm font-bold text-white transition-all hover:scale-105"
+                style="background:linear-gradient(135deg,#006D77,#83C5BE);box-shadow:0 6px 20px rgba(0,109,119,0.3)">
+          ＋ Créer le premier club
+        </button>
       </div>
-      <h3 class="text-2xl font-bold text-[#006D77]">No clubs found</h3>
-      <p class="text-[#83C5BE] mt-2 mb-6 font-medium">Try adjusting your filters or create a new club.</p>
-      <button (click)="openClubModal()" class="px-8 py-3 bg-[#006D77] text-white rounded-2xl font-bold shadow-lg hover:bg-[#83C5BE] transition-all duration-300">
-        Create First Club
-      </button>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════ REQUESTS TAB ═══════════════════════════ -->
-  <div *ngIf="tab==='requests'" class="animate-fade-in">
-    <!-- Filter Bar -->
-    <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-8 mb-8">
-      <div class="mb-6 flex items-center gap-3">
-        <div class="w-10 h-10 bg-[#EDF6F9] text-[#006D77] rounded-xl flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-        </div>
-        <h3 class="text-lg font-bold text-[#006D77]">Filter Requests</h3>
-      </div>
-      <div class="flex flex-wrap items-end gap-6">
-        <div>
-          <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Filter by Club</label>
-          <select [(ngModel)]="clubId" class="w-64 px-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
-            <option [ngValue]="null">— Select Club —</option>
-            <option *ngFor="let c of clubs" [ngValue]="c.clubId">{{ c.name }}</option>
-          </select>
-        </div>
-        <div class="flex gap-3">
-          <button (click)="loadRequestsByClub()" class="px-6 py-3 bg-[#006D77] text-white font-bold rounded-xl hover:bg-[#83C5BE] transition-all shadow-sm">
-            Load By Club
-          </button>
-          <button (click)="loadAllRequests()" class="px-6 py-3 bg-white text-[#E29578] font-bold rounded-xl hover:bg-[#FFDDD2] border-2 border-[#FFDDD2] transition-all shadow-sm">
-            Load All
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Table -->
-    <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden mb-8" *ngIf="requests.length > 0">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left">
-          <thead>
-            <tr class="bg-gray-50/50 border-b border-gray-100">
-              <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest w-16 text-center">ID</th>
-              <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Applicant</th>
-              <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest">Club</th>
-              <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-center">Status</th>
-              <th class="px-6 py-5 text-xs font-bold text-[#83C5BE] uppercase tracking-widest text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-50">
-            <tr *ngFor="let r of requests" class="hover:bg-[#EDF6F9]/30 transition-all duration-200 group" [ngClass]="{'bg-orange-50/30': r.status==='PENDING'}">
-              <td class="px-6 py-5 text-center font-bold text-gray-400 text-xs">#{{ r.requestId }}</td>
-              <td class="px-6 py-5">
-                <div class="font-bold text-[#006D77] text-sm">{{ userName(r.memberId) }}</div>
-                <div class="text-xs text-gray-400 mt-1 italic">{{ r.motivation || 'No motivation provided' }}</div>
-                <div class="text-[10px] text-gray-400 font-bold mt-1 uppercase">{{ r.requestDate || '—' }}</div>
-              </td>
-              <td class="px-6 py-5">
-                <span class="inline-flex items-center px-3 py-1 bg-[#EDF6F9] text-[#006D77] border border-[#83C5BE]/20 rounded-lg text-xs font-bold shadow-sm">
-                  {{ clubName(r.club.clubId) }}
-                </span>
-              </td>
-              <td class="px-6 py-5 text-center">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border"
-                      [ngClass]="r.status==='PENDING' ? 'bg-[#FFDDD2] text-[#E29578] border-[#E29578]/20' : r.status==='ACCEPTED' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-500 border-red-100'">
-                  {{ r.status }}
-                </span>
-              </td>
-              <td class="px-6 py-5 text-right">
-                <div class="flex justify-end gap-2" *ngIf="r.status==='PENDING'">
-                  <button (click)="acceptRequest(r.requestId)" class="px-3 py-1.5 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600 transition-colors shadow-sm">Accept</button>
-                  <button (click)="rejectRequest(r.requestId)" class="px-3 py-1.5 bg-[#E29578] text-white rounded-lg text-xs font-bold hover:bg-red-500 transition-colors shadow-sm">Reject</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    <div *ngIf="requests.length===0" class="py-24 text-center">
-      <div class="flex justify-center mb-6 text-[#83C5BE] opacity-40">
-        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      </div>
-      <h3 class="text-2xl font-bold text-[#006D77]">No requests found</h3>
-      <p class="text-[#83C5BE] mt-2 mb-6 font-medium">Select a club to filter requests, or view all requests.</p>
     </div>
   </div>
 
-  <!-- ═══════════════════════════ ACTIVITIES TAB ═══════════════════════════ -->
-  <div *ngIf="tab==='activities'" class="animate-fade-in">
-    <!-- Filter Bar -->
-    <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-8 mb-8">
-      <div class="mb-6 flex items-center gap-3">
-        <div class="w-10 h-10 bg-[#EDF6F9] text-[#006D77] rounded-xl flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <h3 class="text-lg font-bold text-[#006D77]">Club Activities</h3>
-      </div>
-      <div class="flex flex-wrap items-end gap-6">
-        <div>
-          <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1 mb-1 block">Select Club</label>
-          <select [(ngModel)]="clubId" class="w-64 px-4 py-3 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
-            <option [ngValue]="null">— Select Club —</option>
-            <option *ngFor="let c of clubs" [ngValue]="c.clubId">{{ c.name }}</option>
-          </select>
-        </div>
-        <div class="flex gap-3">
-          <button (click)="loadExcursions()" class="px-6 py-3 bg-white text-[#006D77] font-bold rounded-xl hover:bg-[#EDF6F9] border-2 border-[#EDF6F9] transition-all shadow-sm">
-            Load Excursions
-          </button>
-          <button (click)="loadTrainings()" class="px-6 py-3 bg-white text-[#E29578] font-bold rounded-xl hover:bg-[#FFDDD2] border-2 border-[#FFDDD2] transition-all shadow-sm">
-            Load Trainings
-          </button>
-        </div>
-      </div>
-    </div>
+  <!-- ═══════════════════════════════ REQUESTS TAB ═══════════════════════════════ -->
+  <div *ngIf="tab==='requests'">
 
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-      <!-- EXCURSIONS -->
-      <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
-        <div class="h-2 bg-gradient-to-r from-[#83C5BE] to-[#006D77]"></div>
-        <div class="p-8">
-          <div class="flex items-center justify-between mb-8">
-            <h2 class="text-xl font-bold text-[#006D77]">Excursions</h2>
-            <button (click)="openExcursionModal()" class="px-5 py-2.5 bg-[#006D77] text-white rounded-xl hover:bg-[#83C5BE] transition-all shadow-md font-bold text-sm">
-              + Add Excursion
+    <!-- Filter card -->
+    <div class="bg-white rounded-3xl border shadow-sm overflow-hidden mb-6" style="border-color:rgba(131,197,190,0.2)">
+      <div class="h-1.5" style="background:linear-gradient(90deg,#FFDDD2,#E29578,#c9785f)"></div>
+      <div class="p-6">
+        <h2 class="font-black text-gray-800 mb-5 flex items-center gap-2">
+          <svg class="w-5 h-5" style="color:#E29578" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/>
+          </svg>
+          Filtrer les demandes
+        </h2>
+
+        <div class="flex flex-wrap items-end gap-4">
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-gray-400 uppercase tracking-widest">Club</label>
+            <select [(ngModel)]="clubId"
+                    class="px-4 py-3 border-2 rounded-2xl text-sm outline-none focus:border-[#006D77] transition-all bg-white w-64 font-medium"
+                    style="border-color:rgba(131,197,190,0.3)">
+              <option [ngValue]="null">— Sélectionner un club —</option>
+              <option *ngFor="let c of clubs" [ngValue]="c.clubId">
+                {{ typeIcon(c.type) }} {{ c.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="flex gap-3 flex-wrap items-end">
+            <button (click)="loadRequestsByClub()"
+                    class="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold text-white hover:scale-105 active:scale-95 transition-all"
+                    style="background:linear-gradient(135deg,#006D77,#83C5BE);box-shadow:0 4px 14px rgba(0,109,119,0.3)">
+              🏛 Par Club
+            </button>
+            <button (click)="loadAllRequests()"
+                    class="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold border transition-all hover:bg-[#FFF5F0] hover:scale-105 active:scale-95"
+                    style="border-color:#E29578;color:#E29578">
+              📬 Toutes les demandes
             </button>
           </div>
-          <div *ngIf="excursions.length===0" class="py-12 text-center border-2 border-dashed border-[#EDF6F9] rounded-2xl">
-            <p class="text-[#83C5BE] font-medium">Select a club and load excursions.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Requests list -->
+    <div class="bg-white rounded-3xl border shadow-sm overflow-hidden" style="border-color:rgba(131,197,190,0.2)">
+      <div class="p-6 border-b flex items-center justify-between" style="border-color:#F1F5F9">
+        <h3 class="font-black text-gray-800 flex items-center gap-2">
+          Demandes
+          <span class="text-xs font-bold px-3 py-1 rounded-full" style="background:#EDF6F9;color:#006D77">
+            {{ requests.length }}
+          </span>
+        </h3>
+      </div>
+
+      <!-- Empty -->
+      <div *ngIf="requests.length===0" class="py-20 flex flex-col items-center gap-4">
+        <div class="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl" style="background:#EDF6F9">📬</div>
+        <p class="text-gray-400 font-semibold">Aucune demande trouvée</p>
+      </div>
+
+      <!-- Items -->
+      <div *ngFor="let r of requests; let last = last"
+           class="flex items-start gap-4 p-5 transition-all hover:bg-slate-50"
+           [class]="!last ? 'border-b' : ''"
+           style="border-color:#F1F5F9">
+
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xs font-black text-white flex-shrink-0"
+             style="background:linear-gradient(135deg,#006D77,#83C5BE)">
+          #{{ resolveRequestId(r) }}
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap mb-1.5">
+            <span class="text-sm font-bold text-gray-800">{{ displayRequestUserName(r) }}</span>
+            <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+            </svg>
+            <span class="text-sm font-bold text-gray-800">{{ clubName(r.club.clubId) }}</span>
+            <span class="text-xs font-bold px-2.5 py-1 rounded-full"
+                  [style]="r.status==='PENDING' ? 'background:#FEF3C7;color:#D97706' : r.status==='ACCEPTED' ? 'background:#DCFCE7;color:#16A34A' : 'background:#FEE2E2;color:#DC2626'">
+              {{ r.status }}
+            </span>
           </div>
-          <div class="space-y-4">
-            <div *ngFor="let e of excursions" class="p-5 rounded-2xl border border-gray-100 bg-gray-50/50 hover:border-[#83C5BE] transition-all group relative">
-              <h3 class="font-bold text-[#006D77] text-base pr-20 truncate">{{ e.title }}</h3>
-              <p class="text-xs font-medium text-gray-500 mt-1">{{ e.location }} · {{ e.startDate }} → {{ e.endDate }}</p>
-              <p class="text-xs font-bold text-[#83C5BE] mt-2">Places: {{ e.nbrDeplace ?? 0 }}</p>
-              <div class="mt-3">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border"
-                      [ngClass]="e.status==='ONGOING' ? 'bg-green-50 text-green-600 border-green-100' : e.status==='PLANNED' ? 'bg-[#EDF6F9] text-[#006D77] border-[#006D77]/20' : 'bg-gray-50 text-gray-500 border-gray-200'">
+          <p *ngIf="r.motivation" class="text-xs text-gray-400 italic">{{ r.motivation }}</p>
+          <p class="text-xs text-gray-300 mt-1">{{ r.requestDate || '—' }}</p>
+        </div>
+
+        <div *ngIf="r.status==='PENDING'" class="flex gap-2 flex-shrink-0">
+          <button (click)="acceptRequest(r)"
+                  class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:scale-105 active:scale-95"
+                  style="background:linear-gradient(135deg,#16A34A,#059669);box-shadow:0 4px 12px rgba(22,163,74,0.3)">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+            </svg>
+            Accepter
+          </button>
+          <button (click)="rejectRequest(r)"
+                  class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:scale-105 active:scale-95"
+                  style="background:linear-gradient(135deg,#E29578,#c9785f);box-shadow:0 4px 12px rgba(226,149,120,0.3)">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            Rejeter
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ ACTIVITIES TAB ═══════════════════════════════ -->
+  <div *ngIf="tab==='activities'">
+
+    <!-- Filter bar -->
+    <div class="bg-white rounded-3xl border shadow-sm p-5 mb-6 flex flex-wrap items-end gap-4"
+         style="border-color:rgba(131,197,190,0.2)">
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-black text-gray-400 uppercase tracking-widest">Club</label>
+        <select [(ngModel)]="clubId"
+                class="px-4 py-3 border-2 rounded-2xl text-sm outline-none focus:border-[#006D77] transition-all bg-white w-56 font-medium"
+                style="border-color:rgba(131,197,190,0.3)">
+          <option [ngValue]="null">— Sélectionner —</option>
+          <option *ngFor="let c of clubs" [ngValue]="c.clubId">
+            {{ typeIcon(c.type) }} {{ c.name }}
+          </option>
+        </select>
+      </div>
+
+      <button (click)="loadExcursions()"
+              class="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold border transition-all hover:bg-[#EDF6F9] hover:scale-105 active:scale-95"
+              style="border-color:#83C5BE;color:#006D77">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+        </svg>
+        Excursions
+      </button>
+
+      <button (click)="loadTrainings()"
+              class="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold border transition-all hover:bg-[#FFF5F0] hover:scale-105 active:scale-95"
+              style="border-color:#E29578;color:#E29578">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+        </svg>
+        Formations
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+      <!-- ── EXCURSIONS ── -->
+      <div class="bg-white rounded-3xl border shadow-sm overflow-hidden" style="border-color:rgba(131,197,190,0.2)">
+        <div class="h-1.5" style="background:linear-gradient(90deg,#83C5BE,#006D77)"></div>
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="font-black text-gray-800 flex items-center gap-2">
+              <span class="text-xl">🧭</span> Excursions
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full" style="background:#EDF6F9;color:#006D77">
+                {{ excursions.length }}
+              </span>
+            </h2>
+            <button (click)="openExcursionModal()"
+                    class="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold text-white hover:scale-105 active:scale-95 transition-all"
+                    style="background:linear-gradient(135deg,#006D77,#83C5BE);box-shadow:0 4px 12px rgba(0,109,119,0.3)">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+              </svg>
+              Ajouter
+            </button>
+          </div>
+
+          <div *ngIf="excursions.length===0" class="py-12 text-center">
+            <div class="text-5xl opacity-20 mb-3">🧭</div>
+            <p class="text-xs text-gray-400 font-medium">Sélectionnez un club et chargez les excursions.</p>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <div *ngFor="let e of excursions"
+                 class="flex items-start gap-3 p-4 rounded-2xl border transition-all hover:border-[#83C5BE] hover:shadow-sm group"
+                 style="border-color:#F1F5F9;background:#FAFBFC">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-xl" style="background:#EDF6F9">🧭</div>
+
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-bold text-gray-800 truncate">{{ e.title }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">📍 {{ e.location }} · {{ e.startDate }} → {{ e.endDate }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">👥 {{ e.nbrDeplace ?? 0 }} places</p>
+                <span class="inline-block text-xs font-bold px-2.5 py-0.5 rounded-full mt-2"
+                      [style]="e.status==='ONGOING' ? 'background:#DCFCE7;color:#16A34A' : e.status==='PLANNED' ? 'background:#EDF6F9;color:#006D77' : 'background:#F3F4F6;color:#6B7280'">
                   {{ e.status }}
                 </span>
               </div>
-              <div class="absolute top-5 right-5 flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                <button (click)="openEditExcursionModal(e)" class="p-2 bg-white text-[#006D77] rounded-lg shadow-sm hover:bg-[#EDF6F9]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>
-                <button (click)="deleteExcursion(e.excursionId)" class="p-2 bg-white text-[#E29578] rounded-lg shadow-sm hover:bg-[#FFDDD2]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+
+              <div class="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0">
+                <button (click)="openEditExcursionModal(e)"
+                        class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-105"
+                        style="background:#EDF6F9;color:#006D77">Modifier</button>
+                <button (click)="deleteExcursion(e.excursionId)"
+                        class="px-3 py-1.5 rounded-xl text-xs font-bold text-white transition-all hover:scale-105"
+                        style="background:linear-gradient(135deg,#E29578,#c9785f)">Suppr.</button>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- TRAININGS -->
-      <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
-        <div class="h-2 bg-gradient-to-r from-[#FFDDD2] to-[#E29578]"></div>
-        <div class="p-8">
-          <div class="flex items-center justify-between mb-8">
-            <h2 class="text-xl font-bold text-[#E29578]">Trainings</h2>
-            <button (click)="openTrainingModal()" class="px-5 py-2.5 bg-[#E29578] text-white rounded-xl hover:bg-[#c9785f] transition-all shadow-md font-bold text-sm">
-              + Add Training
+      <!-- ── TRAININGS ── -->
+      <div class="bg-white rounded-3xl border shadow-sm overflow-hidden" style="border-color:rgba(131,197,190,0.2)">
+        <div class="h-1.5" style="background:linear-gradient(90deg,#E29578,#FFDDD2)"></div>
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="font-black text-gray-800 flex items-center gap-2">
+              <span class="text-xl">🎓</span> Formations
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full" style="background:#FFF5F0;color:#E29578">
+                {{ trainings.length }}
+              </span>
+            </h2>
+            <button (click)="openTrainingModal()"
+                    class="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold text-white hover:scale-105 active:scale-95 transition-all"
+                    style="background:linear-gradient(135deg,#E29578,#c9785f);box-shadow:0 4px 12px rgba(226,149,120,0.3)">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+              </svg>
+              Ajouter
             </button>
           </div>
-          <div *ngIf="trainings.length===0" class="py-12 text-center border-2 border-dashed border-[#FFDDD2] rounded-2xl">
-            <p class="text-[#E29578] font-medium opacity-60">Select a club and load trainings.</p>
+
+          <div *ngIf="trainings.length===0" class="py-12 text-center">
+            <div class="text-5xl opacity-20 mb-3">🎓</div>
+            <p class="text-xs text-gray-400 font-medium">Sélectionnez un club et chargez les formations.</p>
           </div>
-          <div class="space-y-4">
-            <div *ngFor="let t of trainings" class="p-5 rounded-2xl border border-gray-100 bg-gray-50/50 hover:border-[#E29578] transition-all group relative">
-              <h3 class="font-bold text-[#E29578] text-base pr-20 truncate">{{ t.title }}</h3>
-              <p class="text-xs font-medium text-gray-500 mt-1">{{ t.trainer }} · {{ t.startDate }} → {{ t.endDate }}</p>
-              <p class="text-xs font-bold text-[#E29578]/70 mt-2">Places: {{ t.nbrDeplace ?? 0 }}</p>
-              <div class="mt-3">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border"
-                      [ngClass]="t.status==='ONGOING' ? 'bg-green-50 text-green-600 border-green-100' : t.status==='PLANNED' ? 'bg-[#FFDDD2] text-[#E29578] border-[#E29578]/20' : 'bg-gray-50 text-gray-500 border-gray-200'">
-                  {{ t.status }}
-                </span>
+
+          <div class="flex flex-col gap-3">
+            <div *ngFor="let t of trainings"
+                 class="flex items-start gap-3 p-4 rounded-2xl border transition-all hover:border-[#E29578] hover:shadow-sm group"
+                 style="border-color:#F1F5F9;background:#FAFBFC">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-xl" style="background:#FFF5F0">🎓</div>
+
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-bold text-gray-800 truncate">{{ t.title }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">👤 {{ t.trainer }} · {{ t.startDate }} → {{ t.endDate }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">👥 {{ t.nbrDeplace ?? 0 }} places</p>
+                <div class="flex items-center gap-2 mt-2 flex-wrap">
+                  <span *ngIf="t.price" class="text-xs font-bold px-2.5 py-0.5 rounded-full"
+                        style="background:#FFF5F0;color:#c9785f">
+                    💰 {{ t.price }} TND
+                  </span>
+                  <span *ngIf="t.rewardEnabled" class="text-xs font-bold px-2.5 py-0.5 rounded-full"
+                        style="background:#DCFCE7;color:#16A34A">
+                    🏆 Reward: {{ t.rewardMax }} TND
+                  </span>
+                  <span class="inline-block text-xs font-bold px-2.5 py-0.5 rounded-full"
+                        [style]="t.status==='ONGOING' ? 'background:#DCFCE7;color:#16A34A' : t.status==='PLANNED' ? 'background:#FFF5F0;color:#E29578' : 'background:#F3F4F6;color:#6B7280'">
+                    {{ t.status }}
+                  </span>
+                </div>
               </div>
-              <div class="absolute top-5 right-5 flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                <button (click)="openEditTrainingModal(t)" class="p-2 bg-white text-[#E29578] rounded-lg shadow-sm hover:bg-[#FFDDD2]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>
-                <button (click)="deleteTraining(t.trainingId)" class="p-2 bg-white text-[#E29578] rounded-lg shadow-sm hover:bg-[#FFDDD2]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+
+              <div class="flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0">
+                <button (click)="openEditTrainingModal(t)"
+                        class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-105"
+                        style="background:#FFF5F0;color:#E29578">Modifier</button>
+                <button (click)="openTrainingAdminModal(t)"
+                        class="px-3 py-1.5 rounded-xl text-xs font-bold text-white transition-all hover:scale-105"
+                        style="background:#006D77">Membres</button>
+                <button (click)="deleteTraining(t.trainingId)"
+                        class="px-3 py-1.5 rounded-xl text-xs font-bold text-white transition-all hover:scale-105"
+                        style="background:linear-gradient(135deg,#E29578,#c9785f)">Suppr.</button>
               </div>
             </div>
           </div>
@@ -316,164 +523,624 @@
       </div>
     </div>
   </div>
-
 </div>
 
-<!-- MODALS (CLUB, EXCURSION, TRAINING) -->
-<div *ngIf="showClubModal || showExcursionModal || showTrainingModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
-  <!-- CLUB MODAL -->
-  <div *ngIf="showClubModal" class="bg-white rounded-[32px] w-full max-w-2xl shadow-2xl overflow-hidden animate-scale-up" (click)="$event.stopPropagation()">
-    <div class="p-8 bg-[#EDF6F9] flex items-center justify-between border-b border-gray-100">
-      <div class="flex items-center gap-4">
-        <div class="w-14 h-14 rounded-2xl bg-[#006D77] shadow-lg flex items-center justify-center text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     MODAL — CLUB
+════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="showClubModal"
+     class="fixed inset-0 z-50 flex items-center justify-center p-4"
+     style="background:rgba(0,25,20,0.6);backdrop-filter:blur(8px)">
+  <div (click)="$event.stopPropagation()"
+       class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-slide-up">
+    <div class="h-2" style="background:linear-gradient(90deg,#006D77,#83C5BE,#006D77)"></div>
+    <div class="p-8">
+
+      <div class="flex justify-between items-start mb-7">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl" style="background:#EDF6F9">🏛</div>
+          <div>
+            <h2 class="text-xl font-black text-gray-800" style="font-family:'Georgia',serif">
+              {{ clubForm.clubId ? 'Modifier le club' : 'Nouveau club' }}
+            </h2>
+            <p class="text-xs text-gray-400 mt-0.5">{{ clubForm.clubId ? 'Club #' + clubForm.clubId : 'Remplissez les informations ci-dessous' }}</p>
+          </div>
         </div>
-        <div>
-          <h2 class="text-2xl font-bold text-[#006D77]">{{ clubForm.clubId ? 'Edit Club' : 'Create New Club' }}</h2>
-          <p class="text-[#83C5BE] font-medium text-sm">{{ clubForm.clubId ? 'Club #' + clubForm.clubId : 'Fill in the details below' }}</p>
+        <button (click)="showClubModal=false"
+                class="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:bg-[#FFF5F0] hover:text-[#E29578] text-gray-400"
+                style="background:#F8FAFC">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="rounded-2xl p-5 mb-6 border" style="background:#F8FAFC;border-color:rgba(131,197,190,0.2)">
+        <div class="grid grid-cols-2 gap-4">
+
+          <div class="flex flex-col gap-2 col-span-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">
+              Nom du club <span class="text-red-400">*</span>
+            </label>
+            <input [(ngModel)]="clubForm.name" placeholder="ex: Mountain Explorers"
+                   class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none focus:border-[#006D77] transition-all"
+                   style="border-color:rgba(131,197,190,0.3);background:white" />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">
+              Type <span class="text-red-400">*</span>
+            </label>
+            <select [(ngModel)]="clubForm.type"
+                    class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none focus:border-[#006D77] transition-all bg-white"
+                    style="border-color:rgba(131,197,190,0.3)">
+              <option *ngFor="let r of roles" [value]="r">{{ typeIcon(r) }} {{ r }}</option>
+            </select>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Statut</label>
+            <select [(ngModel)]="clubForm.status"
+                    class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none focus:border-[#006D77] transition-all bg-white"
+                    style="border-color:rgba(131,197,190,0.3)">
+              <option *ngFor="let s of clubStatuses" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+
+          <div class="flex flex-col gap-2 col-span-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Date de création</label>
+            <input type="date" [(ngModel)]="clubForm.creationDate"
+                   class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none focus:border-[#006D77] transition-all"
+                   style="border-color:rgba(131,197,190,0.3);background:white" />
+          </div>
+
+          <div class="flex flex-col gap-2 col-span-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Description</label>
+            <textarea [(ngModel)]="clubForm.description" rows="3" placeholder="Décrivez le club…"
+                      class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none focus:border-[#006D77] transition-all resize-none"
+                      style="border-color:rgba(131,197,190,0.3);background:white"></textarea>
+          </div>
         </div>
       </div>
-      <button (click)="showClubModal=false" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#E29578] shadow-sm hover:bg-[#FFDDD2] transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="space-y-2 md:col-span-2">
-        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Club Name *</label>
-        <input [(ngModel)]="clubForm.name" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="e.g. Mountain Explorers" />
+
+      <div class="flex justify-end gap-3">
+        <button (click)="showClubModal=false"
+                class="px-6 py-3 rounded-2xl border text-sm font-bold text-gray-400 hover:bg-gray-50 transition-all"
+                style="border-color:rgba(131,197,190,0.3)">Annuler</button>
+        <button (click)="saveClub()" [disabled]="loading"
+                class="px-6 py-3 rounded-2xl text-sm font-bold text-white hover:scale-105 active:scale-95 disabled:opacity-40 transition-all"
+                style="background:linear-gradient(135deg,#005f69,#006D77,#83C5BE);box-shadow:0 6px 20px rgba(0,109,119,0.3)">
+          {{ clubForm.clubId ? '✓ Mettre à jour' : '✓ Créer le club' }}
+        </button>
       </div>
-      <div class="space-y-2">
-        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Type *</label>
-        <select [(ngModel)]="clubForm.type" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
-          <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
-        </select>
-      </div>
-      <div class="space-y-2">
-        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Status</label>
-        <select [(ngModel)]="clubForm.status" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
-          <option *ngFor="let s of clubStatuses" [value]="s">{{ s }}</option>
-        </select>
-      </div>
-      <div class="space-y-2 md:col-span-2">
-        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Creation Date</label>
-        <input type="date" [(ngModel)]="clubForm.creationDate" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
-      </div>
-      <div class="space-y-2 md:col-span-2">
-        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Description</label>
-        <textarea [(ngModel)]="clubForm.description" rows="3" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium resize-none" placeholder="Describe the club..."></textarea>
-      </div>
-    </div>
-    <div class="p-8 bg-gray-50/50 flex gap-4 rounded-b-[32px] border-t border-gray-100">
-      <button (click)="showClubModal=false" class="flex-1 py-4 bg-white border-2 border-[#EDF6F9] text-[#006D77] rounded-2xl font-bold hover:bg-[#EDF6F9] transition-all">Cancel</button>
-      <button (click)="saveClub()" [disabled]="loading" class="flex-1 py-4 bg-[#006D77] text-white rounded-2xl font-bold shadow-lg hover:bg-[#83C5BE] transition-all flex items-center justify-center gap-3">
-        {{ clubForm.clubId ? 'Update Club' : 'Create Club' }}
-      </button>
     </div>
   </div>
+</div>
 
-  <!-- EXCURSION MODAL -->
-  <div *ngIf="showExcursionModal" class="bg-white rounded-[32px] w-full max-w-2xl shadow-2xl overflow-hidden animate-scale-up" (click)="$event.stopPropagation()">
-    <div class="p-8 bg-gradient-to-r from-[#EDF6F9] to-[#83C5BE]/20 flex items-center justify-between border-b border-gray-100">
-      <div class="flex items-center gap-4">
-        <div class="w-14 h-14 rounded-2xl bg-[#006D77] shadow-lg flex items-center justify-center text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     MODAL — EXCURSION
+════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="showExcursionModal"
+     class="fixed inset-0 z-50 flex items-center justify-center p-4"
+     style="background:rgba(0,25,20,0.6);backdrop-filter:blur(8px)">
+  <div (click)="$event.stopPropagation()"
+       class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden">
+    <div class="h-2" style="background:linear-gradient(90deg,#83C5BE,#006D77)"></div>
+    <div class="p-8">
+
+      <div class="flex justify-between items-start mb-7">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl" style="background:#EDF6F9">🧭</div>
+          <div>
+            <h2 class="text-xl font-black text-gray-800" style="font-family:'Georgia',serif">
+              {{ excursionForm.excursionId ? 'Modifier l\'excursion' : 'Nouvelle excursion' }}
+            </h2>
+            <p class="text-xs text-gray-400 mt-0.5">Club : {{ selectedClubName }}</p>
+          </div>
         </div>
-        <div>
-          <h2 class="text-2xl font-bold text-[#006D77]">{{ excursionForm.excursionId ? 'Edit Excursion' : 'New Excursion' }}</h2>
-          <p class="text-[#83C5BE] font-medium text-sm">Club: {{ selectedClubName }}</p>
+        <button (click)="showExcursionModal=false"
+                class="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:bg-[#FFF5F0] hover:text-[#E29578] text-gray-400"
+                style="background:#F8FAFC">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="rounded-2xl p-5 mb-6 border" style="background:#F8FAFC;border-color:rgba(131,197,190,0.2)">
+        <div class="grid grid-cols-2 gap-4">
+
+          <div class="flex flex-col gap-2 col-span-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Titre <span class="text-red-400">*</span></label>
+            <input [(ngModel)]="excursionForm.title" placeholder="Titre de l'excursion"
+                   class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none focus:border-[#006D77] transition-all"
+                   style="border-color:rgba(131,197,190,0.3);background:white" />
+          </div>
+
+          <div class="flex flex-col gap-2 col-span-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Destination</label>
+            <input [(ngModel)]="excursionForm.location" placeholder="Lieu de destination"
+                   class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none focus:border-[#006D77] transition-all"
+                   style="border-color:rgba(131,197,190,0.3);background:white" />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Début</label>
+            <input type="date" [(ngModel)]="excursionForm.startDate"
+                   class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none focus:border-[#006D77] transition-all"
+                   style="border-color:rgba(131,197,190,0.3);background:white" />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Fin</label>
+            <input type="date" [(ngModel)]="excursionForm.endDate"
+                   class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none focus:border-[#006D77] transition-all"
+                   style="border-color:rgba(131,197,190,0.3);background:white" />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Statut</label>
+            <select [(ngModel)]="excursionForm.status"
+                    class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none focus:border-[#006D77] transition-all bg-white"
+                    style="border-color:rgba(131,197,190,0.3)">
+              <option *ngFor="let s of activityStatuses" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Nombre de places</label>
+            <input type="number" min="0" [(ngModel)]="excursionForm.nbrDeplace"
+                   class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none focus:border-[#006D77] transition-all"
+                   style="border-color:rgba(131,197,190,0.3);background:white" />
+          </div>
+
+          <div class="flex flex-col gap-2 col-span-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Description</label>
+            <input [(ngModel)]="excursionForm.description" placeholder="Détails de l'excursion…"
+                   class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none focus:border-[#006D77] transition-all"
+                   style="border-color:rgba(131,197,190,0.3);background:white" />
+          </div>
         </div>
       </div>
-      <button (click)="showExcursionModal=false" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#E29578] shadow-sm hover:bg-[#FFDDD2] transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="space-y-2 md:col-span-2">
-        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Title *</label>
-        <input [(ngModel)]="excursionForm.title" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Trip title" />
+
+      <div class="flex justify-end gap-3">
+        <button (click)="showExcursionModal=false"
+                class="px-6 py-3 rounded-2xl border text-sm font-bold text-gray-400 hover:bg-gray-50 transition-all"
+                style="border-color:rgba(131,197,190,0.3)">Annuler</button>
+        <button (click)="saveExcursion()" [disabled]="loading"
+                class="px-6 py-3 rounded-2xl text-sm font-bold text-white hover:scale-105 active:scale-95 disabled:opacity-40 transition-all"
+                style="background:linear-gradient(135deg,#005f69,#006D77,#83C5BE);box-shadow:0 6px 20px rgba(0,109,119,0.3)">
+          {{ excursionForm.excursionId ? '✓ Mettre à jour' : '✓ Créer' }}
+        </button>
       </div>
-      <div class="space-y-2 md:col-span-2">
-        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Location</label>
-        <input [(ngModel)]="excursionForm.location" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Destination" />
-      </div>
-      <div class="space-y-2">
-        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Start Date</label>
-        <input type="date" [(ngModel)]="excursionForm.startDate" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
-      </div>
-      <div class="space-y-2">
-        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">End Date</label>
-        <input type="date" [(ngModel)]="excursionForm.endDate" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
-      </div>
-      <div class="space-y-2">
-        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Status</label>
-        <select [(ngModel)]="excursionForm.status" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
-          <option *ngFor="let s of activityStatuses" [value]="s">{{ s }}</option>
-        </select>
-      </div>
-      <div class="space-y-2">
-        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Places</label>
-        <input type="number" min="0" [(ngModel)]="excursionForm.nbrDeplace" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
-      </div>
-      <div class="space-y-2 md:col-span-2">
-        <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1">Description</label>
-        <textarea [(ngModel)]="excursionForm.description" rows="3" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium resize-none" placeholder="Details..."></textarea>
-      </div>
-    </div>
-    <div class="p-8 bg-gray-50/50 flex gap-4 rounded-b-[32px] border-t border-gray-100">
-      <button (click)="showExcursionModal=false" class="flex-1 py-4 bg-white border-2 border-[#EDF6F9] text-[#006D77] rounded-2xl font-bold hover:bg-[#EDF6F9] transition-all">Cancel</button>
-      <button (click)="saveExcursion()" [disabled]="loading" class="flex-1 py-4 bg-[#006D77] text-white rounded-2xl font-bold shadow-lg hover:bg-[#83C5BE] transition-all flex items-center justify-center gap-3">
-        {{ excursionForm.excursionId ? 'Update Excursion' : 'Create Excursion' }}
-      </button>
     </div>
   </div>
+</div>
 
-  <!-- TRAINING MODAL -->
-  <div *ngIf="showTrainingModal" class="bg-white rounded-[32px] w-full max-w-2xl shadow-2xl overflow-hidden animate-scale-up" (click)="$event.stopPropagation()">
-    <div class="p-8 bg-gradient-to-r from-[#FFDDD2] to-[#E29578]/20 flex items-center justify-between border-b border-gray-100">
-      <div class="flex items-center gap-4">
-        <div class="w-14 h-14 rounded-2xl bg-[#E29578] shadow-lg flex items-center justify-center text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     MODAL — TRAINING
+════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="showTrainingModal"
+     class="fixed inset-0 z-50 flex items-center justify-center p-4"
+     style="background:rgba(0,25,20,0.6);backdrop-filter:blur(8px)">
+  <div (click)="$event.stopPropagation()"
+       class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden">
+    <div class="h-2" style="background:linear-gradient(90deg,#E29578,#c9785f,#FFDDD2)"></div>
+    <div class="p-8">
+
+      <div class="flex justify-between items-start mb-7">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl" style="background:#FFF5F0">🎓</div>
+          <div>
+            <h2 class="text-xl font-black text-gray-800" style="font-family:'Georgia',serif">
+              {{ trainingForm.trainingId ? 'Modifier la formation' : 'Nouvelle formation' }}
+            </h2>
+            <p class="text-xs text-gray-400 mt-0.5">Club : {{ selectedClubName }}</p>
+          </div>
         </div>
+        <button (click)="showTrainingModal=false"
+                class="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:bg-[#FFF5F0] hover:text-[#E29578] text-gray-400"
+                style="background:#F8FAFC">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="rounded-2xl p-5 mb-6 border max-h-[60vh] overflow-y-auto"
+           style="background:#FFFAF8;border-color:rgba(255,221,210,0.5)">
+        <div class="grid grid-cols-2 gap-4">
+
+          <div class="flex flex-col gap-2 col-span-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Titre <span class="text-red-400">*</span></label>
+            <input [(ngModel)]="trainingForm.title" placeholder="Titre de la session"
+                   class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none transition-all"
+                   style="border-color:rgba(255,221,210,0.6);background:white;focus:border-color:#E29578" />
+          </div>
+
+          <div class="flex flex-col gap-2 col-span-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Formateur</label>
+            <input [(ngModel)]="trainingForm.trainer" placeholder="Nom du formateur"
+                   class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none transition-all"
+                   style="border-color:rgba(255,221,210,0.6);background:white" />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Début</label>
+            <input type="date" [(ngModel)]="trainingForm.startDate"
+                   class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none transition-all"
+                   style="border-color:rgba(255,221,210,0.6);background:white" />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Fin</label>
+            <input type="date" [(ngModel)]="trainingForm.endDate"
+                   class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none transition-all"
+                   style="border-color:rgba(255,221,210,0.6);background:white" />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Statut</label>
+            <select [(ngModel)]="trainingForm.status"
+                    class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none transition-all bg-white"
+                    style="border-color:rgba(255,221,210,0.6)">
+              <option *ngFor="let s of activityStatuses" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Nb. de places</label>
+            <input type="number" min="0" [(ngModel)]="trainingForm.nbrDeplace"
+                   class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none transition-all"
+                   style="border-color:rgba(255,221,210,0.6);background:white" />
+          </div>
+
+          <!-- Divider paiement -->
+          <div class="col-span-2 pt-1">
+            <div class="flex items-center gap-3">
+              <div class="flex-1 border-t" style="border-color:rgba(255,221,210,0.6)"></div>
+              <span class="text-xs font-black uppercase tracking-widest px-2" style="color:#E29578">💰 Paiement & Récompense</span>
+              <div class="flex-1 border-t" style="border-color:rgba(255,221,210,0.6)"></div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Prix (TND) <span class="text-red-400">*</span></label>
+            <div class="relative">
+              <input type="number" min="0" step="0.01" [(ngModel)]="trainingForm.price" placeholder="0.00"
+                     class="w-full pl-4 pr-14 py-3 border-2 rounded-2xl text-sm font-medium outline-none transition-all"
+                     style="border-color:rgba(255,221,210,0.6);background:white" />
+              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black" style="color:#E29578">TND</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Reward Max (TND)</label>
+            <div class="relative">
+              <input type="number" min="0" step="0.01" [(ngModel)]="trainingForm.rewardMax" placeholder="0.00"
+                     class="w-full pl-4 pr-14 py-3 border-2 rounded-2xl text-sm font-medium outline-none transition-all"
+                     style="border-color:rgba(255,221,210,0.6);background:white" />
+              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black" style="color:#E29578">TND</span>
+            </div>
+          </div>
+
+          <!-- Toggle reward -->
+          <div class="col-span-2">
+            <label class="flex items-center gap-3 cursor-pointer p-4 rounded-2xl border transition-all"
+                   [style]="trainingForm.rewardEnabled ? 'border-color:#16A34A;background:#F0FDF4' : 'border-color:rgba(255,221,210,0.6);background:white'">
+              <div class="relative w-12 h-6 flex-shrink-0">
+                <input type="checkbox" [(ngModel)]="trainingForm.rewardEnabled" class="sr-only" />
+                <div class="absolute inset-0 rounded-full transition-all duration-300"
+                     [style]="trainingForm.rewardEnabled ? 'background:#16A34A' : 'background:#E5E7EB'"></div>
+                <div class="absolute top-1 w-4 h-4 rounded-full bg-white shadow-md transition-all duration-300"
+                     [style]="trainingForm.rewardEnabled ? 'left:26px' : 'left:4px'"></div>
+              </div>
+              <div>
+                <p class="text-sm font-bold" [style]="trainingForm.rewardEnabled ? 'color:#16A34A' : 'color:#6B7280'">
+                  {{ trainingForm.rewardEnabled ? '🏆 Système de récompense activé' : 'Activer la récompense' }}
+                </p>
+                <p class="text-xs mt-0.5" style="color:#9CA3AF">
+                  Score ≥ 50% → récompense créditée sur le wallet
+                </p>
+              </div>
+            </label>
+          </div>
+
+          <div class="flex flex-col gap-2 col-span-2">
+            <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Description</label>
+            <input [(ngModel)]="trainingForm.description" placeholder="Détails de la formation…"
+                   class="px-4 py-3 border-2 rounded-2xl text-sm font-medium outline-none transition-all"
+                   style="border-color:rgba(255,221,210,0.6);background:white" />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3">
+        <button (click)="showTrainingModal=false"
+                class="px-6 py-3 rounded-2xl border text-sm font-bold text-gray-400 hover:bg-gray-50 transition-all"
+                style="border-color:rgba(131,197,190,0.3)">Annuler</button>
+        <button (click)="saveTraining()" [disabled]="loading"
+                class="px-6 py-3 rounded-2xl text-sm font-bold text-white hover:scale-105 active:scale-95 disabled:opacity-40 transition-all"
+                style="background:linear-gradient(135deg,#E29578,#c9785f);box-shadow:0 6px 20px rgba(226,149,120,0.35)">
+          {{ trainingForm.trainingId ? '✓ Mettre à jour' : '✓ Créer la formation' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     MODAL — TRAINING ADMIN (PARTICIPANTS + PAIEMENTS + SCORES)
+════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="showTrainingAdminModal"
+     class="fixed inset-0 z-50 flex items-center justify-center p-4"
+     style="background:rgba(0,25,20,0.65);backdrop-filter:blur(10px)">
+  <div (click)="$event.stopPropagation()"
+       class="bg-white rounded-3xl w-full max-w-6xl shadow-2xl overflow-hidden flex flex-col"
+       style="max-height:95vh">
+
+    <!-- ─── Modal Header ─── -->
+    <div class="relative px-8 py-7 text-white overflow-hidden flex-shrink-0"
+         style="background:linear-gradient(135deg,#c9785f 0%,#E29578 50%,#FFDDD2 100%)">
+      <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-20"
+           style="background:radial-gradient(circle,white,transparent)"></div>
+      <div class="absolute bottom-0 left-1/3 w-32 h-32 rounded-full opacity-10 translate-y-1/2"
+           style="background:radial-gradient(circle,white,transparent)"></div>
+
+      <div class="relative flex items-start justify-between gap-4">
         <div>
-          <h2 class="text-2xl font-bold text-[#E29578]">{{ trainingForm.trainingId ? 'Edit Training' : 'New Training' }}</h2>
-          <p class="text-[#c9785f] font-medium text-sm">Club: {{ selectedClubName }}</p>
+          <p class="text-xs font-black uppercase tracking-[0.3em] opacity-80 mb-2">Gestion de la formation</p>
+          <h2 class="text-2xl font-black" style="font-family:'Georgia',serif">
+            {{ selectedTrainingTitle || 'Formation sélectionnée' }}
+          </h2>
+          <p class="text-sm opacity-80 mt-1.5">
+            Paiements, scores & récompenses des participants
+          </p>
+        </div>
+        <button (click)="closeTrainingAdminModal()"
+                class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all hover:bg-white/20 flex-shrink-0"
+                style="background:rgba(255,255,255,0.15)">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── Stats Summary ─── -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 px-8 py-5 border-b flex-shrink-0"
+         style="background:#F8FAFC;border-color:#EEF2F7">
+      <div class="bg-white rounded-2xl p-4 border shadow-sm" style="border-color:#EEF2F7">
+        <p class="text-xs font-black uppercase tracking-wider text-gray-400 mb-1">Participants</p>
+        <p class="text-3xl font-black text-gray-800">{{ trainingParticipantsList.length }}</p>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border shadow-sm" style="border-color:#DCFCE7">
+        <p class="text-xs font-black uppercase tracking-wider text-gray-400 mb-1">Paiements validés</p>
+        <p class="text-3xl font-black" style="color:#16A34A">{{ paidParticipantsCount }}</p>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border shadow-sm" style="border-color:#FEF3C7">
+        <p class="text-xs font-black uppercase tracking-wider text-gray-400 mb-1">En attente</p>
+        <p class="text-3xl font-black" style="color:#D97706">{{ pendingParticipantsCount }}</p>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border shadow-sm" style="border-color:#EDF6F9">
+        <p class="text-xs font-black uppercase tracking-wider text-gray-400 mb-1">Complétés</p>
+        <p class="text-3xl font-black" style="color:#006D77">{{ completedParticipantsCount }}</p>
+      </div>
+    </div>
+
+    <!-- ─── Participants List ─── -->
+    <div class="overflow-y-auto flex-1 p-6" style="background:#F8FAFC">
+
+      <!-- Empty state -->
+      <div *ngIf="trainingParticipantsList.length===0"
+           class="bg-white rounded-3xl border py-20 text-center" style="border-color:#EEF2F7">
+        <div class="text-6xl opacity-20 mb-4">👥</div>
+        <p class="text-lg font-bold text-gray-400">Aucun participant trouvé</p>
+        <p class="text-sm text-gray-300 mt-1">Cette formation n'a pas encore de participants.</p>
+      </div>
+
+      <!-- Participant cards -->
+      <div class="space-y-4">
+        <div *ngFor="let p of trainingParticipantsList"
+             class="bg-white rounded-3xl border shadow-sm overflow-hidden transition-all hover:shadow-md"
+             style="border-color:#EEF2F7">
+
+          <!-- Card top accent -->
+          <div class="h-1"
+               [style]="p.paymentStatus==='PAID' ? 'background:linear-gradient(90deg,#16A34A,#4ADE80)' : p.paymentStatus==='PENDING' ? 'background:linear-gradient(90deg,#D97706,#FCD34D)' : 'background:linear-gradient(90deg,#E5E7EB,#D1D5DB)'">
+          </div>
+
+          <div class="p-6">
+            <!-- ─── Identity Row ─── -->
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-black text-white shadow-sm flex-shrink-0"
+                     style="background:linear-gradient(135deg,#006D77,#83C5BE)">
+                  {{ p._resolvedInitial }}
+                </div>
+                <div>
+                  <p class="text-base font-black text-gray-800">{{ p._resolvedName }}</p>
+                  <p class="text-sm text-gray-400 mt-0.5">{{ p._resolvedEmail }}</p>
+                </div>
+              </div>
+
+              <!-- Status badges -->
+              <div class="flex flex-wrap items-center gap-2">
+                <span *ngIf="p.paymentStatus==='PAID'"
+                      class="flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-full"
+                      style="background:#DCFCE7;color:#16A34A">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  Paiement validé
+                </span>
+                <span *ngIf="p.paymentStatus==='PENDING'"
+                      class="flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-full"
+                      style="background:#FEF3C7;color:#D97706">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  En attente de paiement
+                </span>
+                <span *ngIf="p.status==='CONFIRMED'"
+                      class="flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-full"
+                      style="background:#DCFCE7;color:#16A34A">
+                  ✅ Réussi
+                </span>
+                <span *ngIf="p.status==='FAILED'"
+                      class="flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-full"
+                      style="background:#FEE2E2;color:#DC2626">
+                  ❌ Échec
+                </span>
+                <span *ngIf="p.status==='REGISTERED'"
+                      class="flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-full"
+                      style="background:#EDF6F9;color:#006D77">
+                  Inscrit
+                </span>
+              </div>
+            </div>
+
+            <!-- ─── Details Grid ─── -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+              <!-- Méthode paiement -->
+              <div class="rounded-2xl p-4 border" style="background:#F8FAFC;border-color:#EEF2F7">
+                <p class="text-xs font-black uppercase tracking-wider text-gray-400 mb-3">Méthode</p>
+                <div class="flex items-center gap-2">
+                  <span class="text-lg">{{ p.paymentMethod === 'CASH' ? '💵' : p.paymentMethod === 'WALLET' ? '👛' : '—' }}</span>
+                  <span class="text-sm font-bold text-gray-700">{{ p.paymentMethod || '—' }}</span>
+                </div>
+              </div>
+
+              <!-- Score input -->
+              <div class="rounded-2xl p-4 border" style="background:#F8FAFC;border-color:#EEF2F7">
+                <p class="text-xs font-black uppercase tracking-wider text-gray-400 mb-3">Score (/100)</p>
+                <div class="relative">
+                  <input type="number" min="0" max="100" [(ngModel)]="p.score"
+                         class="w-full px-3 py-2.5 border-2 rounded-xl text-sm font-bold text-center outline-none transition-all focus:border-[#E29578]"
+                         style="border-color:rgba(255,221,210,0.6)" />
+                  <!-- Score bar -->
+                  <div class="mt-2 h-1.5 rounded-full overflow-hidden" style="background:#F1F5F9">
+                    <div class="h-full rounded-full transition-all duration-500"
+                         [style]="'width:' + (p.score || 0) + '%;background:' + ((p.score || 0) >= 50 ? 'linear-gradient(90deg,#16A34A,#4ADE80)' : 'linear-gradient(90deg,#DC2626,#F87171)')">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Reward -->
+              <div class="rounded-2xl p-4 border" style="background:#F8FAFC;border-color:#EEF2F7">
+                <p class="text-xs font-black uppercase tracking-wider text-gray-400 mb-3">Récompense</p>
+                <p class="text-xl font-black" style="color:#E29578">
+                  {{ p.rewardAmount || 0 }} <span class="text-xs">TND</span>
+                </p>
+                <div *ngIf="p.rewardTransferred"
+                     class="flex items-center gap-1.5 mt-2">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="#16A34A" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <span class="text-xs font-bold" style="color:#16A34A">Transféré</span>
+                </div>
+              </div>
+
+              <!-- ══════════════════════════════════════════════════════════
+                   ACTIONS — BOUTON VALIDER PAIEMENT CASH (DESIGN PRO)
+              ══════════════════════════════════════════════════════════ -->
+              <div class="rounded-2xl p-4 border flex flex-col gap-3" style="background:#F8FAFC;border-color:#EEF2F7">
+                <p class="text-xs font-black uppercase tracking-wider text-gray-400">Actions</p>
+
+                <!-- ── CASH PENDING → Validation Card ── -->
+                <ng-container *ngIf="p.paymentStatus==='PENDING' && p.paymentMethod==='CASH'">
+                  <div class="rounded-2xl overflow-hidden border" style="border-color:#BBF7D0">
+
+                    <!-- Card Header -->
+                    <div class="flex items-center gap-2 px-3 py-2.5"
+                         style="background:linear-gradient(135deg,#ECFDF5,#D1FAE5)">
+                      <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="#16A34A" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/>
+                      </svg>
+                      <span class="text-xs font-black" style="color:#16A34A">Paiement CASH</span>
+                    </div>
+
+                    <!-- Amount -->
+                    <div class="flex items-center justify-between px-3 py-2"
+                         style="background:white;border-top:1px solid #BBF7D0;border-bottom:1px solid #BBF7D0">
+                      <span class="text-xs text-gray-400 font-medium">Montant</span>
+                      <span class="text-sm font-black" style="color:#16A34A">{{ p.amount ?? '—' }} TND</span>
+                    </div>
+
+                    <!-- Validate button -->
+                    <div class="p-2.5" style="background:white">
+                      <button (click)="validateCashPayment(p)"
+                              class="group relative w-full overflow-hidden rounded-xl py-3 text-xs font-black text-white transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-95"
+                              style="background:linear-gradient(135deg,#059669,#16A34A);box-shadow:0 4px 14px rgba(5,150,105,0.4)">
+
+                        <!-- Shimmer -->
+                        <span class="pointer-events-none absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"
+                              style="background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)"></span>
+
+                        <!-- Icon + label -->
+                        <span class="relative flex items-center justify-center gap-2">
+                          <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                          Valider le paiement
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- ── ALREADY PAID ── -->
+                <div *ngIf="p.paymentStatus==='PAID'"
+                     class="flex items-center gap-2.5 px-3 py-3 rounded-2xl border"
+                     style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border-color:#BBF7D0">
+                  <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="#16A34A" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <div>
+                    <p class="text-xs font-black" style="color:#16A34A">Paiement confirmé</p>
+                    <p class="text-xs mt-0.5" style="color:#4ADE80">{{ p.paymentMethod }}</p>
+                  </div>
+                </div>
+
+                <!-- ── SAVE SCORE BUTTON ── -->
+                <button (click)="saveParticipantScore(p)"
+                        class="group relative w-full overflow-hidden rounded-2xl py-3 text-xs font-black text-white transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-95"
+                        style="background:linear-gradient(135deg,#c9785f,#E29578);box-shadow:0 4px 14px rgba(201,120,95,0.35)">
+
+                  <!-- Shimmer -->
+                  <span class="pointer-events-none absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"
+                        style="background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)"></span>
+
+                  <span class="relative flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/>
+                    </svg>
+                    Enregistrer le score
+                  </span>
+                </button>
+
+              </div>
+              <!-- ══ FIN ACTIONS ══ -->
+
+            </div>
+          </div>
         </div>
       </div>
-      <button (click)="showTrainingModal=false" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#E29578] shadow-sm hover:bg-[#FFDDD2] transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="space-y-2 md:col-span-2">
-        <label class="text-[10px] font-black text-[#E29578] uppercase tracking-widest ml-1">Title *</label>
-        <input [(ngModel)]="trainingForm.title" class="w-full px-5 py-4 bg-[#FFDDD2]/30 border-2 border-transparent focus:border-[#E29578] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Session title" />
-      </div>
-      <div class="space-y-2 md:col-span-2">
-        <label class="text-[10px] font-black text-[#E29578] uppercase tracking-widest ml-1">Trainer</label>
-        <input [(ngModel)]="trainingForm.trainer" class="w-full px-5 py-4 bg-[#FFDDD2]/30 border-2 border-transparent focus:border-[#E29578] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="Instructor name" />
-      </div>
-      <div class="space-y-2">
-        <label class="text-[10px] font-black text-[#E29578] uppercase tracking-widest ml-1">Start Date</label>
-        <input type="date" [(ngModel)]="trainingForm.startDate" class="w-full px-5 py-4 bg-[#FFDDD2]/30 border-2 border-transparent focus:border-[#E29578] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
-      </div>
-      <div class="space-y-2">
-        <label class="text-[10px] font-black text-[#E29578] uppercase tracking-widest ml-1">End Date</label>
-        <input type="date" [(ngModel)]="trainingForm.endDate" class="w-full px-5 py-4 bg-[#FFDDD2]/30 border-2 border-transparent focus:border-[#E29578] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
-      </div>
-      <div class="space-y-2">
-        <label class="text-[10px] font-black text-[#E29578] uppercase tracking-widest ml-1">Status</label>
-        <select [(ngModel)]="trainingForm.status" class="w-full px-5 py-4 bg-[#FFDDD2]/30 border-2 border-transparent focus:border-[#E29578] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
-          <option *ngFor="let s of activityStatuses" [value]="s">{{ s }}</option>
-        </select>
-      </div>
-      <div class="space-y-2">
-        <label class="text-[10px] font-black text-[#E29578] uppercase tracking-widest ml-1">Places</label>
-        <input type="number" min="0" [(ngModel)]="trainingForm.nbrDeplace" class="w-full px-5 py-4 bg-[#FFDDD2]/30 border-2 border-transparent focus:border-[#E29578] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
-      </div>
-      <div class="space-y-2 md:col-span-2">
-        <label class="text-[10px] font-black text-[#E29578] uppercase tracking-widest ml-1">Description</label>
-        <textarea [(ngModel)]="trainingForm.description" rows="3" class="w-full px-5 py-4 bg-[#FFDDD2]/30 border-2 border-transparent focus:border-[#E29578] focus:bg-white rounded-2xl outline-none transition-all font-medium resize-none" placeholder="Details..."></textarea>
-      </div>
-    </div>
-    <div class="p-8 bg-gray-50/50 flex gap-4 rounded-b-[32px] border-t border-gray-100">
-      <button (click)="showTrainingModal=false" class="flex-1 py-4 bg-white border-2 border-[#FFDDD2] text-[#E29578] rounded-2xl font-bold hover:bg-[#FFDDD2] transition-all">Cancel</button>
-      <button (click)="saveTraining()" [disabled]="loading" class="flex-1 py-4 bg-[#E29578] text-white rounded-2xl font-bold shadow-lg hover:bg-[#c9785f] transition-all flex items-center justify-center gap-3">
-        {{ trainingForm.trainingId ? 'Update Training' : 'Create Training' }}
+
+    <!-- ─── Modal Footer ─── -->
+    <div class="px-8 py-5 border-t flex justify-end flex-shrink-0" style="background:white;border-color:#EEF2F7">
+      <button (click)="closeTrainingAdminModal()"
+              class="flex items-center gap-2 px-6 py-3 rounded-2xl border text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all hover:scale-105 active:scale-95"
+              style="border-color:#E2E8F0">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+        Fermer
       </button>
     </div>
+
   </div>
 </div>

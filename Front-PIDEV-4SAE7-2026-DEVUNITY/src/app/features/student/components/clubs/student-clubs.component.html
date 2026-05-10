@@ -1,389 +1,741 @@
-﻿<div class="bg-decor">
-  <div class="bg-orb bg-orb--1"></div>
-  <div class="bg-orb bg-orb--2"></div>
-  <div class="bg-orb bg-orb--3"></div>
-  <div class="bg-sphere bg-sphere--1"></div>
-  <div class="bg-sphere bg-sphere--2"></div>
-  <div class="bg-sphere bg-sphere--3"></div>
-  <div class="bg-sphere bg-sphere--4"></div>
-  <div class="bg-plane">
-    <svg width="90" height="60" viewBox="0 0 90 60" fill="none">
-      <path d="M5 50 L85 10 L50 30 L85 10 L60 55 L50 30 L5 50Z" fill="url(#planeGrad)" opacity="0.18"/>
-      <defs><linearGradient id="planeGrad" x1="0" y1="0" x2="90" y2="60"><stop stop-color="#5ad0d0"/><stop offset="1" stop-color="#83C5BE" stop-opacity="0.3"/></linearGradient></defs>
-    </svg>
-  </div>
-</div>
+﻿<div class="p-8 min-h-screen" style="background:#EDF6F9">
 
-<div *ngIf="errorMsg || successMsg" class="ev-toast" [ngClass]="{ 'ev-toast--success': successMsg && !errorMsg, 'ev-toast--error': errorMsg }">
-  <div class="ev-toast__ico">
-    <svg *ngIf="successMsg && !errorMsg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-    <svg *ngIf="errorMsg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-  </div>
-  <span>{{ successMsg || errorMsg }}</span>
-</div>
-
-<div *ngIf="showJoinModal" class="ev-overlay">
-  <div class="ev-overlay__bg" (click)="showJoinModal = false"></div>
-  <div class="ev-modal" (click)="$event.stopPropagation()">
-    <div class="ev-modal__bar"></div>
-    <div class="ev-modal__head">
-      <div class="ev-modal__head-ico">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M4 11h16"/></svg>
+  <!-- HERO HEADER -->
+  <div class="relative rounded-2xl overflow-hidden mb-8"
+    style="background: linear-gradient(135deg, #004e45 0%, #006D77 55%, #2a8a79 100%)">
+    <div class="absolute top-0 right-0 w-80 h-80 rounded-full opacity-20 -translate-y-20 translate-x-10"
+      style="background:radial-gradient(circle,#83C5BE,transparent)"></div>
+    <div class="absolute bottom-0 left-1/3 w-48 h-48 rounded-full opacity-10 translate-y-16"
+      style="background:radial-gradient(circle,#FFDDD2,transparent)"></div>
+    <div class="relative z-10 p-8">
+      <div class="flex items-center justify-between flex-wrap gap-4 mb-8">
+        <div class="flex items-center gap-4">
+          <span class="text-5xl drop-shadow-lg">🎭</span>
+          <div>
+            <h1 class="text-3xl font-bold text-white">Clubs</h1>
+            <p class="text-sm mt-1" style="color:#FFDDD2">Decouvrez des clubs, rejoignez des activites & suivez vos demandes</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 px-4 py-2.5 rounded-2xl"
+          style="background:rgba(255,255,255,0.12);backdrop-filter:blur(12px);border:1px solid rgba(255,221,210,0.25)">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold text-white shrink-0"
+            style="background:linear-gradient(135deg,#83C5BE,#006D77)">
+            {{ currentUserName ? currentUserName.charAt(0).toUpperCase() : '?' }}
+          </div>
+          <div class="hidden sm:block">
+            <p class="text-sm font-bold text-white leading-tight">{{ currentUserName || 'User' }}</p>
+            <p class="text-xs" style="color:#FFDDD2">Student</p>
+          </div>
+        </div>
       </div>
-      <h2>Request Club Membership</h2>
-      <button class="ev-modal__x" (click)="showJoinModal = false">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+
+      <div class="flex flex-wrap items-stretch rounded-xl border overflow-hidden"
+        style="background:rgba(255,255,255,0.08);backdrop-filter:blur(16px);border-color:rgba(255,221,210,0.2)">
+        <div class="flex flex-col items-center px-6 py-4 flex-1 min-w-0">
+          <span class="text-3xl font-bold text-white">{{ clubs.length }}</span>
+          <span class="text-xs uppercase tracking-widest mt-1" style="color:#83C5BE">Clubs</span>
+        </div>
+        <div class="w-px" style="background:rgba(255,221,210,0.2)"></div>
+        <div class="flex flex-col items-center px-6 py-4 flex-1">
+          <span class="text-3xl font-bold" style="color:#83C5BE">{{ myClubs.length }}</span>
+          <span class="text-xs uppercase tracking-widest mt-1" style="color:#FFDDD2">My Clubs</span>
+        </div>
+        <div class="w-px" style="background:rgba(255,221,210,0.2)"></div>
+        <div class="flex flex-col items-center px-6 py-4 flex-1">
+          <span class="text-3xl font-bold" style="color:#FFDDD2">{{ myRequests.length }}</span>
+          <span class="text-xs uppercase tracking-widest mt-1" style="color:#FFDDD2">Requests</span>
+        </div>
+        <div class="w-px" style="background:rgba(255,221,210,0.2)"></div>
+        <div class="flex flex-col items-center px-6 py-4 flex-1">
+          <span class="text-3xl font-bold" style="color:#E29578">{{ totalActivitiesCount }}</span>
+          <span class="text-xs uppercase tracking-widest mt-1" style="color:#FFDDD2">Activities</span>
+        </div>
+      </div>
     </div>
-    <div class="ev-modal__body">
-      <h3 class="ev-modal__evt-name">{{ selectedClub?.name }}</h3>
-      <div class="ev-modal__metas">
-        <div class="ev-modal__meta-r">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          {{ selectedClub?.type || 'Club' }}
-        </div>
-        <div class="ev-modal__meta-r">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          {{ selectedClub?.creationDate ? (selectedClub?.creationDate | date:'dd MMM yyyy') : 'Created recently' }}
+  </div>
+
+  <!-- FEEDBACK -->
+  <div *ngIf="errorMsg"
+    class="mb-5 flex items-center gap-3 px-5 py-3.5 rounded-xl border text-sm font-semibold shadow-sm"
+    style="background:#FEF2F2;border-color:#FECACA;color:#DC2626">
+    <span>⚠</span> {{ errorMsg }}
+    <button (click)="errorMsg=''" class="ml-auto text-red-300 hover:text-red-500 transition-all">✕</button>
+  </div>
+
+  <div *ngIf="successMsg"
+    class="mb-5 flex items-center gap-3 px-5 py-3.5 rounded-xl border text-sm font-semibold shadow-sm"
+    style="background:#d4f0eb;border-color:#83C5BE;color:#006D77">
+    <span>✅</span> {{ successMsg }}
+    <button (click)="successMsg=''" class="ml-auto hover:opacity-60 transition-all">✕</button>
+  </div>
+
+  <div *ngIf="loading || anyActivityLoading" class="mb-5 h-1 rounded-full overflow-hidden" style="background:#d4f0eb">
+    <div class="h-full rounded-full animate-pulse" style="background:linear-gradient(90deg,#83C5BE,#006D77);width:60%"></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="flex gap-1 mb-6 bg-white rounded-xl p-1 w-fit shadow-sm border" style="border-color:#83C5BE30">
+    <button (click)="setTab('clubs')"
+      [ngClass]="tab==='clubs' ? 'text-white shadow-sm' : 'text-gray-500 hover:text-[#006D77]'"
+      [style]="tab==='clubs' ? 'background:#006D77' : 'background:transparent'"
+      class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all">
+      🏛 Clubs
+      <span class="text-xs px-2 py-0.5 rounded-full font-bold"
+        [style]="tab==='clubs' ? 'background:rgba(255,255,255,0.25);color:white' : 'background:#EDF6F9;color:#006D77'">
+        {{ clubs.length }}
+      </span>
+    </button>
+
+    <button (click)="setTab('my-clubs')"
+      [ngClass]="tab==='my-clubs' ? 'text-white shadow-sm' : 'text-gray-500 hover:text-[#006D77]'"
+      [style]="tab==='my-clubs' ? 'background:#006D77' : 'background:transparent'"
+      class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all">
+      ⭐ My Clubs
+      <span class="text-xs px-2 py-0.5 rounded-full font-bold"
+        [style]="tab==='my-clubs' ? 'background:rgba(255,255,255,0.25);color:white' : 'background:#EDF6F9;color:#006D77'">
+        {{ myClubs.length }}
+      </span>
+    </button>
+
+    <button (click)="setTab('activities')"
+      [ngClass]="tab==='activities' ? 'text-white shadow-sm' : 'text-gray-500 hover:text-[#006D77]'"
+      [style]="tab==='activities' ? 'background:#006D77' : 'background:transparent'"
+      class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all">
+      ⚡ Activities
+      <span *ngIf="totalActivitiesCount > 0" class="text-xs px-2 py-0.5 rounded-full font-bold"
+        [style]="tab==='activities' ? 'background:rgba(255,255,255,0.25);color:white' : 'background:#EDF6F9;color:#006D77'">
+        {{ totalActivitiesCount }}
+      </span>
+    </button>
+
+    <button (click)="setTab('requests')"
+      [ngClass]="tab==='requests' ? 'text-white shadow-sm' : 'text-gray-500 hover:text-[#006D77]'"
+      [style]="tab==='requests' ? 'background:#006D77' : 'background:transparent'"
+      class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all">
+      📬 My Requests
+      <span class="text-xs px-2 py-0.5 rounded-full font-bold"
+        [style]="tab==='requests' ? 'background:rgba(255,255,255,0.25);color:white' : 'background:#EDF6F9;color:#006D77'">
+        {{ myRequests.length }}
+      </span>
+    </button>
+  </div>
+
+  <!-- TAB — ALL CLUBS -->
+  <div *ngIf="tab==='clubs'">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div class="flex items-center gap-3 bg-white border-2 rounded-full px-4 py-2.5 flex-1 max-w-sm shadow-sm focus-within:border-[#006D77] transition-all"
+        style="border-color:#83C5BE40">
+        <svg class="w-4 h-4 shrink-0" style="color:#83C5BE" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input [(ngModel)]="searchQuery" placeholder="Search clubs..."
+          class="border-none outline-none text-sm text-gray-700 w-full bg-transparent placeholder-gray-400"/>
+        <button *ngIf="searchQuery" (click)="searchQuery=''"
+          class="text-xs text-gray-300 hover:text-gray-500 transition-all">✕</button>
+      </div>
+
+      <div class="flex gap-2 flex-wrap">
+        <button (click)="filterType=''"
+          [style]="filterType==='' ? 'background:#006D77;color:white' : 'background:white;color:#006D77;border:1.5px solid #83C5BE'"
+          class="px-4 py-1.5 rounded-full text-xs font-bold transition-all">All</button>
+
+        <button *ngFor="let r of roles" (click)="filterType=r"
+          [style]="filterType===r ? 'background:#006D77;color:white' : 'background:white;color:#006D77;border:1.5px solid #83C5BE'"
+          class="px-4 py-1.5 rounded-full text-xs font-bold transition-all">{{ r }}</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+      <div *ngFor="let c of filteredClubs"
+        class="bg-white rounded-2xl border overflow-hidden shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
+        style="border-color:#EDF6F9">
+        <div class="h-1.5" [style]="getSpineStyle(c.type)"></div>
+        <div class="p-5">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm" [style]="getIconBg(c.type)">
+                {{ typeIcon(c.type) }}
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-800 text-sm leading-tight">{{ c.name }}</h3>
+                <p class="text-xs mt-0.5" style="color:#83C5BE">{{ c.type }}</p>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-end gap-1">
+              <span *ngIf="c.clubId !== undefined && isMyClub(c.clubId)"
+                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold"
+                style="background:#d4f0eb;color:#006D77">⭐ Member</span>
+
+              <span *ngIf="c.clubId !== undefined && hasPendingRequest(c.clubId)"
+                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold"
+                style="background:#FEF3C7;color:#D97706">⏳ Pending</span>
+            </div>
+          </div>
+
+          <p class="text-xs text-gray-500 leading-relaxed mb-4 line-clamp-2">
+            {{ c.description || 'No description provided.' }}
+          </p>
+
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-xs px-3 py-1.5 rounded-xl font-semibold" style="background:#EDF6F9;color:#006D77">
+              📅 {{ c.creationDate | date:'mediumDate' }}
+            </span>
+          </div>
+
+          <div class="pt-3 border-t" style="border-color:#EDF6F9">
+            <ng-container *ngIf="c.clubId !== undefined">
+              <button *ngIf="!isMyClub(c.clubId) && !hasPendingRequest(c.clubId)"
+                (click)="openJoinModal(c)"
+                class="w-full py-2.5 rounded-xl text-xs font-bold text-white hover:opacity-90 active:scale-95 transition-all shadow-sm"
+                style="background:linear-gradient(135deg,#006D77,#83C5BE)">
+                📬 Request to Join
+              </button>
+
+              <div *ngIf="isMyClub(c.clubId)"
+                class="flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold"
+                style="background:#d4f0eb;color:#006D77">
+                ✅ You are a member
+              </div>
+
+              <div *ngIf="!isMyClub(c.clubId) && hasPendingRequest(c.clubId)"
+                class="flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold"
+                style="background:#FEF3C7;color:#D97706">
+                ⏳ Request pending...
+              </div>
+            </ng-container>
+          </div>
         </div>
       </div>
-      <label class="sidebar-card__label">Role</label>
-      <select class="sidebar-card__select" [(ngModel)]="joinRole">
-        <option *ngFor="let role of clubRoles" [ngValue]="role">{{ role }}</option>
-      </select>
-      <label class="sidebar-card__label">Phone</label>
-      <input class="sidebar-card__input" type="tel" [(ngModel)]="joinPhone" placeholder="Optional phone" />
-      <label class="sidebar-card__label">Address</label>
-      <input class="sidebar-card__input" type="text" [(ngModel)]="joinAddress" placeholder="Optional address" />
-      <label class="sidebar-card__label">Motivation</label>
-      <textarea class="ev-modal__ta" rows="3" [(ngModel)]="motivation" placeholder="Why do you want to join?"></textarea>
-      <div class="ev-modal__btns">
-        <button class="ev-btn ev-btn--ghost" (click)="showJoinModal = false">Cancel</button>
-        <button class="ev-btn ev-btn--prim" (click)="sendRequest()" [disabled]="loading">
-          <span *ngIf="!loading">Send Request</span>
-          <span *ngIf="loading" class="ev-btn__ld"><span class="ev-spin"></span> Sending...</span>
+
+      <div *ngIf="filteredClubs.length===0"
+        class="col-span-full flex flex-col items-center justify-center py-24 text-gray-400">
+        <div class="text-6xl mb-4 opacity-30">🏛</div>
+        <p class="text-lg font-semibold mb-1">No clubs found</p>
+        <p class="text-sm">Try adjusting your search or filters</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB — MY CLUBS -->
+  <div *ngIf="tab==='my-clubs'">
+    <div *ngIf="myClubs.length===0" class="flex flex-col items-center justify-center py-24 text-gray-400">
+      <div class="text-6xl mb-4 opacity-30">⭐</div>
+      <p class="text-lg font-semibold mb-1">You haven't joined any club yet</p>
+      <p class="text-sm mb-6">Discover clubs and send a join request</p>
+      <button (click)="setTab('clubs')"
+        class="px-6 py-3 rounded-full text-sm font-bold text-white hover:opacity-90 transition-all"
+        style="background:#006D77">🏛 Browse Clubs</button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+      <div *ngFor="let m of myClubs"
+        class="bg-white rounded-2xl border overflow-hidden shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
+        style="border-color:#EDF6F9">
+        <div class="h-1.5" [style]="getSpineStyle(m.club.type)"></div>
+        <div class="p-5">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm" [style]="getIconBg(m.club.type)">
+                {{ typeIcon(m.club.type) }}
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-800 text-sm leading-tight">{{ m.club.name }}</h3>
+                <p class="text-xs mt-0.5" style="color:#83C5BE">{{ m.club.type }}</p>
+              </div>
+            </div>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold" [style]="getRoleStyle(m.role)">
+              {{ roleIcon(m.role) }} {{ m.role }}
+            </span>
+          </div>
+
+          <p class="text-xs text-gray-500 leading-relaxed mb-4 line-clamp-2">
+            {{ m.club.description || 'No description provided.' }}
+          </p>
+
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-xs px-3 py-1.5 rounded-xl font-semibold" style="background:#d4f0eb;color:#006D77">
+              ✅ Member since {{ m.joinDate | date:'mediumDate' }}
+            </span>
+          </div>
+
+          <div class="flex gap-2 pt-3 border-t" style="border-color:#EDF6F9">
+            <button (click)="onClubSelect(m.club.clubId); setTab('activities')"
+              class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white hover:opacity-90 transition-all"
+              style="background:linear-gradient(135deg,#006D77,#83C5BE)">
+              ⚡ Activities
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB — ACTIVITIES -->
+  <div *ngIf="tab==='activities'">
+    <div class="flex flex-wrap items-center gap-3 mb-6">
+      <div class="flex items-center gap-3 bg-white border-2 rounded-full px-4 py-2.5 shadow-sm"
+        style="border-color:#83C5BE40">
+        <span class="text-xs font-bold uppercase tracking-widest" style="color:#83C5BE">🏛 Club</span>
+        <select [ngModel]="selectedClubId" (ngModelChange)="onClubSelect($event)"
+          class="border-none outline-none text-sm text-gray-700 bg-transparent">
+          <option [ngValue]="null">-- All my clubs --</option>
+          <option *ngFor="let m of myClubs" [ngValue]="m.club.clubId">{{ m.club.name }}</option>
+        </select>
+      </div>
+
+      <div class="flex gap-1 bg-white rounded-xl p-1 shadow-sm border" style="border-color:#83C5BE30">
+        <button (click)="activityTab='excursions'"
+          [ngClass]="activityTab==='excursions' ? 'text-white shadow-sm' : 'text-gray-500 hover:text-[#006D77]'"
+          [style]="activityTab==='excursions' ? 'background:#006D77' : 'background:transparent'"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all">🧭 Excursions</button>
+
+        <button (click)="activityTab='trainings'"
+          [ngClass]="activityTab==='trainings' ? 'text-white shadow-sm' : 'text-gray-500 hover:text-[#006D77]'"
+          [style]="activityTab==='trainings' ? 'background:#006D77' : 'background:transparent'"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all">🎓 Trainings</button>
+      </div>
+
+      <div class="flex gap-2 flex-wrap">
+        <button *ngFor="let s of ['','PLANNED','ONGOING','FINISHED','CANCELLED']"
+          (click)="filterStatus=s"
+          [style]="filterStatus===s ? 'background:#006D77;color:white' : 'background:white;color:#006D77;border:1.5px solid #83C5BE'"
+          class="px-3 py-1.5 rounded-full text-xs font-bold transition-all">
+          {{ s || 'All' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- EXCURSIONS -->
+    <div *ngIf="activityTab==='excursions'">
+      <ng-container *ngFor="let m of visibleClubs">
+        <div *ngIf="getFilteredExcursions(m.club.clubId).length > 0 || getClubActivities(m.club.clubId).loading">
+          <div class="flex items-center gap-2 mb-3 mt-2">
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center text-base" [style]="getIconBg(m.club.type)">
+              {{ typeIcon(m.club.type) }}
+            </div>
+            <h3 class="text-sm font-bold text-gray-700">{{ m.club.name }}</h3>
+            <div *ngIf="getClubActivities(m.club.clubId).loading"
+              class="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
+              style="border-color:#006D77;border-top-color:transparent"></div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+            <div *ngFor="let e of getFilteredExcursions(m.club.clubId)"
+              class="bg-white rounded-2xl border shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all overflow-hidden"
+              style="border-color:#EDF6F9">
+              <div class="h-1" style="background:linear-gradient(90deg,#83C5BE,#006D77)"></div>
+              <div class="p-5">
+                <div class="flex items-start justify-between mb-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background:#EDF6F9">🧭</div>
+                    <div>
+                      <h3 class="font-bold text-gray-800 text-sm">{{ e.title }}</h3>
+                      <p class="text-xs text-gray-400 mt-0.5">📍 {{ e.location }}</p>
+                    </div>
+                  </div>
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold"
+                    [style]="statusColor(e.status)">{{ e.status }}</span>
+                </div>
+
+                <p class="text-xs text-gray-400 mb-3">📅 {{ e.startDate }} → {{ e.endDate }}</p>
+
+                <div class="mb-4" *ngIf="e.nbrDeplace">
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="text-gray-400">Places</span>
+                    <span class="font-bold" style="color:#006D77">
+                      {{ getParticipantCount('exc', e.excursionId ?? 0) }} / {{ e.nbrDeplace }}
+                    </span>
+                  </div>
+                  <div class="h-2 rounded-full overflow-hidden" style="background:#EDF6F9">
+                    <div class="h-full rounded-full transition-all"
+                      [style]="getCapacityBarStyle(e.nbrDeplace, getParticipantCount('exc', e.excursionId ?? 0))"></div>
+                  </div>
+                </div>
+
+                <div class="pt-3 border-t" style="border-color:#EDF6F9">
+                  <ng-container *ngIf="e.excursionId !== undefined">
+                    <div *ngIf="isRegistered('exc', e.excursionId)"
+                      class="flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold"
+                      style="background:#d4f0eb;color:#006D77">✅ Already registered</div>
+
+                    <button *ngIf="!isRegistered('exc', e.excursionId) && e.status !== 'CANCELLED' && e.status !== 'FINISHED'"
+                      (click)="openReserveModal('exc', e)" [disabled]="isReserving('exc', e.excursionId)"
+                      class="w-full py-2.5 rounded-xl text-xs font-bold text-white hover:opacity-90 active:scale-95 disabled:opacity-50 transition-all shadow-sm"
+                      style="background:linear-gradient(135deg,#006D77,#83C5BE)">
+                      <span *ngIf="isReserving('exc', e.excursionId)" class="flex items-center justify-center gap-1.5">
+                        <span class="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        Reservation...
+                      </span>
+                      <span *ngIf="!isReserving('exc', e.excursionId)">🧭 Register</span>
+                    </button>
+
+                    <div *ngIf="e.status === 'CANCELLED' || e.status === 'FINISHED'"
+                      class="flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold"
+                      style="background:#f3f4f6;color:#6b7280">
+                      {{ e.status === 'CANCELLED' ? '✕ Cancelled' : '✓ Finished' }}
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div *ngIf="!anyActivityLoading && totalActivitiesCount===0"
+        class="flex flex-col items-center justify-center py-20 text-gray-400">
+        <div class="text-6xl mb-4 opacity-30">🧭</div>
+        <p class="text-lg font-semibold mb-1">No excursions available</p>
+        <p class="text-sm">Join clubs to access activities</p>
+      </div>
+    </div>
+
+    <!-- TRAININGS -->
+    <div *ngIf="activityTab==='trainings'">
+      <ng-container *ngFor="let m of visibleClubs">
+        <div *ngIf="getFilteredTrainings(m.club.clubId).length > 0 || getClubActivities(m.club.clubId).loading">
+          <div class="flex items-center gap-2 mb-3 mt-2">
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center text-base" [style]="getIconBg(m.club.type)">
+              {{ typeIcon(m.club.type) }}
+            </div>
+            <h3 class="text-sm font-bold text-gray-700">{{ m.club.name }}</h3>
+            <div *ngIf="getClubActivities(m.club.clubId).loading" class="w-4 h-4 rounded-full border-2 animate-spin"
+              style="border-color:#E29578;border-top-color:transparent"></div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+            <div *ngFor="let t of getFilteredTrainings(m.club.clubId)"
+              class="bg-white rounded-2xl border shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all overflow-hidden"
+              style="border-color:#EDF6F9">
+              <div class="h-1" style="background:linear-gradient(90deg,#E29578,#FFDDD2)"></div>
+              <div class="p-5">
+                <div class="flex items-start justify-between mb-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background:#FFF5F0">🎓</div>
+                    <div>
+                      <h3 class="font-bold text-gray-800 text-sm">{{ t.title }}</h3>
+                      <p class="text-xs text-gray-400 mt-0.5">👤 {{ t.trainer }}</p>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col items-end gap-1">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold"
+                      [style]="statusColor(t.status)">{{ t.status }}</span>
+
+                    <span *ngIf="$any(t).rewardEnabled" class="px-2 py-0.5 rounded-full text-xs font-bold"
+                      style="background:#FEF3C7;color:#D97706">🏆 Reward</span>
+                  </div>
+                </div>
+
+                <p class="text-xs text-gray-400 mb-1">📅 {{ t.startDate }} → {{ t.endDate }}</p>
+
+                <p *ngIf="$any(t).price" class="text-sm font-bold mb-3" style="color:#E29578">
+                  {{ $any(t).price }} TND
+                </p>
+
+                <div class="mb-4" *ngIf="t.nbrDeplace">
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="text-gray-400">Enrolled</span>
+                    <span class="font-bold" style="color:#E29578">
+                      {{ getParticipantCount('tr', t.trainingId ?? 0) }} / {{ t.nbrDeplace }}
+                    </span>
+                  </div>
+                  <div class="h-2 rounded-full overflow-hidden" style="background:#FFF5F0">
+                    <div class="h-full rounded-full transition-all"
+                      [style]="getTrainingCapacityBarStyle(t.nbrDeplace, getParticipantCount('tr', t.trainingId ?? 0))"></div>
+                  </div>
+                </div>
+
+                <div class="pt-3 border-t space-y-2" style="border-color:#EDF6F9">
+                  <ng-container *ngIf="t.trainingId !== undefined">
+                    <div *ngIf="isRegistered('tr', t.trainingId)"
+                      class="flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold"
+                      style="background:#d4f0eb;color:#006D77">✅ Already enrolled</div>
+
+                    <button *ngIf="isRegistered('tr', t.trainingId) && $any(t).price && $any(t).price > 0 && !paymentSuccess[t.trainingId]"
+                      (click)="openPaymentModal(t)"
+                      class="w-full py-2.5 rounded-xl text-xs font-bold hover:opacity-90 active:scale-95 transition-all shadow-sm"
+                      style="background:linear-gradient(135deg,#f59e0b,#fcd34d);color:#1f2937">
+                      💳 Payer {{ $any(t).price }} TND
+                    </button>
+
+                    <div *ngIf="isRegistered('tr', t.trainingId) && $any(t).price && $any(t).price > 0 && paymentSuccess[t.trainingId]"
+                      class="flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-semibold"
+                      style="background:#d4f0eb;color:#006D77">✅ Payé</div>
+
+                    <button *ngIf="!isRegistered('tr', t.trainingId) && t.status !== 'CANCELLED' && t.status !== 'FINISHED'"
+                      (click)="openReserveModal('tr', t)" [disabled]="isReserving('tr', t.trainingId)"
+                      class="w-full py-2.5 rounded-xl text-xs font-bold text-white hover:opacity-90 active:scale-95 disabled:opacity-50 transition-all shadow-sm"
+                      style="background:linear-gradient(135deg,#E29578,#c9785f)">
+                      <span *ngIf="isReserving('tr', t.trainingId)" class="flex items-center justify-center gap-1.5">
+                        <span class="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        Inscription...
+                      </span>
+                      <span *ngIf="!isReserving('tr', t.trainingId)">🎓 Enroll</span>
+                    </button>
+
+                    <div *ngIf="t.status === 'CANCELLED' || t.status === 'FINISHED'"
+                      class="flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold"
+                      style="background:#f3f4f6;color:#6b7280">
+                      {{ t.status === 'CANCELLED' ? '✕ Cancelled' : '✓ Finished' }}
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div *ngIf="!anyActivityLoading && totalActivitiesCount===0"
+        class="flex flex-col items-center justify-center py-20 text-gray-400">
+        <div class="text-6xl mb-4 opacity-30">🎓</div>
+        <p class="text-lg font-semibold mb-1">No trainings available</p>
+        <p class="text-sm">Join clubs to access activities</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB — MY REQUESTS -->
+  <div *ngIf="tab==='requests'">
+    <div *ngIf="myRequests.length===0" class="flex flex-col items-center justify-center py-24 text-gray-400">
+      <div class="text-6xl mb-4 opacity-30">📭</div>
+      <p class="text-lg font-semibold mb-1">No requests yet</p>
+      <p class="text-sm mb-6">Browse clubs and send your first join request</p>
+      <button (click)="setTab('clubs')"
+        class="px-6 py-3 rounded-full text-sm font-bold text-white hover:opacity-90 transition-all"
+        style="background:#006D77">🏛 Browse Clubs</button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+      <div *ngFor="let r of myRequests"
+        class="bg-white rounded-2xl border overflow-hidden shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
+        style="border-color:#EDF6F9">
+        <div class="h-1.5" [style]="r.status==='PENDING'
+               ? 'background:linear-gradient(90deg,#f59e0b,#fcd34d)'
+               : r.status==='ACCEPTED'
+               ? 'background:linear-gradient(90deg,#006D77,#83C5BE)'
+               : 'background:linear-gradient(90deg,#E29578,#FFDDD2)'"></div>
+        <div class="p-5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-xl"
+                [style]="getIconBg($any(r).club?.type || '')">
+                {{ typeIcon($any(r).club?.type || '') }}
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-800 text-sm">{{ $any(r).club?.name || clubName($any(r).club?.clubId ?? 0) }}</h3>
+                <p class="text-xs mt-0.5" style="color:#83C5BE">{{ $any(r).club?.type }}</p>
+              </div>
+            </div>
+
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold"
+              [style]="r.status==='PENDING' ? 'background:#FEF3C7;color:#D97706'
+                    : r.status==='ACCEPTED' ? 'background:#d4f0eb;color:#006D77'
+                    : 'background:#FEE2E2;color:#DC2626'">
+              {{ r.status==='PENDING' ? '⏳ Pending' : r.status==='ACCEPTED' ? '✅ Accepted' : '✕ Rejected' }}
+            </span>
+          </div>
+
+          <div *ngIf="extractRole(r.motivation)" class="mb-2">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold"
+              style="background:#EDF6F9;color:#006D77">{{ extractRole(r.motivation) }}</span>
+          </div>
+
+          <p *ngIf="cleanMotivation(r.motivation)" class="text-xs text-gray-500 line-clamp-2 mb-3">
+            💬 {{ cleanMotivation(r.motivation) }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL — CONFIRM RESERVATION -->
+<div *ngIf="showReserveModal && reserveActivity" class="fixed inset-0 z-50 flex items-center justify-center p-4"
+  style="background:rgba(0,30,25,0.55);backdrop-filter:blur(6px)">
+  <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
+    <div class="h-1.5" [style]="reserveType==='exc'
+           ? 'background:linear-gradient(90deg,#83C5BE,#006D77)'
+           : 'background:linear-gradient(90deg,#E29578,#FFDDD2)'"></div>
+    <div class="p-6">
+      <div class="flex flex-col items-center text-center mb-5">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-3"
+          [style]="reserveType==='exc' ? 'background:#EDF6F9' : 'background:#FFF5F0'">
+          {{ reserveType === 'exc' ? '🧭' : '🎓' }}
+        </div>
+        <h2 class="text-base font-bold text-gray-800 leading-snug">{{ reserveActivity.title }}</h2>
+        <p class="text-xs text-gray-400 mt-1">
+          {{ reserveType === 'exc' ? '📍 ' + $any(reserveActivity).location : '👤 ' + $any(reserveActivity).trainer }}
+        </p>
+        <p class="text-xs text-gray-400">📅 {{ reserveActivity.startDate }} → {{ reserveActivity.endDate }}</p>
+        <p *ngIf="$any(reserveActivity).price" class="text-sm font-bold mt-1" style="color:#E29578">
+          {{ $any(reserveActivity).price }} TND
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2.5 p-3 rounded-xl mb-5" style="background:#EDF6F9">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+          style="background:linear-gradient(135deg,#006D77,#83C5BE)">
+          {{ currentUserName.charAt(0).toUpperCase() }}
+        </div>
+        <div>
+          <p class="text-xs font-bold text-gray-700">{{ currentUserName }}</p>
+          <p class="text-xs" style="color:#83C5BE">Confirm your registration?</p>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <button (click)="showReserveModal=false; reserveActivity=null"
+          class="flex-1 py-2.5 rounded-xl border text-xs font-semibold text-gray-400 hover:bg-gray-50 transition-all"
+          style="border-color:#83C5BE40">Cancel</button>
+        <button (click)="confirmReserve()"
+          class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white hover:opacity-90 transition-all"
+          [style]="reserveType==='exc' ? 'background:linear-gradient(135deg,#006D77,#83C5BE)' : 'background:linear-gradient(135deg,#E29578,#c9785f)'">
+          ✓ Confirm
         </button>
       </div>
     </div>
   </div>
 </div>
 
-<div *ngIf="showReserveModal && reserveActivity" class="ev-overlay ev-overlay--dark" (click)="showReserveModal = false">
-  <div class="ev-overlay__bg"></div>
-  <div class="ev-modal ev-modal--sm" (click)="$event.stopPropagation()">
-    <div class="ev-modal__bar"></div>
-    <div class="ev-modal__head">
-      <div class="ev-modal__head-ico">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M4 11h16"/></svg>
-      </div>
-      <h2>{{ reserveType === 'exc' ? 'Reserve Excursion' : 'Reserve Training' }}</h2>
-      <button class="ev-modal__x" (click)="showReserveModal = false">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="ev-modal__body">
-      <h3 class="ev-modal__evt-name">{{ reserveActivity.title }}</h3>
-      <div class="ev-modal__metas">
-        <div class="ev-modal__meta-r">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>{{ getReserveDetail(reserveActivity) }}</span>
+<!-- MODAL — JOIN CLUB -->
+<div *ngIf="showJoinModal && selectedClub"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4"
+  style="background:rgba(0,30,25,0.55);backdrop-filter:blur(6px)">
+  <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+    <div class="h-1.5" style="background:linear-gradient(90deg,#006D77,#83C5BE)"></div>
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h2 class="text-lg font-bold text-gray-800">Request to Join</h2>
+          <p class="text-sm text-gray-400">{{ selectedClub.name }}</p>
         </div>
-        <div class="ev-modal__meta-r">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1fa7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          {{ reserveActivity.startDate ? (reserveActivity.startDate | date:'dd MMM yyyy') : 'TBA' }}
+        <button (click)="showJoinModal=false"
+          class="w-8 h-8 rounded-xl text-gray-400 flex items-center justify-center hover:bg-[#FFDDD2] hover:text-[#E29578]"
+          style="background:#EDF6F9">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Desired Role</label>
+          <select [(ngModel)]="joinRole" class="w-full border rounded-xl p-3 outline-none" style="border-color:#83C5BE40">
+            <option *ngFor="let role of clubRoles" [ngValue]="role">{{ role }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Phone</label>
+          <input [(ngModel)]="joinPhone" type="text"
+            class="w-full border rounded-xl p-3 outline-none"
+            style="border-color:#83C5BE40"
+            placeholder="Your phone number">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Address</label>
+          <input [(ngModel)]="joinAddress" type="text"
+            class="w-full border rounded-xl p-3 outline-none"
+            style="border-color:#83C5BE40"
+            placeholder="Your address">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Motivation</label>
+          <textarea [(ngModel)]="motivation" rows="4"
+            class="w-full border rounded-xl p-3 outline-none resize-none"
+            style="border-color:#83C5BE40"
+            placeholder="Why do you want to join this club?"></textarea>
         </div>
       </div>
-      <div class="ev-modal__btns">
-        <button class="ev-btn ev-btn--ghost" (click)="showReserveModal = false">Cancel</button>
-        <button class="ev-btn ev-btn--prim" (click)="confirmReserve()">Confirm</button>
+
+      <div class="flex gap-2 mt-6">
+        <button (click)="showJoinModal=false"
+          class="flex-1 py-2.5 rounded-xl border text-sm font-semibold text-gray-500 hover:bg-gray-50"
+          style="border-color:#83C5BE40">Cancel</button>
+        <button (click)="sendRequest()"
+          class="flex-1 py-2.5 rounded-xl text-sm font-bold text-white hover:opacity-90 transition-all"
+          style="background:linear-gradient(135deg,#006D77,#83C5BE)">
+          Send Request
+        </button>
       </div>
     </div>
   </div>
 </div>
 
-<main class="page">
-  <nav class="breadcrumb">
-    <span class="breadcrumb__back">&#8249;</span>
-    <a routerLink="/student/dashboard">Home</a>
-    <span class="breadcrumb__sep">&#8250;</span>
-    <strong>Clubs</strong>
-  </nav>
+<!-- MODAL — PAIEMENT -->
+<div *ngIf="showPaymentModal && paymentTraining" class="fixed inset-0 z-50 flex items-center justify-center p-4"
+  style="background:rgba(0,30,25,0.55);backdrop-filter:blur(6px)">
+  <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
+    <div class="h-1.5" style="background:linear-gradient(90deg,#f59e0b,#fcd34d)"></div>
 
-  <header class="hero">
-    <h1>Student Clubs</h1>
-    <p>Explore clubs, join activities, and manage your membership requests in one premium experience.</p>
-  </header>
-
-  <div class="tabs-bar">
-    <div class="tabs-group">
-      <button class="tab-btn" [class.tab-btn--active]="tab === 'clubs'" (click)="setTab('clubs')">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Clubs
-        <span class="tab-count">{{ clubs.length }}</span>
-      </button>
-      <button class="tab-btn" [class.tab-btn--active]="tab === 'my-clubs'" (click)="setTab('my-clubs')">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
-        My Clubs
-        <span class="tab-count" *ngIf="myClubs.length > 0">{{ myClubs.length }}</span>
-      </button>
-      <button class="tab-btn" [class.tab-btn--active]="tab === 'activities'" (click)="setTab('activities')">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M17 11l6-6"/><path d="M23 5l-6 6"/></svg>
-        Activities
-        <span class="tab-count" *ngIf="totalActivitiesCount > 0">{{ totalActivitiesCount }}</span>
-      </button>
-      <button class="tab-btn" [class.tab-btn--active]="tab === 'requests'" (click)="setTab('requests')">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2"/><path d="M12 12l3-3-3-3M12 21V9"/></svg>
-        My Requests
-        <span class="tab-count" *ngIf="myRequests.length > 0">{{ myRequests.length }}</span>
-      </button>
-    </div>
-  </div>
-
-  <div class="layout">
-    <div class="layout__main">
-      <div *ngIf="tab === 'clubs'">
-        <div class="search-bar">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" [(ngModel)]="searchQuery" placeholder="Search clubs...">
-          <div class="search-divider"></div>
-          <select class="sidebar-card__select" [(ngModel)]="filterType">
-            <option value="">All types</option>
-            <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
-          </select>
-        </div>
-        <div *ngIf="filteredClubs.length === 0" class="empty-state">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><path d="M3 6h18M4 6v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6"/><path d="M8 6V4a4 4 0 0 1 8 0v2"/></svg>
-          <p class="empty-state__title">No clubs found</p>
-          <p class="empty-state__sub">Try a different keyword or clear the filter.</p>
-        </div>
-        <div *ngIf="filteredClubs.length > 0" class="events-list">
-          <article *ngFor="let club of filteredClubs; let i = index" class="event-card glass" [style.--card-delay]="(i * 0.06) + 's'">
-            <div class="event-card__img-side">
-              <div class="event-card__img-ph"><span style="font-size: 34px;">{{ typeIcon(club.type) }}</span></div>
-              <div class="event-card__date-badge" [class.teal]="isMyClub(club.clubId!)" [class.orange]="!isMyClub(club.clubId!)">
-                <span class="event-card__date-month">{{ club.type }}</span>
-                <span class="event-card__date-day">{{ club.creationDate ? (club.creationDate | date:'dd') : '—' }}</span>
-              </div>
-            </div>
-            <div class="event-card__body">
-              <div class="event-card__header">
-                <h3 class="event-card__title">{{ club.name }}</h3>
-                <span class="event-card__pill" [class.pill--demand]="isMyClub(club.clubId!)" [class.pill--rated]="!isMyClub(club.clubId!)">
-                  {{ isMyClub(club.clubId!) ? 'Member' : hasPendingRequest(club.clubId!) ? 'Pending' : 'Open' }}
-                </span>
-              </div>
-              <p class="event-card__desc">{{ club.description || 'Join this active club to participate in activities, trainings and community events.' }}</p>
-              <div class="event-card__separator"></div>
-              <div class="event-card__footer">
-                <div class="event-card__meta">
-                  <span class="event-card__meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>{{ club.type }}</span>
-                  <span class="event-card__meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>{{ club.creationDate ? (club.creationDate | date:'MMM yyyy') : 'New' }}</span>
-                </div>
-                <div class="event-card__actions">
-                  <button *ngIf="!isMyClub(club.clubId!) && !hasPendingRequest(club.clubId!)" class="btn-register" (click)="openJoinModal(club)">Join</button>
-                  <span *ngIf="isMyClub(club.clubId!)" class="badge-registered">Member</span>
-                  <span *ngIf="!isMyClub(club.clubId!) && hasPendingRequest(club.clubId!)" class="reg-badge reg-badge--wait">Pending</span>
-                </div>
-              </div>
-            </div>
-          </article>
-        </div>
-      </div>
-
-      <div *ngIf="tab === 'my-clubs'">
-        <div *ngIf="myClubs.length === 0" class="empty-state">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <p class="empty-state__title">No clubs joined yet</p>
-          <p class="empty-state__sub">Browse clubs and request to join one.</p>
-        </div>
-        <div *ngIf="myClubs.length > 0" class="events-list">
-          <article *ngFor="let membership of myClubs; let i = index" class="event-card glass" [style.--card-delay]="(i * 0.06) + 's'">
-            <div class="event-card__img-side">
-              <div class="event-card__img-ph"><span style="font-size: 34px;">{{ typeIcon(membership.club.type || '') }}</span></div>
-              <div class="event-card__date-badge teal">
-                <span class="event-card__date-month">{{ membership.club.type }}</span>
-                <span class="event-card__date-day">{{ membership.club.creationDate ? (membership.club.creationDate | date:'dd') : '—' }}</span>
-              </div>
-            </div>
-            <div class="event-card__body">
-              <div class="event-card__header">
-                <h3 class="event-card__title">{{ membership.club.name ?? clubName(membership.club.clubId) }}</h3>
-                <span class="event-card__pill pill--demand">Member</span>
-              </div>
-              <p class="event-card__desc">Role: {{ membership.role }} · Status: {{ membership.status }} · Joined {{ membership.joinDate | date:'dd MMM yyyy' }}</p>
-              <div class="event-card__separator"></div>
-              <div class="event-card__footer">
-                <div class="event-card__meta">
-                  <span class="event-card__meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>{{ membership.role }}</span>
-                  <span class="event-card__meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>{{ membership.club.type }}</span>
-                </div>
-                <div class="event-card__actions">
-                  <span class="badge-registered">Active</span>
-                </div>
-              </div>
-            </div>
-          </article>
-        </div>
-      </div>
-
-      <div *ngIf="tab === 'activities'">
-        <div class="search-bar">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <select class="sidebar-card__select" [(ngModel)]="selectedClubId" (ngModelChange)="onClubSelect($event)">
-            <option [ngValue]="null">All my clubs</option>
-            <option *ngFor="let membership of myClubs" [ngValue]="membership.club.clubId">{{ membership.club.name }}</option>
-          </select>
-          <div class="search-divider"></div>
-          <select class="sidebar-card__select" [(ngModel)]="filterStatus">
-            <option value="">All statuses</option>
-            <option value="PLANNED">Planned</option>
-            <option value="ONGOING">Ongoing</option>
-            <option value="FINISHED">Finished</option>
-            <option value="CANCELLED">Cancelled</option>
-          </select>
-        </div>
-        <div *ngIf="visibleClubs.length === 0" class="empty-state">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <p class="empty-state__title">No activities available</p>
-          <p class="empty-state__sub">Join a club and come back to explore activities.</p>
-        </div>
-        <div *ngFor="let membership of visibleClubs">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-lg" style="background:#EDF6F9">{{ typeIcon(membership.club.type || '') }}</div>
-            <div>
-              <h2 class="font-bold text-gray-800 text-sm">{{ membership.club.name ?? clubName(membership.club.clubId) }}</h2>
-              <p class="text-xs text-gray-400">{{ getClubActivities(membership.club.clubId).excursions.length + getClubActivities(membership.club.clubId).trainings.length }} upcoming activities</p>
-            </div>
-            <div *ngIf="getClubActivities(membership.club.clubId).loading" class="ml-auto w-4 h-4 border-2 border-t-transparent rounded-full animate-spin" style="border-color:#83C5BE;border-top-color:transparent"></div>
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl" style="background:#FFF5F0">💳</div>
+          <div>
+            <h2 class="text-sm font-bold text-gray-800">Paiement Training</h2>
+            <p class="text-xs text-gray-400">{{ paymentTraining.title }}</p>
           </div>
-          <ng-container *ngIf="activityTab === 'excursions'">
-            <div *ngIf="getFilteredExcursions(membership.club.clubId).length === 0" class="empty-state">
-              <span class="text-4xl opacity-25">🧭</span>
-              <p class="empty-state__title">No excursions found</p>
-            </div>
-            <div *ngIf="getFilteredExcursions(membership.club.clubId).length > 0" class="events-list">
-              <article *ngFor="let excursion of getFilteredExcursions(membership.club.clubId); let i = index" class="event-card glass" [style.--card-delay]="(i * 0.05) + 's'">
-                <div class="event-card__img-side">
-                  <div class="event-card__img-ph"><span style="font-size: 34px;">🧭</span></div>
-                  <div class="event-card__date-badge teal">
-                    <span class="event-card__date-month">Excursion</span>
-                    <span class="event-card__date-day">{{ excursion.startDate ? (excursion.startDate | date:'dd') : '—' }}</span>
-                  </div>
-                </div>
-                <div class="event-card__body">
-                  <div class="event-card__header">
-                    <h3 class="event-card__title">{{ excursion.title }}</h3>
-                    <span class="event-card__pill" [class.pill--demand]="isRegistered('exc', excursion.excursionId!)">{{ isRegistered('exc', excursion.excursionId!) ? 'Reserved' : excursion.status }}</span>
-                  </div>
-                  <p class="event-card__desc">{{ excursion.description || 'Discover this excursion and reserve your seat.' }}</p>
-                  <div class="event-card__separator"></div>
-                  <div class="event-card__footer">
-                    <div class="event-card__meta">
-                      <span class="event-card__meta-item">📍 {{ excursion.location || 'TBA' }}</span>
-                      <span class="event-card__meta-item">📅 {{ excursion.startDate ? (excursion.startDate | date:'dd MMM') : '—' }}</span>
-                    </div>
-                    <div class="event-card__actions">
-                      <button *ngIf="!isRegistered('exc', excursion.excursionId!) && excursion.status !== 'CANCELLED' && excursion.status !== 'FINISHED'" class="btn-register" (click)="openReserveModal('exc', excursion)">Reserve</button>
-                      <span *ngIf="isRegistered('exc', excursion.excursionId!)" class="badge-registered">Registered</span>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </ng-container>
-          <ng-container *ngIf="activityTab === 'trainings'">
-            <div *ngIf="getFilteredTrainings(membership.club.clubId).length === 0" class="empty-state">
-              <span class="text-4xl opacity-25">🎓</span>
-              <p class="empty-state__title">No trainings found</p>
-            </div>
-            <div *ngIf="getFilteredTrainings(membership.club.clubId).length > 0" class="events-list">
-              <article *ngFor="let training of getFilteredTrainings(membership.club.clubId); let i = index" class="event-card glass" [style.--card-delay]="(i * 0.05) + 's'">
-                <div class="event-card__img-side">
-                  <div class="event-card__img-ph"><span style="font-size: 34px;">🎓</span></div>
-                  <div class="event-card__date-badge orange">
-                    <span class="event-card__date-month">Training</span>
-                    <span class="event-card__date-day">{{ training.startDate ? (training.startDate | date:'dd') : '—' }}</span>
-                  </div>
-                </div>
-                <div class="event-card__body">
-                  <div class="event-card__header">
-                    <h3 class="event-card__title">{{ training.title }}</h3>
-                    <span class="event-card__pill" [class.pill--demand]="isRegistered('tr', training.trainingId!)">{{ isRegistered('tr', training.trainingId!) ? 'Reserved' : training.status }}</span>
-                  </div>
-                  <p class="event-card__desc">{{ training.description || 'Register for this training to boost your skills.' }}</p>
-                  <div class="event-card__separator"></div>
-                  <div class="event-card__footer">
-                    <div class="event-card__meta">
-                      <span class="event-card__meta-item">👤 {{ training.trainer || 'Instructor' }}</span>
-                      <span class="event-card__meta-item">📅 {{ training.startDate ? (training.startDate | date:'dd MMM') : '—' }}</span>
-                    </div>
-                    <div class="event-card__actions">
-                      <button *ngIf="!isRegistered('tr', training.trainingId!) && training.status !== 'CANCELLED' && training.status !== 'FINISHED'" class="btn-register" (click)="openReserveModal('tr', training)">Reserve</button>
-                      <span *ngIf="isRegistered('tr', training.trainingId!)" class="badge-registered">Registered</span>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </ng-container>
         </div>
+        <button (click)="closePaymentModal()"
+          class="w-8 h-8 rounded-xl text-gray-400 flex items-center justify-center hover:bg-[#FFDDD2] hover:text-[#E29578]"
+          style="background:#EDF6F9">✕</button>
       </div>
-      <div *ngIf="tab === 'requests'">
-        <div *ngIf="myRequests.length === 0" class="empty-state">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#5ad0d0" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <p class="empty-state__title">No requests yet</p>
-          <p class="empty-state__sub">Send a club request to see it here.</p>
-        </div>
-        <div *ngIf="myRequests.length > 0" class="events-list">
-          <article *ngFor="let request of myRequests; let i = index" class="event-card glass" [style.--card-delay]="(i * 0.06) + 's'">
-            <div class="event-card__img-side">
-              <div class="event-card__img-ph"><span style="font-size: 34px;">📬</span></div>
-              <div class="event-card__date-badge" [class.orange]="request.status === 'PENDING'" [class.teal]="request.status === 'ACCEPTED'">
-                <span class="event-card__date-month">{{ request.status }}</span>
-                <span class="event-card__date-day">{{ request.requestDate ? (request.requestDate | date:'dd') : '—' }}</span>
-              </div>
-            </div>
-            <div class="event-card__body">
-              <div class="event-card__header">
-                <h3 class="event-card__title">{{ clubName(request.club.clubId) }}</h3>
-                <span class="event-card__pill" [class.pill--demand]="request.status === 'ACCEPTED'" [class.pill--rated]="request.status !== 'ACCEPTED'">
-                  {{ request.status === 'PENDING' ? 'Pending' : request.status === 'ACCEPTED' ? 'Accepted' : 'Rejected' }}
-                </span>
-              </div>
-              <p class="event-card__desc">{{ cleanMotivation(request.motivation || '') || 'No motivation provided.' }}</p>
-              <div class="event-card__separator"></div>
-              <div class="event-card__footer">
-                <div class="event-card__meta">
-                  <span class="event-card__meta-item">📅 {{ request.requestDate ? (request.requestDate | date:'dd MMM yyyy') : '—' }}</span>
-                  <span class="event-card__meta-item">📝 {{ request.status }}</span>
-                </div>
-                <div class="event-card__actions">
-                  <span *ngIf="request.status === 'ACCEPTED'" class="badge-registered">Approved</span>
-                  <span *ngIf="request.status === 'PENDING'" class="reg-badge reg-badge--wait">Waiting</span>
-                  <span *ngIf="request.status === 'REJECTED'" class="reg-badge reg-badge--no">Rejected</span>
-                </div>
-              </div>
-            </div>
-          </article>
-        </div>
-      </div>
-    </div>
 
-    <aside class="layout__sidebar">
-      <div class="sidebar-card glass">
-        <h2 class="sidebar-card__title">Club Snapshot</h2>
-        <div class="sidebar-card__label">Active area</div>
-        <p class="sidebar-card__desc" style="margin-bottom: 20px; color: rgba(90,107,127,0.85);">{{ tab === 'clubs' ? 'Browse clubs' : tab === 'my-clubs' ? 'Your memberships' : tab === 'activities' ? 'Upcoming activities' : 'Pending requests' }}</p>
-        <div class="sidebar-card__label">Quick stats</div>
-        <div style="display: grid; gap: 12px; margin-bottom: 24px;">
-          <div style="display:flex;justify-content:space-between;font-size:14px;color:#5a6b7f;"><span>Available clubs</span><strong>{{ clubs.length }}</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:14px;color:#5a6b7f;"><span>Joined clubs</span><strong>{{ myClubs.length }}</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:14px;color:#5a6b7f;"><span>Pending requests</span><strong>{{ myRequests.length }}</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:14px;color:#5a6b7f;"><span>Upcoming activities</span><strong>{{ totalActivitiesCount }}</strong></div>
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div class="text-center py-4 rounded-xl" style="background:#FEF3C7">
+          <p class="text-2xl font-bold" style="color:#D97706">{{ paymentTraining.price || 0 }} TND</p>
+          <p class="text-xs text-gray-400 mt-1">Montant à régler</p>
         </div>
-        <button class="sidebar-card__submit" (click)="setTab('clubs')">Browse Clubs</button>
-        <p class="sidebar-card__terms">Use the tabs to switch views and manage your clubs without changing any business logic.</p>
+
+        <div class="text-center py-4 rounded-xl" style="background:#EDF6F9">
+          <p class="text-2xl font-bold" style="color:#006D77">
+            {{ walletBalance | number:'1.3-3' }} TND
+          </p>
+          <p class="text-xs text-gray-400 mt-1">Solde wallet</p>
+        </div>
       </div>
-    </aside>
+
+      <div *ngIf="insufficientFunds"
+        class="mb-4 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold"
+        style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA">
+        ⚠ Solde wallet insuffisant
+      </div>
+
+      <p class="text-xs text-gray-500 mb-5 text-center">
+        Ce wallet est le même que celui utilisé dans Library.
+      </p>
+
+      <div *ngIf="paymentLoading" class="flex items-center justify-center gap-2 mb-4 text-xs text-gray-400">
+        <span class="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin"
+          style="border-color:#f59e0b;border-top-color:transparent"></span>
+        Traitement en cours…
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <button (click)="payTraining('cash')"
+          [disabled]="paymentLoading"
+          class="py-3 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
+          style="background:#FEF3C7;color:#92400E">
+          💵 Cash
+        </button>
+
+        <button (click)="payTraining('wallet')"
+          [disabled]="paymentLoading || insufficientFunds"
+          class="py-3 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50"
+          style="background:linear-gradient(135deg,#006D77,#83C5BE)">
+          👛 Wallet
+        </button>
+      </div>
+
+      <button (click)="closePaymentModal()"
+        class="w-full mt-3 py-2.5 rounded-xl border text-sm font-semibold text-gray-500"
+        style="border-color:#83C5BE40">
+        Annuler
+      </button>
+    </div>
   </div>
-</main>
+</div>

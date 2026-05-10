@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 
@@ -15,39 +15,62 @@ export interface Transaction {
   amount: number;
   type: 'CREDIT' | 'DEBIT';
   date: string;
-  userId: number;
-  walletId: number;
+  userId: number | null;
+  walletId: number | null;
 }
 
 @Injectable({ providedIn: 'root' })
 export class WalletService {
 
-  private readonly BASE = `${environment.apiUrl}/learners/api/wallet`;
+  private readonly BASE = `${environment.devUnityUrl}/learners/api/wallet`;
 
   constructor(private http: HttpClient) {}
 
-  private authHeaders(): { headers: HttpHeaders } {
-    const token = localStorage.getItem('jwt_token'); // ✅ FIX : était 'token'
-    return {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      })
-    };
+  private getToken(): string {
+    return localStorage.getItem('jwt_token') ?? '';
+  }
+
+  private authHeaders(): HttpHeaders {
+    const token = this.getToken();
+    return new HttpHeaders({
+      Authorization: token ? `Bearer ${token}` : '',
+      'Content-Type': 'application/json'
+    });
   }
 
   private authOptions(params?: HttpParams): { headers: HttpHeaders; params?: HttpParams } {
-    const token = localStorage.getItem('jwt_token'); // ✅ FIX : était 'token'
-    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    const headers = this.authHeaders();
     return params ? { headers, params } : { headers };
   }
 
-  // ✅ mappe w.user.id → userId
   private mapWallet(w: any, fallbackUserId?: number): Wallet {
     return {
-      id:      w.id,
-      balance: w.balance ?? 0,
-      userId:  w.user?.userId ?? w.userId ?? fallbackUserId ?? 0
+      id: Number(w?.id ?? 0),
+      balance: Number(w?.balance ?? 0),
+      userId: Number(
+        w?.user?.userId ??
+        w?.userId ??
+        fallbackUserId ??
+        0
+      )
+    };
+  }
+
+  private mapTransaction(t: any): Transaction {
+    return {
+      id: Number(t?.id ?? 0),
+      amount: Number(t?.amount ?? 0),
+      type: t?.type as 'CREDIT' | 'DEBIT',
+      date: t?.date ?? '',
+      userId: t?.user?.userId ?? t?.userId ?? null,
+      walletId: t?.wallet?.id ?? t?.walletId ?? null
+    };
+  }
+
+  private handleError(operation: string) {
+    return (error: any) => {
+      console.error(`${operation} error`, error);
+      return throwError(() => error);
     };
   }
 
@@ -55,30 +78,35 @@ export class WalletService {
     return this.http.post<any>(
       `${this.BASE}/create/${userId}`,
       {},
-      this.authHeaders()
+      { headers: this.authHeaders() }
     ).pipe(
-      map(w => this.mapWallet(w, userId)),
-      catchError(() => of({ id: 0, balance: 0, userId }))
+      map((w) => this.mapWallet(w, userId)),
+      catchError(this.handleError('createWallet'))
     );
   }
 
   getWallet(userId: number): Observable<Wallet> {
-    // The create endpoint is idempotent server-side (returns existing wallet or creates one),
-    // which avoids initial 404 responses when a student has no wallet yet.
-    return this.createWallet(userId);
+    return this.http.get<any>(
+      `${this.BASE}/${userId}`,
+      this.authOptions()
+    ).pipe(
+      map((w) => this.mapWallet(w, userId)),
+      catchError(this.handleError('getWallet'))
+    );
   }
 
   recharge(userId: number, amount: number): Observable<Wallet> {
     const params = new HttpParams()
       .set('userId', userId.toString())
       .set('amount', amount.toString());
+
     return this.http.post<any>(
       `${this.BASE}/recharge`,
-      null,
+      {},
       this.authOptions(params)
     ).pipe(
-      map(w => this.mapWallet(w, userId)),
-      catchError(() => of({ id: 0, balance: 0, userId }))
+      map((w) => this.mapWallet(w, userId)),
+      catchError(this.handleError('recharge'))
     );
   }
 
@@ -86,30 +114,23 @@ export class WalletService {
     const params = new HttpParams()
       .set('userId', userId.toString())
       .set('amount', amount.toString());
+
     return this.http.post<void>(
       `${this.BASE}/pay`,
-      null,
+      {},
       this.authOptions(params)
     ).pipe(
-      catchError(() => of(undefined as void))
+      catchError(this.handleError('payFromWallet'))
     );
   }
 
-  // ✅ mappe t.user.id → userId et t.wallet.id → walletId
   getTransactions(userId: number): Observable<Transaction[]> {
     return this.http.get<any[]>(
       `${this.BASE}/transactions/${userId}`,
       this.authOptions()
     ).pipe(
-      map(res => Array.isArray(res) ? res.map(t => ({
-        id:       t.id,
-        amount:   t.amount,
-        type:     t.type as 'CREDIT' | 'DEBIT',
-        date:     t.date,
-        userId:   t.user?.userId   ?? t.userId   ?? null,
-        walletId: t.wallet?.id ?? t.walletId ?? null
-      })) : []),
-      catchError(() => of([]))
+      map((res) => Array.isArray(res) ? res.map((t) => this.mapTransaction(t)) : []),
+      catchError(this.handleError('getTransactions'))
     );
   }
 }

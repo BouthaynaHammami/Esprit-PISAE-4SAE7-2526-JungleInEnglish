@@ -1,6 +1,6 @@
 package tn.esprit.Books_Clubs.Services.IServices;
 
-import tn.esprit.Books_Clubs.entities.*;
+import tn.esprit.jungleinenglishuser.entities.*;
 
 public interface IStockService {
 
@@ -12,4 +12,3 @@ public interface IStockService {
 
     Stock removeQuantity(Long bookId, int qte);
 }
-

@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tn.esprit.learner_managment_service.UserManagement.Entities.User;
 
 import java.math.BigDecimal;
 import java.util.List;

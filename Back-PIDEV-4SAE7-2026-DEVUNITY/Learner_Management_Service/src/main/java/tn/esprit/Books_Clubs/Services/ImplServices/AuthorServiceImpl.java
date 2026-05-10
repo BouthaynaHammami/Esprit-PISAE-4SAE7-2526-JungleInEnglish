@@ -1,9 +1,9 @@
 package tn.esprit.Books_Clubs.Services.ImplServices;
 
 import org.springframework.stereotype.Service;
-import tn.esprit.Books_Clubs.Services.IServices.*;
-import tn.esprit.Books_Clubs.entities.*;
-import tn.esprit.Books_Clubs.repositories.*;
+import tn.esprit.jungleinenglishuser.Services.IServices.*;
+import tn.esprit.jungleinenglishuser.entities.*;
+import tn.esprit.jungleinenglishuser.repositories.*;
 
 import java.util.List;
 
@@ -29,4 +29,3 @@ public class AuthorServiceImpl implements IAuthorService {
     public void deleteAuthor(Long id){ repo.deleteById(id);}
     public List<Book> getBooksByAuthor(Long id){ return bookRepo.findByAuthor_AuthorId(id);}
 }
-

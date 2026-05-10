@@ -8,17 +8,20 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Entity
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "excursion_participations")
+@Entity
 public class ExcursionParticipation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long memberId;
+    @ManyToOne
+    private User member;
 
     private LocalDate registrationDate;
 

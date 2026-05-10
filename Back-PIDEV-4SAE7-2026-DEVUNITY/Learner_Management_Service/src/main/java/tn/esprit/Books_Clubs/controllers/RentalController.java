@@ -1,10 +1,10 @@
-package tn.esprit.Books_Clubs.controllers;
+package tn.esprit.Books_Clubs.Controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.Books_Clubs.Services.IServices.IRentalService;
-import tn.esprit.Books_Clubs.entities.*;
-import tn.esprit.Books_Clubs.repositories.RentalRepository;
+import tn.esprit.jungleinenglishuser.Services.IServices.IRentalService;
+import tn.esprit.jungleinenglishuser.entities.*;
+import tn.esprit.jungleinenglishuser.repositories.RentalRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,7 +27,7 @@ public class RentalController {
                          @RequestParam(required = false) Long userId) {
 
         return rentalService.createRental(
-                userId, // ðŸ”¥ IMPORTANT
+                userId, // 🔥 IMPORTANT
                 bookId,
                 LocalDate.parse(startDate),
                 LocalDate.parse(dueDate),

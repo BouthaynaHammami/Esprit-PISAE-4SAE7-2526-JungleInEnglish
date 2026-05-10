@@ -1,12 +1,12 @@
 package tn.esprit.Books_Clubs.Services.ImplServices;
 
 import org.springframework.stereotype.Service;
-import tn.esprit.Books_Clubs.Services.IServices.IStockService;
-import tn.esprit.Books_Clubs.entities.Book;
-import tn.esprit.Books_Clubs.entities.BookStatus;
-import tn.esprit.Books_Clubs.entities.Stock;
-import tn.esprit.Books_Clubs.repositories.BookRepository;
-import tn.esprit.Books_Clubs.repositories.StockRepository;
+import tn.esprit.jungleinenglishuser.Services.IServices.IStockService;
+import tn.esprit.jungleinenglishuser.entities.Book;
+import tn.esprit.jungleinenglishuser.entities.BookStatus;
+import tn.esprit.jungleinenglishuser.entities.Stock;
+import tn.esprit.jungleinenglishuser.repositories.BookRepository;
+import tn.esprit.jungleinenglishuser.repositories.StockRepository;
 
 import java.time.LocalDate;
 
@@ -21,7 +21,7 @@ public class StockServiceImpl implements IStockService {
         this.bookRepo = bookRepo;
     }
 
-    // âœ… rÃ©cupÃ¨re le stock ou le crÃ©e s'il n'existe pas
+    // ✅ récupère le stock ou le crée s'il n'existe pas
     private Stock getOrCreate(Long bookId) {
         return stockRepo.findByBook_BookId(bookId).orElseGet(() -> {
             Book book = bookRepo.findById(bookId)

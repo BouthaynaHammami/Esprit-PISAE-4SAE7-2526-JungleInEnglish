@@ -22,7 +22,7 @@ export interface ParticipationClub {
 
 @Injectable({ providedIn: 'root' })
 export class MembershipService {
-  private baseUrl = `${environment.apiUrl}/learners/api/api/memberships`;
+  private baseUrl = `${environment.devUnityUrl}/learners/api/api/memberships`;
 
   constructor(private http: HttpClient) {}
 

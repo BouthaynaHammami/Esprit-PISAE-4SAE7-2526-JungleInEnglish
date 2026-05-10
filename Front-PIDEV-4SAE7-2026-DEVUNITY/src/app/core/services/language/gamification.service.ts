@@ -8,7 +8,7 @@ import { Badge, ChildBadge, Progress, LeaderboardEntry } from '../../models/engl
   providedIn: 'root'
 })
 export class GamificationService {
-  private readonly apiUrl = `${environment.apiUrl}/language/api`;
+  private readonly apiUrl = `${environment.apiUrl}/languages/api`;
 
   constructor(private http: HttpClient) {}
 

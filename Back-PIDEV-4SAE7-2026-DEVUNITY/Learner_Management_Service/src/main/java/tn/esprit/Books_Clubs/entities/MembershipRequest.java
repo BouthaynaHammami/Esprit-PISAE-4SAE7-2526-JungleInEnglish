@@ -9,8 +9,10 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "membership_requests")
 public class MembershipRequest {
 
@@ -18,7 +20,8 @@ public class MembershipRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long requestId;
 
-    private Long memberId;
+    @ManyToOne
+    private User member;
 
     private String motivation;
 
@@ -28,7 +31,8 @@ public class MembershipRequest {
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
 
-    private Long decidedByMemberId;
+    @ManyToOne
+    private User decidedByMember;
 
     @ManyToOne
     private Club club;

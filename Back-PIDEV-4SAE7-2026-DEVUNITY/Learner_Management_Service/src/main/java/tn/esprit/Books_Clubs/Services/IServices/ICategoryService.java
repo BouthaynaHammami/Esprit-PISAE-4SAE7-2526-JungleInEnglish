@@ -1,6 +1,6 @@
 package tn.esprit.Books_Clubs.Services.IServices;
 
-import tn.esprit.Books_Clubs.entities.*;
+import tn.esprit.jungleinenglishuser.entities.*;
 
 import java.util.List;
 
@@ -12,4 +12,3 @@ public interface ICategoryService {
     void deleteCategory(Long id);
     List<Book> getBooksByCategory(Long id);
 }
-

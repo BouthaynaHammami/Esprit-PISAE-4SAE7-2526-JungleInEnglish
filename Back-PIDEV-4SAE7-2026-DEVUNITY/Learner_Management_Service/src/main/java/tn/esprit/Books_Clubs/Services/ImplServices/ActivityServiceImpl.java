@@ -2,9 +2,10 @@ package tn.esprit.Books_Clubs.Services.ImplServices;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tn.esprit.Books_Clubs.Services.IServices.IActivityService;
-import tn.esprit.Books_Clubs.entities.*;
-import tn.esprit.Books_Clubs.repositories.*;
+import org.springframework.transaction.annotation.Transactional;
+import tn.esprit.jungleinenglishuser.Services.IServices.IActivityService;
+import tn.esprit.jungleinenglishuser.entities.*;
+import tn.esprit.jungleinenglishuser.repositories.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,35 +19,95 @@ public class ActivityServiceImpl implements IActivityService {
     private final TrainingRepository trainingRepository;
     private final ExcursionParticipationRepository exPartRepository;
     private final TrainingParticipationRepository trPartRepository;
+    private final UserRepository userRepository;
 
-    // ============================== CRUD ==============================
     @Override
     public Excursion addExcursion(Excursion e) {
-        clubRepository.findById(e.getClub().getClubId())
+        if (e.getClub() == null || e.getClub().getClubId() == null) {
+            throw new IllegalArgumentException("Club is required");
+        }
+
+        Club club = clubRepository.findById(e.getClub().getClubId())
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
 
-        if (e.getStatus() == null) e.setStatus(ActivityStatus.PLANNED);
-        if (e.getNbrDeReservation() == null) e.setNbrDeReservation(0);
+        e.setClub(club);
+
+        if (e.getStatus() == null) {
+            e.setStatus(ActivityStatus.PLANNED);
+        }
+        if (e.getNbrDeReservation() == null) {
+            e.setNbrDeReservation(0);
+        }
 
         return excursionRepository.save(e);
     }
 
     @Override
     public Training addTraining(Training t) {
-        clubRepository.findById(t.getClub().getClubId())
+        if (t.getClub() == null || t.getClub().getClubId() == null) {
+            throw new IllegalArgumentException("Club is required");
+        }
+
+        Club club = clubRepository.findById(t.getClub().getClubId())
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
 
-        if (t.getStatus() == null) t.setStatus(ActivityStatus.PLANNED);
-        if (t.getNbrDeReservation() == null) t.setNbrDeReservation(0);
+        t.setClub(club);
+
+        if (t.getStatus() == null) {
+            t.setStatus(ActivityStatus.PLANNED);
+        }
+        if (t.getNbrDeReservation() == null) {
+            t.setNbrDeReservation(0);
+        }
 
         return trainingRepository.save(t);
     }
 
-    @Override public Excursion updateExcursion(Excursion e) { return excursionRepository.save(e); }
-    @Override public Training updateTraining(Training t) { return trainingRepository.save(t); }
+    @Override
+    public Excursion updateExcursion(Excursion e) {
+        if (e.getExcursionId() == null) {
+            throw new IllegalArgumentException("Excursion id is required");
+        }
 
-    @Override public void deleteExcursion(Long id) { excursionRepository.deleteById(id); }
-    @Override public void deleteTraining(Long id) { trainingRepository.deleteById(id); }
+        excursionRepository.findById(e.getExcursionId())
+                .orElseThrow(() -> new IllegalArgumentException("Excursion not found"));
+
+        if (e.getClub() != null && e.getClub().getClubId() != null) {
+            Club club = clubRepository.findById(e.getClub().getClubId())
+                    .orElseThrow(() -> new IllegalArgumentException("Club not found"));
+            e.setClub(club);
+        }
+
+        return excursionRepository.save(e);
+    }
+
+    @Override
+    public Training updateTraining(Training t) {
+        if (t.getTrainingId() == null) {
+            throw new IllegalArgumentException("Training id is required");
+        }
+
+        trainingRepository.findById(t.getTrainingId())
+                .orElseThrow(() -> new IllegalArgumentException("Training not found"));
+
+        if (t.getClub() != null && t.getClub().getClubId() != null) {
+            Club club = clubRepository.findById(t.getClub().getClubId())
+                    .orElseThrow(() -> new IllegalArgumentException("Club not found"));
+            t.setClub(club);
+        }
+
+        return trainingRepository.save(t);
+    }
+
+    @Override
+    public void deleteExcursion(Long id) {
+        excursionRepository.deleteById(id);
+    }
+
+    @Override
+    public void deleteTraining(Long id) {
+        trainingRepository.deleteById(id);
+    }
 
     @Override
     public Excursion findExcursion(Long id) {
@@ -60,111 +121,101 @@ public class ActivityServiceImpl implements IActivityService {
                 .orElseThrow(() -> new IllegalArgumentException("Training not found: " + id));
     }
 
-    @Override public List<Excursion> excursionsByClub(Long clubId) { return excursionRepository.findByClub_ClubId(clubId); }
-    @Override public List<Training> trainingsByClub(Long clubId) { return trainingRepository.findByClub_ClubId(clubId); }
-
-    // ============================== HELPERS ==============================
-    private void validateCapacity(Integer capacity) {
-        if (capacity == null || capacity <= 0) {
-            throw new IllegalStateException("Invalid capacity (nbrDeplace)");
-        }
-    }
-
-    private void ensureActivityOpen(ActivityStatus status, String type) {
-        if (status == ActivityStatus.CANCELLED || status == ActivityStatus.FINISHED) {
-            throw new IllegalStateException(type + " not available (status=" + status + ")");
-        }
-    }
-
-    // ============================== REGISTER ==============================
     @Override
-    public ExcursionParticipation registerExcursion(Long memberId, Long excursionId) {
+    public List<Excursion> excursionsByClub(Long clubId) {
+        return excursionRepository.findByClub_ClubId(clubId);
+    }
 
-        if (exPartRepository.existsByMemberIdAndExcursion_ExcursionId(memberId, excursionId)) {
+    @Override
+    public List<Training> trainingsByClub(Long clubId) {
+        return trainingRepository.findByClub_ClubId(clubId);
+    }
+
+    @Override
+    @Transactional
+    public ExcursionParticipation registerExcursion(Long memberId, Long excursionId) {
+        if (exPartRepository.existsByMember_UserIdAndExcursion_ExcursionId(memberId.intValue(), excursionId)) {
             throw new IllegalStateException("Already registered");
         }
 
-        Excursion ex = findExcursion(excursionId);
+        Excursion ex = excursionRepository.findById(excursionId)
+                .orElseThrow(() -> new IllegalArgumentException("Excursion not found"));
 
-        ensureActivityOpen(ex.getStatus(), "Excursion");
-        validateCapacity(ex.getNbrDeplace());
-
-        int reserved = ex.getNbrDeReservation() == null ? 0 : ex.getNbrDeReservation();
-        int capacity = ex.getNbrDeplace();
-
-        if (reserved >= capacity) {
-            // activitÃ© pleine -> on bloque
-            // (tu peux changer status ici si tu veux, mais recommandÃ©: laisser PLANNED)
-            throw new IllegalStateException("Excursion is full");
+        if (ex.getStatus() == ActivityStatus.CANCELLED || ex.getStatus() == ActivityStatus.FINISHED) {
+            throw new IllegalStateException("This excursion is not available for reservation");
         }
 
-        // save participation
+        int reserved = ex.getNbrDeReservation() == null ? 0 : ex.getNbrDeReservation();
+        int capacity = ex.getNbrDeplace() == null ? 0 : ex.getNbrDeplace();
+
+        if (capacity <= 0 || reserved >= capacity) {
+            throw new IllegalStateException("No places available");
+        }
+
+        User member = userRepository.findById(memberId.intValue())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
         ExcursionParticipation p = new ExcursionParticipation();
-        p.setMemberId(memberId);
+        p.setMember(member);
         p.setExcursion(ex);
         p.setRegistrationDate(LocalDate.now());
         p.setStatus(ParticipationStatus.REGISTERED);
 
         ExcursionParticipation saved = exPartRepository.save(p);
 
-        // increment reservations counter
         ex.setNbrDeReservation(reserved + 1);
-
-        // si plein aprÃ¨s ajout
-        if (ex.getNbrDeReservation() >= capacity) {
-            // OPTION 1 (recommandÃ©e): laisser PLANNED et juste bloquer les nouvelles inscriptions
-            ex.setStatus(ActivityStatus.PLANNED);
-
-            // OPTION 2 (si tu INSISTES): ex.setStatus(ActivityStatus.CANCELLED);
-        }
-
         excursionRepository.save(ex);
+
         return saved;
     }
 
     @Override
+    @Transactional
     public TrainingParticipation registerTraining(Long memberId, Long trainingId) {
-
-        if (trPartRepository.existsByMemberIdAndTraining_TrainingId(memberId, trainingId)) {
+        if (trPartRepository.existsByMember_UserIdAndTraining_TrainingId(memberId.intValue(), trainingId)) {
             throw new IllegalStateException("Already registered");
         }
 
-        Training tr = findTraining(trainingId);
+        Training tr = trainingRepository.findById(trainingId)
+                .orElseThrow(() -> new IllegalArgumentException("Training not found"));
 
-        ensureActivityOpen(tr.getStatus(), "Training");
-        validateCapacity(tr.getNbrDeplace());
-
-        int reserved = tr.getNbrDeReservation() == null ? 0 : tr.getNbrDeReservation();
-        int capacity = tr.getNbrDeplace();
-
-        if (reserved >= capacity) {
-            throw new IllegalStateException("Training is full");
+        if (tr.getStatus() == ActivityStatus.CANCELLED || tr.getStatus() == ActivityStatus.FINISHED) {
+            throw new IllegalStateException("This training is not available for reservation");
         }
 
+        int reserved = tr.getNbrDeReservation() == null ? 0 : tr.getNbrDeReservation();
+        int capacity = tr.getNbrDeplace() == null ? 0 : tr.getNbrDeplace();
+
+        if (capacity <= 0 || reserved >= capacity) {
+            throw new IllegalStateException("No places available");
+        }
+
+        User member = userRepository.findById(memberId.intValue())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
         TrainingParticipation p = new TrainingParticipation();
-        p.setMemberId(memberId);
+        p.setMember(member);
         p.setTraining(tr);
         p.setRegistrationDate(LocalDate.now());
         p.setStatus(ParticipationStatus.REGISTERED);
+        p.setCompleted(false);
+        p.setRewardTransferred(false);
 
         TrainingParticipation saved = trPartRepository.save(p);
 
         tr.setNbrDeReservation(reserved + 1);
-
-        if (tr.getNbrDeReservation() >= capacity) {
-            tr.setStatus(ActivityStatus.PLANNED);
-            // OPTION 2: tr.setStatus(ActivityStatus.CANCELLED);
-        }
-
         trainingRepository.save(tr);
+
         return saved;
     }
 
-    @Override public List<ExcursionParticipation> excursionParticipants(Long excursionId) {
+    @Override
+    public List<ExcursionParticipation> excursionParticipants(Long excursionId) {
         return exPartRepository.findByExcursion_ExcursionId(excursionId);
     }
 
-    @Override public List<TrainingParticipation> trainingParticipants(Long trainingId) {
+    @Override
+    public List<TrainingParticipation> trainingParticipants(Long trainingId) {
         return trPartRepository.findByTraining_TrainingId(trainingId);
     }
 }

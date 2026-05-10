@@ -1,8 +1,8 @@
-package tn.esprit.Books_Clubs.controllers;
+package tn.esprit.Books_Clubs.Controllers;
 
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.Books_Clubs.Services.IServices.IAuthorService;
-import tn.esprit.Books_Clubs.entities.*;
+import tn.esprit.jungleinenglishuser.Services.IServices.IAuthorService;
+import tn.esprit.jungleinenglishuser.entities.*;
 
 import java.util.List;
 
@@ -48,4 +48,3 @@ public class AuthorController {
         return service.getBooksByAuthor(id);
     }
 }
-

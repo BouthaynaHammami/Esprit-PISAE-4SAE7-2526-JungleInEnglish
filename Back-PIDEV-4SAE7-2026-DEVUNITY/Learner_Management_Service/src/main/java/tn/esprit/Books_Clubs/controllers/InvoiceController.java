@@ -1,11 +1,11 @@
-package tn.esprit.Books_Clubs.controllers;
+package tn.esprit.Books_Clubs.Controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.Books_Clubs.Services.ImplServices.InvoiceService;
+import tn.esprit.jungleinenglishuser.Services.ImplServices.InvoiceService;
 
 @RestController
 @RequestMapping("/invoice")

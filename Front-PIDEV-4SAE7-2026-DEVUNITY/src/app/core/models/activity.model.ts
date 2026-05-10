@@ -5,14 +5,13 @@ export interface Excursion {
   title: string;
   description?: string;
   location?: string;
-  startDate?: string;
-  endDate?: string;
-
-  nbrDeplace?: number;        
-  nbrReservations?: number;   
-
+  startDate: string;
+  endDate: string;
   status: ActivityStatus;
-  club: { clubId: number };
+  nbrDeplace?: number;
+  nbrDeReservation?: number;
+  nbrReservations?: number;
+  club?: { clubId: number };
 }
 
 export interface Training {
@@ -20,12 +19,14 @@ export interface Training {
   title: string;
   description?: string;
   trainer?: string;
-  startDate?: string;
-  endDate?: string;
-
-  nbrDeplace?: number;       
-  nbrReservations?: number;   
-
+  startDate: string;
+  endDate: string;
   status: ActivityStatus;
-  club: { clubId: number };
+  nbrDeplace?: number;
+  nbrDeReservation?: number;
+  nbrReservations?: number;
+  price?: number;
+  rewardEnabled?: boolean;
+  rewardMax?: number;
+  club?: { clubId: number };
 }

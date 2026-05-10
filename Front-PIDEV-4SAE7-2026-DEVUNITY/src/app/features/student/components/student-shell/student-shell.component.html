@@ -1,6 +1,37 @@
 <div class="flex flex-col min-h-screen bg-gray-50">
-    <app-student-navbar></app-student-navbar>
-    <div class="pt-14 flex-1">
-        <router-outlet></router-outlet>
+
+  <!-- STUDENT navbar (non-parents only) -->
+  <app-student-navbar *ngIf="!isParent"></app-student-navbar>
+
+  <!-- PARENT navbar -->
+  <nav class="parent-nav" *ngIf="isParent">
+    <div class="pnav-brand">
+      <i class="bi bi-translate pnav-logo-icon"></i>
+      <span class="pnav-logo-text">JUNGLE <span>IN ENGLISH</span></span>
     </div>
+
+    <div class="pnav-links">
+      <a *ngFor="let item of parentNav"
+         [routerLink]="item.link"
+         class="pnav-link"
+         [class.active]="isActive(item.link)">
+        <i [class]="'bi ' + item.icon"></i>
+        <span>{{ item.label }}</span>
+      </a>
+    </div>
+
+    <div class="pnav-right">
+      <div class="pnav-avatar">{{ avatarLetter }}</div>
+      <span class="pnav-name">{{ displayName }}</span>
+      <button class="pnav-logout" (click)="logout()">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- Page content -->
+  <div [class.pt-14]="!isParent" class="flex-1">
+    <router-outlet></router-outlet>
+  </div>
+
 </div>

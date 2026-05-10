@@ -49,6 +49,7 @@ export class StudentNavbarComponent implements OnInit {
     { label: 'Certif Board', short: 'CBoard', icon: 'bi-kanban-fill', link: '/student/kanban-certif' },
     { label: 'Events Board', short: 'EBoard', icon: 'bi-kanban-fill', link: '/student/kanban-events' },
     { label: 'Daily Analysis', short: 'Analysis', icon: 'bi-bar-chart-fill', link: '/student/daily-analysis' },
+    { label: 'My Kids', short: 'My Kids', icon: 'bi-emoji-smile-fill', link: '/student/parent-dashboard' },
   ];
 
   get mainNav() {

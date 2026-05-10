@@ -11,8 +11,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "clubs")
 public class Club {
 

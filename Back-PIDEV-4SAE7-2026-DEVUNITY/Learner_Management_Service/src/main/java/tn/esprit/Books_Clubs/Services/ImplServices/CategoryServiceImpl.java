@@ -1,9 +1,9 @@
 package tn.esprit.Books_Clubs.Services.ImplServices;
 
 import org.springframework.stereotype.Service;
-import tn.esprit.Books_Clubs.Services.IServices.*;
-import tn.esprit.Books_Clubs.entities.*;
-import tn.esprit.Books_Clubs.repositories.*;
+import tn.esprit.jungleinenglishuser.Services.IServices.*;
+import tn.esprit.jungleinenglishuser.entities.*;
+import tn.esprit.jungleinenglishuser.repositories.*;
 
 import java.util.List;
 @Service
@@ -28,4 +28,3 @@ public class CategoryServiceImpl implements ICategoryService {
     public void deleteCategory(Long id){repo.deleteById(id);}
     public List<Book> getBooksByCategory(Long id){return bookRepo.findByCategory_CategoryId(id);}
 }
-

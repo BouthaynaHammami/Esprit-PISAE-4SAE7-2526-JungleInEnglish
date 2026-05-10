@@ -8,7 +8,7 @@ import { Activity, ActivityCategory, DifficultyLevel } from '../../models/englis
   providedIn: 'root'
 })
 export class EnglishActivityService {
-  private readonly apiUrl = `${environment.apiUrl}/language/api/activities`;
+  private readonly apiUrl = `${environment.apiUrl}/languages/api/activities`;
 
   constructor(private http: HttpClient) {}
 
