@@ -1,4 +1,7 @@
 <router-outlet></router-outlet>
 
-<!-- Global Chat Window (Floating) -->
-<app-chat-window></app-chat-window>
+<!-- Global Chat Window (Floating) — only visible when logged in -->
+<app-chat-window *ngIf="authService.isLoggedIn()"></app-chat-window>
+
+<!-- AI Assistant — visible to everyone -->
+<app-ai-chatbot></app-ai-chatbot>

@@ -9,7 +9,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
-@EnableElasticsearchRepositories(basePackages = "tn.esprit.social_interaction_service.Reporting_Analytics.Repositories")
+//@EnableElasticsearchRepositories(basePackages = "tn.esprit.social_interaction_service.Reporting_Analytics.Repositories")
 public class SocialInrecationApplication {
     public static void main(String[] args) {
         SpringApplication.run(SocialInrecationApplication.class, args);

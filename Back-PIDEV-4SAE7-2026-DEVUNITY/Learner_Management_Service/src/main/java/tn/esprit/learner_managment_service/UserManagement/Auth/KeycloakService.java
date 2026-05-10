@@ -72,7 +72,12 @@ public class KeycloakService {
      * @throws InvalidCredentialsException si les credentials sont invalides
      * @throws KeycloakException           si une erreur Keycloak survient
      */
-    public String getUserToken(String email, String password) {
+    /**
+     * Résultat d'une opération de token Keycloak.
+     */
+    public record TokenResult(String accessToken, String refreshToken) {}
+
+    public TokenResult getUserToken(String email, String password) {
         validateNotBlank(email, "Email");
         validateNotBlank(password, "Password");
 
@@ -97,9 +102,10 @@ public class KeycloakService {
                 throw new KeycloakException("Format de réponse Keycloak invalide (access_token manquant)");
             }
             String accessToken = json.get("access_token").asText();
+            String refreshToken = json.has("refresh_token") ? json.get("refresh_token").asText() : null;
 
             log.info("Authentification réussie pour l'utilisateur: {}", email);
-            return accessToken;
+            return new TokenResult(accessToken, refreshToken);
 
         } catch (HttpClientErrorException.Unauthorized e) {
             log.warn("Échec d'authentification pour l'utilisateur {}: credentials invalides", email);
@@ -112,6 +118,49 @@ public class KeycloakService {
         } catch (Exception e) {
             log.error("Erreur inattendue lors de l'authentification de {}: {}", email, e.getMessage(), e);
             throw new KeycloakException("Erreur lors de l'authentification", e);
+        }
+    }
+
+    /**
+     * Rafraîchit un access token via le refresh token Keycloak.
+     */
+    public TokenResult refreshToken(String refreshToken) {
+        validateNotBlank(refreshToken, "RefreshToken");
+
+        String tokenUrl = buildUrl("/realms/{realm}/protocol/openid-connect/token", Map.of("realm", realm));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", "refresh_token");
+        body.add("client_id", clientId);
+        body.add("refresh_token", refreshToken);
+
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(
+                    tokenUrl, new HttpEntity<>(body, headers), String.class);
+            JsonNode json = objectMapper.readTree(response.getBody());
+            if (json == null || !json.has("access_token")) {
+                throw new KeycloakException("Réponse de rafraîchissement invalide");
+            }
+            String newAccess = json.get("access_token").asText();
+            String newRefresh = json.has("refresh_token") ? json.get("refresh_token").asText() : refreshToken;
+
+            log.info("Token rafraîchi avec succès");
+            return new TokenResult(newAccess, newRefresh);
+
+        } catch (HttpClientErrorException.Unauthorized | HttpClientErrorException.BadRequest e) {
+            log.warn("Refresh token invalide ou expiré");
+            throw new InvalidCredentialsException("Session expirée, veuillez vous reconnecter");
+
+        } catch (RestClientException e) {
+            log.error("Erreur Keycloak lors du rafraîchissement: {}", e.getMessage());
+            throw new KeycloakException("Impossible de rafraîchir le token", e);
+
+        } catch (Exception e) {
+            log.error("Erreur inattendue lors du rafraîchissement du token: {}", e.getMessage(), e);
+            throw new KeycloakException("Erreur lors du rafraîchissement du token", e);
         }
     }
 

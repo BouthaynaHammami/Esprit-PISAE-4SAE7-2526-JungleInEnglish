@@ -251,12 +251,17 @@ export class StudentCertificatesComponent implements OnInit, OnDestroy {
 
     let fullName = 'Student';
     try {
-      const token = localStorage.getItem('jwt_token');
+      const token = localStorage.getItem('jwt_token') ||
+                    localStorage.getItem('access_token') ||
+                    localStorage.getItem('token');
       if (token) {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        const firstName = payload.firstName || '';
-        const lastName  = payload.lastName  || '';
-        fullName = `${firstName} ${lastName}`.trim() || 'Student';
+        // Keycloak standard claims
+        fullName = payload.name ||
+                   (`${payload.given_name || ''} ${payload.family_name || ''}`).trim() ||
+                   payload.preferred_username ||
+                   payload.firstName && (`${payload.firstName} ${payload.lastName || ''}`).trim() ||
+                   'Student';
       }
     } catch (e) {}
 

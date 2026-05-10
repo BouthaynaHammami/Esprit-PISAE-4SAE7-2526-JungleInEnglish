@@ -13,7 +13,7 @@ import javax.net.ssl.X509TrustManager;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 
-@Configuration
+//@Configuration
 @ConditionalOnProperty(name = "spring.data.elasticsearch.repositories.enabled", havingValue = "true")
 public class ElasticsearchClientConfig extends ElasticsearchConfiguration {
 

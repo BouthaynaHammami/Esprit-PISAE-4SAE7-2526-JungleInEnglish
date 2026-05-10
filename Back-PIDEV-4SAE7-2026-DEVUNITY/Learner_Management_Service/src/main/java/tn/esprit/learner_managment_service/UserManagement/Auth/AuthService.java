@@ -8,6 +8,7 @@ import tn.esprit.learner_managment_service.UserManagement.Entities.Role;
 import tn.esprit.learner_managment_service.UserManagement.Entities.User;
 import tn.esprit.learner_managment_service.UserManagement.Exceptions.EmailAlreadyExistsException;
 import tn.esprit.learner_managment_service.UserManagement.Exceptions.InvalidCredentialsException;
+import tn.esprit.learner_managment_service.UserManagement.Exceptions.KeycloakException;
 import tn.esprit.learner_managment_service.UserManagement.Exceptions.UserNotFoundException;
 import tn.esprit.learner_managment_service.UserManagement.Repositories.UserRepository;
 
@@ -70,16 +71,20 @@ public class AuthService {
             log.info("Étape 2/3 réussie : Profil local créé (ID: {})", user.getUserId());
 
             // 3. Obtenir le token JWT de Keycloak
-            String token = keycloakService.getUserToken(request.getEmail(), request.getPassword());
+            KeycloakService.TokenResult tokens = keycloakService.getUserToken(request.getEmail(), request.getPassword());
             log.info("Étape 3/3 réussie : Token obtenu, inscription complète pour {}", request.getEmail());
 
             return AuthResponse.builder()
-                    .token(token)
+                    .token(tokens.accessToken())
+                    .refreshToken(tokens.refreshToken())
                     .role(user.getRole().name())
                     .email(user.getEmail())
                     .userId(user.getUserId())
                     .build();
 
+        } catch (KeycloakException e) {
+            log.error("Erreur Keycloak lors de l'inscription {}: {}", request.getEmail(), e.getMessage());
+            throw e;
         } catch (Exception e) {
             log.error("ÉCHEC CRITIQUE lors de l'inscription {}: {}", request.getEmail(), e.getMessage());
             throw new RuntimeException("Échec de l'inscription: " + e.getMessage(), e);
@@ -95,7 +100,7 @@ public class AuthService {
 
         try {
             // 1. Authentification via Keycloak
-            String token = keycloakService.getUserToken(request.getEmail(), request.getPassword());
+            KeycloakService.TokenResult tokens = keycloakService.getUserToken(request.getEmail(), request.getPassword());
             log.info("Authentification Keycloak réussie pour: {}", request.getEmail());
 
             // 2. Charger le profil depuis la base locale
@@ -112,7 +117,8 @@ public class AuthService {
             log.info("Connexion réussie pour userId={}, role={}", user.getUserId(), user.getRole());
 
             return AuthResponse.builder()
-                    .token(token)
+                    .token(tokens.accessToken())
+                    .refreshToken(tokens.refreshToken())
                     .role(user.getRole().name())
                     .email(user.getEmail())
                     .userId(user.getUserId())
@@ -133,5 +139,16 @@ public class AuthService {
     public User getUserProfile(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Utilisateur introuvable: " + email));
+    }
+
+    /**
+     * Rafraîchit l'access token via le refresh token.
+     */
+    public AuthResponse refresh(String refreshToken) {
+        KeycloakService.TokenResult tokens = keycloakService.refreshToken(refreshToken);
+        return AuthResponse.builder()
+                .token(tokens.accessToken())
+                .refreshToken(tokens.refreshToken())
+                .build();
     }
 }

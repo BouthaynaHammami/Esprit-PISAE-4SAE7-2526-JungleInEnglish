@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/ai/**").permitAll()
                         .requestMatchers("/users/**").permitAll()
                         .requestMatchers("/ml/**").permitAll()
                         .requestMatchers("/learners/api/ml/**").permitAll()

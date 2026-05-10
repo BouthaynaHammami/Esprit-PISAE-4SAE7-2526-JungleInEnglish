@@ -15,15 +15,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-/**
- * Configuration de sécurité Spring Security avec Keycloak OAuth2 Resource Server.
- * 
- * Architecture:
- * - JWT validation automatique via Keycloak
- * - Conversion des rôles Keycloak en GrantedAuthorities Spring
- * - Gestion RBAC (Role-Based Access Control)
- * - Session stateless (REST API)
- */
+
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)

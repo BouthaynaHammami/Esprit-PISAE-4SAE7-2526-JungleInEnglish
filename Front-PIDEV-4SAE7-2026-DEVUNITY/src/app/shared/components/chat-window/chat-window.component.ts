@@ -148,12 +148,8 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewChecked 
         this.chatService.connect(this.username);
       }
       // Mark all messages as read
-      this.chatService.unreadCount$.subscribe(count => {
-        if (count > 0) {
-          // Reset unread count when opening
-          (this.chatService as any).unreadCountSubject.next(0);
-        }
-      });
+      this.unreadSubscription?.unsubscribe();
+      (this.chatService as any).unreadCountSubject.next(0);
     }
     // Don't disconnect when closing - just hide the window
     // This keeps messages in memory

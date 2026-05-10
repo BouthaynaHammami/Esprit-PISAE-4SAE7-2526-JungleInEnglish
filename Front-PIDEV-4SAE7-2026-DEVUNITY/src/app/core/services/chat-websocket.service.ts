@@ -78,7 +78,8 @@ export class ChatWebsocketService {
     this.isChatOpen = true;
     this.unreadCountSubject.next(0);
 
-    if (this.stompClient?.connected) return;
+    // Use `active` (not `connected`) — blocks duplicate clients while handshake is in progress
+    if (this.stompClient?.active) return;
 
     // Load history — if this fails with 503/0, the service is down: skip WebSocket
     this.loadHistory().subscribe({

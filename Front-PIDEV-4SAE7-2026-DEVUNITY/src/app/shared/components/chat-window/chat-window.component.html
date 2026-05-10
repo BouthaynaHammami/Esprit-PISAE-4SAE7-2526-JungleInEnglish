@@ -12,13 +12,7 @@
       <span *ngIf="isConnected" class="status-dot connected"></span>
     </button>
     
-    <!-- Username Badge -->
-    <div class="user-badge" *ngIf="!isOpen">
-      <span class="user-name">{{ username }}</span>
-      <span class="user-status" [class.online]="isConnected">
-        {{ isConnected ? 'Online' : 'Offline' }}
-      </span>
-    </div>
+    <!-- Username Badge (hidden) -->
   </div>
 
   <!-- Chat Window -->
