@@ -118,28 +118,11 @@ export class LandingComponent implements OnInit {
       next: () => {
         this.isLoading = false;
         this.successMessage = '✅ Login successful! Redirecting…';
-        // After login, check if this user has children → mark as parent automatically
-        // This ensures the parent UI works on any device, not just where they registered
-        const userId = this.authService.getUserId();
-        if (userId) {
-          this.childService.getAllChildren().subscribe({
-            next: (children) => {
-              const myKids = children.filter(c => c.parentId === userId);
-              if (myKids.length > 0) {
-                localStorage.setItem('devunity_user_type', 'parent');
-              } else {
-                localStorage.removeItem('devunity_user_type');
-              }
-              setTimeout(() => { this.closeAllModals(); this.authService.redirectByRole(); }, 500);
-            },
-            error: () => {
-              // If check fails, fall through normally
-              setTimeout(() => { this.closeAllModals(); this.authService.redirectByRole(); }, 500);
-            }
-          });
-        } else {
-          setTimeout(() => { this.closeAllModals(); this.authService.redirectByRole(); }, 800);
-        }
+        // Only keep 'parent' flag if it was explicitly set during parent registration.
+        // Do NOT auto-detect via children lookup — that caused students to see the parent dashboard
+        // when the children service was slow or unavailable.
+        // The flag is set in finishParentSetup() and cleared on logout/student-register.
+        setTimeout(() => { this.closeAllModals(); this.authService.redirectByRole(); }, 500);
       },
       error: (err) => {
         this.isLoading = false;
@@ -188,6 +171,8 @@ export class LandingComponent implements OnInit {
           this.successMessage = '✅ Account created! Now add your children.';
           this.registerStep = 'add-kids';
         } else {
+          // Ensure no stale parent flag from a previous session
+          localStorage.removeItem('devunity_user_type');
           this.successMessage = '✅ Account created! Redirecting…';
           setTimeout(() => {
             this.closeAllModals();

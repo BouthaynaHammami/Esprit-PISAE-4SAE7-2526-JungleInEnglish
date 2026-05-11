@@ -53,6 +53,13 @@
         </button>
       </div>
 
+      <!-- Select child warning -->
+      <div *ngIf="noChildSelectedError"
+           style="background:#fef3c7;border:1px solid #f59e0b;border-radius:12px;
+                  padding:12px 18px;margin-bottom:16px;color:#92400e;font-size:14px;font-weight:500;">
+        ⚠️ Please select a child from the sidebar before starting an activity.
+      </div>
+
       <!-- Loading -->
       <div *ngIf="activitiesLoading" style="text-align:center;padding:60px 0;color:#83C5BE;font-size:15px;font-weight:500;">
         <div style="font-size:32px;margin-bottom:12px;">⏳</div>
@@ -125,7 +132,7 @@
               </div>
 
               <div class="course-card__actions">
-                <button class="btn-continue" style="width:100%;">
+                <button class="btn-continue" style="width:100%;" (click)="startActivity(activity)">
                   {{ activity.isCompleted ? '🔁 Play Again' : '▶ Start Activity' }}
                 </button>
               </div>

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import tn.esprit.Config.RabbitMQConfig;
 import tn.esprit.Books_Clubs.DTO.ClubDTO;
 import tn.esprit.Books_Clubs.entities.Club;
-import tn.esprit.Books_Clubs.repositories.ClubRepository;
+import tn.esprit.repositories.ClubRepository;
 
 import java.time.ZoneId;
 import java.util.Date;

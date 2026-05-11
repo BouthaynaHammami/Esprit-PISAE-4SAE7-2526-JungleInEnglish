@@ -36,21 +36,63 @@ public class ChildController {
         
         // Convert age to birthDate
         if (childData.containsKey("age")) {
-            Integer age = (Integer) childData.get("age");
+            Object ageObj = childData.get("age");
+            Integer age = ageObj instanceof Integer ? (Integer) ageObj : ((Number) ageObj).intValue();
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.YEAR, -age);
             child.setBirthDate(cal.getTime());
         }
         
+        // Save parentId (userId from auth service) for frontend filtering
+        if (childData.containsKey("parentId")) {
+            Object pidObj = childData.get("parentId");
+            if (pidObj != null) {
+                child.setParentId(((Number) pidObj).longValue());
+            }
+        }
+
+        // Save avatar
+        if (childData.containsKey("avatar")) {
+            child.setAvatar((String) childData.get("avatar"));
+        }
+
+        // Save xp/level if provided
+        if (childData.containsKey("xp")) {
+            child.setXp(((Number) childData.get("xp")).intValue());
+        }
+        if (childData.containsKey("level")) {
+            child.setLevel(((Number) childData.get("level")).intValue());
+        }
+        
         return ResponseEntity.ok(childService.addChild(child));
     }
     
+    @PutMapping("/{id}")
+    public ResponseEntity<Child> updateChild(@PathVariable Long id, @RequestBody Map<String, Object> childData) {
+        Child child = childService.getChild(id);
+        if (child == null) return ResponseEntity.notFound().build();
+        if (childData.containsKey("name")) child.setName((String) childData.get("name"));
+        if (childData.containsKey("age")) {
+            Object ageObj = childData.get("age");
+            Integer age = ageObj instanceof Integer ? (Integer) ageObj : ((Number) ageObj).intValue();
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.YEAR, -age);
+            child.setBirthDate(cal.getTime());
+        }
+        if (childData.containsKey("avatar")) child.setAvatar((String) childData.get("avatar"));
+        if (childData.containsKey("parentId")) {
+            Object pidObj = childData.get("parentId");
+            if (pidObj != null) child.setParentId(((Number) pidObj).longValue());
+        }
+        return ResponseEntity.ok(childService.updateChild(child));
+    }
+
     @PutMapping("/update")
-    public ResponseEntity<Child> updateChild(@RequestBody Child child) {
+    public ResponseEntity<Child> updateChildLegacy(@RequestBody Child child) {
         return ResponseEntity.ok(childService.updateChild(child));
     }
     
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteChild(@PathVariable Long id) {
         childService.deleteChild(id);
         return ResponseEntity.ok().build();

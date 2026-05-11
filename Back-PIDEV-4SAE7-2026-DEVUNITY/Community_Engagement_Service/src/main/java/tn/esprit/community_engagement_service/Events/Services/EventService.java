@@ -2,8 +2,10 @@ package tn.esprit.community_engagement_service.Events.Services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.community_engagement_service.Events.Entities.Events;
 import tn.esprit.community_engagement_service.Events.Repositories.EventRepo;
+import tn.esprit.community_engagement_service.Events.Repositories.RegsitrationEventRepo;
 import tn.esprit.community_engagement_service.Events.Producer.EventProducer;
 import tn.esprit.community_engagement_service.Events.DTO.EventDTO;
 
@@ -16,6 +18,9 @@ public class EventService {
 
     @Autowired
     private EventRepo eventRepo;
+
+    @Autowired
+    private RegsitrationEventRepo regsitrationEventRepo;
 
     @Autowired
     private EventProducer eventProducer;
@@ -34,7 +39,9 @@ public class EventService {
         return saved;
     }
 
+    @Transactional
     public void deleteEvent(Long id) {
+        regsitrationEventRepo.deleteByEvents_EventId(id);
         eventRepo.deleteById(id);
     }
 

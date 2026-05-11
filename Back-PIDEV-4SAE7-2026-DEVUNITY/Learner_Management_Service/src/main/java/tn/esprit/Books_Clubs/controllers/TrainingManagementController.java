@@ -3,9 +3,9 @@ package tn.esprit.Books_Clubs.Controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.jungleinenglishuser.Services.IServices.ITrainingManagementService;
-import tn.esprit.jungleinenglishuser.entities.Payment;
-import tn.esprit.jungleinenglishuser.entities.TrainingParticipation;
+import tn.esprit.Services.IServices.ITrainingManagementService;
+import tn.esprit.Books_Clubs.entities.Payment;
+import tn.esprit.Books_Clubs.entities.TrainingParticipation;
 
 import java.util.Map;
 

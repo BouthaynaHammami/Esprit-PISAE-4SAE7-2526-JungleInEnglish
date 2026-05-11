@@ -80,6 +80,7 @@ export class AuthService {
     localStorage.removeItem(this.USER_ID_KEY);
     localStorage.removeItem(this.FIRST_NAME_KEY);
     localStorage.removeItem(this.LAST_NAME_KEY);
+    localStorage.removeItem('devunity_user_type');
     this.router.navigate(['/']);
   }
 

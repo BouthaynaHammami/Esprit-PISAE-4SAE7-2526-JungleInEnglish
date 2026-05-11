@@ -24,4 +24,7 @@ public interface RegsitrationEventRepo extends JpaRepository<RegsitrationEvent, 
     // FIND BY USER
     List<RegsitrationEvent>
     findByUser(Integer userId);
+
+    // DELETE ALL REGISTRATIONS FOR AN EVENT (used before deleting the event)
+    void deleteByEvents_EventId(Long eventId);
 }

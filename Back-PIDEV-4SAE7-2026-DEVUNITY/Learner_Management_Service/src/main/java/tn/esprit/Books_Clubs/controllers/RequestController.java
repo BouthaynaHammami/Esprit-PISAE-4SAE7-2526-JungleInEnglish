@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import tn.esprit.jungleinenglishuser.Services.IServices.IRequestService;
-import tn.esprit.jungleinenglishuser.entities.MembershipRequest;
+import tn.esprit.Services.IServices.IRequestService;
+import tn.esprit.Books_Clubs.entities.MembershipRequest;
 
 import java.util.List;
 

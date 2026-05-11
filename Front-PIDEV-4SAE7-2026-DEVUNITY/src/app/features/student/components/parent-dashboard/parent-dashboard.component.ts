@@ -89,6 +89,9 @@ export class ParentDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.parentId = this.authService.getUserId() ?? 0;
+    // Restore child selected from english-kids navigation if available
+    const stored = this.childService.getCurrentChild();
+    if (stored) this.selectedChild = stored;
     this.loadChildren();
   }
 
@@ -111,6 +114,16 @@ export class ParentDashboardComponent implements OnInit, OnDestroy {
             : children;
           if (this.children.length > 0 && !this.selectedChild) {
             this.selectChild(this.children[0]);
+          } else if (this.selectedChild) {
+            // Came from english-kids with a pre-selected child — load its progress
+            this.loadProgress(this.selectedChild);
+          }
+          // Auto-start pending activity from english-kids page
+          const pendingId = sessionStorage.getItem('pendingActivityId');
+          if (pendingId) {
+            sessionStorage.removeItem('pendingActivityId');
+            this.activeTab = 'play';
+            this.loadActivitiesAndStart(Number(pendingId));
           }
         },
         error: () => { this.error = 'Failed to load children. Please try again.'; }
@@ -147,6 +160,25 @@ export class ParentDashboardComponent implements OnInit, OnDestroy {
     if (tab === 'play' && this.activities.length === 0) {
       this.loadActivities();
     }
+  }
+
+  // ── Load activities then immediately start one by id ──────────────────────
+  loadActivitiesAndStart(activityId: number): void {
+    this.activitiesLoading = true;
+    this.activityService.getAllActivities()
+      .pipe(takeUntil(this.destroy$), finalize(() => this.activitiesLoading = false))
+      .subscribe({
+        next: (acts) => {
+          this.activities = acts;
+          this.filterActivities();
+          const target = acts.find(a => a.activityId === activityId);
+          if (target) {
+            this.playView = 'activities';
+            this.startActivity(target);
+          }
+        },
+        error: () => {}
+      });
   }
 
   // ── Activities ────────────────────────────────────────────────────────────

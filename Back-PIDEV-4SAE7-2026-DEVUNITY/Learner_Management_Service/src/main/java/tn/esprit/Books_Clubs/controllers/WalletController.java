@@ -3,9 +3,9 @@ package tn.esprit.Books_Clubs.Controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.jungleinenglishuser.Services.IServices.IWalletService;
-import tn.esprit.jungleinenglishuser.entities.Transaction;
-import tn.esprit.jungleinenglishuser.entities.Wallet;
+import tn.esprit.Services.IServices.IWalletService;
+import tn.esprit.Books_Clubs.entities.Transaction;
+import tn.esprit.Books_Clubs.entities.Wallet;
 
 import java.math.BigDecimal;
 import java.util.List;

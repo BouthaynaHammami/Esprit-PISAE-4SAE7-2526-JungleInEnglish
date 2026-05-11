@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tn.esprit.Books_Clubs.entities.*;
-import tn.esprit.Books_Clubs.repositories.*;
+import tn.esprit.repositories.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -5,7 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.jungleinenglishuser.Services.ImplServices.InvoiceService;
+import tn.esprit.Services.ImplServices.InvoiceService;
 
 @RestController
 @RequestMapping("/invoice")

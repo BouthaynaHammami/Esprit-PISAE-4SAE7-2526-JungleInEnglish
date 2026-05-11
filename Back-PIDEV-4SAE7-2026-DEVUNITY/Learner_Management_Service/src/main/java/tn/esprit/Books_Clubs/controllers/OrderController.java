@@ -2,9 +2,9 @@ package tn.esprit.Books_Clubs.Controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.jungleinenglishuser.Services.IServices.IOrderService;
-import tn.esprit.jungleinenglishuser.entities.*;
-import tn.esprit.jungleinenglishuser.repositories.OrderRepository;
+import tn.esprit.Services.IServices.IOrderService;
+import tn.esprit.Books_Clubs.entities.*;
+import tn.esprit.repositories.OrderRepository;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package tn.esprit.Books_Clubs.Controllers;
 
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.jungleinenglishuser.Services.IServices.IAuthorService;
-import tn.esprit.jungleinenglishuser.entities.*;
+import tn.esprit.Services.IServices.IAuthorService;
+import tn.esprit.Books_Clubs.entities.*;
 
 import java.util.List;
 

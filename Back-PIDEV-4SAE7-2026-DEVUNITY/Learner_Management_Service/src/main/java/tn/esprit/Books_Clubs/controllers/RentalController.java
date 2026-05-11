@@ -2,9 +2,9 @@ package tn.esprit.Books_Clubs.Controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.jungleinenglishuser.Services.IServices.IRentalService;
-import tn.esprit.jungleinenglishuser.entities.*;
-import tn.esprit.jungleinenglishuser.repositories.RentalRepository;
+import tn.esprit.Services.IServices.IRentalService;
+import tn.esprit.Books_Clubs.entities.*;
+import tn.esprit.repositories.RentalRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

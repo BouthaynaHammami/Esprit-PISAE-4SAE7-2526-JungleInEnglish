@@ -31,7 +31,15 @@ public class Child {
     @ManyToOne
     @JoinColumn(name = "parent_id", nullable = true)
     private Parent parent;
-    
+
+    // Flat parentId (userId from auth service) for direct frontend filtering
+    @Column(name = "parent_user_id", nullable = true)
+    private Long parentId;
+
+    // Avatar emoji chosen by the parent
+    @Column(nullable = true)
+    private String avatar;
+
     @ManyToOne
     @JoinColumn(name = "level_id", nullable = true)
     private LevelChildren levelChildren;

@@ -242,7 +242,7 @@
                   <div class="act-cat-icon">{{ getCategoryIcon(act.category) }}</div>
                   <span [class]="'diff-badge ' + getDifficultyClass(act.difficulty)">{{ act.difficulty }}</span>
                 </div>
-                <img *ngIf="act.imageUrl" [src]="act.imageUrl" [alt]="act.title" class="act-image"
+                <img *ngIf="act.imageUrl && act.imageUrl.startsWith('http')" [src]="act.imageUrl" [alt]="act.title" class="act-image"
                      (error)="$any($event.target).style.display='none'">
                 <div class="act-card-body">
                   <h3 class="act-title">{{ act.title }}</h3>
@@ -283,7 +283,7 @@
           </div>
 
           <div class="question-card" *ngIf="currentQuestion">
-            <img *ngIf="currentQuestion.imageUrl" [src]="currentQuestion.imageUrl" class="question-img"
+            <img *ngIf="currentQuestion.imageUrl && currentQuestion.imageUrl.startsWith('http')" [src]="currentQuestion.imageUrl" class="question-img"
                  (error)="$any($event.target).style.display='none'">
             <h2 class="question-text">{{ currentQuestion.questionText }}</h2>
             <div class="answer-options">

@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ChildService } from '../../../../core/services/language/child.service';
 import { EnglishActivityService } from '../../../../core/services/language/english-activity.service';
@@ -26,6 +27,7 @@ export class StudentEnglishKidsComponent implements OnInit, OnDestroy {
 
   isParent = false;
   parentId: number | null = null;
+  noChildSelectedError = false;
 
   categories = Object.values(ActivityCategory);
   difficulties = Object.values(DifficultyLevel);
@@ -35,7 +37,8 @@ export class StudentEnglishKidsComponent implements OnInit, OnDestroy {
   constructor(
     private childService: ChildService,
     private activityService: EnglishActivityService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -109,6 +112,23 @@ export class StudentEnglishKidsComponent implements OnInit, OnDestroy {
     this.selectedCategory = '';
     this.selectedDifficulty = '';
     this.applyFilters();
+  }
+
+  startActivity(activity: Activity): void {
+    // If parent view, a child must be selected
+    if (this.isParent && !this.selectedChild) {
+      this.noChildSelectedError = true;
+      setTimeout(() => this.noChildSelectedError = false, 3000);
+      return;
+    }
+    this.noChildSelectedError = false;
+    // Store pending activity so parent-dashboard can auto-start it
+    sessionStorage.setItem('pendingActivityId', String(activity.activityId));
+    // Store selected child so parent-dashboard picks it up
+    if (this.selectedChild) {
+      this.childService.setCurrentChild(this.selectedChild);
+    }
+    this.router.navigate(['/student/parent-dashboard']);
   }
 
   getCategoryIcon(category: ActivityCategory): string {

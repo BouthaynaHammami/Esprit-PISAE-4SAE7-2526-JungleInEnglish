@@ -5,5 +5,6 @@ public enum Role {
     STUDENT,
     TUTOR,
     EMPLOYE,
-    COMPANY
+    COMPANY,
+    Parent
 }

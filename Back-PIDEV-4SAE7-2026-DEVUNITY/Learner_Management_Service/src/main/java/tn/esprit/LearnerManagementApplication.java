@@ -11,7 +11,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication(scanBasePackages = {
     "tn.esprit.learner_managment_service",
     "tn.esprit.LevelTest",
-    "tn.esprit.Books_Clubs"
+    "tn.esprit.Books_Clubs",
+    "tn.esprit.Services",
+    "tn.esprit.Config"
 })
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = {"tn.esprit.LevelTest"})
@@ -19,7 +21,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
     "tn.esprit.learner_managment_service.UserManagement",
     "tn.esprit.learner_managment_service.DropoutPrediction",
     "tn.esprit.LevelTest.Repositories",
-    "tn.esprit.Books_Clubs.repositories"
+    "tn.esprit.repositories"
 })
 @EntityScan(basePackages = {
     "tn.esprit.learner_managment_service.UserManagement",
