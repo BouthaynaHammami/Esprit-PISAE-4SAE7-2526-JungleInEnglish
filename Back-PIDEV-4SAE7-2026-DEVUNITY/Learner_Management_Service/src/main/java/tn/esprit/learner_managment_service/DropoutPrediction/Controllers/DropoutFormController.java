@@ -25,12 +25,8 @@ public class DropoutFormController {
 
     @PostMapping
     public ResponseEntity<DropoutFormResponse> createForm(@RequestBody DropoutFormRequest request) throws Exception {
-        try {
-            DropoutFormResponse response = dropoutFormService.createForm(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        DropoutFormResponse response = dropoutFormService.createForm(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping

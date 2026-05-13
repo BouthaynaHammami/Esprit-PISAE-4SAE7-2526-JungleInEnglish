@@ -144,8 +144,31 @@ public class GlobalExceptionHandler {
                 .error("Invalid Request")
                 .message(ex.getMessage())
                 .build();
-
+ 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    /**
+     * Gère les erreurs d'état illégal (ex: service ML indisponible ou authentification).
+     */
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalState(IllegalStateException ex) {
+        log.error("Illegal state error: {}", ex.getMessage());
+        
+        boolean isAuthError = ex.getMessage() != null && 
+                             (ex.getMessage().toLowerCase().contains("authenticated") || 
+                              ex.getMessage().toLowerCase().contains("authentifié"));
+        
+        HttpStatus status = isAuthError ? HttpStatus.UNAUTHORIZED : HttpStatus.SERVICE_UNAVAILABLE;
+        
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(status.value())
+                .error(isAuthError ? "Unauthorized" : "Service Unavailable")
+                .message(ex.getMessage())
+                .build();
+ 
+        return ResponseEntity.status(status).body(response);
     }
 
     /**

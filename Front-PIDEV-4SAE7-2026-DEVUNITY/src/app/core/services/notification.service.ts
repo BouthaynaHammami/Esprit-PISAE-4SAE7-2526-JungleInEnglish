@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private readonly baseUrl = `${environment.apiUrl}/activities/api/notifications`;
+  private readonly baseUrl = `${environment.apiUrl}/activities/api/api/notifications`;
   
   private unreadCountSubject = new BehaviorSubject<number>(0);
   public unreadCount$ = this.unreadCountSubject.asObservable();

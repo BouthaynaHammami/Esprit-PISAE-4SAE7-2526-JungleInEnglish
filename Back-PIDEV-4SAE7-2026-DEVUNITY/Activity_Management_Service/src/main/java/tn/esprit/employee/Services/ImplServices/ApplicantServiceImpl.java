@@ -3,7 +3,9 @@ package tn.esprit.employee.Services.ImplServices;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.employee.Dto.CvAnalysisResult;
 import tn.esprit.employee.Dto.UserDTO;
 import tn.esprit.employee.Entities.Applicant;
@@ -15,6 +17,7 @@ import tn.esprit.employee.Repositories.ApplicantRepository;
 import tn.esprit.employee.Repositories.RecruitmentRepository;
 import tn.esprit.employee.Services.IServices.IApplicantService;
 import java.util.List;
+import java.util.Map;
 
 import tn.esprit.employee.Dto.Role;
 import tn.esprit.employee.Services.IServices.ICvAnalysisService;
@@ -30,6 +33,18 @@ public class ApplicantServiceImpl implements IApplicantService {
     private final EmployeeUserClient userClient;
     private final INotificationService notificationService;
     private final ICvAnalysisService cvAnalysisService;
+    private final Cloudinary cloudinary;
+
+    @Override
+    public String uploadCv(MultipartFile file) {
+        try {
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("resource_type", "auto"));
+            return (String) uploadResult.get("url");
+        } catch (Exception e) {
+            log.error("Failed to upload CV to Cloudinary", e);
+            throw new RuntimeException("CV upload failed: " + e.getMessage());
+        }
+    }
 
     @Override
     public List<Applicant> getAll() {
@@ -50,12 +65,15 @@ public class ApplicantServiceImpl implements IApplicantService {
         if (applicant != null && applicant.getUserId() != null) {
             try {
                 UserDTO user = userClient.getUserById(applicant.getUserId());
-                if (user != null) {
+                if (user != null && user.getFirstName() != null) {
                     applicant.setFirstName(user.getFirstName());
                     applicant.setLastName(user.getLastName());
+                } else {
+                    applicant.setFirstName("User");
+                    applicant.setLastName(applicant.getUserId().toString());
                 }
             } catch (Exception e) {
-                System.err.println("Failed to fetch user names: " + e.getMessage());
+                log.warn("Failed to fetch user names for user {}: {}", applicant.getUserId(), e.getMessage());
             }
         }
     }
@@ -145,20 +163,22 @@ public class ApplicantServiceImpl implements IApplicantService {
         }
         
         // 3. Récupérer les informations du recrutement
-        String skills = "General skills"; // Valeur par défaut
+        String skills = "";
         Integer experienceYears = 0;
+        Recruitment recruitment = null;
         
         if (recruitmentId != null) {
-            Recruitment recruitment = recruitmentRepository.findById(recruitmentId).orElse(null);
-            if (recruitment != null) {
-                skills = recruitment.getPositionTitle() + " - " + recruitment.getDepartment();
-            }
+            recruitment = recruitmentRepository.findById(recruitmentId).orElse(null);
         } else if (applicant.getRecruitment() != null) {
-            Recruitment recruitment = applicant.getRecruitment();
-            skills = recruitment.getPositionTitle() + " - " + recruitment.getDepartment();
+            recruitment = applicant.getRecruitment();
+        }
+
+        if (recruitment != null) {
+            skills = recruitment.getRequiredSkills() != null ? recruitment.getRequiredSkills() : recruitment.getPositionTitle();
+            experienceYears = recruitment.getExperienceYears() != null ? recruitment.getExperienceYears() : 0;
         }
         
-        log.info("Analyzing CV from URL: {} with skills: {}", applicant.getCv(), skills);
+        log.info("Analyzing CV from URL: {} with skills: {} and exp: {}", applicant.getCv(), skills, experienceYears);
         
         // 4. Analyser le CV
         try {
@@ -213,51 +233,59 @@ public class ApplicantServiceImpl implements IApplicantService {
     private void updateApplicantStatus(Applicant applicant, CvAnalysisResult result) {
         ApplicantStatus newStatus;
         String notificationMessage;
+        String title = "Recruitment AI Analysis";
+        
+        // Stocker le résultat IA dans le candidat
+        applicant.setAiResult(result);
         
         switch (result.getDecision()) {
             case "ACCEPTED":
-                newStatus = ApplicantStatus.ACCEPTED;
-                notificationMessage = String.format("Your application has been ACCEPTED by AI analysis (Score: %d/100). Reason: %s", 
-                    result.getScore(), result.getRaison());
-                log.info("Applicant {} ACCEPTED by ML with score {}", applicant.getId(), result.getScore());
+                newStatus = ApplicantStatus.PENDING; // Keep PENDING but with high AI score for admin to decide
+                notificationMessage = String.format("Good news! Your CV for '%s' was analyzed as a '%s' profile with a score of %d/100.", 
+                    applicant.getRecruitment() != null ? applicant.getRecruitment().getPositionTitle() : "the position",
+                    result.getCluster(), result.getScore());
                 break;
                 
             case "REJECTED":
                 newStatus = ApplicantStatus.REJECTED;
-                notificationMessage = String.format("Your application has been REJECTED by AI analysis (Score: %d/100). Reason: %s", 
-                    result.getScore(), result.getRaison());
-                log.info("Applicant {} REJECTED by ML with score {}", applicant.getId(), result.getScore());
+                notificationMessage = String.format("We regret to inform you that your profile for '%s' does not match our current requirements (AI Score: %d/100).", 
+                    applicant.getRecruitment() != null ? applicant.getRecruitment().getPositionTitle() : "the position",
+                    result.getScore());
                 break;
                 
             case "PENDING":
             default:
                 newStatus = ApplicantStatus.PENDING;
-                notificationMessage = String.format("Your application is under review (Score: %d/100). Reason: %s", 
-                    result.getScore(), result.getRaison());
-                log.info("Applicant {} set to PENDING by ML with score {}", applicant.getId(), result.getScore());
+                notificationMessage = String.format("Your CV for '%s' is being reviewed by our team. AI Cluster: %s.", 
+                    applicant.getRecruitment() != null ? applicant.getRecruitment().getPositionTitle() : "the position",
+                    result.getCluster());
                 break;
         }
         
         // Mettre à jour le statut
         applicant.setStatus(newStatus);
         applicantRepository.save(applicant);
-        log.info("Updated applicant {} status to {}", applicant.getId(), newStatus);
+        log.info("Updated applicant {} status to {} with AI decision {}", applicant.getId(), newStatus, result.getDecision());
         
-        // Envoyer une notification au candidat
+        // Envoyer une notification WebSocket au candidat
         try {
             if (applicant.getUserId() != null) {
                 UserDTO user = userClient.getUserById(applicant.getUserId());
                 if (user != null && user.getEmail() != null) {
-                    notificationService.sendToUser(
+                    notificationService.createNotification(
                         user.getEmail(),
+                        user.getUserId(),
+                        title,
                         notificationMessage,
-                        NotificationType.APPLICANT_STATUS_CHANGED
+                        NotificationType.APPLICANT_STATUS_CHANGED,
+                        "Applicant",
+                        applicant.getId()
                     );
-                    log.info("Notification sent to user {}", user.getEmail());
+                    log.info("WebSocket Notification sent to user {}", user.getEmail());
                 }
             }
         } catch (Exception e) {
-            log.error("Failed to send notification to applicant: {}", e.getMessage());
+            log.warn("Failed to notify applicant about status change: {}", e.getMessage());
         }
     }
 }

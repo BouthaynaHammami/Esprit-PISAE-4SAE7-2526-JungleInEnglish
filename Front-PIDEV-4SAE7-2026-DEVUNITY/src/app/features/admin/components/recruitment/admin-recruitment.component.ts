@@ -58,6 +58,11 @@ export class AdminRecruitmentComponent implements AfterViewInit {
     this.el('rc-modal-title').textContent = 'New recruitment';
     this.el<HTMLInputElement>('rc-f-position').value = '';
     this.el<HTMLInputElement>('rc-f-department').value = '';
+    this.el<HTMLInputElement>('rc-f-skills').value = '';
+    this.el<HTMLInputElement>('rc-f-exp').value = '0';
+    this.el<HTMLInputElement>('rc-f-location').value = '';
+    (this.el('rc-f-contract') as HTMLSelectElement).value = 'CDI';
+    (this.el('rc-f-desc') as HTMLTextAreaElement).value = '';
     (this.el('rc-f-status') as HTMLSelectElement).value = 'OPEN';
     this.el<HTMLInputElement>('rc-f-opened').value = new Date().toISOString().slice(0, 10);
     this.clearErrors();
@@ -71,6 +76,11 @@ export class AdminRecruitmentComponent implements AfterViewInit {
     this.el('rc-modal-title').textContent = 'Edit recruitment';
     this.el<HTMLInputElement>('rc-f-position').value = rec.positionTitle || '';
     this.el<HTMLInputElement>('rc-f-department').value = rec.department || '';
+    this.el<HTMLInputElement>('rc-f-skills').value = rec.requiredSkills || '';
+    this.el<HTMLInputElement>('rc-f-exp').value = String(rec.experienceYears || 0);
+    this.el<HTMLInputElement>('rc-f-location').value = rec.location || '';
+    (this.el('rc-f-contract') as HTMLSelectElement).value = rec.contractType || 'CDI';
+    (this.el('rc-f-desc') as HTMLTextAreaElement).value = rec.description || '';
     (this.el('rc-f-status') as HTMLSelectElement).value = rec.status || 'OPEN';
     this.el<HTMLInputElement>('rc-f-opened').value = this.getRawDate(rec.openedAt);
     this.clearErrors();
@@ -100,6 +110,11 @@ export class AdminRecruitmentComponent implements AfterViewInit {
   saveRecruitment(): void {
     const positionTitle = (this.el('rc-f-position')   as HTMLInputElement).value.trim();
     const department    = (this.el('rc-f-department') as HTMLInputElement).value.trim();
+    const requiredSkills = (this.el('rc-f-skills')     as HTMLInputElement).value.trim();
+    const experienceYears = Number((this.el('rc-f-exp') as HTMLInputElement).value);
+    const location      = (this.el('rc-f-location')   as HTMLInputElement).value.trim();
+    const contractType  = (this.el('rc-f-contract')   as HTMLSelectElement).value;
+    const description   = (this.el('rc-f-desc')       as HTMLTextAreaElement).value.trim();
     const status        = (this.el('rc-f-status')     as HTMLSelectElement).value as RecruitmentStatus;
     const openedAt      = (this.el('rc-f-opened')     as HTMLInputElement).value;
 
@@ -114,6 +129,11 @@ export class AdminRecruitmentComponent implements AfterViewInit {
     const payload: Recruitment = {
       positionTitle,
       department,
+      requiredSkills,
+      experienceYears,
+      location,
+      contractType: contractType as any,
+      description,
       status,
       openedAt: openedAt ? new Date(openedAt) : new Date()
     };
@@ -486,13 +506,22 @@ export class AdminRecruitmentComponent implements AfterViewInit {
           ? `<div class="text-[10px] font-bold text-[#006D77] mt-1 bg-[#EDF6F9] px-2 py-0.5 rounded-md inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${this.escHtml(app.interview.title)}</div>`
           : '';
 
-        const aiAnalysisInfo = analysisResult 
-          ? `<div class="mt-2 p-2 rounded-xl bg-[#EDF6F9]/50 border border-[#83C5BE]/30">
-               <div class="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 ${analysisResult.decision === 'ACCEPTED' ? 'text-green-600' : 'text-[#006D77]'}">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg> AI: ${analysisResult.decision || 'PENDING'}
+        const aiResult = app.aiResult;
+        const aiAnalysisInfo = aiResult 
+          ? `<div class="mt-3 p-3 rounded-2xl bg-white border-2 border-[#83C5BE]/20 shadow-sm relative overflow-hidden">
+               <div class="absolute top-0 right-0 px-2 py-0.5 bg-[#006D77] text-white text-[8px] font-black uppercase tracking-tighter rounded-bl-lg">AI Engine</div>
+               <div class="text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 ${aiResult.decision === 'ACCEPTED' ? 'text-green-600' : 'text-[#006D77]'}">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg> 
+                 Cluster: ${aiResult.cluster || 'N/A'}
                </div>
-               ${analysisResult.score ? `<div class="text-xs font-bold text-gray-700 mt-1">Score: ${analysisResult.score}/100</div>` : ''}
-               ${analysisResult.summary ? `<div class="text-xs text-gray-500 mt-1 line-clamp-2" title="${this.escHtml(analysisResult.summary)}">${this.escHtml(analysisResult.summary)}</div>` : ''}
+               ${aiResult.score ? `
+                 <div class="flex items-center gap-2 mt-1.5">
+                   <div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                     <div class="h-full rounded-full transition-all duration-1000 ${aiResult.score > 70 ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]' : aiResult.score > 40 ? 'bg-yellow-500' : 'bg-red-500'}" style="width: ${aiResult.score}%"></div>
+                   </div>
+                   <span class="text-[10px] font-black text-gray-800">${aiResult.score}%</span>
+                 </div>` : ''}
+               ${aiResult.raison ? `<div class="text-[11px] text-gray-600 mt-2 leading-relaxed font-medium bg-[#EDF6F9]/30 p-2 rounded-lg border border-[#83C5BE]/10">${this.escHtml(aiResult.raison)}</div>` : ''}
              </div>`
           : '';
 

@@ -176,3 +176,8 @@ def get_course_recommendations(request: CourseRecommendationRequest) -> CourseRe
 
 
 app.include_router(router)
+ 
+if __name__ == "__main__":
+    import uvicorn
+    logger.info(f"Starting ML Service on port {SERVICE_PORT}")
+    uvicorn.run(app, host="0.0.0.0", port=SERVICE_PORT)

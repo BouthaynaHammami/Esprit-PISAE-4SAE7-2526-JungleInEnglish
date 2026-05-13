@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.employee.Dto.CvAnalysisResult;
 import tn.esprit.employee.Dto.UserDTO;
 import tn.esprit.employee.Entities.Applicant;
@@ -82,6 +83,17 @@ public class ApplicantController {
     @GetMapping("/interview/{interviewId}")
     public ResponseEntity<List<Applicant>> getByInterview(@PathVariable Long interviewId) {
         return ResponseEntity.ok(applicantService.getByInterviewId(interviewId));
+    }
+
+    @PostMapping("/upload-cv")
+    public ResponseEntity<String> uploadCv(@RequestParam("file") MultipartFile file) {
+        try {
+            String url = applicantService.uploadCv(file);
+            return ResponseEntity.ok(url);
+        } catch (Exception e) {
+            log.error("Error uploading CV", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     // ─── AI CV Analysis ────────────────────────────────────────

@@ -82,15 +82,20 @@ public class DropoutFormServiceImpl implements DropoutFormService {
             .technicalIssuesFrequency(request.getTechnicalIssuesFrequency())
             .build();
 
-        ResponseEntity<MlPredictResponse> response = restTemplate.postForEntity(
-            mlServiceBaseUrl + "/predict",
-            mlRequest,
-            MlPredictResponse.class
-        );
+        ResponseEntity<MlPredictResponse> response;
+        try {
+            response = restTemplate.postForEntity(
+                mlServiceBaseUrl + "/predict",
+                mlRequest,
+                MlPredictResponse.class
+            );
+        } catch (Exception e) {
+            throw new IllegalStateException("Le service de prédiction ML est indisponible: " + e.getMessage());
+        }
 
         MlPredictResponse mlResponse = response.getBody();
         if (mlResponse == null) {
-            throw new IllegalStateException("ML response body is empty");
+            throw new IllegalStateException("La réponse du service ML est vide");
         }
 
         DropoutForm form = DropoutForm.builder()
@@ -142,10 +147,13 @@ public class DropoutFormServiceImpl implements DropoutFormService {
     }
 
     private DropoutFormResponse toResponse(DropoutForm form) {
+        Integer userId = (form.getUser() != null) ? form.getUser().getUserId() : null;
+        String userEmail = (form.getUser() != null) ? form.getUser().getEmail() : "Unknown";
+
         return DropoutFormResponse.builder()
             .id(form.getId())
-            .userId(form.getUser().getUserId())
-            .userEmail(form.getUser().getEmail())
+            .userId(userId)
+            .userEmail(userEmail)
             .motivationLevel(form.getMotivationLevel())
             .weeklyStudyHours(form.getWeeklyStudyHours())
             .freeTimeHoursPerWeek(form.getFreeTimeHoursPerWeek())

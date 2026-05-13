@@ -4,10 +4,17 @@ export type RecruitmentStatus = 'OPEN' | 'CLOSED' | 'CANCELLED';
 export type ApplicantStatus   = 'PENDING' | 'ACCEPTED' | 'REJECTED';
 export type MeetingStatus     = 'SCHEDULED' | 'DONE' | 'CANCELLED' | 'ENLIGNE' | 'PRESENTIEL';
 
+export type ContractType = 'CDI' | 'CDD' | 'FREELANCE' | 'STAGE';
+
 export interface Recruitment {
   id?: number;
   positionTitle: string;
   department: string;
+  requiredSkills?: string;
+  experienceYears?: number;
+  description?: string;
+  location?: string;
+  contractType?: ContractType;
   status?: RecruitmentStatus;
   openedAt?: string | Date;
   interviews?: Interview[];
@@ -33,6 +40,12 @@ export interface Applicant {
   firstName?: string;
   lastName?: string;
   cv?: string;
+  aiResult?: {
+    cluster?: string;
+    decision?: string;
+    raison?: string;
+    score?: number;
+  };
   status?: ApplicantStatus;
   recruitment?: Partial<Recruitment>;
   interview?: Partial<Interview>;

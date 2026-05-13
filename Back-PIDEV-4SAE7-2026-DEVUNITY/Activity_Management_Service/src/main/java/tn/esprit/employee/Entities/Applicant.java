@@ -6,6 +6,8 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.Date;
 
+import tn.esprit.employee.Dto.CvAnalysisResult;
+
 @Entity
 @Getter
 @Setter
@@ -21,6 +23,9 @@ public class Applicant {
     private String reponse;
     private Long userId;
     private String cv;
+    
+    @Embedded
+    private CvAnalysisResult aiResult;
     
     @Transient
     private String firstName;

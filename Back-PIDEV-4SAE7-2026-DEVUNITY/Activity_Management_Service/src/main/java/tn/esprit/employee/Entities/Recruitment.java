@@ -20,6 +20,13 @@ public class Recruitment {
 
     private String positionTitle;
     private String department;
+    private String requiredSkills;
+    private Integer experienceYears;
+    private String description;
+    private String location;
+
+    @Enumerated(EnumType.STRING)
+    private ContractType contractType;
 
     @Enumerated(EnumType.STRING)
     private RecruitmentStatus status;

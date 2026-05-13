@@ -93,6 +93,10 @@ export class RecruitmentService {
     return this.http.delete<void>(`${this.applicantsUrl}/${id}`);
   }
 
+  uploadCv(formData: FormData): Observable<string> {
+    return this.http.post(`${this.applicantsUrl}/upload-cv`, formData, { responseType: 'text' });
+  }
+
   // ─── AI Analysis ──────────────────────────────────────
   analyzeCV(applicantId: number, recruitmentId?: number): Observable<any> {
     const options = recruitmentId 

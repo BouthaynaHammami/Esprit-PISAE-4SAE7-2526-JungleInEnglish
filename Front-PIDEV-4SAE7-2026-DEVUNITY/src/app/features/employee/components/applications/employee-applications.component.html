@@ -18,11 +18,6 @@
     <span>Session issue detected: Please log out and log back in to sync your application history.</span>
   </div>
 
-  <!-- SUCCESS MESSAGE -->
-  <div *ngIf="submitSuccess" class="success-banner">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-    <span>Application submitted successfully! We'll get back to you soon.</span>
-  </div>
 
   <!-- LOADING STATE -->
   <div *ngIf="loadingApplications && !myApplications.length" class="loading-state">
@@ -78,7 +73,7 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
             <span>Details</span>
           </button>
-          <button class="action-btn" (click)="openApplyModal()">
+          <button class="action-btn" routerLink="/employee/recruitments">
             <span>Apply More</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
           </button>
@@ -92,7 +87,7 @@
     <div class="empty-icon">📋</div>
     <div class="empty-title">No Applications Yet</div>
     <div class="empty-desc">Start your hiring journey by applying to available positions. Click the button below to explore opportunities.</div>
-    <button class="apply-action-btn" (click)="openApplyModal()">Browse Positions</button>
+    <button class="apply-action-btn" routerLink="/employee/recruitments">Browse Positions</button>
   </div>
 
   <!-- APPLICATION DETAILS MODAL -->
@@ -132,6 +127,26 @@
           <div class="response-box">{{ selectedApplication.reponse }}</div>
         </div>
 
+        <!-- AI ANALYSIS SECTION -->
+        <div class="detail-section ai-section" *ngIf="selectedApplication.aiResult">
+          <div class="ai-header">
+            <div class="ai-title-group">
+              <label class="section-label ai-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"></path><path d="M12 12L2.69 7.04"></path><path d="M12 22a10 10 0 0 0 10-10H12v10z"></path></svg>
+                AI Insights & Matching
+              </label>
+            </div>
+            <div class="ai-score" [ngClass]="getScoreClass(selectedApplication.aiResult.score)">
+              {{ selectedApplication.aiResult.score }}% Match
+            </div>
+          </div>
+          
+          <div class="ai-reasoning-box">
+            <div class="ai-badge">AI ANALYSIS</div>
+            <p>{{ selectedApplication.aiResult.raison }}</p>
+          </div>
+        </div>
+
         <div class="detail-section" *ngIf="selectedApplication.cv">
           <label class="section-label">Your CV</label>
           <a [href]="selectedApplication.cv" target="_blank" class="cv-link">
@@ -147,66 +162,5 @@
     </div>
   </div>
 
-  <!-- APPLY MODAL -->
-  <div class="modal-overlay" *ngIf="showApplyModal" (click)="closeApplyModal()">
-    <div class="apply-modal" (click)="$event.stopPropagation()">
-      
-      <div class="modal-header">
-        <div class="modal-title-group">
-          <h2 class="modal-title">Apply to Position</h2>
-          <p class="modal-subtitle">Submit your application for a job opportunity</p>
-        </div>
-      </div>
-
-      <div class="modal-body">
-        <label class="input-label">Select Position</label>
-        <div *ngIf="loadingRecruitments" class="loading-input">Loading positions…</div>
-        <select *ngIf="!loadingRecruitments" [(ngModel)]="selectedRecruitmentId" class="modern-select">
-          <option [ngValue]="null">-- Choose a position --</option>
-          <option *ngFor="let r of getAvailableRecruitments()" [ngValue]="r.id">
-            {{ r.positionTitle }} ({{ r.department }})
-          </option>
-        </select>
-        <div *ngIf="!loadingRecruitments && recruitments.length > 0 && getAvailableRecruitments().length === 0" class="info-hint">
-          ✨ You have applied for all available positions!
-        </div>
-
-        <label class="input-label" style="margin-top: 20px">Cover Letter / Response</label>
-        <textarea
-          [(ngModel)]="form.reponse"
-          rows="5"
-          class="modern-textarea"
-          placeholder="Why are you a good fit for this role? Tell us about your experience and motivation."
-        ></textarea>
-
-        <label class="input-label" style="margin-top: 20px">CV Link (URL)</label>
-        <div style="display: flex; gap: 8px;">
-          <input
-            [(ngModel)]="form.cv"
-            class="modern-input"
-            style="flex: 1;"
-            placeholder="https://drive.google.com/…"
-            type="url"
-          />
-          <button class="preview-btn" title="Preview" (click)="togglePreview()" [disabled]="!form.cv">
-            👁️
-          </button>
-        </div>
-        <div *ngIf="showPreview && form.cv" class="preview-box">
-          <iframe [src]="getSafeViewerUrl(form.cv)" frameborder="0" style="width: 100%; height: 300px; border-radius: 10px;"></iframe>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button class="modal-btn-secondary" (click)="closeApplyModal()">Cancel</button>
-        <button class="modal-btn-primary" (click)="submitApplication()"
-          [disabled]="submitting || !selectedRecruitmentId || !form.reponse?.trim()">
-          <span *ngIf="!submitting">Submit Application</span>
-          <div *ngIf="submitting" class="mini-loader"></div>
-        </button>
-      </div>
-
-    </div>
-  </div>
 
 </div>

@@ -114,58 +114,125 @@
 
   <!-- ══════════════════  MODAL (CREATE/EDIT)  ══════════════════ -->
   <div id="rc-modal-overlay" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#006D77]/20 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300" (click)="onOverlayClick($event)">
-    <div class="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl border border-white/20 transform scale-95 transition-transform duration-300" id="rc-modal-box">
+    <div class="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl border border-white/20 transform scale-95 transition-transform duration-300 overflow-hidden" id="rc-modal-box">
 
-      <div class="p-8 bg-[#EDF6F9] flex justify-between items-center border-b border-gray-100 rounded-t-[32px]">
+      <!-- Modal Header -->
+      <div class="p-8 bg-gradient-to-r from-[#006D77] to-[#83C5BE] flex justify-between items-center text-white">
         <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-2xl bg-[#006D77] shadow-lg flex items-center justify-center text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
             <div>
-                <h2 class="text-2xl font-bold text-[#006D77]" id="rc-modal-title">New recruitment</h2>
-                <p class="text-[#83C5BE] font-medium text-sm">Fill in the position details</p>
+                <h2 class="text-2xl font-bold tracking-tight" id="rc-modal-title">New Recruitment</h2>
+                <p class="text-white/80 text-sm font-medium">Define the future of your team</p>
             </div>
         </div>
-        <button class="p-3 hover:bg-white rounded-2xl transition-all text-[#006D77]" (click)="closeModal()">
+        <button class="p-2 hover:bg-white/10 rounded-xl transition-all" (click)="closeModal()">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         </button>
       </div>
 
-      <div class="p-8 space-y-6">
+      <div class="p-8 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
         <input type="hidden" id="rc-edit-id" value="" />
 
-        <div class="grid grid-cols-2 gap-6">
-          <div class="space-y-2" id="rc-field-position">
-            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1" for="rc-f-position">Position title *</label>
-            <input type="text" id="rc-f-position" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium rc-input-val" placeholder="e.g. Frontend developer" />
-            <span class="text-red-500 text-xs font-bold hidden rc-error-msg mt-1">Position title is required.</span>
+        <!-- Section: General Information -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-2 pb-2 border-b border-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <h3 class="text-xs font-black text-[#006D77] uppercase tracking-[0.2em]">General Information</h3>
           </div>
-          <div class="space-y-2" id="rc-field-department">
-            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1" for="rc-f-department">Department *</label>
-            <input type="text" id="rc-f-department" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium rc-input-val" placeholder="e.g. Engineering" />
-            <span class="text-red-500 text-xs font-bold hidden rc-error-msg mt-1">Department is required.</span>
+          
+          <div class="grid grid-cols-2 gap-6">
+            <div class="space-y-2" id="rc-field-position">
+              <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" for="rc-f-position">Position Title *</label>
+              <input type="text" id="rc-f-position" class="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium rc-input-val" placeholder="e.g. Senior Architect" />
+              <span class="text-red-500 text-[10px] font-bold hidden rc-error-msg">Required field</span>
+            </div>
+            <div class="space-y-2" id="rc-field-department">
+              <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" for="rc-f-department">Department *</label>
+              <input type="text" id="rc-f-department" class="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium rc-input-val" placeholder="e.g. Product" />
+              <span class="text-red-500 text-[10px] font-bold hidden rc-error-msg">Required field</span>
+            </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-6">
-          <div class="space-y-2">
-            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1" for="rc-f-status">Status</label>
-            <select id="rc-f-status" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
-              <option value="OPEN">Open</option>
-              <option value="CLOSED">Closed</option>
-              <option value="CANCELLED">Cancelled</option>
-            </select>
+        <!-- Section: Requirements & Contract -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-2 pb-2 border-b border-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            <h3 class="text-xs font-black text-[#006D77] uppercase tracking-[0.2em]">Requirements & Contract</h3>
           </div>
-          <div class="space-y-2">
-            <label class="text-[10px] font-black text-[#006D77] uppercase tracking-widest ml-1" for="rc-f-opened">Opening date</label>
-            <input type="date" id="rc-f-opened" class="w-full px-5 py-4 bg-[#EDF6F9]/30 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
+
+          <div class="space-y-2" id="rc-field-skills">
+            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" for="rc-f-skills">Required Skills</label>
+            <input type="text" id="rc-f-skills" class="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="e.g. Java, Docker, React (Comma separated)">
+          </div>
+
+          <div class="grid grid-cols-2 gap-6">
+            <div class="space-y-2" id="rc-field-exp">
+              <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" for="rc-f-exp">Experience (Years)</label>
+              <input type="number" id="rc-f-exp" class="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" min="0" value="0">
+            </div>
+            <div class="space-y-2" id="rc-field-location">
+              <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" for="rc-f-location">Location</label>
+              <input type="text" id="rc-f-location" class="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" placeholder="e.g. Remote, Paris">
+            </div>
+          </div>
+
+          <div class="space-y-2" id="rc-field-contract">
+            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" for="rc-f-contract">Contract Type</label>
+            <div class="relative">
+              <select id="rc-f-contract" class="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
+                <option value="CDI">CDI - Permanent</option>
+                <option value="CDD">CDD - Fixed Term</option>
+                <option value="FREELANCE">Freelance / Contractor</option>
+                <option value="STAGE">Internship</option>
+              </select>
+              <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2" id="rc-field-desc">
+            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" for="rc-f-desc">Job Description</label>
+            <textarea id="rc-f-desc" class="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium min-h-[120px]" placeholder="Outline the role responsibilities and expectations..."></textarea>
+          </div>
+        </div>
+
+        <!-- Section: Status & Timeline -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-2 pb-2 border-b border-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <h3 class="text-xs font-black text-[#006D77] uppercase tracking-[0.2em]">Status & Timeline</h3>
+          </div>
+
+          <div class="grid grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" for="rc-f-status">Current Status</label>
+              <div class="relative">
+                <select id="rc-f-status" class="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium appearance-none">
+                  <option value="OPEN">Open</option>
+                  <option value="CLOSED">Closed</option>
+                  <option value="CANCELLED">Cancelled</option>
+                </select>
+                <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" for="rc-f-opened">Opening Date</label>
+              <input type="date" id="rc-f-opened" class="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent focus:border-[#006D77] focus:bg-white rounded-2xl outline-none transition-all font-medium" />
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="p-8 bg-gray-50/50 flex gap-4 rounded-b-[32px]">
-        <button class="flex-1 py-4 bg-white border-2 border-[#EDF6F9] text-[#006D77] rounded-2xl font-bold hover:bg-[#EDF6F9] transition-all" (click)="closeModal()">Cancel</button>
-        <button class="flex-1 py-4 bg-[#006D77] text-white rounded-2xl font-bold shadow-lg hover:bg-[#83C5BE] transition-all" (click)="saveRecruitment()">Save</button>
+      <!-- Modal Footer -->
+      <div class="p-8 bg-gray-50 flex gap-4 border-t border-gray-100">
+        <button class="flex-1 py-4 bg-white border border-gray-200 text-gray-500 rounded-2xl font-bold hover:bg-gray-100 hover:text-gray-700 transition-all shadow-sm" (click)="closeModal()">Cancel</button>
+        <button class="flex-1 py-4 bg-gradient-to-r from-[#006D77] to-[#83C5BE] text-white rounded-2xl font-bold shadow-lg shadow-[#006D77]/20 hover:scale-[1.02] active:scale-[0.98] transition-all" (click)="saveRecruitment()">Create Position</button>
       </div>
 
     </div>
@@ -264,5 +331,20 @@
   }
   .has-error .rc-error-msg {
     display: block !important;
+  }
+
+  /* Premium Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #006D77;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #83C5BE;
   }
 </style>

@@ -5,9 +5,12 @@ import tn.esprit.employee.Dto.CvAnalysisResult;
 import tn.esprit.employee.Dto.UserDTO;
 import tn.esprit.employee.Entities.Applicant;
 
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface IApplicantService {
+
+    String uploadCv(MultipartFile file);
 
     List<Applicant> getAll();
 

@@ -20,15 +20,7 @@ export class EmployeeApplicationsComponent implements OnInit {
   loadingRecruitments = true;
   loadingApplications = true;
 
-  form: Applicant = { reponse: '', cv: '' };
-  selectedRecruitmentId: number | null = null;
-  submitting = false;
-  submitSuccess = false;
-  submitError = '';
-  showPreview = false;
-
   currentUserId: number | null = null;
-  showApplyModal = false;
   selectedApplication: Applicant | null = null;
   showApplicationDetails = false;
 
@@ -62,13 +54,6 @@ export class EmployeeApplicationsComponent implements OnInit {
       this.loadingRecruitments = false;
       this.loadingApplications = false;
     }
-
-    // Pre-select recruitmentId if navigated with query param
-    this.route.queryParams.subscribe(params => {
-      if (params['recruitmentId']) {
-        this.selectedRecruitmentId = +params['recruitmentId'];
-      }
-    });
   }
 
   loadRecruitments(): void {
@@ -92,52 +77,6 @@ export class EmployeeApplicationsComponent implements OnInit {
     });
   }
 
-  submitApplication(): void {
-    if (!this.selectedRecruitmentId) return;
-    this.submitting = true;
-    this.submitSuccess = false;
-    this.submitError = '';
-
-    const applicant: Applicant = {
-      ...this.form,
-      userId: this.currentUserId ?? undefined,
-      status: 'PENDING',
-      recruitment: { id: this.selectedRecruitmentId }
-    };
-
-    this.recruitmentService.createApplicant(applicant).subscribe({
-      next: (createdApplicant) => {
-        // Send notification to admin about new application
-        const selectedRecruitment = this.recruitments.find(r => r.id === this.selectedRecruitmentId);
-        const userEmail = this.authService.getUserEmail();
-        
-        if (selectedRecruitment && userEmail) {
-          // Send notification to admin
-          this.notificationService.sendNotificationToUser(
-            this.notificationConfig.getAdminEmail(),
-            'New Job Application Received',
-            `A new application has been submitted for ${selectedRecruitment.positionTitle} in ${selectedRecruitment.department} by ${userEmail}`,
-            'APPLICANT_CREATED',
-            createdApplicant.id,
-            'APPLICANT'
-          ).subscribe({
-            next: () => console.log('Notification sent to admin'),
-            error: (err) => console.error('Failed to send notification:', err)
-          });
-        }
-
-        this.submitting = false;
-        this.submitSuccess = true;
-        this.form = { reponse: '', cv: '' };
-        this.selectedRecruitmentId = null;
-        this.loadMyApplications();
-      },
-      error: (err) => {
-        this.submitting = false;
-        this.submitError = err?.error?.message ?? 'Application failed. Please try again.';
-      }
-    });
-  }
 
   getStatusClass(status?: string): string {
     switch (status) {
@@ -147,39 +86,13 @@ export class EmployeeApplicationsComponent implements OnInit {
     }
   }
 
-  togglePreview(): void {
-    this.showPreview = !this.showPreview;
+  getScoreClass(score?: number): string {
+    if (!score) return 'score-low';
+    if (score >= 70) return 'score-high';
+    if (score >= 40) return 'score-medium';
+    return 'score-low';
   }
 
-  getSafeViewerUrl(url: string): SafeResourceUrl {
-    if (!url) return '';
-    let target = url;
-
-    // 1. Handle Google Drive Files (PDF, etc.)
-    if (url.includes('drive.google.com')) {
-      target = url.replace(/\/view(\?.*)?$/, '/preview');
-    } 
-    // 2. Handle Google-native Docs/Slides/Sheets
-    else if (url.includes('docs.google.com') && (url.includes('/document/') || url.includes('/presentation/') || url.includes('/spreadsheets/'))) {
-      target = url.replace(/\/(edit|view|copy)(\?.*)?$/, '/preview');
-    }
-    // 3. Fallback for external direct file links (PDF, DOCX)
-    else {
-      target = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
-    }
-
-    return this.sanitizer.bypassSecurityTrustResourceUrl(target);
-  }
-
-  openApplyModal(): void {
-    this.showApplyModal = true;
-  }
-
-  closeApplyModal(): void {
-    this.showApplyModal = false;
-    this.submitSuccess = false;
-    this.submitError = '';
-  }
 
   openApplicationDetails(app: Applicant): void {
     this.selectedApplication = app;
