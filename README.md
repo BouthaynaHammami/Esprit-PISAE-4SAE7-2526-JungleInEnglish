@@ -1,4 +1,4 @@
-# 🚀 DevUnity — Integrated E-Learning & Professional Development Platform
+# 🚀 DevUnity — Platform E-Learning — Jungle In English
 
 ![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)
 ![Angular](https://img.shields.io/badge/angular-%23DD0031.svg?style=for-the-badge&logo=angular&logoColor=white)
