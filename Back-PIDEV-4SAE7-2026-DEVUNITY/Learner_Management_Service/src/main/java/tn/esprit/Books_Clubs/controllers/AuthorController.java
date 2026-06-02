@@ -1,4 +1,4 @@
-package tn.esprit.Books_Clubs.Controllers;
+package tn.esprit.Books_Clubs.controllers;
 
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.Services.IServices.IAuthorService;

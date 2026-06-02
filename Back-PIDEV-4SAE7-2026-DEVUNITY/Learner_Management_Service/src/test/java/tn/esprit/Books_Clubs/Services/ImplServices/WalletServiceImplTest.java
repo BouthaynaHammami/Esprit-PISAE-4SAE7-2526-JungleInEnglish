@@ -7,12 +7,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tn.esprit.Books_Clubs.entities.Transaction;
+import tn.esprit.Books_Clubs.entities.User;
 import tn.esprit.Books_Clubs.entities.Wallet;
+import tn.esprit.Books_Clubs.entities.Role;
 import tn.esprit.repositories.TransactionRepository;
 import tn.esprit.repositories.WalletRepository;
-import tn.esprit.learner_managment_service.UserManagement.Entities.Role;
-import tn.esprit.learner_managment_service.UserManagement.Entities.User;
-import tn.esprit.learner_managment_service.UserManagement.Repositories.UserRepository;
+import tn.esprit.repositories.BookClubUserRepository;
+import tn.esprit.Services.ImplServices.WalletServiceImpl;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -32,7 +33,7 @@ class WalletServiceImplTest {
     @Mock
     private TransactionRepository transactionRepo;
     @Mock
-    private UserRepository userRepo;
+    private BookClubUserRepository userRepo;
 
     @InjectMocks
     private WalletServiceImpl walletService;

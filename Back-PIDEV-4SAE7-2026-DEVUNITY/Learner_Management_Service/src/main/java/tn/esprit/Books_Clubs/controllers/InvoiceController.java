@@ -1,4 +1,4 @@
-package tn.esprit.Books_Clubs.Controllers;
+package tn.esprit.Books_Clubs.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
