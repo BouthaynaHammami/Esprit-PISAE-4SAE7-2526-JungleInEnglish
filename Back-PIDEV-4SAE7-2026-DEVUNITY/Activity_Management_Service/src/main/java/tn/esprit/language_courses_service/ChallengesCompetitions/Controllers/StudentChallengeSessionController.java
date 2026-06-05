@@ -142,6 +142,24 @@ public class StudentChallengeSessionController {
     }
 
     /**
+     * Get total accumulated score for a user
+     * GET /sessions/user/{userId}/score
+     * 
+     * @param userId - Student ID
+     * @return Total score as Integer
+     */
+    @GetMapping("/user/{userId}/score")
+    public ResponseEntity<?> getUserTotalScore(@PathVariable Long userId) {
+        try {
+            int totalScore = badgeEvaluationService.calculateTotalScore(userId);
+            return ResponseEntity.ok(totalScore);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error retrieving total score: " + e.getMessage());
+        }
+    }
+
+    /**
      * Submit an answer for current challenge in session
      * POST /sessions/{sessionId}/submit
      * 

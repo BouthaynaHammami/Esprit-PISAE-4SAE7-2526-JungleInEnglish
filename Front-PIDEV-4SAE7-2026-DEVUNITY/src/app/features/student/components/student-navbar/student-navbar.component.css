@@ -60,20 +60,16 @@
   color: inherit;
 }
 
-.brand-icon {
-  background: linear-gradient(135deg, var(--primary), #83c5be);
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  box-shadow: 0 8px 24px rgba(6,22,23,0.14);
+.brand-logo {
+  height: 42px;
+  width: 42px;
+  object-fit: cover;
+  border-radius: 50%;
+  filter: drop-shadow(0 2px 6px rgba(0, 109, 119, 0.15));
   transition: transform 220ms cubic-bezier(.2,.9,.3,1);
 }
 
-.brand:hover .brand-icon { transform: translateY(-2px) scale(1.02); }
+.brand:hover .brand-logo { transform: translateY(-2px) scale(1.02); }
 
 .brand-text { display:flex; flex-direction:column; line-height:1; }
 .brand-name { font-size:16px; font-weight:800; color:var(--primary); letter-spacing:0.6px }

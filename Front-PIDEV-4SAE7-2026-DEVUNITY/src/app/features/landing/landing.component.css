@@ -43,25 +43,21 @@
   text-decoration: none;
 }
 
-.brand-icon {
+.brand-logo {
   width: 42px; height: 42px;
-  background: linear-gradient(135deg, #006D77 0%, #83C5BE 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  object-fit: cover;
+  border-radius: 50%;
   box-shadow: 0 4px 14px rgba(0,109,119,0.25);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.brand-wrap:hover .brand-icon {
-  transform: scale(1.05) rotate(-3deg);
+.brand-wrap:hover .brand-logo {
+  transform: scale(1.05);
   box-shadow: 0 6px 20px rgba(0,109,119,0.35);
 }
 
-.brand-icon-sm {
+.brand-logo-sm {
   width: 36px; height: 36px;
-  border-radius: 10px;
 }
 
 .brand-text { display: flex; flex-direction: column; }

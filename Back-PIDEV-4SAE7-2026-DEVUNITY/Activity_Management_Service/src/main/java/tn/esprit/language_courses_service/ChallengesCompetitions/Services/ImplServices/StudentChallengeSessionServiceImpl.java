@@ -172,22 +172,29 @@ public class StudentChallengeSessionServiceImpl implements IStudentChallengeSess
             Challenge challenge = challengeRepository.findById(challengeId).orElse(null);
             int basePoints = (challenge != null && challenge.getPointsPerCorrectAnswer() != null)
                              ? challenge.getPointsPerCorrectAnswer() : 20;
-            
-            // Dynamic points calculation
-            int earnedPoints = Math.max(0, basePoints - wrongAttempts);
+
+            // Dynamic points: deduct 1 point per wrong attempt, never below 1 if correct
+            int earnedPoints = Math.max(1, basePoints - wrongAttempts);
             session.setTotalScore(session.getTotalScore() + earnedPoints);
-            
-            log.debug("Answer correct! Earned {} points. Total played: {}", earnedPoints, session.getTotalChallengesPlayed());
+
+            log.debug("Answer correct! Earned {} points. Total score: {}, Total played: {}",
+                earnedPoints, session.getTotalScore(), session.getTotalChallengesPlayed());
         } else {
-            // Include the final wrong attempt
             session.setWrongAnswers(session.getWrongAnswers() + wrongAttempts);
             // 0 points for wrong answer
             log.debug("Answer wrong. Total played: {}", session.getTotalChallengesPlayed());
         }
 
-        // ===== Auto-advance to next challenge =====
-        advanceChallenge(sessionId);
+        // FIX Bug #4: advance the index directly on the SAME entity instance to avoid
+        // a double-save race condition (advanceChallenge() would reload and save a separate instance).
+        if (session.getStatus() == SessionStatus.IN_PROGRESS && !isSessionExpired(session)) {
+            session.setCurrentChallengeIndex(session.getCurrentChallengeIndex() + 1);
+        } else if (isSessionExpired(session)) {
+            session.setStatus(SessionStatus.EXPIRED);
+            session.setSessionEndTime(LocalDateTime.now());
+        }
 
+        // Single authoritative save
         StudentChallengeSession updatedSession = sessionRepository.save(session);
         return toDTO(updatedSession);
     }
@@ -201,10 +208,11 @@ public class StudentChallengeSessionServiceImpl implements IStudentChallengeSess
             return toDTO(session);
         }
 
-        log.info("Completing session ID={}. Correct={}, Wrong={}, Total={}", 
-            sessionId, 
-            session.getCorrectAnswers(), 
+        log.info("Completing session ID={}. Correct={}, Wrong={}, AccumulatedScore={}, Total={}",
+            sessionId,
+            session.getCorrectAnswers(),
             session.getWrongAnswers(),
+            session.getTotalScore(),
             session.getTotalChallengesPlayed()
         );
 
@@ -217,29 +225,33 @@ public class StudentChallengeSessionServiceImpl implements IStudentChallengeSess
 
         session.setSessionEndTime(LocalDateTime.now());
 
-        // ===== CALCULATE FINAL SCORE =====
+        // ===== FIX Bug #3: DO NOT overwrite the accumulated score =====
+        // The score was already accumulated correctly during submitAnswer().
+        // We only add a small time bonus on top of it.
         long timeElapsedSeconds = java.time.temporal.ChronoUnit.SECONDS.between(
             session.getSessionStartTime(),
             session.getSessionEndTime()
         );
         long timeRemainingSeconds = Math.max(0, session.getSessionDurationSeconds() - timeElapsedSeconds);
-        
-        // Calculate score
-        int finalScore = (session.getCorrectAnswers() * 20) + (int) timeRemainingSeconds;
+
+        // Time bonus: 1 bonus point every 5 seconds remaining (capped at 30)
+        int timeBonus = (int) Math.min(30, timeRemainingSeconds / 5);
+        int finalScore = session.getTotalScore() + timeBonus;
         session.setTotalScore(finalScore);
 
+        log.info("Session {} finalized: accumulatedScore + timeBonus({}) = {}",
+            sessionId, timeBonus, finalScore);
+
         StudentChallengeSession completedSession = sessionRepository.save(session);
-        
+
         // ===== AUTO-EVALUATE BADGES AFTER SESSION COMPLETION =====
-        // This ensures badges are awarded immediately after session ends
         try {
             log.info("Evaluating badges for user {} after session completion", session.getIdUser());
             badgeEvaluationService.evaluateBadgesForUser(session.getIdUser(), sessionId);
         } catch (Exception e) {
-            // Log error but don't fail session completion if badge evaluation fails
             log.error("Error evaluating badges for user {} after session {}", session.getIdUser(), sessionId, e);
         }
-        
+
         return toDTO(completedSession);
     }
 
@@ -253,7 +265,8 @@ public class StudentChallengeSessionServiceImpl implements IStudentChallengeSess
 
         for (StudentChallengeSession session : activeSessions) {
             if (isSessionExpired(session)) {
-                log.info("Expiring session ID={} due to timeout", session.getId());
+                log.info("Expiring session ID={} due to timeout. Final score preserved: {}",
+                    session.getId(), session.getTotalScore());
                 session.setStatus(SessionStatus.EXPIRED);
                 session.setSessionEndTime(now);
                 sessionRepository.save(session);

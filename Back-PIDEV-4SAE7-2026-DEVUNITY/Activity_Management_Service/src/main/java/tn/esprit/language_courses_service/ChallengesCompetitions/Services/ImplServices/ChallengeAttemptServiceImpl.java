@@ -9,9 +9,15 @@ import tn.esprit.language_courses_service.ChallengesCompetitions.Entities.Challe
 import tn.esprit.language_courses_service.ChallengesCompetitions.Entities.ChallengeAttempt;
 import tn.esprit.language_courses_service.ChallengesCompetitions.Entities.ChallengeType;
 import tn.esprit.language_courses_service.ChallengesCompetitions.Entities.Level;
+import tn.esprit.language_courses_service.ChallengesCompetitions.Entities.Badge;
+import tn.esprit.language_courses_service.ChallengesCompetitions.Entities.StudentBadge;
+import tn.esprit.language_courses_service.ChallengesCompetitions.DTO.ChallengeResponseDTO;
+import tn.esprit.language_courses_service.DTO.BadgeEvaluationResultDTO;
+import tn.esprit.language_courses_service.DTO.ChallengeAttemptDTO;
 import tn.esprit.language_courses_service.ChallengesCompetitions.Repositories.ChallengeAttemptRepository;
 import tn.esprit.language_courses_service.ChallengesCompetitions.Repositories.ChallengeRepository;
 import tn.esprit.language_courses_service.ChallengesCompetitions.Services.IServices.IChallengeAttemptService;
+import tn.esprit.language_courses_service.ChallengesCompetitions.Services.IServices.IBadgeEvaluationService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +30,7 @@ public class ChallengeAttemptServiceImpl implements IChallengeAttemptService {
 
     private final ChallengeAttemptRepository attemptRepository;
     private final ChallengeRepository challengeRepository;
+    private final IBadgeEvaluationService badgeEvaluationService;
 
     @Override
     public ChallengeAttempt startAttempt(Long idUser, Long challengeId) {
@@ -156,6 +163,98 @@ public class ChallengeAttemptServiceImpl implements IChallengeAttemptService {
         attempt.setEndTime(now);
         attempt.setScore(score);
         attemptRepository.save(attempt);
+    }
+
+    @Override
+    @Transactional
+    public ChallengeResponseDTO submitAttemptAnswer(Long attemptId, String answer) {
+        ChallengeAttempt attempt = attemptRepository.findById(attemptId)
+                .orElseThrow(() -> new IllegalArgumentException("Attempt not found"));
+
+        if (attempt.getStatus() != AttemptStatus.IN_PROGRESS) {
+            throw new IllegalStateException("Attempt is not in progress");
+        }
+
+        Challenge challenge = attempt.getChallenge();
+        boolean isCorrect = false;
+
+        if ("___timeout___".equals(answer)) {
+            attempt.setStatus(AttemptStatus.EXPIRED);
+            attempt.setScore(0);
+        } else {
+            if (challenge.getCorrectAnswer() != null) {
+                String[] possibleAnswers = challenge.getCorrectAnswer().split(";");
+                String normalizedInput = normalizeString(answer);
+                for (String possibleAnswer : possibleAnswers) {
+                    if (normalizeString(possibleAnswer).equals(normalizedInput)) {
+                        isCorrect = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (isCorrect) {
+                attempt.setStatus(AttemptStatus.COMPLETED);
+                Integer points = challenge.getPointsPerCorrectAnswer() != null ? challenge.getPointsPerCorrectAnswer() : 10;
+                attempt.setScore(points);
+                attempt.setProgress(points);
+            } else {
+                int attemptsUsed = attempt.getAttemptsUsed() != null ? attempt.getAttemptsUsed() + 1 : 1;
+                attempt.setAttemptsUsed(attemptsUsed);
+                int maxAttempts = challenge.getMaxAttempts() != null ? challenge.getMaxAttempts() : 3;
+                if (attemptsUsed >= maxAttempts) {
+                    attempt.setStatus(AttemptStatus.EXPIRED);
+                }
+                attempt.setScore(0);
+            }
+        }
+
+        attempt = attemptRepository.save(attempt);
+
+        List<Badge> newBadges = new java.util.ArrayList<>();
+        List<Badge> allBadges = new java.util.ArrayList<>();
+        
+        if (attempt.getStatus() == AttemptStatus.COMPLETED || attempt.getStatus() == AttemptStatus.EXPIRED) {
+            BadgeEvaluationResultDTO badgeResult = badgeEvaluationService.evaluateBadgesForUser(attempt.getIdUser(), null);
+                
+            if (badgeResult.getNewlyEarnedBadges() != null) {
+                newBadges = badgeResult.getNewlyEarnedBadges();
+            }
+            if (badgeResult.getAllOwnedBadges() != null) {
+                allBadges = badgeResult.getAllOwnedBadges().stream()
+                        .map(StudentBadge::getBadge)
+                        .collect(java.util.stream.Collectors.toList());
+            }
+        }
+
+        int totalScore = badgeEvaluationService.calculateTotalScore(attempt.getIdUser());
+
+        return ChallengeResponseDTO.builder()
+                .challengeAttempt(toDto(attempt))
+                .totalScore(totalScore)
+                .newBadges(newBadges)
+                .allBadges(allBadges)
+                .build();
+    }
+    
+    private String normalizeString(String input) {
+        if (input == null) return "";
+        return input.trim().toLowerCase().replaceAll("[^a-z0-9]", "");
+    }
+    
+    private ChallengeAttemptDTO toDto(ChallengeAttempt attempt) {
+        return ChallengeAttemptDTO.builder()
+                .id(attempt.getId())
+                .idUser(attempt.getIdUser())
+                .challengeId(attempt.getChallenge() != null ? attempt.getChallenge().getId() : null)
+                .startTime(attempt.getStartTime())
+                .endTime(attempt.getEndTime())
+                .deadlineTime(attempt.getDeadlineTime())
+                .status(attempt.getStatus())
+                .score(attempt.getScore())
+                .progress(attempt.getProgress())
+                .attemptsUsed(attempt.getAttemptsUsed())
+                .build();
     }
 
     @Override

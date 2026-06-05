@@ -9,6 +9,7 @@ import tn.esprit.language_courses_service.DTO.ErrorResponse;
 import tn.esprit.language_courses_service.ChallengesCompetitions.Entities.ChallengeAttempt;
 import tn.esprit.language_courses_service.ChallengesCompetitions.Entities.ChallengeType;
 import tn.esprit.language_courses_service.ChallengesCompetitions.Entities.Level;
+import tn.esprit.language_courses_service.ChallengesCompetitions.DTO.ChallengeResponseDTO;
 import tn.esprit.language_courses_service.ChallengesCompetitions.Services.IServices.IChallengeAttemptService;
 
 import java.util.List;
@@ -208,6 +209,26 @@ public class StudentChallengesController {
             return ResponseEntity.status(HttpStatus.CREATED).body(toDto(attempt));
         } catch (IllegalStateException | IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Submit an answer for a specific challenge attempt
+     * POST /activities/api/studentChallenges/{id}/submit
+     */
+    @PostMapping("/{id}/submit")
+    public ResponseEntity<ChallengeResponseDTO> submitAttemptAnswer(
+            @PathVariable Long id,
+            @RequestBody(required = false) String answer) {
+        try {
+            ChallengeResponseDTO response = attemptService.submitAttemptAnswer(id, answer != null ? answer : "");
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

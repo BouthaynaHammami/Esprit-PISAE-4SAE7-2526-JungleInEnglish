@@ -79,6 +79,14 @@ export class StudentChallengeSessionService {
   }
 
   /**
+   * Get total accumulated score for a user
+   * GET /sessions/user/{userId}/score
+   */
+  getUserTotalScore(userId: number): Observable<number> {
+    return this.http.get<number>(`${this.baseUrl}/user/${userId}/score`);
+  }
+
+  /**
    * Submit an answer for current challenge in session
    * POST /sessions/{sessionId}/submit
    * 

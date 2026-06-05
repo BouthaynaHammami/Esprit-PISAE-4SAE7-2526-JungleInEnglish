@@ -144,7 +144,7 @@ export class StudentChallengesComponent implements OnInit, OnDestroy {
     // Load student stats (score + badges)
     this.badgeService.getStudentStats(this.userId).subscribe({
       next: (stats) => {
-        this.totalScore = stats.totalScore || 0;
+        // We will explicitly fetch totalScore below, just load badges here
         // Map StudentBadge[] to Badge[]
         if (stats.allOwnedBadges) {
           this.allBadges = stats.allOwnedBadges.map((sb: any) => ({
@@ -153,8 +153,11 @@ export class StudentChallengesComponent implements OnInit, OnDestroy {
           }));
         }
       },
-      error: () => console.error('Failed to load total score for challenges')
+      error: () => console.error('Failed to load stats for challenges')
     });
+
+    // Explicitly load the total score using the dedicated endpoint
+    this.refreshTotalScore();
 
     // Load challenges
     this.studentChallengeService.getByUser(this.userId).subscribe({
@@ -493,6 +496,7 @@ export class StudentChallengesComponent implements OnInit, OnDestroy {
             if (badgeResult.totalScore !== undefined) {
               this.totalScore = badgeResult.totalScore;
             }
+            this.refreshTotalScore(); // Force sync with absolute truth
             
             if (this.newlyEarnedBadges.length > 0) {
               console.log(`🎉 User earned ${this.newlyEarnedBadges.length} new badges!`);
@@ -892,7 +896,11 @@ export class StudentChallengesComponent implements OnInit, OnDestroy {
         // res is ChallengeResponseDTO with { challengeAttempt, totalScore, newBadges, allBadges }
         this.activeStudentChallenge = res.challengeAttempt;
         this.answer = '';
-        this.totalScore = res.totalScore;
+        if (res.totalScore !== undefined) {
+          this.totalScore = res.totalScore;
+        }
+        this.refreshTotalScore(); // Force sync with absolute truth
+
         this.newlyEarnedBadges = res.newBadges || [];
         this.allBadges = res.allBadges || [];
 
@@ -919,6 +927,17 @@ export class StudentChallengesComponent implements OnInit, OnDestroy {
     this.stopSessionTimer();
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private refreshTotalScore() {
+    this.sessionService.getUserTotalScore(this.userId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (score) => {
+        if (score !== undefined && score !== null) {
+          this.totalScore = score;
+        }
+      },
+      error: () => console.error('Failed to refresh absolute total score')
+    });
   }
 
 }

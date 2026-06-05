@@ -152,38 +152,35 @@ public class ChallengeScoringServiceImpl implements IChallengeScoringService {
     }
 
     /**
-     * Process completed attempt and update student progress
+     * Process completed attempt and update student progress.
+     * FIX Bug #2: persist the recalculated pointsAwarded into the attempt record.
+     * The global score for leaderboard / badges is derived from StudentChallengeSession
+     * via BadgeEvaluationServiceImpl.calculateTotalScore() — no separate Player table needed.
      */
     @Override
     public void processCompletedAttempt(ChallengeAttempt attempt, Integer pointsAwarded) {
         try {
-            log.info("Processing completed attempt {} with {} points", attempt.getId(), pointsAwarded);
-            
-            // Here you would:
-            // 1. Update student's total points in Player/User entity
-            // 2. Update challenge completion status
-            // 3. Trigger any cascading effects (level up, badge notifications, etc.)
-            // 4. Update leaderboard
-            // 5. Log analytics/events
-            
-            // Example (implement based on your User/Player entity structure):
-            // Player player = playerRepository.findById(attempt.getIdUser());
-            // player.setTotalPoints(player.getTotalPoints() + pointsAwarded);
-            // playerRepository.save(player);
-            
+            log.info("Processing completed attempt {} with {} points awarded", attempt.getId(), pointsAwarded);
+
+            // Persist the real calculated score (not the raw frontend value)
+            attempt.setScore(pointsAwarded);
+            attemptRepository.save(attempt);
+
+            log.info("Attempt {} updated: score set to {}", attempt.getId(), pointsAwarded);
         } catch (Exception e) {
-            log.error("Error processing completed attempt", e);
+            log.error("Error processing completed attempt {}: {}", attempt.getId(), e.getMessage(), e);
         }
     }
 
     /**
-     * Calculate progress based on total answered
+     * Calculate progress (accuracy) as a real percentage of correct / total answered.
+     * FIX Bug #5: replaced arbitrary total*10 formula with actual accuracy ratio.
      */
     private Integer calculateProgress(Integer correctAnswers, Integer wrongAnswers) {
         int total = correctAnswers + wrongAnswers;
         if (total == 0) {
             return 0;
         }
-        return Math.min(100, total * 10); // Arbitrary progress calculation
+        return (int) Math.round((correctAnswers * 100.0) / total);
     }
 }

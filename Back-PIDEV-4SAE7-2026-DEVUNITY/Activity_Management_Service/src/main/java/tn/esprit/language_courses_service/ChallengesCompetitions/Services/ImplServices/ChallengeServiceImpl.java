@@ -9,6 +9,7 @@ import tn.esprit.language_courses_service.ChallengesCompetitions.DTO.ChallengeRe
 import tn.esprit.language_courses_service.ChallengesCompetitions.Entities.*;
 import tn.esprit.language_courses_service.ChallengesCompetitions.Repositories.ChallengeRepository;
 import tn.esprit.language_courses_service.ChallengesCompetitions.Services.IServices.ChallengeService;
+import tn.esprit.language_courses_service.ChallengesCompetitions.Services.IServices.IChallengeScoringService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,7 +24,9 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     private final ChallengeRepository challengeRepository;
     private final SimpMessagingTemplate messagingTemplate;
-    
+    // FIX Bug #1: inject the real scoring service
+    private final IChallengeScoringService challengeScoringService;
+
     // --- Story Chain Real-time State ---
     private final Map<String, StoryChainGameSession> activeStorySessions = new ConcurrentHashMap<>();
 
@@ -532,20 +535,13 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     /**
      * Submit challenge score - delegates to ChallengeScoringService
+     * FIX Bug #1: delegate to the real scoring service instead of returning a stub
      */
     @Override
     public ChallengeResultDTO submitChallengeScore(
             Long idUser,
             Long challengeId,
             ChallengeSubmissionDTO submission) {
-        // This will be injected when service is ready
-        // For now, return a default response
-        // In a real implementation, you would inject IChallengeScoringService
-        return ChallengeResultDTO.builder()
-                .success(true)
-                .message("Challenge score received")
-                .score(submission.getScore())
-                .pointsAwarded(submission.getScore())
-                .build();
+        return challengeScoringService.submitChallengeScore(idUser, challengeId, submission);
     }
 }

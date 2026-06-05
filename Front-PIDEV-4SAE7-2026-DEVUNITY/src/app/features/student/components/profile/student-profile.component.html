@@ -1,114 +1,104 @@
-<div class="profile-page">
+<div class="profile-container">
+    <div class="glass-header">
+        <div class="header-content">
+            <h1 class="main-title">Student Portal</h1>
+            <p class="subtitle">Track your progress, achievements, and linguistic mastery.</p>
+        </div>
+    </div>
 
     <div class="profile-grid">
-        
-        <!-- SIDEBAR: AVATAR & QUICK STATS -->
-        <aside class="sidebar-card card animate-in">
-            <div class="avatar-wrapper">
+        <!-- LEFT: Identity & Main Stats -->
+        <aside class="glass-card identity-card animate-in">
+            <div class="avatar-glow">
                 <div class="avatar-circle">
                     <span>{{ avatarLetter }}</span>
                 </div>
             </div>
 
-            <h1 class="profile-name">{{ displayName }}</h1>
+            <h2 class="user-name">{{ displayName }}</h2>
+            <div class="role-badge role-student">{{ role }}</div>
             <div class="rank-badge">{{ rank }}</div>
 
-            <div class="main-stats-row">
+            <div class="stats-row">
                 <div class="stat-box">
-                    <span class="val">{{ completedChallenges }}</span>
-                    <span class="lab">Challenges</span>
+                    <span class="stat-val">{{ completedChallenges }}</span>
+                    <span class="stat-lab">Challenges</span>
                 </div>
                 <div class="stat-box">
-                    <span class="val">{{ totalScore }}</span>
-                    <span class="lab">Points</span>
+                    <span class="stat-val">{{ totalScore }}</span>
+                    <span class="stat-lab">Points</span>
                 </div>
                 <div class="stat-box">
-                    <span class="val">{{ badgesCount }}</span>
-                    <span class="lab">Badges</span>
+                    <span class="stat-val">{{ badgesCount }}</span>
+                    <span class="stat-lab">Badges</span>
                 </div>
             </div>
 
-            <!-- Profile Actions -->
-            <div class="profile-actions">
-                <button (click)="logout()" class="btn-logout">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>Log Out</span>
+            <div class="card-actions">
+                <button (click)="logout()" class="btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    <span>Secure Sign Out</span>
                 </button>
             </div>
         </aside>
 
-        <!-- MAIN CONTENT: DETAILS & PROGRESS -->
-        <main class="details-section animate-in" style="animation-delay: 0.1s;">
-            
-            <h2>Account Details</h2>
-
-            <div class="info-cards">
-                <!-- Email Item -->
-                <div class="info-item">
-                    <div class="icon-box">📧</div>
-                    <div class="item-text">
-                        <span class="info-label">Email Address</span>
-                        <span class="info-value">{{ email }}</span>
+        <!-- RIGHT: Details & Progress -->
+        <main class="main-content">
+            <div class="glass-card animate-in delay-1">
+                <h3 class="section-title">Account Details</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+                        </div>
+                        <div class="info-text">
+                            <span class="info-label">Email Address</span>
+                            <span class="info-value">{{ email }}</span>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Role Item -->
-                <div class="info-item">
-                    <div class="icon-box">🎓</div>
-                    <div class="item-text">
-                        <span class="info-label">Member Role</span>
-                        <span class="info-value" [ngClass]="getRoleBadgeClass()">{{ role }}</span>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                        <div class="info-text">
+                            <span class="info-label">Full Name</span>
+                            <span class="info-value">{{ displayName }}</span>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Member ID Item -->
-                <div class="info-item">
-                    <div class="icon-box">🪪</div>
-                    <div class="item-text">
-                        <span class="info-label">Student ID</span>
-                        <span class="info-value">#{{ userId }}</span>
-                    </div>
-                </div>
-
-                <!-- Expiry Item -->
-                <div class="info-item">
-                    <div class="icon-box">🕐</div>
-                    <div class="item-text">
-                        <span class="info-label">Session Status</span>
-                        <span class="info-value">{{ expiryDate }}</span>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#006D77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        </div>
+                        <div class="info-text">
+                            <span class="info-label">Session Status</span>
+                            <span class="info-value">{{ expiryDate }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Progress Tracker -->
-            <section class="progress-card card animate-in" style="animation-delay: 0.2s;">
+            <div class="glass-card progress-card animate-in delay-2">
                 <div class="progress-header">
-                    <h3>Learning Mastery</h3>
-                    <span class="stat-label">{{ xpProgress }}% to next rank</span>
+                    <h3 class="section-title">Learning Mastery</h3>
+                    <span class="progress-percent">{{ xpProgress }}% to next rank</span>
                 </div>
-                <div class="xp-bar-outer">
-                    <div class="xp-bar-inner" [style.width.%]="xpProgress"></div>
+                <div class="xp-bar-bg">
+                    <div class="xp-bar-fill" [style.width.%]="xpProgress"></div>
                 </div>
-                <p class="subtitle mt-3" style="font-size: 13px; opacity: 0.7;">
-                    Complete more challenges to unlock the <strong>Polyglot Champion</strong> rank!
-                </p>
-            </section>
+                <p class="progress-hint">Complete more challenges to unlock the <strong>Polyglot Champion</strong> rank!</p>
+            </div>
 
-            <!-- Recent Achievements -->
-            <section class="badges-section animate-in" style="animation-delay: 0.3s;">
-                <h3>Linguistic Proficiency</h3>
-                <div class="badge-wrapper">
-                    <div class="profile-badge" title="Grammar King">👑</div>
-                    <div class="profile-badge" title="Vocabulary Master">📚</div>
-                    <div class="profile-badge" title="Streak Starter">🔥</div>
-                    <div class="profile-badge" title="Community Hero">🤝</div>
-                    <div class="profile-badge" title="Fast Learner">⚡</div>
-                    <div class="profile-badge" title="Emoji Decoder">🧩</div>
+            <div class="glass-card animate-in delay-3">
+                <h3 class="section-title">Linguistic Proficiency</h3>
+                <div class="badges-grid">
+                    <div class="achievement-badge" title="Grammar King">👑</div>
+                    <div class="achievement-badge" title="Vocabulary Master">📚</div>
+                    <div class="achievement-badge" title="Streak Starter">🔥</div>
+                    <div class="achievement-badge" title="Community Hero">🤝</div>
+                    <div class="achievement-badge" title="Fast Learner">⚡</div>
+                    <div class="achievement-badge" title="Emoji Decoder">🧩</div>
                 </div>
-            </section>
-
+            </div>
         </main>
-
     </div>
-
 </div>

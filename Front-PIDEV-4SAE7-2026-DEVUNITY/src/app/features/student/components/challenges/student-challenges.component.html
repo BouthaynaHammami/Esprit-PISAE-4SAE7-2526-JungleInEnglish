@@ -645,102 +645,72 @@
         </div>
       </div>
 
-      <section *ngIf="(allBadges.length > 0 || newlyEarnedBadges.length > 0) && step !== 'TYPE'" class="badge-hero glass animate-in">
-        <div class="badge-hero__top">
-          <div>
-            <span class="section-label">Badges</span>
-            <h2>Vos trophées et récompenses</h2>
-            <p>Chaque badge gagné renforce votre progression. Gardez vos trophées visibles et visez le prochain niveau.</p>
-          </div>
-          <div *ngIf="newlyEarnedBadges.length > 0" class="badge-hero__pill">
-            <span>Nouvelle récompense débloquée</span>
-          </div>
-        </div>
 
-        <div *ngIf="allBadges.length > 0" class="badge-list-premium">
-          <div *ngFor="let badge of allBadges; let i = index" 
-               class="badge-row animate-in"
-               [class.new-badge]="isBadgeNew(badge)"
-               [style.--badge-delay]="getBadgeDelay(i)"
-               (click)="openBadgeDetails(badge)">
-            
-
-            <div class="badge-row__content">
-              <div class="badge-row__header">
-                <h3 class="badge-row__title">{{ badge.name }}</h3>
-                <span class="badge-row__tier" [attr.data-tier]="getBadgeTier(badge)">
-                  {{ getBadgeTier(badge) }}
-                </span>
-              </div>
-              <p class="badge-row__description">{{ badge.description || 'Achievement unlocked for your outstanding performance.' }}</p>
-            </div>
-
-            <div class="badge-row__meta">
-              <div class="points-tag">
-                <i class="fas fa-bolt"></i>
-                <span>{{ badge.pointsRequired }} pts</span>
-              </div>
-              <button class="badge-row__action">
-                <i class="fas fa-chevron-right"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div *ngIf="allBadges.length === 0" class="badge-empty-state">
-          <div class="badge-empty-state__icon">🏆</div>
-          <h3>Pas encore de badge</h3>
-          <p>Terminez une mission pour voir votre première récompense apparaître ici.</p>
-        </div>
-      </section>
 
     </div>
 
-    <!-- RIGHT: Stats sidebar -->
+    <!-- RIGHT: Badges sidebar -->
     <aside class="layout__sidebar">
-      <div class="sidebar-card glass">
-        <div class="sidebar-card__header">
-          <h2 class="sidebar-card__title">My Progress</h2>
-          <div class="progress-pulse"></div>
-        </div>
+      <div class="sidebar-card glass badges-sidebar">
 
-        <div class="sidebar-stats">
-          <div class="stat-item premium">
-            <div class="stat-info">
-              <div class="stat-icon-box score">
-                <i class="fas fa-star"></i>
-              </div>
-              <span class="stat-label">Total Points</span>
-            </div>
-            <span class="stat-value highlight">{{ totalScore }}</span>
+        <!-- Header -->
+        <div class="badges-sidebar-header">
+          <div class="badges-sidebar-header__icon">
+            <i class="fas fa-award"></i>
           </div>
-          
-          <div class="stat-item premium">
-            <div class="stat-info">
-              <div class="stat-icon-box badges">
-                <i class="fas fa-medal"></i>
-              </div>
-              <span class="stat-label">Badges Earned</span>
-            </div>
-            <span class="stat-value">{{ allBadges.length }}</span>
+          <div>
+            <h2 class="badges-sidebar-header__title">My Trophies</h2>
+            <span class="badges-sidebar-header__sub">{{ allBadges.length }} badge{{ allBadges.length !== 1 ? 's' : '' }} earned</span>
           </div>
         </div>
 
-        <div class="sidebar-divider"></div>
-
-        <div *ngIf="allBadges.length > 0" class="badges-section">
-          
-          <div class="badges-grid-premium">
-            <div *ngFor="let b of allBadges" class="badge-wrapper" (click)="openBadgeDetails(b)">
-              <div class="badge-frame" [title]="b.name">
+        <!-- Badge Grid (if badges) -->
+        <div *ngIf="allBadges.length > 0" class="badges-showcase">
+          <ng-container *ngFor="let b of allBadges; let i = index">
+            <div *ngIf="i < 6"
+                 class="badge-card"
+                 [class.badge-card--new]="isBadgeNew(b)"
+                 (click)="openBadgeDetails(b)">
+              <div class="badge-card__glow"></div>
+              <div class="badge-card__img-wrapper">
                 <img [src]="b.imageUrl || 'assets/badges/default.png'"
                      [alt]="b.name"
-                     class="badge-icon" 
+                     class="badge-card__img"
                      onerror="this.src='https://cdn-icons-png.flaticon.com/512/10044/10044163.png'"/>
+                <div *ngIf="isBadgeNew(b)" class="badge-card__new-dot"></div>
               </div>
-              <div class="badge-tooltip">{{ b.name }}</div>
+              <span class="badge-card__name">{{ b.name }}</span>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Latest badge detail (newest one) -->
+        <div *ngIf="allBadges.length > 0" class="badge-featured">
+          <div class="badge-featured__inner">
+            <img [src]="allBadges[0].imageUrl || 'assets/badges/default.png'"
+                 [alt]="allBadges[0].name"
+                 class="badge-featured__img"
+                 onerror="this.src='https://cdn-icons-png.flaticon.com/512/10044/10044163.png'"/>
+            <div class="badge-featured__info">
+              <span class="badge-featured__label">Latest Badge</span>
+              <span class="badge-featured__name">{{ allBadges[0].name }}</span>
+              <span class="badge-featured__desc">{{ allBadges[0].description || 'Achievement unlocked!' }}</span>
             </div>
           </div>
+        </div>
+
+        <!-- View all button -->
+        <button *ngIf="allBadges.length > 6" class="btn-view-all" (click)="showTypes()">
+          <i class="fas fa-th-large"></i>
+          See all {{ allBadges.length }} badges
+        </button>
+
+        <!-- Empty state -->
+        <div *ngIf="allBadges.length === 0" class="badge-empty-sidebar">
+          <div class="badge-empty-sidebar__orb"></div>
+          <div class="badge-empty-sidebar__icon">🏆</div>
+          <p class="badge-empty-sidebar__title">No badges yet</p>
+          <p class="badge-empty-sidebar__hint">Complete your first challenges to unlock trophies!</p>
         </div>
 
       </div>

@@ -108,13 +108,14 @@ public class BadgeEvaluationServiceImpl implements IBadgeEvaluationService {
         }
 
         // ===== RULE 2: CHALLENGE COMPLETION =====
-        // Award badge after completing N challenges
-        // Mapping: pointsRequired as proxy for required completions
-        // E.g., badge.pointsRequired=5 -> need 5 completions
+        // FIX Bug #6: use a separate threshold for completions to avoid trivially granting
+        // score-based badges via the completion rule.
+        // Convention: require at least (pointsRequired / 20) completed challenges, minimum 1.
         long completedChallenges = countCompletedChallenges(userId);
-        if (completedChallenges >= pointsRequired / 10.0) { // E.g., 50 points = 5 challenges
-            log.debug("User {} eligible for badge {} via COMPLETION RULE (completed={})", 
-                userId, badgeId, completedChallenges);
+        long completionsRequired = Math.max(1, pointsRequired / 20);
+        if (completedChallenges >= completionsRequired) {
+            log.debug("User {} eligible for badge {} via COMPLETION RULE (completed={}, required={})",
+                userId, badgeId, completedChallenges, completionsRequired);
             return true;
         }
 
@@ -203,12 +204,23 @@ public class BadgeEvaluationServiceImpl implements IBadgeEvaluationService {
      */
     @Override
     public Integer calculateTotalScore(Long userId) {
-        // Only use StudentChallengeSession for global score, ignore legacy ChallengeAttempts
+        // FIX Bug #7: only count COMPLETED sessions in global score.
+        // EXPIRED sessions mean the student ran out of time — those partial scores
+        // should not inflate badge eligibility.
         List<StudentChallengeSession> sessions = sessionRepository.findByIdUserOrderBySessionStartTimeDesc(userId);
-        return sessions.stream()
-            .filter(s -> s.getStatus() == SessionStatus.COMPLETED || s.getStatus() == SessionStatus.EXPIRED)
+        int sessionScore = sessions.stream()
+            .filter(s -> s.getStatus() == SessionStatus.COMPLETED)
             .mapToInt(StudentChallengeSession::getTotalScore)
             .sum();
+            
+        // Include standalone challenge attempts
+        List<ChallengeAttempt> attempts = attemptRepository.findByIdUser(userId);
+        int attemptScore = attempts.stream()
+            .filter(a -> a.getStatus() == tn.esprit.language_courses_service.ChallengesCompetitions.Entities.AttemptStatus.COMPLETED && a.getScore() != null)
+            .mapToInt(ChallengeAttempt::getScore)
+            .sum();
+            
+        return sessionScore + attemptScore;
     }
 
 

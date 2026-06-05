@@ -3,6 +3,7 @@ package tn.esprit.language_courses_service.ChallengesCompetitions.Services.IServ
 import tn.esprit.language_courses_service.ChallengesCompetitions.Entities.ChallengeAttempt;
 import tn.esprit.language_courses_service.ChallengesCompetitions.Entities.ChallengeType;
 import tn.esprit.language_courses_service.ChallengesCompetitions.Entities.Level;
+import tn.esprit.language_courses_service.ChallengesCompetitions.DTO.ChallengeResponseDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,8 @@ public interface IChallengeAttemptService {
     void expireAttempt(Long attemptId);
 
     void completeAttempt(Long attemptId, Integer score);
+
+    ChallengeResponseDTO submitAttemptAnswer(Long attemptId, String answer);
 
     void checkAndExpireTimedOutAttempts();
 }
