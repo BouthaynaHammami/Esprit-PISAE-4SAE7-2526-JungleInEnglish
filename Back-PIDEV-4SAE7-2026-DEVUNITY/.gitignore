@@ -4,11 +4,8 @@ target/
 !**/src/test/**/target/
 .kotlin
 
-### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
+### IntelliJ IDEA (COMPLET) ###
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -37,3 +34,28 @@ build/
 
 ### Mac OS ###
 .DS_Store
+Thumbs.db
+
+### Secrets & Variables d'environnement (ESPRIT) ###
+.env
+.env.local
+.env.*.local
+!.env.example
+
+### Logs applicatifs (ESPRIT) ###
+*.log
+logs/
+startup.log
+**/startup.log
+
+### Uploads utilisateurs — données runtime (ESPRIT) ###
+uploads/*
+!uploads/.gitkeep
+**/uploads/*
+!**/uploads/.gitkeep
+
+### Fichiers temporaires ###
+*.tmp
+*.bak
+*.swp
+*~
