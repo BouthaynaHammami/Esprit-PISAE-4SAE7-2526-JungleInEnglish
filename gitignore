@@ -1,0 +1,224 @@
+# ============================================================
+# JAVA / SPRING BOOT
+# ============================================================
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+spring-shell.log
+/build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Maven
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+
+# Gradle
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# ============================================================
+# PYTHON / FASTAPI / ML
+# ============================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# Environnements virtuels
+venv/
+.venv/
+env/
+.env/
+ENV/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+wheels/
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Modèles ML — à héberger sur HuggingFace / Google Drive
+*.pkl
+*.joblib
+*.h5
+*.keras
+*.pt
+*.pth
+*.onnx
+*.bin
+*.pb
+*.tflite
+*.caffemodel
+*.mlmodel
+models/
+
+# Données d'entraînement
+data/raw/
+data/processed/
+*.csv
+*.parquet
+*.feather
+*.arrow
+
+# ============================================================
+# NODE.JS / ANGULAR
+# ============================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Angular build output
+dist/
+.angular/
+.angular/cache/
+
+# ============================================================
+# FICHIERS SENSIBLES — NE JAMAIS VERSIONNER
+# ============================================================
+.env
+*.env
+!.env.example
+application-local.properties
+application-secret.properties
+*-secret.yml
+*-secret.yaml
+secrets.yml
+secrets.yaml
+
+# Clés et certificats
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+*.crt
+*.csr
+
+# ============================================================
+# IDEs ET ÉDITEURS
+# ============================================================
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Eclipse
+.classpath
+.project
+.settings/
+.factorypath
+
+# NetBeans
+nbproject/
+nbactions.xml
+
+# ============================================================
+# DOCKER
+# ============================================================
+docker-compose.override.yml
+docker-compose.local.yml
+.docker/
+
+# ============================================================
+# LOGS ET FICHIERS TEMPORAIRES
+# ============================================================
+*.log
+logs/
+log/
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# ============================================================
+# SYSTÈME D'EXPLOITATION
+# ============================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ============================================================
+# KUBERNETES / TERRAFORM (credentials)
+# ============================================================
+*.tfstate
+*.tfstate.backup
+*.tfvars
+!*.tfvars.example
+.terraform/
+kubeconfig
+*.kubeconfig
+
+# ============================================================
+# SONARQUBE
+# ============================================================
+.sonar/
+.scannerwork/
+
+# ============================================================
+# DIVERS
+# ============================================================
+*.bak
+*.orig
+*.rej
+.history/
