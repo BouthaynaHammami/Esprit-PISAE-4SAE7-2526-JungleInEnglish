@@ -471,11 +471,11 @@ Full API documentation is available in [`docs/api.md`](docs/api.md).
 <table>
   <tr>
     <td><img src="demo/screenshots/1.png" alt="Screenshot 1" width="280"/></td>
-    <td><img src="demo/screenshots/3934586f-f6e7-4946-8270-09821251fa58.png" alt="Screenshot 2" width="280"/></td>
+    <td><img src="demo/screenshots/3934586f-f6e7-4946-8270-09821251fa58.jpg" alt="Screenshot 2" width="280"/></td>
     <td><img src="demo/screenshots/Capture d'écran 2026-06-06 140905.png" alt="Screenshot 3" width="280"/></td>
   </tr>
   <tr>
-    <td><img src="demo/screenshots/Capture d'écran 2026-06-08 013822screenshot-4.png" alt="Screenshot 4" width="280"/></td>
+    <td><img src="demo/screenshots/Capture d'écran 2026-06-08 013822.png" alt="Screenshot 4" width="280"/></td>
     <td><img src="demo/screenshots/Capture d'écran 2026-06-06 135438.png" alt="Screenshot 5" width="280"/></td>
     <td><img src="demo/screenshots/Capture d'écran 2026-06-06 135431.png" alt="Screenshot 6" width="280"/></td>
   </tr>
