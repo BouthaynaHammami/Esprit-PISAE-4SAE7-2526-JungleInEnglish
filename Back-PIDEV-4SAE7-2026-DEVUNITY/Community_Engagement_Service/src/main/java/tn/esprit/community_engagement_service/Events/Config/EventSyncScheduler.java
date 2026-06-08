@@ -16,7 +16,7 @@ public class EventSyncScheduler {
     /**
      * Synchronizes all events to RabbitMQ/Elasticsearch daily at midnight.
      */
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 39 1 * * *")
     public void scheduleEventSync() {
         log.info("Starting scheduled daily event synchronization...");
         try {
