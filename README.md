@@ -403,65 +403,7 @@ INFO:     Uvicorn running on http://0.0.0.0:8090
 
 ---
 
-### Step 9 — Start Elasticsearch & Kibana
-
-> 📦 **Download link:** [Elasticsearch_Kibana](https://esprittncom-my.sharepoint.com/:f:/g/personal/bouthayna_hammami_esprit_tn/IgCGFxxun9d5Q58MgyO_U_PlAY4LQiHUrx6-PK2F-WEKgSg?e=n1xMME)
-
-#### 9.1 — Download and extract
-
-1. Download the zip from the link above
-2. Extract it to the directory of your choice — you will get:
-```
-elasticsearch-kibana/
-├── elasticsearch-8.x.x/    ← pre-configured, security disabled
-├── kibana-8.x.x/           ← pre-configured
-└── kibana-export.ndjson     ← dashboards with data
-```
-
-#### 9.2 — Start Elasticsearch
-
-```bash
-# Windows — run directly from inside the zip or extracted folder
-elasticsearch-8.x.x\bin\elasticsearch.bat
-
-# macOS / Linux
-./elasticsearch-8.x.x/bin/elasticsearch
-```
-
-Wait until you see:
-```
-[INFO] started
-```
-✅ Verify: http://localhost:9200 → should return cluster info.
-
-#### 9.3 — Start Kibana
-
-Open a **new terminal**:
-
-```bash
-# Windows
-kibana-8.x.x\bin\kibana.bat
-
-# macOS / Linux
-./kibana-8.x.x/bin/kibana
-```
-
-Wait until you see:
-```
-[info] http server running at http://localhost:5601
-```
-✅ Open http://localhost:5601 → Kibana loads **without any login** — dashboards appear with data directly.
-
-> 💡 **Tip — Charts not showing?** If the dashboard loads but graphs/curves are empty, the issue is likely the **date range filter**.
-> In the top-right corner of the dashboard, the default range may be set to **Last 1 year**.
-> Change it to a wider range such as **Last 5 years** or use **Absolute dates** to cover the actual period of your data.
-> The search bar uses filters like `courseLevel : * and coursePrice : * or challengeLevel : * and challengeStartDate : *` — make sure the selected time window includes dates present in your dataset.
-
-> ⚠️ Security is disabled in this configuration — for demo/local use only.
-
----
-
-### Step 10 — Start the Frontend (Angular)
+### Step 9 — Start the Frontend (Angular)
 
 ```bash
 cd Front-PIDEV-4SAE7-2026-DEVUNITY
