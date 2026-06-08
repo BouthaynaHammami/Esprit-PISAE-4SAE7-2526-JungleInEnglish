@@ -161,7 +161,15 @@ cp .env.example .env
 
 ### Step 3 — Set up MySQL databases
 
-Open MySQL and run the following commands — the databases will be created automatically by Spring Boot on first launch, but you can create them manually to be sure:
+The SQL migration scripts are located in the repository under:
+
+```
+Esprit-PISAE-4SAE7-2526-JungleInEnglish/script/migration/
+```
+
+#### 3.1 — Create the databases
+
+Open MySQL and run:
 
 ```sql
 CREATE DATABASE IF NOT EXISTS Academic_Management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -172,18 +180,15 @@ CREATE DATABASE IF NOT EXISTS Learner_Management  CHARACTER SET utf8mb4 COLLATE 
 CREATE DATABASE IF NOT EXISTS Social_Interaction  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
+> The databases will also be created automatically by Spring Boot on first launch.
 
-#### 3.1 — Download & import the pre-filled databases (optional but recommended)
-
-> 📦 **Download link:** [devunity-databases — OneDrive](https://1drv.ms/f/c/0dd392f1aa339042/IgB4p49fnJMeSoU8aiQtnzXQAZaUppFh9a_Oq7SX_Vekq2Q?e=YnAjay)
-
-Download the zip, extract it — you will get one `.sql` dump file per database.
+#### 3.2 — Import the migration scripts
 
 **Option A — Via MySQL Workbench**
 
 1. Open **MySQL Workbench** and connect to your local server
 2. Go to **Server → Data Import**
-3. Select **Import from Self-Contained File** and browse to the `.sql` file
+3. Select **Import from Self-Contained File** and browse to the `.sql` file inside `script/migration/`
 4. Under **Default Schema to be Imported To**, select the matching database (e.g. `Academic_Management`)
 5. Click **Start Import**
 6. Repeat for each `.sql` file
@@ -191,18 +196,23 @@ Download the zip, extract it — you will get one `.sql` dump file per database.
 **Option B — Via terminal**
 
 ```bash
-# Replace <password> with your MySQL password
-# Repeat for each dump file
+# From the project root — replace <password> with your MySQL password
 
-mysql -u root -p<password> Academic_Management  < Academic_Management.sql
-mysql -u root -p<password> Activity_Management  < Activity_Management.sql
-mysql -u root -p<password> Community_Engagement < Community_Engagement.sql
-mysql -u root -p<password> Language_Courses     < Language_Courses.sql
-mysql -u root -p<password> Learner_Management   < Learner_Management.sql
-mysql -u root -p<password> Social_Interaction   < Social_Interaction.sql
+mysql -u root -p<password> Academic_Management  < script/migration/Academic_Management.sql
+mysql -u root -p<password> Activity_Management  < script/migration/Activity_Management.sql
+mysql -u root -p<password> Community_Engagement < script/migration/Community_Engagement.sql
+mysql -u root -p<password> Language_Courses     < script/migration/Language_Courses.sql
+mysql -u root -p<password> Learner_Management   < script/migration/Learner_Management.sql
+mysql -u root -p<password> Social_Interaction   < script/migration/Social_Interaction.sql
 ```
 
-> ⚠️ Make sure the databases are created (step above) before importing.
+> ⚠️ Make sure the databases are created (step 3.1) before importing.
+
+#### 3.3 — Download pre-filled databases (optional)
+
+> 📦 **Download link:** [devunity-databases — OneDrive](https://1drv.ms/f/c/0dd392f1aa339042/IgB4p49fnJMeSoU8aiQtnzXQAZaUppFh9a_Oq7SX_Vekq2Q?e=YnAjay)
+
+Download the zip, extract it and import each `.sql` file using Option A or B above.
 
 ---
 
@@ -470,14 +480,14 @@ Full API documentation is available in [`docs/api.md`](docs/api.md).
 
 <table>
   <tr>
-    <td><img src="demo/screenshots/1.png" alt="Screenshot 1" width="280"/></td>
-    <td><img src="demo/screenshots/3934586f-f6e7-4946-8270-09821251fa58.jpg" alt="Screenshot 2" width="280"/></td>
-    <td><img src="demo/screenshots/Capture d'écran 2026-06-06 140905.png" alt="Screenshot 3" width="280"/></td>
+    <td><img src="demo/screenshots/screenshot-1.png" alt="Screenshot 1" width="280"/></td>
+    <td><img src="demo/screenshots/screenshot-2.png" alt="Screenshot 2" width="280"/></td>
+    <td><img src="demo/screenshots/screenshot-3.png" alt="Screenshot 3" width="280"/></td>
   </tr>
   <tr>
-    <td><img src="demo/screenshots/Capture d'écran 2026-06-08 013822.png" alt="Screenshot 4" width="280"/></td>
-    <td><img src="demo/screenshots/Capture d'écran 2026-06-06 135438.png" alt="Screenshot 5" width="280"/></td>
-    <td><img src="demo/screenshots/Capture d'écran 2026-06-06 135431.png" alt="Screenshot 6" width="280"/></td>
+    <td><img src="demo/screenshots/screenshot-4.png" alt="Screenshot 4" width="280"/></td>
+    <td><img src="demo/screenshots/screenshot-5.png" alt="Screenshot 5" width="280"/></td>
+    <td><img src="demo/screenshots/screenshot-6.png" alt="Screenshot 6" width="280"/></td>
   </tr>
 </table>
 
